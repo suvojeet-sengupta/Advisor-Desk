@@ -1,6 +1,6 @@
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:intl/intl.dart';
 
 class PdfService {
@@ -13,7 +13,7 @@ class PdfService {
       return pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text('DishTV Agent Performance Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+          pw.Text('Advisor Desk Performance Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 10),
           pw.Text('Month: ${summary.formattedMonthYear}', style: pw.TextStyle(fontSize: 18)),
           pw.SizedBox(height: 20),

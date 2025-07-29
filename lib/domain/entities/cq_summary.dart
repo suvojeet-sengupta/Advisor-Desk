@@ -1,6 +1,6 @@
 // Call Quality (CQ) Summary Entity
 import 'package:equatable/equatable.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/cq_entry.dart';
 
 class CQSummary extends Equatable {
   final List<CQEntry> entries;

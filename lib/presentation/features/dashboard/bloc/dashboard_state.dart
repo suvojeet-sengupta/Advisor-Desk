@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_summary.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
 
 enum DashboardStatus { initial, loading, loaded, error }
 

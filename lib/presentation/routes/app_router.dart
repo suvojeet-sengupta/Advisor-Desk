@@ -1,16 +1,16 @@
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_entry.dart';
-import 'package:dishtv_agent_tracker/presentation/screens/theme_selection_screen.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/presentation/screens/theme_selection_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:dishtv_agent_tracker/presentation/features/onboarding/onboarding_tutorial_screen.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/dashboard_screen.dart';
-import 'package:dishtv_agent_tracker/presentation/features/add_entry/widgets/add_entry_screen.dart';
-import 'package:dishtv_agent_tracker/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
-import 'package:dishtv_agent_tracker/presentation/features/monthly_performance/widgets/monthly_performance_screen.dart';
-import 'package:dishtv_agent_tracker/presentation/features/all_reports/widgets/all_reports_screen.dart';
-import 'package:dishtv_agent_tracker/presentation/screens/app_info_screen.dart';
-import 'package:dishtv_agent_tracker/presentation/features/settings/widgets/settings_screen.dart';
+import 'package:advisor_desk/presentation/features/onboarding/onboarding_tutorial_screen.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_screen.dart';
+import 'package:advisor_desk/presentation/features/add_entry/widgets/add_entry_screen.dart';
+import 'package:advisor_desk/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
+import 'package:advisor_desk/presentation/features/monthly_performance/widgets/monthly_performance_screen.dart';
+import 'package:advisor_desk/presentation/features/all_reports/widgets/all_reports_screen.dart';
+import 'package:advisor_desk/presentation/screens/app_info_screen.dart';
+import 'package:advisor_desk/presentation/features/settings/widgets/settings_screen.dart';
 
 
 class AppRouter {

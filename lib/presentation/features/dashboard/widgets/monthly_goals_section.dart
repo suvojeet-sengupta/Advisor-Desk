@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/goals_bloc.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/goals_event.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/goals_state.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 
 class MonthlyGoalsSection extends StatelessWidget {
   final MonthlySummary summary;

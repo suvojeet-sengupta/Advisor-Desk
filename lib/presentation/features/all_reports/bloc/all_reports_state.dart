@@ -1,4 +1,4 @@
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:equatable/equatable.dart';
 
 enum AllReportsStatus { initial, loading, loaded, error }

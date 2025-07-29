@@ -1,6 +1,6 @@
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
-import 'package:dishtv_agent_tracker/domain/usecases/generate_pdf_report_usecase.dart'; 
-import 'package:dishtv_agent_tracker/domain/usecases/get_all_monthly_summaries_usecase.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/domain/usecases/generate_pdf_report_usecase.dart'; 
+import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'all_reports_event.dart';
 import 'all_reports_state.dart';

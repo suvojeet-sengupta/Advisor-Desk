@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_app_bar.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
 
 class OnboardingTutorialScreen extends StatefulWidget {
   const OnboardingTutorialScreen({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
 
   final List<Map<String, dynamic>> _onboardingPages = [
     {
-      'title': 'Welcome to DishTV Agent Tracker!',
+      'title': 'Welcome to Advisor Desk!',
       'description': "This app helps you track your daily calls, login time, and salary. Let's get started!",
       'image': Icons.waving_hand,
     },
@@ -64,7 +64,7 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'DishTV Agent Tracker Features'),
+      appBar: const CustomAppBar(title: 'Advisor Desk Features'),
       body: Column(
         children: [
           Expanded(

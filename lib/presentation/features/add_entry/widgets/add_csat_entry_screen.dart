@@ -1,13 +1,13 @@
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_form_field.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_entry.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_app_bar.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_button.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart'; // Import PerformanceRepository
+import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/domain/entities/csat_entry.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart'; // Import PerformanceRepository
 // This comment is added to force a re-compilation.
 
 class AddCSATEntryScreen extends StatefulWidget {
@@ -109,7 +109,7 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
                     children: [
                       Icon(
                         Icons.calendar_today,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: AppColors.dishTvOrange,
                       ),
                       const SizedBox(width: 12),
                       Text(
@@ -265,7 +265,7 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: color ?? (isHighlight ? Theme.of(context).colorScheme.primary : null),
+              color: color ?? (isHighlight ? AppColors.dishTvOrange : null),
             ),
           ),
         ],
@@ -292,7 +292,7 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: Theme.of(context).colorScheme.primary,
+              primary: AppColors.dishTvOrange,
             ),
           ),
           child: child!,

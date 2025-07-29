@@ -1,12 +1,12 @@
-# 📊 DishTV Agent Tracker App
+# 📊 Advisor Desk App
 
-## Empowering DishTV Field Agents with Seamless Performance Tracking
+## Empowering Professionals with Seamless Performance Tracking
 
 --- 
 
 ## ✨ Overview
 
-**DishTV Agent Tracker** is a robust and intuitive mobile application developed using Flutter, meticulously designed to empower DishTV field agents. It provides a comprehensive suite of tools for efficiently managing daily tasks, monitoring performance metrics, and accurately calculating monthly earnings. With a strong emphasis on a clean user interface and practical functionalities, this app serves as an indispensable tool for agents to maintain organization, boost motivation, and achieve their targets.
+**Advisor Desk** is a robust and intuitive mobile application developed using Flutter, meticulously designed to empower professionals. It provides a comprehensive suite of tools for efficiently managing daily tasks, monitoring performance metrics, and accurately calculating monthly earnings. With a strong emphasis on a clean user interface and practical functionalities, this app serves as an indispensable tool for users to maintain organization, boost motivation, and achieve their targets.
 
 ## 🚀 Features
 
@@ -69,11 +69,11 @@ To get a local copy of the project up and running for development or testing, fo
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/suvojit213/Dishtv-Agent-Trackerapp.git
+    git clone https://github.com/suvojit213/Advisor-Desk.git
     ```
 2.  **Navigate to the project directory:**
     ```bash
-    cd Dishtv-Agent-Trackerapp
+    cd Advisor-Desk
     ```
 3.  **Install dependencies:**
     ```bash
@@ -108,7 +108,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Suvojeet Sengupta** - suvojitsengupta21@gmail.com
 
-Project Link: [https://github.com/suvojit213/Dishtv-Agent-Trackerapp](https://github.com/suvojit213/Dishtv-Agent-Trackerapp)
+Project Link: [https://github.com/suvojit213/Advisor-Desk](https://github.com/suvojit213/Advisor-Desk)
 
 ## 🙏 Acknowledgements
 

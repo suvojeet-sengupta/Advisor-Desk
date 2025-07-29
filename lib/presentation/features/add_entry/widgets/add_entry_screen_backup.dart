@@ -1,15 +1,15 @@
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_app_bar.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_button.dart';
-import 'package:dishtv_agent_tracker/presentation/features/add_entry/bloc/add_entry_bloc.dart';
-import 'package:dishtv_agent_tracker/presentation/features/add_entry/bloc/add_entry_event.dart';
-import 'package:dishtv_agent_tracker/presentation/features/add_entry/bloc/add_entry_state.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_bloc.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_event.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_state.dart';
 
 class AddEntryScreen extends StatelessWidget {
   final DailyEntry? entryToEdit;

@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
-import 'package:dishtv_agent_tracker/domain/usecases/get_monthly_summary_usecase.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/dashboard_event.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/dashboard_state.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_summary.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/domain/usecases/get_monthly_summary_usecase.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_event.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_state.dart';
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final PerformanceRepository repository;

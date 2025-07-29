@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_enums.dart';
-import 'package:dishtv_agent_tracker/presentation/common/theme/theme_cubit.dart';
+import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
 
 class ThemeSelectionScreen extends StatelessWidget {
   const ThemeSelectionScreen({Key? key}) : super(key: key);

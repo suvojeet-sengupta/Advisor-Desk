@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
 class DashboardCard extends StatelessWidget {
   final String title;

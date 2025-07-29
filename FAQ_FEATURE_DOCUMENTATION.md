@@ -1,4 +1,4 @@
-# DishTV Agent Tracker - Version 1.0.2 Update
+# Advisor Desk - Version 1.0.2 Update
 
 ## नया फीचर: FAQ/Help Section
 

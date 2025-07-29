@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.suvojeet.dishtvagenttracker"
+    namespace "com.suvojeet.advisordesk"
     compileSdk 35 // यहाँ 34 से 35 में बदला गया है
 
     ndkVersion flutter.ndkVersion
@@ -42,7 +42,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.suvojeet.dishtvagenttracker"
+        applicationId "com.suvojeet.advisordesk"
         minSdk 21
         targetSdk 35 // आप चाहें तो इसे भी 35 कर सकते हैं, पर जरूरी नहीं है
         versionCode flutterVersionCode.toInteger()

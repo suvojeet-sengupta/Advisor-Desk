@@ -1,5 +1,5 @@
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 
 class AddEntryUseCase {
   final PerformanceRepository repository;

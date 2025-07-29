@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:dishtv_agent_tracker/data/datasources/data_import_service.dart';
-import 'package:dishtv_agent_tracker/data/datasources/local_data_source.dart';
+import 'package:advisor_desk/data/datasources/data_import_service.dart';
+import 'package:advisor_desk/data/datasources/local_data_source.dart';
 
 // This file is now empty as import features are removed.
 // If new import methods (e.g., Excel) are added to DataImportService,

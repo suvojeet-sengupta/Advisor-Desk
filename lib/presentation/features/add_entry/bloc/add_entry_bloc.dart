@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
-import 'package:dishtv_agent_tracker/domain/usecases/add_entry_usecase.dart';
-import 'package:dishtv_agent_tracker/domain/usecases/update_entry_usecase.dart';
-import 'package:dishtv_agent_tracker/domain/usecases/delete_entry_usecase.dart';
-import 'package:dishtv_agent_tracker/presentation/features/add_entry/bloc/add_entry_event.dart';
-import 'package:dishtv_agent_tracker/presentation/features/add_entry/bloc/add_entry_state.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/domain/usecases/add_entry_usecase.dart';
+import 'package:advisor_desk/domain/usecases/update_entry_usecase.dart';
+import 'package:advisor_desk/domain/usecases/delete_entry_usecase.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_event.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_state.dart';
 
 class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
   final PerformanceRepository repository;

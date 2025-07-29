@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_constants.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:intl/intl.dart';
 
 class PerformanceShareCard extends StatelessWidget {

@@ -1,5 +1,5 @@
-name: dishtv_agent_tracker
-description: "DishTV Agent Perfomence Tracker."
+name: advisor_desk
+description: "Advisor Desk Performance Tracker."
 publish_to: 'none'
 
 version: 1.0.6

@@ -1,34 +1,34 @@
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/salary_section.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/summary_section.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_divider.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/dashboard_card.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_constants.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/goal_repository.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/empty_state_widget.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/goals_bloc.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/goals_event.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/dashboard_shimmer.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/monthly_goals_section.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/csat_performance_section.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/cq_performance_section.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/salary_section.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/summary_section.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_divider.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_card.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/domain/repositories/goal_repository.dart';
+import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_shimmer.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/monthly_goals_section.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/csat_performance_section.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/cq_performance_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_app_bar.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_bottom_navigation_bar.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/dashboard_bloc.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/dashboard_event.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/dashboard_state.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/widgets/daily_entries_section.dart';
-import 'package:dishtv_agent_tracker/presentation/routes/app_router.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_bottom_navigation_bar.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_bloc.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_event.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_state.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/daily_entries_section.dart';
+import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/performance_share_card.dart';
+import 'package:advisor_desk/presentation/common/widgets/performance_share_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -98,7 +98,7 @@ class _DashboardViewState extends State<DashboardView> {
         await file.writeAsBytes(imageFile);
 
         // Share the image
-        await Share.shareXFiles([XFile(file.path)], text: 'Check out my DishTV Agent performance!');
+        await Share.shareXFiles([XFile(file.path)], text: 'Check out my Advisor Desk performance!');
 
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,9 +1,9 @@
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_summary.dart'; // Import CQSummary
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/csat_entry.dart';
+import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart'; // Import CQSummary
 import 'dart:io';
 
 abstract class PerformanceRepository {

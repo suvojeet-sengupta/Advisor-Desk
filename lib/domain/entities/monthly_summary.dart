@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_constants.dart';
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_summary.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
 
 class MonthlySummary extends Equatable {
   final int month;

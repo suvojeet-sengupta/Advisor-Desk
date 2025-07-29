@@ -1,7 +1,8 @@
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
-import 'package:dishtv_agent_tracker/presentation/routes/app_router.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:intl/intl.dart';
 
 class DailyEntriesSection extends StatelessWidget {
@@ -60,7 +61,7 @@ class DailyEntriesSection extends StatelessWidget {
             DateFormat('dd').format(entry.date),
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+              color: AppColors.dishTvOrange,
             ),
           ),
         ),
@@ -73,7 +74,7 @@ class DailyEntriesSection extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         trailing: IconButton(
-          icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.secondary),
+          icon: Icon(Icons.edit_outlined, color: AppColors.dishTvOrangeLight),
           onPressed: () {
             // Edit ke liye AddEntryScreen par navigate karein
             Navigator.pushNamed(

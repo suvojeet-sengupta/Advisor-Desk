@@ -1,6 +1,6 @@
 class AppConstants {
   // App information
-  static const String appName = 'DishTV Agent Tracker';
+  static const String appName = 'Advisor Desk';
   static const String appVersion = '1.0.6';
   static const String appDeveloper = 'Suvojeet';
 
@@ -17,7 +17,7 @@ class AppConstants {
   static const double tdsRate = 0.10; // 10% TDS
 
   // Database constants
-  static const String databaseName = 'dishtv_agent_tracker.db';
+  static const String databaseName = 'advisor_desk.db';
   static const int databaseVersion = 3; // Updated version for CQ feature
 
   // Table names

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 
 abstract class DashboardEvent extends Equatable {
   const DashboardEvent();

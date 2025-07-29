@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/entities/csat_entry.dart';
+import 'package:advisor_desk/domain/entities/cq_entry.dart';
 
 class DataImportService {
   // Placeholder for Excel import functionality

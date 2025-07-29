@@ -1,16 +1,17 @@
 import 'dart:io';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
-import 'package:dishtv_agent_tracker/domain/usecases/generate_excel_report_usecase.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/domain/usecases/generate_excel_report_usecase.dart';
 import 'package:open_file/open_file.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
-import 'package:dishtv_agent_tracker/presentation/features/all_reports/bloc/all_reports_bloc.dart';
-import 'package:dishtv_agent_tracker/presentation/features/all_reports/bloc/all_reports_event.dart';
-import 'package:dishtv_agent_tracker/presentation/features/all_reports/bloc/all_reports_state.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/presentation/features/all_reports/bloc/all_reports_bloc.dart';
+import 'package:advisor_desk/presentation/features/all_reports/bloc/all_reports_event.dart';
+import 'package:advisor_desk/presentation/features/all_reports/bloc/all_reports_state.dart';
 import 'package:flutter/material.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -133,14 +134,14 @@ class AllReportsView extends StatelessWidget {
         children: [
           Text(
             summary.formattedMonthYear,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppColors.dishTvOrange),
           ),
           const Divider(height: 24),
-          _buildInfoRow(context, Icons.call, 'Total Calls', '${summary.totalCalls}', Theme.of(context).colorScheme.secondary),
+          _buildInfoRow(context, Icons.call, 'Total Calls', '${summary.totalCalls}', AppColors.dishTvOrangeLight),
           const SizedBox(height: 8),
-          _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', Theme.of(context).colorScheme.secondary),
+          _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', AppColors.dishTvOrangeLight),
           const SizedBox(height: 8),
-          _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', Theme.of(context).colorScheme.primary),
+          _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', AppColors.dishTvOrange),
           const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerRight,
@@ -152,7 +153,7 @@ class AllReportsView extends StatelessWidget {
                   label: const Text("Export PDF"),
                   onPressed: () => _generateAndSharePdf(context, summary),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: AppColors.dishTvOrange,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
@@ -162,7 +163,7 @@ class AllReportsView extends StatelessWidget {
                   label: const Text("Export Excel"),
                   onPressed: () => _generateAndShareExcel(context, summary),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    backgroundColor: AppColors.dishTvOrangeLight,
                     foregroundColor: Theme.of(context).colorScheme.onSecondary,
                   ),
                 ),

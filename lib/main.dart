@@ -1,17 +1,17 @@
-import 'package:dishtv_agent_tracker/data/datasources/goal_data_source.dart';
-import 'package:dishtv_agent_tracker/data/repositories/goal_repository_impl.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/goal_repository.dart';
-import 'package:dishtv_agent_tracker/presentation/features/dashboard/bloc/goals_bloc.dart';
+import 'package:advisor_desk/data/datasources/goal_data_source.dart';
+import 'package:advisor_desk/data/repositories/goal_repository_impl.dart';
+import 'package:advisor_desk/domain/repositories/goal_repository.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_constants.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_enums.dart';
-import 'package:dishtv_agent_tracker/data/datasources/local_data_source.dart';
-import 'package:dishtv_agent_tracker/data/repositories/performance_repository_impl.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
-import 'package:dishtv_agent_tracker/presentation/common/theme/app_theme.dart';
-import 'package:dishtv_agent_tracker/presentation/common/theme/theme_cubit.dart';
-import 'package:dishtv_agent_tracker/presentation/routes/app_router.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/data/datasources/local_data_source.dart';
+import 'package:advisor_desk/data/repositories/performance_repository_impl.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/presentation/common/theme/app_theme.dart';
+import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
+import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Custom ScrollBehavior for smoother scrolling

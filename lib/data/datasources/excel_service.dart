@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 
 class ExcelService {
   Future<File> generateMonthlyReportExcel(MonthlySummary summary) async {
@@ -11,7 +11,7 @@ class ExcelService {
 
     // Add header row
     sheet.appendRow([
-      'DishTV Agent Performance Report',
+      'Advisor Desk Performance Report',
       '',
       '',
       '',
@@ -159,7 +159,7 @@ class ExcelService {
 
     // Save the Excel file
     final directory = await getExternalStorageDirectory();
-    final filePath = '${directory!.path}/DishTV_Report_${summary.formattedMonthYear}.xlsx';
+    final filePath = '${directory!.path}/Advisor_Desk_Report_${summary.formattedMonthYear}.xlsx';
     final file = File(filePath);
     await file.writeAsBytes(excel.encode()!);
     return file;

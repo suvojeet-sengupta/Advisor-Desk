@@ -1,13 +1,13 @@
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_form_field.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_entry.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_app_bar.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_button.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 
 class AddCQEntryScreen extends StatefulWidget {
   final CQEntry? entryToEdit;
@@ -74,7 +74,7 @@ class _AddCQEntryScreenState extends State<AddCQEntryScreen> {
                     children: [
                       Icon(
                         Icons.calendar_today,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: AppColors.dishTvOrange,
                       ),
                       const SizedBox(width: 12),
                       Text(
@@ -212,7 +212,7 @@ class _AddCQEntryScreenState extends State<AddCQEntryScreen> {
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: color ?? (isHighlight ? Theme.of(context).colorScheme.primary : null),
+              color: color ?? (isHighlight ? AppColors.dishTvOrange : null),
             ),
           ),
         ],
@@ -232,7 +232,7 @@ class _AddCQEntryScreenState extends State<AddCQEntryScreen> {
   Color _getQualityColor(double percentage) {
     if (percentage == 0) return Colors.black;
     if (percentage >= 85) return Colors.green;
-    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
+    if (percentage >= 75) return AppColors.dishTvOrange;
     return Colors.red;
   }
 
@@ -246,7 +246,7 @@ class _AddCQEntryScreenState extends State<AddCQEntryScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: Theme.of(context).colorScheme.primary,
+              primary: AppColors.dishTvOrange,
             ),
           ),
           child: child!,

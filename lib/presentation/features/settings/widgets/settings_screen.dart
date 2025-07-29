@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_app_bar.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_button.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:dishtv_agent_tracker/data/datasources/data_import_service.dart';
-import 'package:dishtv_agent_tracker/data/datasources/local_data_source.dart';
-import 'package:dishtv_agent_tracker/domain/usecases/import_data_usecase.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_constants.dart';
+import 'package:advisor_desk/data/datasources/data_import_service.dart';
+import 'package:advisor_desk/data/datasources/local_data_source.dart';
+import 'package:advisor_desk/domain/usecases/import_data_usecase.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
-  static const _platform = MethodChannel('com.suvojeet.dishtv_agent_tracker/feedback');
+  static const _platform = MethodChannel('com.suvojeet.advisor_desk/feedback');
 
   @override
   Widget build(BuildContext context) {
@@ -92,13 +92,13 @@ class SettingsScreen extends StatelessWidget {
       final repo = context.read<PerformanceRepository>();
       // Placeholder for actual file selection
       // You would typically use a package like file_picker to let the user select a file
-      // For demonstration, let's assume a file named 'dishtv_agent_tracker.db_backup_TIMESTAMP.db' exists in external storage
+      // For demonstration, let's assume a file named 'advisor_desk.db_backup_TIMESTAMP.db' exists in external storage
       final externalDir = await getExternalStorageDirectory();
       if (externalDir == null) {
         throw Exception("Could not get external storage directory.");
       }
       // This path needs to be dynamic based on the actual backup file name
-      final backupFilePath = '${externalDir.path}/dishtv_agent_tracker.db_backup_YOUR_TIMESTAMP.db'; // REPLACE WITH ACTUAL BACKUP FILE
+      final backupFilePath = '${externalDir.path}/advisor_desk.db_backup_YOUR_TIMESTAMP.db'; // REPLACE WITH ACTUAL BACKUP FILE
 
       // Check if the placeholder file exists
       if (!await File(backupFilePath).exists()) {

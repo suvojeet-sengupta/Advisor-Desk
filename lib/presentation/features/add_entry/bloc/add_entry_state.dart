@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
 
 enum AddEntryStatus { initial, loading, loaded, success, failure }
 

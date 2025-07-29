@@ -1,4 +1,4 @@
-# DishTV Agent Tracker - Version 1.0.1 Improvements
+# Advisor Desk - Version 1.0.1 Improvements
 
 ## Scrolling Smoothness Improvements Made
 

@@ -1,7 +1,7 @@
 # CSAT Implementation Summary
 
 ## Overview
-This implementation adds CSAT (Customer Satisfaction) tracking functionality to the Dishtv Agent Tracker app. The implementation includes:
+This implementation adds CSAT (Customer Satisfaction) tracking functionality to the Advisor Desk app. The implementation includes:
 
 1. **CSAT Entry Entity** (`csat_entry.dart`)
    - Tracks T2 (positive feedback), B2 (negative feedback), and N (neutral feedback) counts

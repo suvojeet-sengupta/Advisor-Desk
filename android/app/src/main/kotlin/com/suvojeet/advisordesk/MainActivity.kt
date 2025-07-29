@@ -1,4 +1,4 @@
-package com.suvojeet.dishtvagenttracker
+package com.suvojeet.advisordesk
 
 import android.content.Intent
 import android.net.Uri
@@ -15,8 +15,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 class MainActivity: FlutterActivity() {
-    private val PDF_CHANNEL = "com.dishtv.agenttracker/pdf"
-    private val FEEDBACK_CHANNEL = "com.suvojeet.dishtv_agent_tracker/feedback"
+    private val PDF_CHANNEL = "com.suvojeet.advisordesk/pdf"
+    private val FEEDBACK_CHANNEL = "com.suvojeet.advisordesk/feedback"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -86,10 +86,10 @@ class MainActivity: FlutterActivity() {
 
     private fun sendFeedbackEmail() {
         val email = "suvojitsengupta21@gmail.com"
-        val subject = "Feedback for DishTV Agent Tracker App"
+        val subject = "Feedback for Advisor Desk App"
 
         val body = """
-            Feedback from DishTV Agent Tracker App
+            Feedback from Advisor Desk App
             -----------------------------------
             App Version: ${getAppVersion()}
             Device: ${Build.MANUFACTURER} ${Build.MODEL}

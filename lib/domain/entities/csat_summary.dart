@@ -1,6 +1,6 @@
 // CSAT Summary Entity
 import 'package:equatable/equatable.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_entry.dart';
+import 'package:advisor_desk/domain/entities/csat_entry.dart';
 
 class CSATSummary extends Equatable {
   final List<CSATEntry> entries;

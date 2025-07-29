@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_summary.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
 class CQPerformanceSection extends StatelessWidget {
   final CQSummary? cqSummary;
@@ -22,7 +22,7 @@ class CQPerformanceSection extends StatelessWidget {
               children: [
                 Icon(
                 Icons.assessment,
-                color: Theme.of(context).colorScheme.primary,
+                color: AppColors.dishTvOrange,
                 size: 24,
               ),
                 const SizedBox(width: 8),
@@ -78,7 +78,7 @@ class CQPerformanceSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.assessment,
-                color: Theme.of(context).colorScheme.primary,
+                color: AppColors.dishTvOrange,
                 size: 24,
               ),
               const SizedBox(width: 8),
@@ -163,7 +163,7 @@ class CQPerformanceSection extends StatelessWidget {
                   context,
                   'Total Audits',
                   cqSummary!.totalAudits.toString(),
-                  Theme.of(context).colorScheme.primary,
+                  AppColors.dishTvOrange,
                   Icons.assignment_turned_in,
                 ),
               ),

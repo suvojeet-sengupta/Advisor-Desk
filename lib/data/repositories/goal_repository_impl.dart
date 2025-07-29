@@ -1,5 +1,5 @@
-import 'package:dishtv_agent_tracker/data/datasources/goal_data_source.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/goal_repository.dart';
+import 'package:advisor_desk/data/datasources/goal_data_source.dart';
+import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 
 class GoalRepositoryImpl implements GoalRepository {
   final GoalDataSource dataSource;

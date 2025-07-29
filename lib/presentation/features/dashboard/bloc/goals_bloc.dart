@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/goal_repository.dart';
+import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'goals_event.dart';
 import 'goals_state.dart';
 

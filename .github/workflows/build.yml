@@ -76,8 +76,8 @@ jobs:
       - name: 📦 Prepare Release Artifacts
         run: |
           mkdir -p release_artifacts
-          mv build/app/outputs/flutter-apk/app-release.apk release_artifacts/DishTV-Agent-Tracker-${{ env.RELEASE_TAG }}.apk
-          mv build/app/outputs/bundle/release/app-release.aab release_artifacts/DishTV-Agent-Tracker-${{ env.RELEASE_TAG }}.aab
+          mv build/app/outputs/flutter-apk/app-release.apk release_artifacts/Advisor-Desk-${{ env.RELEASE_TAG }}.apk
+          mv build/app/outputs/bundle/release/app-release.aab release_artifacts/Advisor-Desk-${{ env.RELEASE_TAG }}.aab
 
       - name: ⬆️ Upload Release Artifacts
         uses: actions/upload-artifact@v4
@@ -119,9 +119,9 @@ jobs:
           tag_name: ${{ needs.build_artifacts.outputs.release_tag }}
           name: "Release ${{ needs.build_artifacts.outputs.release_tag }}"
           body: |
-            # ✨ Release: DishTV Agent Tracker ${{ needs.build_artifacts.outputs.release_tag }}
+            # ✨ Release: Advisor Desk ${{ needs.build_artifacts.outputs.release_tag }}
 
-            Hello there! A new version of DishTV Agent Tracker is now available.
+            Hello there! A new version of Advisor Desk is now available.
 
             ## 🚀 What's New
             ${{ steps.changelog.outputs.changelog }}
@@ -132,7 +132,7 @@ jobs:
             ## 🤝 Support & Feedback
             If you encounter any issues or have suggestions, please open an issue on our [GitHub repository](${{ github.server_url }}/${{ github.repository }}).
 
-            Thank you for using DishTV Agent Tracker!
+            Thank you for using Advisor Desk!
           files: release_artifacts/*
 
       - name: 📲 Notify via Telegram
@@ -144,7 +144,7 @@ jobs:
           message: |
             *🚀 New Flutter Release!*
 
-            *App:* `DishTV Agent Tracker`
+            *App:* `Advisor Desk`
             *Version:* `${{ env.RELEASE_TAG }}`
 
             *Changes:*

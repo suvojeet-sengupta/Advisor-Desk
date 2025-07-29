@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
 
 class CustomFormField extends StatelessWidget {
   final String label;

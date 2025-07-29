@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:dishtv_agent_tracker/data/datasources/pdf_service.dart';
-import 'package:dishtv_agent_tracker/data/datasources/excel_service.dart';
-import 'package:dishtv_agent_tracker/data/datasources/local_data_source.dart';
-import 'package:dishtv_agent_tracker/domain/entities/daily_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/monthly_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_summary.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_entry.dart';
-import 'package:dishtv_agent_tracker/domain/entities/cq_summary.dart';
-import 'package:dishtv_agent_tracker/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/data/datasources/pdf_service.dart';
+import 'package:advisor_desk/data/datasources/excel_service.dart';
+import 'package:advisor_desk/data/datasources/local_data_source.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/csat_entry.dart';
+import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 
 class PerformanceRepositoryImpl implements PerformanceRepository {
   final LocalDataSource localDataSource;
@@ -160,7 +160,7 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     if (backupDir == null) {
       throw Exception("Could not get external storage directory for backup.");
     }
-    final backupPath = '${backupDir.path}/dishtv_agent_tracker_backup_${DateTime.now().millisecondsSinceEpoch}.db';
+    final backupPath = '${backupDir.path}/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.db';
     await dbFile.copy(backupPath);
     return backupPath;
   }

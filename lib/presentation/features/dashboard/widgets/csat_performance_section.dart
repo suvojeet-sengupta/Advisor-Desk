@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:dishtv_agent_tracker/core/constants/app_colors.dart';
-import 'package:dishtv_agent_tracker/domain/entities/csat_summary.dart';
-import 'package:dishtv_agent_tracker/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
 class CSATPerformanceSection extends StatelessWidget {
   final CSATSummary? csatSummary;
@@ -22,7 +22,7 @@ class CSATPerformanceSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.sentiment_satisfied_alt,
-                color: Theme.of(context).colorScheme.primary,
+                color: AppColors.dishTvOrange,
                 size: 24,
               ),
                 const SizedBox(width: 8),
@@ -77,7 +77,7 @@ class CSATPerformanceSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.sentiment_satisfied_alt,
-                color: Theme.of(context).colorScheme.primary,
+                color: AppColors.dishTvOrange,
                 size: 24,
               ),
               const SizedBox(width: 8),
@@ -214,9 +214,9 @@ class CSATPerformanceSection extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: AppColors.dishTvOrange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3)),
+              border: Border.all(color: AppColors.dishTvOrange.withOpacity(0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -231,7 +231,7 @@ class CSATPerformanceSection extends StatelessWidget {
                   csatSummary!.totalSurveyHits.toString(),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: AppColors.dishTvOrange,
                   ),
                 ),
               ],

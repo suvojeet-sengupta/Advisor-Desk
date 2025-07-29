@@ -38,29 +38,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  flutter_launcher_icons: ^0.13.1
   change_app_package_name: ^1.1.0 # <-- यह लाइन जोड़ें
-  flutter_native_splash: ^2.4.0
 
 flutter:
   uses-material-design: true
-
-# यह नया और बेहतर कॉन्फ़िगरेशन है
-flutter_launcher_icons:
-  android: true
-  image_path: "assets/icon/app_icon.png" # यह सामान्य आइकन के लिए है
-  min_sdk_android: 21
-  remove_alpha_ios: true
-  # Android के नए वर्ज़न के लिए ये सेटिंग्स ज़रूरी हैं
-  adaptive_icon_background: "#1E1E1E" # बैकग्राउंड का रंग (आप इसे बदल सकते हैं)
-  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png" # फोरग्राउंड के लिए नई इमेज
-
-# यह नया सेक्शन सबसे नीचे जोड़ा गया है
-flutter_native_splash:
-  color: "#1E1E1E" # डार्क मोड बैकग्राउंड कलर
-  color_dark: "#1E1E1E"
-  image: assets/icon/app_icon.png
-  image_dark: assets/icon/app_icon.png
-  android_12:
-    image: assets/icon/app_icon.png
-    icon_background_color: "#1E1E1E"

@@ -4,7 +4,7 @@
 
 ### 🎉 क्या नया है?
 
-आपके DishTV Agent Tracker ऐप में अब एक comprehensive FAQ/Help section जोड़ा गया है जो आपको ऐप का बेहतर उपयोग करने में मदद करेगा।
+आपके Advisor Desk ऐप में अब एक comprehensive FAQ/Help section जोड़ा गया है जो आपको ऐप का बेहतर उपयोग करने में मदद करेगा।
 
 ### 📱 कैसे एक्सेस करें?
 

@@ -102,7 +102,7 @@ class AppInfoScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '"I Developed This App for Easy to Track Advisor Desk WFH Agent Performance Yourself, Thanks For using This Application"',
+                    '"I developed this app to help you easily track your performance and daily activities. Thank you for using this application."',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontStyle: FontStyle.italic,
                         ),

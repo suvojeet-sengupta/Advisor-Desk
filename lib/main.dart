@@ -13,6 +13,7 @@ import 'package:advisor_desk/presentation/common/theme/app_theme.dart';
 import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {

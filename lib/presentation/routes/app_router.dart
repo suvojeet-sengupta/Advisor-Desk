@@ -11,6 +11,7 @@ import 'package:advisor_desk/presentation/features/monthly_performance/widgets/m
 import 'package:advisor_desk/presentation/features/all_reports/widgets/all_reports_screen.dart';
 import 'package:advisor_desk/presentation/screens/app_info_screen.dart';
 import 'package:advisor_desk/presentation/features/settings/widgets/settings_screen.dart';
+import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dart';
 
 
 class AppRouter {

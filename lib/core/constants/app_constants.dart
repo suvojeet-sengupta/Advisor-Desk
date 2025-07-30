@@ -1,7 +1,7 @@
 class AppConstants {
   // App information
   static const String appName = 'Advisor Desk';
-  static const String appVersion = '1.0.6';
+  static const String appVersion = '1.0.7';
   static const String appDeveloper = 'Suvojeet';
 
   // Salary calculation constants

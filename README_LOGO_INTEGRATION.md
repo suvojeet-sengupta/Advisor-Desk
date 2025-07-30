@@ -32,7 +32,7 @@ Corresponding launcher_icon.png files updated in all density folders.
 The app is configured with:
 - **App Name**: "Advisor Desk"
 - **Package**: advisor_desk
-- **Version**: 1.0.6
+- **Version**: 1.0.7
 - **Target SDK**: Android 6-15 compatibility
 - **Developer**: Suvojeet Sengupta
 

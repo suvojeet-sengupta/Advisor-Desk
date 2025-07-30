@@ -22,8 +22,7 @@ class CustomizeDashboardScreen extends StatelessWidget {
         return 'Salary Details';
       case DashboardSection.dailyEntries:
         return 'Daily Entries';
-      case DashboardSection.performanceChart:
-        return 'Performance Chart';
+      
     }
   }
 

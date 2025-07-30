@@ -58,6 +58,9 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _sendFeedback(BuildContext context) async {
     try {
       await _platform.invokeMethod('sendFeedback');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email client launched. Please compose your feedback.")),
+      );
     } on PlatformException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send feedback: '${e.message}'.")),

@@ -9,7 +9,9 @@ import io.flutter.plugin.common.MethodChannel
 import android.os.Environment
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ContentValues
 import android.content.Context
+import android.provider.MediaStore
 import androidx.core.app.NotificationCompat
 import java.io.File
 import java.io.FileOutputStream
@@ -60,10 +62,23 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun savePdfToDownloads(pdfBytes: ByteArray, fileName: String): String {
-        val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val file = File(downloadsDir, fileName)
-        FileOutputStream(file).use { it.write(pdfBytes) }
-        return file.absolutePath
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        }
+
+        val resolver = context.contentResolver
+        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+        
+        if (uri != null) {
+            resolver.openOutputStream(uri).use { outputStream ->
+                outputStream?.write(pdfBytes)
+            }
+            return uri.toString()
+        } else {
+            throw Exception("Failed to create new MediaStore record.")
+        }
     }
 
     private fun showDownloadNotification(fileName: String, filePath: String) {

@@ -159,7 +159,7 @@ class LocalDataSource {
 
     // Calculate start and end dates for the month
     final startDate = DateTime(year, month, 1);
-    final endDate = DateTime(year, month + 1, 0); // Last day of the month
+    final endDate = DateTime(year, month + 1, 1).subtract(const Duration(microseconds: 1)); // End of the last day
 
     final List<Map<String, dynamic>> maps = await db.query(
       AppConstants.tableEntries,
@@ -252,7 +252,7 @@ class LocalDataSource {
     final db = await database;
 
     final startDate = DateTime(year, month, 1);
-    final endDate = DateTime(year, month + 1, 0);
+    final endDate = DateTime(year, month + 1, 1).subtract(const Duration(microseconds: 1));
 
     final List<Map<String, dynamic>> maps = await db.query(
       AppConstants.tableCSATEntries,
@@ -323,7 +323,7 @@ class LocalDataSource {
     final db = await database;
 
     final startDate = DateTime(year, month, 1);
-    final endDate = DateTime(year, month + 1, 0);
+    final endDate = DateTime(year, month + 1, 1).subtract(const Duration(microseconds: 1));
 
     final List<Map<String, dynamic>> maps = await db.query(
       AppConstants.tableCQEntries,
@@ -439,4 +439,3 @@ class LocalDataSource {
     return result;
   }
 }
-

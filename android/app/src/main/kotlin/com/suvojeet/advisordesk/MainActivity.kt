@@ -115,14 +115,18 @@ class MainActivity: FlutterActivity() {
 
         """.trimIndent()
 
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822"
             putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
             putExtra(Intent.EXTRA_SUBJECT, subject)
             putExtra(Intent.EXTRA_TEXT, body)
         }
 
-        startActivity(Intent.createChooser(intent, "Send Feedback"))
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(Intent.createChooser(intent, "Send Feedback"))
+        } else {
+            throw Exception("No email client found.")
+        }
     }
 
     private fun getAppVersion(): String {

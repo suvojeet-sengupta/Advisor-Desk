@@ -12,7 +12,6 @@ class DashboardCustomization extends Equatable {
       DashboardSection.cqPerformance,
       DashboardSection.salaryDetails,
       DashboardSection.dailyEntries,
-      DashboardSection.performanceChart,
     ],
   });
 

@@ -37,25 +37,21 @@ class CustomizeDashboardScreen extends StatelessWidget {
 
           return ReorderableListView.builder(
             padding: const EdgeInsets.all(16.0),
-            itemCount: DashboardSection.values.length,
+            itemCount: currentVisibleSections.length, // Only reorder visible sections
             itemBuilder: (context, index) {
-              final section = DashboardSection.values[index];
-              final isVisible = currentVisibleSections.contains(section);
+              final section = currentVisibleSections[index]; // Get section from visible list
 
               return Card(
                 key: ValueKey(section.index), // Unique key for reordering
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 child: CheckboxListTile(
                   title: Text(_getSectionTitle(section)),
-                  value: isVisible,
+                  value: true, // Always true for visible sections
                   onChanged: (bool? newValue) {
-                    if (newValue != null) {
+                    if (newValue != null && !newValue) {
+                      // If unchecked, remove from visible sections
                       List<DashboardSection> updatedSections = List.from(currentVisibleSections);
-                      if (newValue) {
-                        updatedSections.add(section);
-                      } else {
-                        updatedSections.remove(section);
-                      }
+                      updatedSections.remove(section);
                       context.read<DashboardCustomizationCubit>().updateVisibleSections(updatedSections);
                     }
                   },
@@ -63,25 +59,13 @@ class CustomizeDashboardScreen extends StatelessWidget {
               );
             },
             onReorder: (int oldIndex, int newIndex) {
-              // This reordering logic needs to be applied to the `visibleSections` list
-              // based on the order of `DashboardSection.values`.
-              // This is a bit tricky because `ReorderableListView` reorders based on its `itemBuilder` index,
-              // not directly on the `visibleSections` list.
-              // For simplicity, let's just handle visibility for now.
-              // Reordering visible sections will require a more complex approach.
-
-              // For now, we'll just reorder the full list of sections and then filter for visible ones.
-              // This is not ideal for performance if you have many sections, but works for a small list.
-              final List<DashboardSection> allSections = List.from(DashboardSection.values);
-              final DashboardSection movedSection = allSections.removeAt(oldIndex);
-              allSections.insert(newIndex > oldIndex ? newIndex - 1 : newIndex, movedSection);
-
-              // Now, filter this reordered list to get only the visible sections
-              final List<DashboardSection> reorderedVisibleSections = allSections
-                  .where((s) => customizationState.visibleSections.contains(s))
-                  .toList();
-
-              context.read<DashboardCustomizationCubit>().updateVisibleSections(reorderedVisibleSections);
+              List<DashboardSection> updatedSections = List.from(currentVisibleSections);
+              if (newIndex > oldIndex) {
+                newIndex -= 1;
+              }
+              final DashboardSection movedSection = updatedSections.removeAt(oldIndex);
+              updatedSections.insert(newIndex, movedSection);
+              context.read<DashboardCustomizationCubit>().updateVisibleSections(updatedSections);
             },
           );
         },

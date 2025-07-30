@@ -15,5 +15,5 @@ enum DashboardSection {
   cqPerformance,
   salaryDetails,
   dailyEntries,
-  performanceChart,
+  
 }

@@ -31,7 +31,7 @@ import 'package:advisor_desk/presentation/common/widgets/performance_share_card.
 import 'package:advisor_desk/core/constants/app_enums.dart'; // Import DashboardSection
 import 'package:advisor_desk/core/models/dashboard_models.dart'; // Import DashboardCustomization
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart'; // Import Cubit
-import 'package:advisor_desk/presentation/features/dashboard/widgets/performance_chart.dart'; // Import PerformanceChart
+
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -381,15 +381,7 @@ class _DashboardViewState extends State<DashboardView> {
             ],
           ),
         );
-      case DashboardSection.performanceChart:
-        return SliverToBoxAdapter(
-          child: Column(
-            children: [
-              const CustomDivider(),
-              PerformanceChart(summary: summary),
-            ],
-          ),
-        );
+      
       default:
         return const SliverToBoxAdapter(child: SizedBox.shrink());
     }

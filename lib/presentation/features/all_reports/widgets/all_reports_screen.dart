@@ -34,7 +34,7 @@ class AllReportsScreen extends StatelessWidget {
 class AllReportsView extends StatelessWidget {
   const AllReportsView({Key? key}) : super(key: key);
 
-  static const platform = MethodChannel('com.dishtv.agenttracker/pdf');
+  static const platform = MethodChannel('com.suvojeet.advisordesk/pdf');
 
   Future<void> _generateAndSharePdf(BuildContext context, MonthlySummary summary) async {
     ScaffoldMessenger.of(context)

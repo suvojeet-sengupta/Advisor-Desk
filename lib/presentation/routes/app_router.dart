@@ -24,6 +24,7 @@ class AppRouter {
   static const String themeSelectionRoute = '/theme-selection';
   static const String appInfoRoute = '/app-info';
   static const String settingsRoute = '/settings';
+  static const String customizeDashboardRoute = '/customize-dashboard';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -66,6 +67,10 @@ class AppRouter {
       case settingsRoute:
         return MaterialPageRoute(
           builder: (_) => const SettingsScreen(),
+        );
+      case customizeDashboardRoute:
+        return MaterialPageRoute(
+          builder: (_) => const CustomizeDashboardScreen(),
         );
       default:
         return MaterialPageRoute(

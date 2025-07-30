@@ -7,3 +7,13 @@ enum AppThemeMode {
   purple,
   red,
 }
+
+enum DashboardSection {
+  monthlySummary,
+  monthlyGoals,
+  csatPerformance,
+  cqPerformance,
+  salaryDetails,
+  dailyEntries,
+  performanceChart,
+}

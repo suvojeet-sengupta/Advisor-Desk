@@ -67,8 +67,11 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<PerformanceRepository>.value(value: performanceRepository),
         RepositoryProvider<GoalRepository>.value(value: goalRepository),
       ],
-      child: BlocProvider(
-        create: (context) => ThemeCubit(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => ThemeCubit()),
+          BlocProvider(create: (context) => DashboardCustomizationCubit()),
+        ],
         child: BlocBuilder<ThemeCubit, AppThemeMode>(
           builder: (context, appThemeMode) {
             ThemeData selectedTheme;

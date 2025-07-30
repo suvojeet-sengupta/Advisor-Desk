@@ -16,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
-
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_bottom_navigation_bar.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_bloc.dart';
@@ -29,6 +28,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:advisor_desk/presentation/common/widgets/performance_share_card.dart';
+import 'package:advisor_desk/core/constants/app_enums.dart'; // Import DashboardSection
+import 'package:advisor_desk/core/models/dashboard_models.dart'; // Import DashboardCustomization
+import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart'; // Import Cubit
+import 'package:advisor_desk/presentation/features/dashboard/widgets/performance_chart.dart'; // Import PerformanceChart
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -147,30 +150,33 @@ class _DashboardViewState extends State<DashboardView> {
               return const SizedBox.shrink();
             },
           ),
-          
+          IconButton(
+            icon: const Icon(Icons.settings_applications),
+            onPressed: () => Navigator.pushNamed(context, AppRouter.customizeDashboardRoute),
+          ),
         ],
       ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
           // Right to Left Swipe (अगली स्क्रीन पर जाने के लिए)
-          if ((details.primaryVelocity ?? 0) < -200) { // स्वाइप की गति को थोड़ा बढ़ा दिया है
+          if ((details.primaryVelocity ?? 0) < -200) {
             _navigateToMonthlyPerformance(context);
           }
         },
         child: BlocBuilder<DashboardBloc, DashboardState>(
-          builder: (context, state) {
-            if (state.status == DashboardStatus.initial || state.status == DashboardStatus.loading) {
+          builder: (context, dashboardState) {
+            if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
               return const DashboardShimmer();
             }
 
-            if (state.status == DashboardStatus.error) {
+            if (dashboardState.status == DashboardStatus.error) {
               return EmptyStateWidget(
-                message: state.errorMessage ?? 'An unknown error occurred.',
+                message: dashboardState.errorMessage ?? 'An unknown error occurred.',
                 icon: Icons.cloud_off_rounded,
                 onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
               );
             }
-            
+
             return Column(
               children: [
                 Padding(
@@ -179,7 +185,7 @@ class _DashboardViewState extends State<DashboardView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        state.monthlySummary?.formattedMonthYear ?? 'Select Month',
+                        dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       Row(
@@ -187,7 +193,7 @@ class _DashboardViewState extends State<DashboardView> {
                           IconButton(
                             icon: const Icon(Icons.chevron_left),
                             onPressed: () {
-                              final currentDate = DateTime(state.currentYear, state.currentMonth);
+                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
                               final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
                               context.read<DashboardBloc>().add(
                                 LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
@@ -197,7 +203,7 @@ class _DashboardViewState extends State<DashboardView> {
                           IconButton(
                             icon: const Icon(Icons.chevron_right),
                             onPressed: () {
-                              final currentDate = DateTime(state.currentYear, state.currentMonth);
+                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
                               final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
                               context.read<DashboardBloc>().add(
                                 LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
@@ -210,7 +216,7 @@ class _DashboardViewState extends State<DashboardView> {
                   ),
                 ),
                 Expanded(
-                  child: state.monthlySummary == null || state.monthlySummary!.entries.isEmpty
+                  child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
                       ? EmptyStateWidget(
                           message: 'No entries found for this month.\nTap the + button to add your first entry!',
                           onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
@@ -221,80 +227,24 @@ class _DashboardViewState extends State<DashboardView> {
                             context.read<GoalsBloc>().add(LoadGoals());
                           },
                           color: AppColors.dishTvOrange,
-                          child: CustomScrollView(
-                            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                            slivers: [
-                              SliverToBoxAdapter(child: const SizedBox(height: 16)),
-                              SliverPadding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                sliver: SliverGrid(
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 16,
-                                    mainAxisSpacing: 16,
-                                    childAspectRatio: 1.2,
-                                  ),
-                                  delegate: SliverChildListDelegate([
-                                    DashboardCard(
-                                      title: 'Total Calls',
-                                      value: state.monthlySummary!.totalCalls.toString(),
-                                      icon: Icons.call,
-                                      iconColor: AppColors.accentBlue,
-                                    ),
-                                    DashboardCard(
-                                      title: 'Avg. Login Hours',
-                                      value: state.monthlySummary!.averageDailyLoginHours.toStringAsFixed(2),
-                                      icon: Icons.timer,
-                                      iconColor: AppColors.accentGreen,
-                                    ),
-                                    DashboardCard(
-                                      title: 'CSAT Score',
-                                      value: '${state.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
-                                      icon: Icons.sentiment_satisfied_alt,
-                                      iconColor: AppColors.dishTvOrange,
-                                    ),
-                                    DashboardCard(
-                                      title: 'CQ Score',
-                                      value: '${state.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%',
-                                      icon: Icons.assessment,
-                                      iconColor: AppColors.accentRed,
-                                    ),
-                                    DashboardCard(
-                                      title: 'Total Salary',
-                                      value: '₹${state.monthlySummary!.totalSalary.toStringAsFixed(2)}',
-                                      icon: Icons.currency_rupee,
-                                      iconColor: AppColors.accentBlue,
-                                    ),
-                                    
-                                  ]),
-                                ),
-                              ),
-                              const SliverToBoxAdapter(child: CustomDivider()),
-                              SliverToBoxAdapter(
-                                child: MonthlyGoalsSection(summary: state.monthlySummary!),
-                              ),
-                              const SliverToBoxAdapter(child: CustomDivider()),
-                              SliverToBoxAdapter(
-                                child: CSATPerformanceSection(csatSummary: state.csatSummary),
-                              ),
-                              const SliverToBoxAdapter(child: CustomDivider()),
-                              SliverToBoxAdapter(
-                                child: CQPerformanceSection(cqSummary: state.cqSummary),
-                              ),
-                              const SliverToBoxAdapter(child: CustomDivider()),
-                              SliverToBoxAdapter(
-                                child: SummarySection(summary: state.monthlySummary!),
-                              ),
-                              const SliverToBoxAdapter(child: CustomDivider()),
-                              SliverToBoxAdapter(
-                                child: SalarySection(summary: state.monthlySummary!),
-                              ),
-                              const SliverToBoxAdapter(child: CustomDivider()),
-                              SliverToBoxAdapter(
-                                child: DailyEntriesSection(entries: state.monthlySummary!.entries),
-                              ),
-                              SliverToBoxAdapter(child: const SizedBox(height: 100)),
-                            ],
+                          child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
+                            builder: (context, customizationState) {
+                              return CustomScrollView(
+                                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                                slivers: [
+                                  SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                                  ...customizationState.visibleSections.map((section) {
+                                    return _buildDashboardSection(
+                                      context,
+                                      section,
+                                      dashboardState.monthlySummary!,
+                                      dashboardState,
+                                    );
+                                  }).toList(),
+                                  SliverToBoxAdapter(child: const SizedBox(height: 100)),
+                                ],
+                              );
+                            },
                           ),
                         ),
                 ),
@@ -333,6 +283,116 @@ class _DashboardViewState extends State<DashboardView> {
         },
       ),
     );
+  }
+
+  Widget _buildDashboardSection(
+    BuildContext context,
+    DashboardSection section,
+    MonthlySummary summary,
+    DashboardState dashboardState,
+  ) {
+    switch (section) {
+      case DashboardSection.monthlySummary:
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.2,
+            ),
+            delegate: SliverChildListDelegate([
+              DashboardCard(
+                title: 'Total Calls',
+                value: summary.totalCalls.toString(),
+                icon: Icons.call,
+                iconColor: AppColors.accentBlue,
+              ),
+              DashboardCard(
+                title: 'Avg. Login Hours',
+                value: summary.averageDailyLoginHours.toStringAsFixed(2),
+                icon: Icons.timer,
+                iconColor: AppColors.accentGreen,
+              ),
+              DashboardCard(
+                title: 'CSAT Score',
+                value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
+                icon: Icons.sentiment_satisfied_alt,
+                iconColor: AppColors.dishTvOrange,
+              ),
+              DashboardCard(
+                title: 'CQ Score',
+                value: '${dashboardState.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%',
+                icon: Icons.assessment,
+                iconColor: AppColors.accentRed,
+              ),
+              DashboardCard(
+                title: 'Total Salary',
+                value: '₹${summary.totalSalary.toStringAsFixed(2)}',
+                icon: Icons.currency_rupee,
+                iconColor: AppColors.accentBlue,
+              ),
+            ]),
+          ),
+        );
+      case DashboardSection.monthlyGoals:
+        return SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const CustomDivider(),
+              MonthlyGoalsSection(summary: summary),
+            ],
+          ),
+        );
+      case DashboardSection.csatPerformance:
+        return SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const CustomDivider(),
+              CSATPerformanceSection(csatSummary: dashboardState.csatSummary),
+            ],
+          ),
+        );
+      case DashboardSection.cqPerformance:
+        return SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const CustomDivider(),
+              CQPerformanceSection(cqSummary: dashboardState.cqSummary),
+            ],
+          ),
+        );
+      case DashboardSection.salaryDetails:
+        return SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const CustomDivider(),
+              SalarySection(summary: summary),
+            ],
+          ),
+        );
+      case DashboardSection.dailyEntries:
+        return SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const CustomDivider(),
+              DailyEntriesSection(entries: summary.entries),
+            ],
+          ),
+        );
+      case DashboardSection.performanceChart:
+        return SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const CustomDivider(),
+              PerformanceChart(summary: summary),
+            ],
+          ),
+        );
+      default:
+        return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
   }
 }
 

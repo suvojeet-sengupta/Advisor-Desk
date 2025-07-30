@@ -45,7 +45,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Legal',
+              'Privacy & Security',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -62,7 +62,6 @@ class SettingsScreen extends StatelessWidget {
                 'Privacy Policy',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
-                  decoration: TextDecoration.underline,
                 ),
               ),
             ),

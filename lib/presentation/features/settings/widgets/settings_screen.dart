@@ -15,7 +15,7 @@ import 'package:advisor_desk/core/constants/app_constants.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
-  static const _platform = MethodChannel('com.suvojeet.advisor_desk/feedback');
+  
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +37,7 @@ class SettingsScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            CustomButton(
-              text: 'Send Feedback',
-              icon: Icons.feedback,
-              onPressed: () => _sendFeedback(context),
-            ),
-            const SizedBox(height: 16),
+            
             Text(
               'Version: ${AppConstants.appVersion}',
               style: Theme.of(context).textTheme.bodyMedium,
@@ -55,18 +50,7 @@ class SettingsScreen extends StatelessWidget {
 
   // Removed _importData method
 
-  Future<void> _sendFeedback(BuildContext context) async {
-    try {
-      await _platform.invokeMethod('sendFeedback');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email client launched. Please compose your feedback.")),
-      );
-    } on PlatformException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send feedback: '${e.message}'.")),
-      );
-    }
-  }
+  
 
   Future<void> _backupData(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(

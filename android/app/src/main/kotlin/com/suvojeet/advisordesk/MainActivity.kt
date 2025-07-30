@@ -18,7 +18,7 @@ import java.io.FileOutputStream
 
 class MainActivity: FlutterActivity() {
     private val PDF_CHANNEL = "com.suvojeet.advisordesk/pdf"
-    private val FEEDBACK_CHANNEL = "com.suvojeet.advisordesk/feedback"
+    
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -45,20 +45,7 @@ class MainActivity: FlutterActivity() {
             }
         }
 
-        // Feedback Channel
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, FEEDBACK_CHANNEL).setMethodCallHandler {
-            call, result ->
-            if (call.method == "sendFeedback") {
-                try {
-                    sendFeedbackEmail()
-                    result.success(null)
-                } catch (e: Exception) {
-                    result.error("EMAIL_FAILED", "Failed to send feedback email.", e.toString())
-                }
-            } else {
-                result.notImplemented()
-            }
-        }
+        
     }
 
     private fun savePdfToDownloads(pdfBytes: ByteArray, fileName: String): String {
@@ -99,35 +86,7 @@ class MainActivity: FlutterActivity() {
         notificationManager.notify(1, notification)
     }
 
-    private fun sendFeedbackEmail() {
-        val email = "suvojitsengupta21@gmail.com"
-        val subject = "Feedback for Advisor Desk App"
-
-        val body = """
-            Feedback from Advisor Desk App
-            -----------------------------------
-            App Version: ${getAppVersion()}
-            Device: ${Build.MANUFACTURER} ${Build.MODEL}
-            Android Version: ${Build.VERSION.RELEASE}
-            -----------------------------------
-
-            Please write your feedback below:
-
-        """.trimIndent()
-
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "message/rfc822"
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-            putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT, body)
-        }
-
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(Intent.createChooser(intent, "Send Feedback"))
-        } else {
-            throw Exception("No email client found.")
-        }
-    }
+    
 
     private fun getAppVersion(): String {
         return try {

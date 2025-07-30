@@ -32,50 +32,63 @@ class CustomizeDashboardScreen extends StatelessWidget {
       appBar: const CustomAppBar(title: 'Customize Dashboard'),
       body: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
         builder: (context, customizationState) {
-          final List<DashboardSection> currentVisibleSections = List.from(customizationState.visibleSections);
+          final visibleSections = customizationState.visibleSections;
+          final hiddenSections = DashboardSection.values
+              .where((section) => !visibleSections.contains(section))
+              .toList();
+
+          final reorderableList = [...visibleSections, ...hiddenSections];
 
           return Column(
             children: [
               Expanded(
                 child: ReorderableListView.builder(
                   padding: const EdgeInsets.all(16.0),
-                  itemCount: DashboardSection.values.length, // Show all sections
+                  itemCount: reorderableList.length,
                   itemBuilder: (context, index) {
-                    final section = DashboardSection.values[index];
-                    final isVisible = customizationState.visibleSections.contains(section);
+                    final section = reorderableList[index];
+                    final isVisible = visibleSections.contains(section);
 
                     return Card(
-                      key: ValueKey(section.index), // Unique key for reordering
+                      key: ValueKey(section),
                       margin: const EdgeInsets.symmetric(vertical: 8.0),
                       child: CheckboxListTile(
                         title: Text(_getSectionTitle(section)),
                         value: isVisible,
                         onChanged: (bool? newValue) {
-                          List<DashboardSection> updatedSections = List.from(customizationState.visibleSections);
-                          if (newValue != null) {
-                            if (newValue) {
-                              // Add to visible sections, maintaining order if possible
-                              updatedSections.add(section);
-                              // Sort to maintain a consistent order for newly added items
-                              updatedSections.sort((a, b) => DashboardSection.values.indexOf(a).compareTo(DashboardSection.values.indexOf(b)));
-                            } else {
-                              updatedSections.remove(section);
+                          final newVisibleSections =
+                              List<DashboardSection>.from(visibleSections);
+                          if (newValue == true) {
+                            if (!newVisibleSections.contains(section)) {
+                              newVisibleSections.add(section);
                             }
-                            context.read<DashboardCustomizationCubit>().updateVisibleSections(updatedSections);
+                          } else {
+                            newVisibleSections.remove(section);
                           }
+                          context
+                              .read<DashboardCustomizationCubit>()
+                              .updateVisibleSections(newVisibleSections);
                         },
                       ),
                     );
                   },
                   onReorder: (int oldIndex, int newIndex) {
-                    // Reorder only the visible sections
-                    List<DashboardSection> updatedSections = List.from(customizationState.visibleSections);
                     if (newIndex > oldIndex) {
                       newIndex -= 1;
                     }
-                    final DashboardSection movedSection = updatedSections.removeAt(oldIndex);
-                    updatedSections.insert(newIndex, movedSection);
-                    context.read<DashboardCustomizationCubit>().updateVisibleSections(updatedSections);
+
+                    final reorderedList =
+                        List<DashboardSection>.from(reorderableList);
+                    final movedSection = reorderedList.removeAt(oldIndex);
+                    reorderedList.insert(newIndex, movedSection);
+
+                    final newVisibleSections = reorderedList
+                        .where((s) => visibleSections.contains(s))
+                        .toList();
+
+                    context
+                        .read<DashboardCustomizationCubit>()
+                        .updateVisibleSections(newVisibleSections);
                   },
                 ),
               ),
@@ -83,7 +96,10 @@ class CustomizeDashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    context.read<DashboardCustomizationCubit>().updateVisibleSections(const DashboardCustomization().visibleSections); // Reset to default
+                    context
+                        .read<DashboardCustomizationCubit>()
+                        .updateVisibleSections(
+                            const DashboardCustomization().visibleSections);
                   },
                   child: const Text('Reset to Default'),
                 ),

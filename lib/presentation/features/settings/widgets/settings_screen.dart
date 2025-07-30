@@ -11,6 +11,7 @@ import 'package:advisor_desk/data/datasources/data_import_service.dart';
 import 'package:advisor_desk/data/datasources/local_data_source.dart';
 import 'package:advisor_desk/domain/usecases/import_data_usecase.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -41,6 +42,29 @@ class SettingsScreen extends StatelessWidget {
             Text(
               'Version: ${AppConstants.appVersion}',
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Legal',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () async {
+                final Uri url = Uri.parse('https://suvojit213.github.io/Privacy_policy_Advisor_Desk/');
+                if (!await launchUrl(url)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Could not launch privacy policy link.')),
+                  );
+                }
+              },
+              child: Text(
+                'Privacy Policy',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ],
         ),

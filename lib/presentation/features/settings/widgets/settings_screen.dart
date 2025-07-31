@@ -2,6 +2,7 @@ import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/presentation/routes/app_router.dart'; // Import AppRouter
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {

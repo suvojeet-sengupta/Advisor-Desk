@@ -14,6 +14,9 @@ import 'package:advisor_desk/presentation/features/settings/widgets/settings_scr
 import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dart';
 
 
+import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
+
+
 class AppRouter {
   // Route names
   static const String dashboardRoute = '/';
@@ -26,6 +29,7 @@ class AppRouter {
   static const String appInfoRoute = '/app-info';
   static const String settingsRoute = '/settings';
   static const String customizeDashboardRoute = '/customize-dashboard';
+  static const String salarySettingsRoute = '/salary-settings';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -72,6 +76,10 @@ class AppRouter {
       case customizeDashboardRoute:
         return MaterialPageRoute(
           builder: (_) => const CustomizeDashboardScreen(),
+        );
+      case salarySettingsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const SalarySettingsScreen(),
         );
       default:
         return MaterialPageRoute(

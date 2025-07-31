@@ -24,6 +24,19 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildSectionCard(
             context,
+            'Salary Settings',
+            [
+              _buildLinkTile(
+                context,
+                'Customize Salary Parameters',
+                AppRouter.salarySettingsRoute,
+                Icons.payments,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildSectionCard(
+            context,
             'Privacy & Security',
             [
               _buildLinkTile(

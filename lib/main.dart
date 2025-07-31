@@ -25,6 +25,7 @@ class SmoothScrollBehavior extends ScrollBehavior {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppConstants.init();
   
   final localDataSource = await LocalDataSource.init();
   final goalDataSource = GoalDataSource();

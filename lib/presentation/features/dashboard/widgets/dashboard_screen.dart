@@ -172,7 +172,7 @@ class _DashboardViewState extends State<DashboardView> {
             if (dashboardState.status == DashboardStatus.error) {
               return EmptyStateWidget(
                 message: dashboardState.errorMessage ?? 'An unknown error occurred.',
-                icon: Icons.cloud_off_rounded,
+                illustrationPath: 'assets/images/error.svg',
                 onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
               );
             }
@@ -219,6 +219,7 @@ class _DashboardViewState extends State<DashboardView> {
                   child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
                       ? EmptyStateWidget(
                           message: 'No entries found for this month.\nTap the + button to add your first entry!',
+                          illustrationPath: 'assets/images/no_data.svg',
                           onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
                         )
                       : RefreshIndicator(

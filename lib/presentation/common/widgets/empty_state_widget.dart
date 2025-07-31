@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final String message;
   final IconData icon;
   final VoidCallback? onRetry;
+  final String? illustrationPath;
 
   const EmptyStateWidget({
     Key? key,
     required this.message,
     this.icon = Icons.inbox_rounded,
     this.onRetry,
+    this.illustrationPath,
   }) : super(key: key);
 
   @override
@@ -21,11 +24,18 @@ class EmptyStateWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 80,
-              color: theme.textTheme.bodySmall?.color,
-            ),
+            if (illustrationPath != null)
+              SvgPicture.asset(
+                illustrationPath!,
+                height: 150,
+                width: 150,
+              )
+            else
+              Icon(
+                icon,
+                size: 80,
+                color: theme.textTheme.bodySmall?.color,
+              ),
             const SizedBox(height: 24),
             Text(
               message,

@@ -60,12 +60,7 @@ class SettingsScreen extends StatelessWidget {
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 contentPadding: EdgeInsets.zero,
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Thank you for considering supporting us! Your generosity directly enables us to enhance the app. Even a small contribution, like 50rs or 100rs, makes a significant difference. You can contribute securely via UPI to suvojeetsengupta2@axl.'),
-                      duration: Duration(seconds: 10), // Increased duration for better readability
-                    ),
-                  );
+                  Navigator.pushNamed(context, AppRouter.supportWebviewRoute);
                 },
               ),
             ],

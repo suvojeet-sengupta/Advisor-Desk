@@ -48,6 +48,28 @@ class SettingsScreen extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          _buildSectionCard(
+            context,
+            'Support Development',
+            [
+              ListTile(
+                leading: Icon(Icons.volunteer_activism, color: AppColors.dishTvOrange),
+                title: const Text('Support Us'),
+                subtitle: const Text('Your small contribution fuels continuous improvements and new features, helping us keep this app free and valuable for everyone.'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                contentPadding: EdgeInsets.zero,
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Thank you for considering supporting us! Your generosity directly enables us to enhance the app. Even a small contribution, like 50rs or 100rs, makes a significant difference. You can contribute securely via UPI to suvojeetsengupta2@axl.'),
+                      duration: Duration(seconds: 10), // Increased duration for better readability
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );

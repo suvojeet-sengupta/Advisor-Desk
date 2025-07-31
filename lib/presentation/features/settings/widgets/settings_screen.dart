@@ -85,18 +85,22 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLinkTile(BuildContext context, String title, String url, IconData icon) {
+  Widget _buildLinkTile(BuildContext context, String title, String target, IconData icon) {
     return ListTile(
       leading: Icon(icon, color: AppColors.dishTvOrange),
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       contentPadding: EdgeInsets.zero,
       onTap: () async {
-        final Uri uri = Uri.parse(url);
-        if (!await launchUrl(uri)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not launch $url')),
-          );
+        if (target.startsWith('/')) { // Check if it's an internal route
+          Navigator.pushNamed(context, target);
+        } else {
+          final Uri uri = Uri.parse(target);
+          if (!await launchUrl(uri)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Could not launch \$target')),
+            );
+          }
         }
       },
     );

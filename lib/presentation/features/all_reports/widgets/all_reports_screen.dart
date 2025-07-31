@@ -1,3 +1,4 @@
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/usecases/generate_excel_report_usecase.dart';

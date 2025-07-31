@@ -15,6 +15,7 @@ import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dar
 
 
 import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
+import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 
 
 class AppRouter {

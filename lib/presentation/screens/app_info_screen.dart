@@ -57,7 +57,6 @@ class AppInfoScreen extends StatelessWidget {
                       'suvojitsengupta21@gmail.com',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: AppColors.dishTvOrange,
-                            decoration: TextDecoration.underline,
                           ),
                     ),
                     onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
@@ -79,7 +78,6 @@ class AppInfoScreen extends StatelessWidget {
                       'GitHub Repository',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: AppColors.dishTvOrange,
-                            decoration: TextDecoration.underline,
                           ),
                     ),
                     onTap: () => _launchURL('https://github.com/suvojit213/Advisor-Desk'),

@@ -1,13 +1,14 @@
 import 'dart:io';
-import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/core/constants/app_enums.dart';
 
 class GenerateExcelReportUseCase {
   final PerformanceRepository repository;
 
   GenerateExcelReportUseCase(this.repository);
 
-  Future<File> execute(MonthlySummary summary) {
-    return repository.generateMonthlyReportExcel(summary);
+  Future<File> execute(ReportSummary summary, List<ReportSection> sectionsToInclude) {
+    return repository.generateReportExcel(summary, sectionsToInclude);
   }
 }

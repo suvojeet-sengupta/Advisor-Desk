@@ -176,6 +176,25 @@ class LocalDataSource {
     });
   }
 
+  // Read entries for a specific date range
+  Future<List<DailyEntry>> getEntriesForDateRange(DateTime startDate, DateTime endDate) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      AppConstants.tableEntries,
+      where: 'date >= ? AND date <= ?',
+      whereArgs: [
+        startDate.millisecondsSinceEpoch,
+        endDate.millisecondsSinceEpoch,
+      ],
+      orderBy: 'date ASC',
+    );
+
+    return List.generate(maps.length, (i) {
+      return DailyEntry.fromMap(maps[i]);
+    });
+  }
+
   // Read entry for a specific date
   Future<DailyEntry?> getEntryForDate(DateTime date) async {
     final db = await database;
@@ -247,6 +266,25 @@ class LocalDataSource {
     });
   }
 
+  // Read CSAT entries for a specific date range
+  Future<List<CSATEntry>> getCSATEntriesForDateRange(DateTime startDate, DateTime endDate) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      AppConstants.tableCSATEntries,
+      where: 'date >= ? AND date <= ?',
+      whereArgs: [
+        startDate.millisecondsSinceEpoch,
+        endDate.millisecondsSinceEpoch,
+      ],
+      orderBy: 'date ASC',
+    );
+
+    return List.generate(maps.length, (i) {
+      return CSATEntry.fromMap(maps[i]);
+    });
+  }
+
   // Read CSAT entries for a specific month
   Future<List<CSATEntry>> getCSATEntriesForMonth(int month, int year) async {
     final db = await database;
@@ -311,6 +349,25 @@ class LocalDataSource {
     final List<Map<String, dynamic>> maps = await db.query(
       AppConstants.tableCQEntries,
       orderBy: 'audit_date DESC',
+    );
+
+    return List.generate(maps.length, (i) {
+      return CQEntry.fromMap(maps[i]);
+    });
+  }
+
+  // Read CQ entries for a specific date range
+  Future<List<CQEntry>> getCQEntriesForDateRange(DateTime startDate, DateTime endDate) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      AppConstants.tableCQEntries,
+      where: 'audit_date >= ? AND audit_date <= ?',
+      whereArgs: [
+        startDate.millisecondsSinceEpoch,
+        endDate.millisecondsSinceEpoch,
+      ],
+      orderBy: 'audit_date ASC',
     );
 
     return List.generate(maps.length, (i) {

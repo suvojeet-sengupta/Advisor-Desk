@@ -3,6 +3,7 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/csat_summary.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart'; // Import CQSummary
 import 'dart:io';
 
@@ -18,6 +19,7 @@ abstract class PerformanceRepository {
   Future<MonthlySummary> getMonthlySummary(int month, int year);
   Future<CSATSummary> getCSATSummary(int month, int year);
   Future<CQSummary> getCQSummary(int month, int year); // Add CQ summary method
+  Future<ReportSummary> getReportSummary(DateTime startDate, DateTime endDate);
 
   // Add CSAT entry methods
   Future<int> saveCSATEntry(CSATEntry entry); // Add this line
@@ -32,8 +34,11 @@ abstract class PerformanceRepository {
   Future<int> updateCQEntry(CQEntry entry);
   
   
-  Future<List<int>> generateMonthlyReportPdf(MonthlySummary summary);
-  Future<File> generateMonthlyReportExcel(MonthlySummary summary);
+  Future<List<int>> generateMonthlyReportPdf(MonthlySummary summary); // Deprecated
+  Future<File> generateMonthlyReportExcel(MonthlySummary summary); // Deprecated
+
+  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude);
+  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude);
 
   // Database backup and restore
   Future<String> backupDatabase();

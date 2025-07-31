@@ -17,3 +17,13 @@ enum DashboardSection {
   dailyEntries,
   
 }
+
+enum ReportSection {
+  monthlySummary,
+  dailyEntries,
+  csatSummary,
+  csatDailyBreakdown,
+  cqSummary,
+  cqDailyBreakdown,
+  salaryDetails,
+}

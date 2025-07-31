@@ -30,6 +30,7 @@ class AppRouter {
   static const String settingsRoute = '/settings';
   static const String customizeDashboardRoute = '/customize-dashboard';
   static const String salarySettingsRoute = '/salary-settings';
+  static const String reportOptionsRoute = '/report-options';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -80,6 +81,10 @@ class AppRouter {
       case salarySettingsRoute:
         return MaterialPageRoute(
           builder: (_) => const SalarySettingsScreen(),
+        );
+      case reportOptionsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const ReportOptionsScreen(),
         );
       default:
         return MaterialPageRoute(

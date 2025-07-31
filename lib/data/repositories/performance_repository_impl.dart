@@ -79,6 +79,21 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
+  Future<ReportSummary> getReportSummary(DateTime startDate, DateTime endDate) async {
+    final entries = await localDataSource.getEntriesForDateRange(startDate, endDate);
+    final csatEntries = await localDataSource.getCSATEntriesForDateRange(startDate, endDate);
+    final cqEntries = await localDataSource.getCQEntriesForDateRange(startDate, endDate);
+
+    return ReportSummary(
+      startDate: startDate,
+      endDate: endDate,
+      entries: entries,
+      csatSummary: CSATSummary(entries: csatEntries, month: startDate.month, year: startDate.year), // Month and year might not be accurate for range, but needed for CSATSummary constructor
+      cqSummary: CQSummary(entries: cqEntries, month: startDate.month, year: startDate.year), // Month and year might not be accurate for range, but needed for CQSummary constructor
+    );
+  }
+
+  @override
   Future<CSATSummary> getCSATSummary(int month, int year) async {
     final csatEntries = await localDataSource.getCSATEntriesForMonth(month, year);
     return CSATSummary(entries: csatEntries, month: month, year: year);
@@ -144,12 +159,24 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
 
   @override
   Future<List<int>> generateMonthlyReportPdf(MonthlySummary summary) async {
-    return _pdfService.generateMonthlyReportPdf(summary);
+    // This method is now deprecated. Use generateReportPdf instead.
+    throw UnimplementedError('generateMonthlyReportPdf is deprecated. Use generateReportPdf instead.');
   }
 
   @override
   Future<File> generateMonthlyReportExcel(MonthlySummary summary) async {
-    return _excelService.generateMonthlyReportExcel(summary);
+    // This method is now deprecated. Use generateReportExcel instead.
+    throw UnimplementedError('generateMonthlyReportExcel is deprecated. Use generateReportExcel instead.');
+  }
+
+  @override
+  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude) async {
+    return _pdfService.generateReportPdf(summary, sectionsToInclude);
+  }
+
+  @override
+  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude) async {
+    return _excelService.generateReportExcel(summary, sectionsToInclude);
   }
 
   @override

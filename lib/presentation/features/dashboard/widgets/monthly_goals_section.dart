@@ -23,6 +23,16 @@ class MonthlyGoalsSection extends StatelessWidget {
         final hoursProgress = (summary.totalLoginHours / state.targetHours).clamp(0.0, 1.0);
         final callsProgress = (summary.totalCalls / state.targetCalls).clamp(0.0, 1.0);
 
+        final now = DateTime.now();
+        final lastDayOfMonth = DateTime(now.year, now.month + 1, 0).day;
+        final remainingDays = (lastDayOfMonth - now.day + 1).clamp(1, lastDayOfMonth);
+
+        final remainingHours = (state.targetHours - summary.totalLoginHours).clamp(0.0, double.infinity);
+        final dailyAvgHours = remainingHours / remainingDays;
+
+        final remainingCalls = (state.targetCalls - summary.totalCalls).clamp(0, double.infinity).toInt();
+        final dailyAvgCalls = (remainingCalls / remainingDays).ceil();
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
@@ -70,25 +80,25 @@ class MonthlyGoalsSection extends StatelessWidget {
                     _buildGoalDetails(
                       context,
                       'Remaining Hours to Goal:',
-                      '${(state.targetHours - summary.totalLoginHours).clamp(0.0, double.infinity).toStringAsFixed(1)}h',
+                      '${remainingHours.toStringAsFixed(1)}h',
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
                       'Remaining Calls to Goal:',
-                      '${(state.targetCalls - summary.totalCalls).clamp(0, double.infinity).toInt()}',
+                      '$remainingCalls',
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
                       'Daily Avg. Hours Needed:',
-                      '${((state.targetHours - summary.totalLoginHours).clamp(0.0, double.infinity) / (DateTime(summary.year, summary.month + 1, 0).day - DateTime.now().day)).toStringAsFixed(1)}h',
+                      '${dailyAvgHours.toStringAsFixed(1)}h',
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
                       'Daily Avg. Calls Needed:',
-                      '${((state.targetCalls - summary.totalCalls).clamp(0, double.infinity).toInt() / (DateTime(summary.year, summary.month + 1, 0).day - DateTime.now().day)).toStringAsFixed(0)}',
+                      '${dailyAvgCalls.toInt()}',
                     ),
                   ],
                 ),

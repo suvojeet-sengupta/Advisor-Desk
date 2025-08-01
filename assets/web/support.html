@@ -9,8 +9,8 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f5f5f7; /* Light theme background */
-            color: #000; /* Default text color for light theme (black) */
+            background-color: #f5f5f7; /* Consistent light background */
+            color: #000; /* All non-highlighted text will be black */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -18,33 +18,13 @@
             min-height: 100vh;
             box-sizing: border-box;
         }
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #1e1e1e; /* Dark theme background */
-                color: #fff; /* Text color for dark theme (white) */
-            }
-            .card {
-                background-color: #252525;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            }
-            .upi-id {
-                color: #FF8A65; /* Lighter orange for dark theme */
-            }
-            .qr-code-placeholder {
-                background-color: #3d3d3d;
-                color: #f0f0f0; /* Light color for dark theme */
-            }
-            .footer-text {
-                color: #f0f0f0; /* Light color for dark theme */
-            }
-        }
         .container {
             max-width: 600px;
             width: 100%;
             text-align: center;
         }
         .card {
-            background-color: #ffffff;
+            background-color: #ffffff; /* Consistent white card background */
             border-radius: 16px;
             padding: 30px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -59,7 +39,7 @@
             font-size: 16px;
             line-height: 1.6;
             margin-bottom: 15px;
-            /* Inherits color from body, which is now explicitly set for themes */
+            /* Inherits color from body, which is now black */
         }
         .highlight {
             font-weight: bold;
@@ -68,26 +48,26 @@
         .upi-id {
             font-size: 20px;
             font-weight: bold;
-            color: #FF5722;
+            color: #FF5722; /* Orange for UPI ID */
             margin: 20px 0;
             word-break: break-all;
         }
         .qr-code-placeholder {
             width: 150px;
             height: 150px;
-            background-color: #eee;
+            background-color: #eee; /* Light grey background */
             margin: 20px auto;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            color: #666; /* Dark grey for light theme */
+            color: #666; /* Dark grey text */
             border: 1px dashed #ccc;
         }
         .footer-text {
             font-size: 14px;
-            color: #777; /* Dark grey for light theme */
+            color: #777; /* Dark grey text */
             margin-top: 20px;
         }
     </style>

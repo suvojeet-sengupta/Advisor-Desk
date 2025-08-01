@@ -52,18 +52,14 @@
             margin: 20px 0;
             word-break: break-all;
         }
-        .qr-code-placeholder {
-            width: 150px;
-            height: 150px;
-            background-color: #eee; /* Light grey background */
+        .qr-code-image {
+            width: 150px; /* Set a fixed width */
+            height: 150px; /* Set a fixed height */
             margin: 20px auto;
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #666; /* Dark grey text */
-            border: 1px dashed #ccc;
+            display: block; /* Ensure it behaves as a block element for margin: auto */
+            object-fit: contain; /* Ensure the entire image is visible within the bounds */
+            border: 1px solid #eee; /* Optional: subtle border around the QR */
         }
         .footer-text {
             font-size: 14px;
@@ -82,9 +78,7 @@
             <p>You can contribute securely via UPI:</p>
             <div class="upi-id">suvojeetsengupta2@axl</div>
             
-            <div class="qr-code-placeholder">
-                UPI QR Code Placeholder<br>(Scan to Pay)
-            </div>
+            <img src="Screenshot_20250801-085737.png" alt="UPI QR Code" class="qr-code-image">
             
             <p class="footer-text">Thank you for being a part of the Advisor Desk community!</p>
         </div>

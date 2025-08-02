@@ -442,6 +442,22 @@ class LocalDataSource {
     );
   }
 
+  // Delete CQ entries for a specific date
+  Future<int> deleteCQEntriesByDate(DateTime date) async {
+    final db = await database;
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+    final nextDay = normalizedDate.add(const Duration(days: 1));
+
+    return await db.delete(
+      AppConstants.tableCQEntries,
+      where: 'audit_date >= ? AND audit_date < ?',
+      whereArgs: [
+        normalizedDate.millisecondsSinceEpoch,
+        nextDay.millisecondsSinceEpoch,
+      ],
+    );
+  }
+
   // Get all unique month-year combinations from daily, CSAT, and CQ entries
   Future<List<Map<String, int>>> getUniqueMonthYearCombinations() async {
     final db = await database;

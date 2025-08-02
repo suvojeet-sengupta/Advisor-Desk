@@ -48,8 +48,13 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
-  Future<int> deleteEntry(int id) async {
-    return await localDataSource.deleteEntry(id);
+  Future<int> deleteEntry(int id) {
+    return localDataSource.deleteEntry(id);
+  }
+
+  @override
+  Future<int> deleteCQEntriesByDate(DateTime date) {
+    return localDataSource.deleteCQEntriesByDate(date);
   }
 
   @override

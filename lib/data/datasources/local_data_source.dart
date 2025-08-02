@@ -317,6 +317,22 @@ class LocalDataSource {
     );
   }
 
+  // Delete CSAT entries for a specific date
+  Future<int> deleteCSATEntriesByDate(DateTime date) async {
+    final db = await database;
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+    final nextDay = normalizedDate.add(const Duration(days: 1));
+
+    return await db.delete(
+      AppConstants.tableCSATEntries,
+      where: 'date >= ? AND date < ?',
+      whereArgs: [
+        normalizedDate.millisecondsSinceEpoch,
+        nextDay.millisecondsSinceEpoch,
+      ],
+    );
+  }
+
   // CQ CRUD operations
 
   // Create a new CQ entry

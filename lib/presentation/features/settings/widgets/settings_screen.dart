@@ -6,6 +6,7 @@ import 'package:advisor_desk/presentation/routes/app_router.dart'; // Import App
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
+import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -94,6 +95,51 @@ class SettingsScreen extends StatelessWidget {
                         final int deletedCount = await deleteCQEntriesByDateUseCase.execute(selectedDate);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('$deletedCount CQ entries deleted for ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}')),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ),
+              ListTile(
+                title: const Text('Delete CSAT Entries by Date'),
+                subtitle: const Text('Delete all CSAT entries for a selected date.'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_forever),
+                  onPressed: () async {
+                    final DateTime? selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now(),
+                    );
+
+                    if (selectedDate != null) {
+                      final bool confirmDelete = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Confirm Deletion'),
+                            content: Text('Are you sure you want to delete all CSAT entries for ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}? This action cannot be undone.'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          );
+                        },
+                      ) ?? false;
+
+                      if (confirmDelete) {
+                        final deleteCSATEntriesByDateUseCase = RepositoryProvider.of<DeleteCSATEntriesByDateUseCase>(context);
+                        final int deletedCount = await deleteCSATEntriesByDateUseCase.execute(selectedDate);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('$deletedCount CSAT entries deleted for ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}')),
                         );
                       }
                     }

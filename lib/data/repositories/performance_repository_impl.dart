@@ -58,6 +58,11 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
+  Future<int> deleteCSATEntriesByDate(DateTime date) {
+    return localDataSource.deleteCSATEntriesByDate(date);
+  }
+
+  @override
   Future<List<MonthlySummary>> getAllMonthlySummaries() async {
     final monthYearCombinations = await localDataSource.getUniqueMonthYearCombinations();
     final List<MonthlySummary> summaries = [];

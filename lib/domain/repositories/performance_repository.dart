@@ -17,6 +17,7 @@ abstract class PerformanceRepository {
   Future<int> updateEntry(DailyEntry entry);
   Future<int> deleteEntry(int id);
   Future<int> deleteCQEntriesByDate(DateTime date);
+  Future<int> deleteCSATEntriesByDate(DateTime date);
   Future<List<MonthlySummary>> getAllMonthlySummaries();
   Future<MonthlySummary> getMonthlySummary(int month, int year);
   Future<CSATSummary> getCSATSummary(int month, int year);

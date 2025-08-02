@@ -2,6 +2,7 @@ import 'package:advisor_desk/data/datasources/goal_data_source.dart';
 import 'package:advisor_desk/data/repositories/goal_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
+import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +35,7 @@ void main() async {
   final performanceRepository = PerformanceRepositoryImpl(localDataSource: localDataSource);
   final goalRepository = GoalRepositoryImpl(goalDataSource);
   final deleteCQEntriesByDateUseCase = DeleteCQEntriesByDateUseCase(performanceRepository);
+  final deleteCSATEntriesByDateUseCase = DeleteCSATEntriesByDateUseCase(performanceRepository);
 
   final prefs = await SharedPreferences.getInstance();
   final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
@@ -48,6 +50,7 @@ void main() async {
     performanceRepository: performanceRepository,
     goalRepository: goalRepository,
     deleteCQEntriesByDateUseCase: deleteCQEntriesByDateUseCase,
+    deleteCSATEntriesByDateUseCase: deleteCSATEntriesByDateUseCase,
     initialRoute: initialRoute,
   ));
 }
@@ -56,6 +59,7 @@ class MyApp extends StatelessWidget {
   final PerformanceRepository performanceRepository;
   final GoalRepository goalRepository;
   final DeleteCQEntriesByDateUseCase deleteCQEntriesByDateUseCase;
+  final DeleteCSATEntriesByDateUseCase deleteCSATEntriesByDateUseCase;
   final String initialRoute;
   
   const MyApp({
@@ -63,6 +67,7 @@ class MyApp extends StatelessWidget {
     required this.performanceRepository,
     required this.goalRepository,
     required this.deleteCQEntriesByDateUseCase,
+    required this.deleteCSATEntriesByDateUseCase,
     required this.initialRoute,
   }) : super(key: key);
 
@@ -74,6 +79,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<PerformanceRepository>.value(value: performanceRepository),
         RepositoryProvider<GoalRepository>.value(value: goalRepository),
         RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: deleteCQEntriesByDateUseCase),
+        RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: deleteCSATEntriesByDateUseCase),
       ],
       child: MultiBlocProvider(
         providers: [

@@ -92,6 +92,4 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-base:18.7.2'
-    implementation 'com.google.android.gms:play-services-auth:21.4.0'
 }

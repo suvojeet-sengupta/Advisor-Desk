@@ -31,7 +31,7 @@ dependencies:
   percent_indicator: ^4.2.3 # <-- यह नया पैकेज जोड़ा गया है
   url_launcher: ^6.3.0
   excel: ^2.1.0
-  file_picker: ^10.2.0
+  
   
   screenshot: ^3.0.0
   webview_flutter: ^4.7.0

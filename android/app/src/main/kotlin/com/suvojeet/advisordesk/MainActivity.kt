@@ -45,6 +45,16 @@ class MainActivity: FlutterActivity() {
             }
         }
 
+        // App Info Channel
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, APP_INFO_CHANNEL).setMethodCallHandler {
+            call, result ->
+            if (call.method == "getAppVersion") {
+                result.success(getAppVersion())
+            } else {
+                result.notImplemented()
+            }
+        }
+
         
     }
 
@@ -87,6 +97,8 @@ class MainActivity: FlutterActivity() {
     }
 
     
+
+    private val APP_INFO_CHANNEL = "com.suvojeet.advisordesk/app_info"
 
     private fun getAppVersion(): String {
         return try {

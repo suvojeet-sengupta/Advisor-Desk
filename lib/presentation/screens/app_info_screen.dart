@@ -116,17 +116,19 @@ class _AppInfoScreenState extends State<AppInfoScreen> {
                   const SizedBox(height: 16),
                   const Divider(),
                   const SizedBox(height: 16),
-                  ListTile(
-                    leading: Icon(Icons.people, color: AppColors.dishTvOrangeLight),
-                    title: Text(
-                      'Credits',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.dishTvOrange,
-                          ),
+                  CustomCard(
+                    child: ListTile(
+                      leading: Icon(Icons.people, color: AppColors.dishTvOrangeLight),
+                      title: Text(
+                        'Credits',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: AppColors.dishTvOrange,
+                            ),
+                      ),
+                      onTap: () => Navigator.pushNamed(context, AppRouter.creditsRoute),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
                     ),
-                    onTap: () => Navigator.pushNamed(context, AppRouter.creditsRoute),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
                   ),
                 ],
               ),

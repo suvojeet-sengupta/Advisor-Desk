@@ -21,6 +21,7 @@ class CreditsScreen extends StatelessWidget {
                 'Sudhanshu',
                 'Dheeraj Ravidas',
                 'Mouma Sengupta',
+                'Asia Noori',
               ],
             ),
             const SizedBox(height: 24),
@@ -53,14 +54,22 @@ class CreditsScreen extends StatelessWidget {
               ),
         ),
         const SizedBox(height: 16),
-        ...names.map((name) => _buildContributorTile(context, name)),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: names.length,
+          itemBuilder: (context, index) {
+            return _buildContributorTile(context, names[index], index);
+          },
+        ),
       ],
     );
   }
 
-  Widget _buildContributorTile(BuildContext context, String name) {
+  Widget _buildContributorTile(BuildContext context, String name, int index) {
+    final colors = [Colors.amber, Colors.blue, Colors.green, Colors.red, Colors.purple, Colors.orange];
     return Container(
-      margin: const EdgeInsets.only(bottom: 8.0),
+      margin: const EdgeInsets.only(bottom: 12.0),
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -75,11 +84,11 @@ class CreditsScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.star, color: Colors.amber),
+          Icon(Icons.star, color: colors[index % colors.length]),
           const SizedBox(width: 16),
           Text(
             name,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -107,6 +116,7 @@ class CreditsScreen extends StatelessWidget {
           child: Text(
             content,
             style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.justify,
           ),
         ),
       ],

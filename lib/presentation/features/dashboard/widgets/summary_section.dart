@@ -23,17 +23,17 @@ class SummarySection extends StatelessWidget {
             const SizedBox(height: 16),
             _buildSummaryRow(
               context,
-              'Total Login Hours',
-              '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
-              Icons.timer,
-              AppColors.accentBlue,
-            ),
-            _buildSummaryRow(
-              context,
               'Total Calls',
               summary.totalCalls.toString(),
               Icons.call,
               AppColors.dishTvOrange,
+            ),
+            _buildSummaryRow(
+              context,
+              'Total Login Hours',
+              '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
+              Icons.timer,
+              AppColors.accentBlue,
             ),
             _buildSummaryRow(
               context,

@@ -148,6 +148,19 @@ class SettingsScreen extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          _buildSectionCard(
+            context,
+            'Support Development',
+            [
+              _buildLinkTile(
+                context,
+                'Support & Feedback',
+                AppRouter.supportWebviewRoute,
+                Icons.support_agent,
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -311,6 +311,12 @@ class _DashboardViewState extends State<DashboardView> {
                 iconColor: AppColors.accentBlue,
               ),
               DashboardCard(
+                title: 'Total Login Hours',
+                value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
+                icon: Icons.timer,
+                iconColor: AppColors.accentGreen,
+              ),
+              DashboardCard(
                 title: 'Avg. Login Hours',
                 value: summary.averageDailyLoginHours.toStringAsFixed(2),
                 icon: Icons.timer,

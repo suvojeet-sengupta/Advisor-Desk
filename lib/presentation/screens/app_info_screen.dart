@@ -5,6 +5,7 @@ import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:advisor_desk/presentation/routes/app_router.dart';
 
 class AppInfoScreen extends StatefulWidget {
   const AppInfoScreen({Key? key}) : super(key: key);

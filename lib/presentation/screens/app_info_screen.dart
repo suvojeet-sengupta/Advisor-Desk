@@ -115,23 +115,17 @@ class _AppInfoScreenState extends State<AppInfoScreen> {
                   const SizedBox(height: 16),
                   const Divider(),
                   const SizedBox(height: 16),
-                  Text(
-                    'Credits',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Special Thanks to Didi Bhai (Mouma), Sudhanshu & many others who contributed and helped me to complete this app.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '"I developed this app to help you easily track your performance and daily activities. Thank you for using this application."',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontStyle: FontStyle.italic,
-                        ),
+                  ListTile(
+                    leading: Icon(Icons.people, color: AppColors.dishTvOrangeLight),
+                    title: Text(
+                      'Credits',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: AppColors.dishTvOrange,
+                          ),
+                    ),
+                    onTap: () => Navigator.pushNamed(context, AppRouter.creditsRoute),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
                   ),
                 ],
               ),

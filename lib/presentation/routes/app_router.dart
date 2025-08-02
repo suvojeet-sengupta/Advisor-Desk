@@ -17,6 +17,7 @@ import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dar
 import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 import 'package:advisor_desk/presentation/screens/support_webview_screen.dart';
+import 'package:advisor_desk/presentation/screens/credits_screen.dart';
 
 
 class AppRouter {
@@ -34,6 +35,7 @@ class AppRouter {
   static const String salarySettingsRoute = '/salary-settings';
   static const String reportOptionsRoute = '/report-options';
   static const String supportWebviewRoute = '/support-webview';
+  static const String creditsRoute = '/credits';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -92,6 +94,10 @@ class AppRouter {
       case supportWebviewRoute:
         return MaterialPageRoute(
           builder: (_) => const SupportWebviewScreen(),
+        );
+      case creditsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const CreditsScreen(),
         );
       default:
         return MaterialPageRoute(

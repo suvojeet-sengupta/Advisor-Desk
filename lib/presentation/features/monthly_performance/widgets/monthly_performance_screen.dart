@@ -65,6 +65,12 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       iconColor: AppColors.dishTvOrangeLight,
                     ),
                     DashboardCard(
+                      title: 'Avg. Calls',
+                      value: summary.averageDailyCalls.toStringAsFixed(2),
+                      icon: Icons.call,
+                      iconColor: AppColors.dishTvOrange,
+                    ),
+                    DashboardCard(
                       title: 'CSAT Score',
                       value: '${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%',
                       icon: Icons.sentiment_satisfied_alt,

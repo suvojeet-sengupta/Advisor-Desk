@@ -315,6 +315,12 @@ class _DashboardViewState extends State<DashboardView> {
                 iconColor: AppColors.accentGreen,
               ),
               DashboardCard(
+                title: 'Avg. Calls',
+                value: summary.averageDailyCalls.toStringAsFixed(2),
+                icon: Icons.call,
+                iconColor: AppColors.accentBlue,
+              ),
+              DashboardCard(
                 title: 'CSAT Score',
                 value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
                 icon: Icons.sentiment_satisfied_alt,

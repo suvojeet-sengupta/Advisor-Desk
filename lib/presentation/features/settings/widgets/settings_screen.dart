@@ -1,4 +1,5 @@
 import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:flutter/services.dart'; // Import for MethodChannel and PlatformException
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
@@ -8,8 +9,37 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
 
-class SettingsScreen extends StatelessWidget {
+import 'package:flutter/services.dart'; // Import for MethodChannel and PlatformException
+
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String _appVersion = 'Loading...';
+  static const platform = MethodChannel('com.suvojeet.advisordesk/app_info');
+
+  @override
+  void initState() {
+    super.initState();
+    _getAppVersion();
+  }
+
+  Future<void> _getAppVersion() async {
+    try {
+      final String version = await platform.invokeMethod('getAppVersion');
+      setState(() {
+        _appVersion = version;
+      });
+    } on PlatformException catch (e) {
+      setState(() {
+        _appVersion = 'Error: ${e.message}';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
             context,
             'App Information',
             [
-              _buildInfoTile('Version', AppConstants.appVersion, Icons.info_outline),
+              _buildInfoTile('Version', _appVersion, Icons.info_outline),
             ],
           ),
           const SizedBox(height: 16),

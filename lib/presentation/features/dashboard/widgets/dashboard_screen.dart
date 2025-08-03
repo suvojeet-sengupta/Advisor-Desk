@@ -156,103 +156,95 @@ class _DashboardViewState extends State<DashboardView> {
           ),
         ],
       ),
-      body: GestureDetector(
-        onHorizontalDragEnd: (details) {
-          // Right to Left Swipe (अगली स्क्रीन पर जाने के लिए)
-          if ((details.primaryVelocity ?? 0) < -200) {
-            _navigateToMonthlyPerformance(context);
+      body: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, dashboardState) {
+          if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
+            return const DashboardShimmer();
           }
-        },
-        child: BlocBuilder<DashboardBloc, DashboardState>(
-          builder: (context, dashboardState) {
-            if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
-              return const DashboardShimmer();
-            }
 
-            if (dashboardState.status == DashboardStatus.error) {
-              return EmptyStateWidget(
-                message: dashboardState.errorMessage ?? 'An unknown error occurred.',
-                illustrationPath: 'assets/images/error.svg',
-                onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-              );
-            }
-
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.chevron_left),
-                            onPressed: () {
-                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                              final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
-                              context.read<DashboardBloc>().add(
-                                LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.chevron_right),
-                            onPressed: () {
-                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                              final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
-                              context.read<DashboardBloc>().add(
-                                LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
-                      ? EmptyStateWidget(
-                          message: 'No entries found for this month.\nTap the + button to add your first entry!',
-                          illustrationPath: 'assets/images/no_data.svg',
-                          onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () async {
-                            context.read<DashboardBloc>().add(RefreshDashboard());
-                            context.read<GoalsBloc>().add(LoadGoals());
-                          },
-                          color: AppColors.dishTvOrange,
-                          child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
-                            builder: (context, customizationState) {
-                              return CustomScrollView(
-                                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                                slivers: [
-                                  SliverToBoxAdapter(child: const SizedBox(height: 16)),
-                                  ...customizationState.visibleSections.map((section) {
-                                    return _buildDashboardSection(
-                                      context,
-                                      section,
-                                      dashboardState.monthlySummary!,
-                                      dashboardState,
-                                    );
-                                  }).toList(),
-                                  SliverToBoxAdapter(child: const SizedBox(height: 100)),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                ),
-              ],
+          if (dashboardState.status == DashboardStatus.error) {
+            return EmptyStateWidget(
+              message: dashboardState.errorMessage ?? 'An unknown error occurred.',
+              illustrationPath: 'assets/images/error.svg',
+              onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
             );
-          },
-        ),
+          }
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed: () {
+                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                            final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
+                            context.read<DashboardBloc>().add(
+                              LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed: () {
+                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                            final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
+                            context.read<DashboardBloc>().add(
+                              LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
+                    ? EmptyStateWidget(
+                        message: 'No entries found for this month.\nTap the + button to add your first entry!',
+                        illustrationPath: 'assets/images/no_data.svg',
+                        onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<DashboardBloc>().add(RefreshDashboard());
+                          context.read<GoalsBloc>().add(LoadGoals());
+                        },
+                        color: AppColors.dishTvOrange,
+                        child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
+                          builder: (context, customizationState) {
+                            return CustomScrollView(
+                              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                              slivers: [
+                                SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                                ...customizationState.visibleSections.map((section) {
+                                  return _buildDashboardSection(
+                                    context,
+                                    section,
+                                    dashboardState.monthlySummary!,
+                                    dashboardState,
+                                  );
+                                }).toList(),
+                                SliverToBoxAdapter(child: const SizedBox(height: 100)),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+              ),
+            ],
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

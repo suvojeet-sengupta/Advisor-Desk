@@ -10,6 +10,7 @@ class MonthlySummary extends Equatable {
   final List<DailyEntry> entries;
   final CSATSummary? csatSummary;
   final CQSummary? cqSummary; // Add CQSummary field
+  final int loginDays;
   
   const MonthlySummary({
     required this.month,
@@ -17,6 +18,7 @@ class MonthlySummary extends Equatable {
     required this.entries,
     this.csatSummary,
     this.cqSummary, // Make it optional for now, will be populated later
+    required this.loginDays,
   });
   
   // Total login hours for the month

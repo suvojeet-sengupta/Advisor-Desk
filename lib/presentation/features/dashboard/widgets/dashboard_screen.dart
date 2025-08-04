@@ -338,6 +338,12 @@ class _DashboardViewState extends State<DashboardView> {
                 icon: Icons.currency_rupee,
                 iconColor: AppColors.accentBlue,
               ),
+              DashboardCard(
+                title: 'Login Days',
+                value: summary.loginDays.toString(),
+                icon: Icons.calendar_today,
+                iconColor: AppColors.accentPurple,
+              ),
             ]),
           ),
         );

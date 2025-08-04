@@ -88,6 +88,12 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       icon: Icons.currency_rupee,
                       iconColor: AppColors.dishTvOrange,
                     ),
+                    DashboardCard(
+                      title: 'Login Days',
+                      value: summary.loginDays.toString(),
+                      icon: Icons.calendar_today,
+                      iconColor: AppColors.accentPurple,
+                    ),
                     
                     DashboardCard(
                       title: 'Bonus Achieved',

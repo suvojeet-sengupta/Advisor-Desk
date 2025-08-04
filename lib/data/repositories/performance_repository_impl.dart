@@ -87,6 +87,7 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
       entries: entries,
       csatSummary: CSATSummary(entries: csatEntries, month: month, year: year),
       cqSummary: CQSummary(entries: cqEntries, month: month, year: year),
+      loginDays: entries.length,
     );
   }
 

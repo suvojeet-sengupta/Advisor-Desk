@@ -19,6 +19,12 @@
 
 ---
 
+## 📲 Get The App
+
+<a href='https://play.google.com/store/apps/details?id=com.suvojeet.advisordesk&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='200'/></a>
+
+---
+
 ## ✨ Overview
 
 **Advisor Desk** is a robust and intuitive mobile application built with Flutter, meticulously designed to empower freelance and remote customer service advisors. It provides a comprehensive suite of tools to efficiently manage daily tasks, monitor performance metrics, and accurately calculate monthly earnings. With a strong emphasis on a clean user interface, user privacy, and practical functionalities, this app serves as an indispensable tool for agents to stay organized, motivated, and in complete control of their performance and finances.

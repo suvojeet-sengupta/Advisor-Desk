@@ -1,71 +1,103 @@
-# 📊 Advisor Desk App
+# Advisor Desk: Performance & Salary Tracker
 
-## Empowering Professionals with Seamless Performance Tracking
+<p align="center">
+  <img src="assets/icon/app_icon.png" alt="Advisor Desk Logo" width="150"/>
+</p>
 
---- 
+<p align="center">
+  <strong>The ultimate all-in-one productivity app for freelance and work-from-home (WFH) customer care advisors.</strong>
+  <br />
+  Track daily login hours, call counts, performance metrics, and instantly calculate your estimated salary—all in a secure, offline-first app.
+</p>
+
+<p align="center">
+  <a href="https://github.com/suvojit213/Advisor-Desk/stargazers"><img src="https://img.shields.io/github/stars/suvojit213/Advisor-Desk?style=for-the-badge" alt="Stars"></a>
+  <a href="https://github.com/suvojit213/Advisor-Desk/network/members"><img src="https://img.shields.io/github/forks/suvojit213/Advisor-Desk?style=for-the-badge" alt="Forks"></a>
+  <a href="https://github.com/suvojit213/Advisor-Desk/issues"><img src="https://img.shields.io/github/issues/suvojit213/Advisor-Desk?style=for-the-badge" alt="Issues"></a>
+  <a href="https://github.com/suvojit213/Advisor-Desk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/suvojit213/Advisor-Desk?style=for-the-badge" alt="License"></a>
+</p>
+
+---
 
 ## ✨ Overview
 
-**Advisor Desk** is a robust and intuitive mobile application developed using Flutter, meticulously designed to empower professionals. It provides a comprehensive suite of tools for efficiently managing daily tasks, monitoring performance metrics, and accurately calculating monthly earnings. With a strong emphasis on a clean user interface and practical functionalities, this app serves as an indispensable tool for users to maintain organization, boost motivation, and achieve their targets.
+**Advisor Desk** is a robust and intuitive mobile application built with Flutter, meticulously designed to empower freelance and remote customer service advisors. It provides a comprehensive suite of tools to efficiently manage daily tasks, monitor performance metrics, and accurately calculate monthly earnings. With a strong emphasis on a clean user interface, user privacy, and practical functionalities, this app serves as an indispensable tool for agents to stay organized, motivated, and in complete control of their performance and finances.
 
-## 🚀 Features
+The app is built with a **secure, offline-first** architecture, ensuring that all user data is stored exclusively on the device. No internet connection, sign-up, or cloud services are required, guaranteeing absolute privacy.
+
+## 🚀 Key Features
 
 This application is packed with features engineered for seamless and efficient performance tracking:
 
--   **Daily Entry Management:** Effortlessly add, edit, or delete daily work entries, including detailed login hours and call counts.
--   **Comprehensive Monthly Summaries:** Gain clear insights into monthly performance with automatically calculated totals, averages, and key metrics.
--   **Automated Salary Calculation:** Instantly calculates estimated monthly salary, incorporating:
-    -   **Base Salary:** Based on call volume.
-    -   **Performance Bonus:** Achieved through predefined criteria (e.g., calls and login hours targets).
-    -   **CSAT Bonus:** Additional incentives based on CSAT scores and call volume targets.
-    -   **TDS Deduction:** Automatic calculation of Tax Deducted at Source.
-    -   **Net Salary:** Your final estimated take-home pay.
--   **Goal Setting & Tracking:** Set personalized monthly goals for login hours and calls, with progress vividly visualized through intuitive circular progress bars.
--   **Professional Report Generation:** Generate and share detailed monthly reports in:
-    -   **PDF Format:** Comprehensive, well-structured PDF documents for easy viewing and sharing.
-    -   **Excel Format:** Detailed Excel spreadsheets for in-depth analysis and record-keeping.
--   **Adaptive Theming:** Enjoy a beautifully crafted, theme-aware UI that seamlessly supports both light and dark modes, complete with a smooth animated switcher.
--   **Intuitive Navigation:** Navigate effortlessly between Dashboard, Monthly Performance, and Reports screens using fluid swipe gestures.
--   **Optimized Performance:** Experience rapid startup times with a professional native splash screen, and enjoy smooth scrolling and instant data retrieval for previously viewed months thanks to lazy loading and intelligent caching.
--   **Offline-First Capability:** All data is securely stored locally on the device using SQFlite, ensuring uninterrupted access and functionality anytime, anywhere, without an internet connection.
--   **Detailed App Information:** An accessible section providing essential information about the app and its developer.
--   **Direct Feedback Channel:** Easily send feedback directly from the app, with automatically included system information for efficient debugging.
+-   **📊 Smart Performance Dashboard:**
+    -   Log daily login hours, calls handled, and quality scores (CSAT & CQ).
+    -   View at-a-glance cards for total calls, login hours, login days, and daily averages.
+    -   Easily edit or delete any entry to keep records accurate.
+
+-   **💰 Instant Salary Estimation:**
+    -   Get a detailed, automated breakdown of your estimated monthly earnings:
+        -   **Base Salary** (based on call volume)
+        -   **Performance Bonus** (for achieving targets)
+        -   **CSAT & CQ Bonuses** (based on quality scores)
+        -   **TDS Deduction** & Final **Net Salary**
+    -   Customize all salary parameters in the settings to match your specific pay structure.
+
+-   **🎯 Motivational Goal Tracking:**
+    -   Set monthly goals for login hours and call counts.
+    -   Visualize your progress in real-time with beautiful, animated circular progress bars.
+    -   Stay focused and consistently hit your targets with a clear view of what's needed.
+
+-   **📄 Professional PDF & Excel Reports:**
+    -   Instantly generate detailed performance reports for any custom date range.
+    -   Customize reports to include only the sections you need (e.g., Salary Breakdown, Daily Entries).
+    -   Export to both **PDF** for easy sharing and **Excel** for record-keeping or analysis.
+    -   Share reports effortlessly via WhatsApp, Gmail, or any other app.
+
+-   **🔒 Secure, Private & Offline-First:**
+    -   All data is stored securely on your device's local database using **SQFlite**.
+    -   **No Internet Required.** The app works perfectly offline.
+    -   **No Sign-Up, No Cloud Sync.** Your privacy is our priority. We collect zero personal data.
+    -   **100% Ad-Free.** No ads, trackers, or third-party analytics.
+
+-   **✨ Modern & Smooth UI:**
+    -   A sleek and intuitive user interface built with Flutter for a fast, responsive experience.
+    -   Choose between a beautiful **Light or Dark mode**.
+    -   Clean, simple navigation designed for a focused workflow.
+
+-   **🔧 Advanced Settings & Control:**
+    -   Full control over salary and bonus parameters.
+    -   Options to delete specific data points (e.g., daily CSAT/CQ scores) to correct errors.
+    -   Backup and restore your entire database.
 
 ## 🛠️ Tech Stack & Architecture
 
-This project is built using cutting-edge technologies and adheres to a clean architecture pattern, specifically the BLoC (Business Logic Component) pattern for robust state management.
+This project is built using cutting-edge technologies and adheres to a clean architecture, specifically the **BLoC (Business Logic Component)** pattern for robust and scalable state management.
 
 -   **Framework:** Flutter
 -   **Language:** Dart
--   **Architecture:** BLoC (Business Logic Component) for State Management
--   **Local Database:** SQFlite
+-   **Architecture:** BLoC (Business Logic Component)
+-   **State Management:** `flutter_bloc`
+-   **Local Database:** `sqflite`
 -   **Key Packages:**
-    -   `flutter_bloc`: For predictable and scalable state management.
-    -   `equatable`: Simplifies value equality checks for BLoC states.
-    -   `sqflite` & `path_provider`: Facilitates local database operations and file system access.
-    -   `intl`: Provides internationalization and date/number formatting capabilities.
-    -   `fl_chart`: Enables the creation of beautiful and customizable charts.
-    -   `shared_preferences`: For persisting simple key-value data.
-    -   `google_fonts`: Integrates custom Google Fonts for enhanced typography.
-    -   `permission_handler`: Streamlines runtime permission requests.
-    -   `open_file`: Allows opening files directly from the app.
-    -   `device_info_plus`: Gathers detailed device information.
-    -   `pdf`: Powers the generation of high-quality PDF reports.
-    -   `share_plus`: Provides native sharing capabilities for content.
-    -   `shimmer`: Implements elegant loading animations.
-    -   `percent_indicator`: Used for visually representing progress with circular indicators.
-    -   `url_launcher`: For launching URLs, emails, and other schemes.
+    -   `equatable`: For value equality checks in BLoC states.
+    -   `path_provider`: For accessing the file system.
+    -   `intl`: For date/number formatting.
+    -   `fl_chart` & `percent_indicator`: For data visualization.
+    -   `shared_preferences`: For storing user settings.
+    -   `pdf` & `excel`: For native report generation.
+    -   `share_plus`: For native sharing capabilities.
+    -   `permission_handler`: For runtime permission requests.
 
-## 🚀 Installation & Usage
+## 🚀 Getting Started
 
-To get a local copy of the project up and running for development or testing, follow these simple steps:
+To get a local copy of the project up and running for development or testing, follow these simple steps.
 
 ### Prerequisites
 
--   [Flutter SDK](https://flutter.dev/docs/get-started/install) installed and configured.
+-   [Flutter SDK](https://flutter.dev/docs/get-started/install) (version 3.x or higher)
 -   A code editor such as [Android Studio](https://developer.android.com/studio) or [VS Code](https://code.visualstudio.com/).
 
-### Steps
+### Installation
 
 1.  **Clone the repository:**
     ```bash
@@ -84,15 +116,11 @@ To get a local copy of the project up and running for development or testing, fo
     flutter run
     ```
 
-## 📸 Screenshots
-
-*(Placeholder: Add screenshots or a GIF of the app's key screens here to give users a visual overview.)*
-
 ## 🤝 Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -112,5 +140,5 @@ Project Link: [https://github.com/suvojit213/Advisor-Desk](https://github.com/su
 
 ## 🙏 Acknowledgements
 
--   Special thanks to **Di Bhai (Mouma)** and **Sudhanshu** for rigorous testing and invaluable feedback.
--   To everyone else who contributed and made this project possible.
+-   A huge thank you to **Di Bhai (Mouma)** and **Sudhanshu** for their rigorous testing, invaluable feedback, and feature suggestions that have shaped this app.
+-   To everyone else who has contributed and supported this project.

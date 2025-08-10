@@ -7,69 +7,47 @@ import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
-import 'package:advisor_desk/domain/repositories/performance_repository.dart'; // Import PerformanceRepository
-// This comment is added to force a re-compilation.
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_bloc.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_event.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_state.dart';
 
-class AddCSATEntryScreen extends StatefulWidget {
+class AddCSATEntryScreen extends StatelessWidget {
   final CSATEntry? entryToEdit;
 
   const AddCSATEntryScreen({Key? key, this.entryToEdit}) : super(key: key);
 
   @override
-  State<AddCSATEntryScreen> createState() => _AddCSATEntryScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AddCSATEntryBloc(
+        repository: context.read<PerformanceRepository>(),
+      )..add(InitializeCSATEntry(entry: entryToEdit)),
+      child: const AddCSATEntryView(),
+    );
+  }
 }
 
-class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
-  late DateTime _selectedDate;
+class AddCSATEntryView extends StatefulWidget {
+  const AddCSATEntryView({Key? key}) : super(key: key);
+
+  @override
+  State<AddCSATEntryView> createState() => _AddCSATEntryViewState();
+}
+
+class _AddCSATEntryViewState extends State<AddCSATEntryView> {
   late final TextEditingController _t2CountController;
   late final TextEditingController _b2CountController;
   late final TextEditingController _nCountController;
-  int _t2Count = 0;
-  int _b2Count = 0;
-  int _nCount = 0;
-  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _t2CountController = TextEditingController();
-    _b2CountController = TextEditingController();
-    _nCountController = TextEditingController();
-
-    if (widget.entryToEdit != null) {
-      _selectedDate = widget.entryToEdit!.date;
-      _t2CountController.text = widget.entryToEdit!.t2Count.toString();
-      _b2CountController.text = widget.entryToEdit!.b2Count.toString();
-      _nCountController.text = widget.entryToEdit!.nCount.toString();
-    } else {
-      _selectedDate = DateTime.now();
-      _t2CountController.text = '';
-      _b2CountController.text = '';
-      _nCountController.text = '';
-    }
-
-    _t2Count = int.tryParse(_t2CountController.text) ?? 0;
-    _b2Count = int.tryParse(_b2CountController.text) ?? 0;
-    _nCount = int.tryParse(_nCountController.text) ?? 0;
-
-    _t2CountController.addListener(() {
-      setState(() {
-        _t2Count = int.tryParse(_t2CountController.text) ?? 0;
-      });
-    });
-    _b2CountController.addListener(() {
-      setState(() {
-        _b2Count = int.tryParse(_b2CountController.text) ?? 0;
-      });
-    });
-    _nCountController.addListener(() {
-      setState(() {
-        _nCount = int.tryParse(_nCountController.text) ?? 0;
-      });
-    });
+    final state = context.read<AddCSATEntryBloc>().state;
+    _t2CountController = TextEditingController(text: state.isUpdate ? state.t2Count.toString() : '');
+    _b2CountController = TextEditingController(text: state.isUpdate ? state.b2Count.toString() : '');
+    _nCountController = TextEditingController(text: state.isUpdate ? state.nCount.toString() : '');
   }
-
-  
 
   @override
   void dispose() {
@@ -81,159 +59,204 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: widget.entryToEdit != null ? 'Edit CSAT Entry' : 'Add CSAT Entry',
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Date Section
-            _buildSectionTitle(context, 'Date'),
-            const SizedBox(height: 8),
-            CustomCard(
-              child: InkWell(
-                onTap: () => _selectDate(context),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).inputDecorationTheme.fillColor,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: AppColors.dishTvOrange,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        DateFormat('dd MMM yyyy').format(_selectedDate),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
-                      ),
-                    ],
-                  ),
+    return BlocListener<AddCSATEntryBloc, AddCSATEntryState>(
+      listener: (context, state) {
+        if (state.status == AddCSATEntryStatus.success) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.isDelete
+                      ? 'CSAT entry deleted successfully!'
+                      : (state.isUpdate
+                          ? 'CSAT entry updated successfully!'
+                          : 'CSAT entry added successfully!'),
                 ),
+                backgroundColor: AppColors.accentGreen,
               ),
-            ),
-            const SizedBox(height: 24),
-
-            // T2 Count Section
-            CustomFormField(
-              label: 'T2 Count (Positive Feedback)',
-              hintText: 'Enter T2 count',
-              icon: Icons.thumb_up,
-              controller: _t2CountController,
-              keyboardType: TextInputType.number,
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-
-            // B2 Count Section
-            CustomFormField(
-              label: 'B2 Count (Negative Feedback)',
-              hintText: 'Enter B2 count',
-              icon: Icons.thumb_down,
-              controller: _b2CountController,
-              keyboardType: TextInputType.number,
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-
-            // N Count Section
-            CustomFormField(
-              label: 'N Count (Neutral Feedback)',
-              hintText: 'Enter N count',
-              icon: Icons.remove,
-              controller: _nCountController,
-              keyboardType: TextInputType.number,
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 24),
-
-            // Preview Section
-            if (_t2Count > 0 || _b2Count > 0 || _nCount > 0) ...[
-              _buildSectionTitle(context, 'Preview'),
-              const SizedBox(height: 8),
-              CustomCard(
-                child: Column(
-                  children: [
-                    _buildPreviewRow('Total Survey Hits', '${_t2Count + _b2Count + _nCount}'),
-                    const Divider(),
-                    _buildPreviewRow('T2 Score', '${_calculateScore(_t2Count).toStringAsFixed(2)}%'),
-                    _buildPreviewRow('B2 Score', '${_calculateScore(_b2Count).toStringAsFixed(2)}%'),
-                    _buildPreviewRow('N Score', '${_calculateScore(_nCount).toStringAsFixed(2)}%'),
-                    const Divider(),
-                    _buildPreviewRow(
-                      'CSAT Percentage',
-                      '${_calculateCSAT().toStringAsFixed(2)}%',
-                      isHighlight: true,
-                      color: _calculateCSAT() >= 60 ? Colors.green : Theme.of(context).colorScheme.error,
-                    ),
-                    if (_calculateCSAT() < 60)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.warning_amber_rounded,
-                                color: Theme.of(context).colorScheme.error,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'CSAT below 60% - Needs Improvement',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+            );
+          Navigator.pop(context, true);
+        } else if (state.status == AddCSATEntryStatus.failure) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage ?? 'Failed to save entry'),
+                backgroundColor: AppColors.accentRed,
+              ),
+            );
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: context.watch<AddCSATEntryBloc>().state.isUpdate ? 'Edit CSAT Entry' : 'Add CSAT Entry',
+        ),
+        body: BlocBuilder<AddCSATEntryBloc, AddCSATEntryState>(
+          builder: (context, state) {
+            if (state.status == AddCSATEntryStatus.loading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Date Section
+                  _buildSectionTitle(context, 'Date'),
+                  const SizedBox(height: 8),
+                  CustomCard(
+                    child: InkWell(
+                      onTap: () => _selectDate(context, state.date),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).inputDecorationTheme.fillColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Theme.of(context).colorScheme.outline),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              color: AppColors.dishTvOrange,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              DateFormat('dd MMM yyyy').format(state.date),
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
+                            ),
+                          ],
                         ),
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // T2 Count Section
+                  CustomFormField(
+                    label: 'T2 Count (Positive Feedback)',
+                    hintText: 'Enter T2 count',
+                    icon: Icons.thumb_up,
+                    controller: _t2CountController,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      context.read<AddCSATEntryBloc>().add(T2CountChanged(count: int.tryParse(value) ?? 0));
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // B2 Count Section
+                  CustomFormField(
+                    label: 'B2 Count (Negative Feedback)',
+                    hintText: 'Enter B2 count',
+                    icon: Icons.thumb_down,
+                    controller: _b2CountController,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      context.read<AddCSATEntryBloc>().add(B2CountChanged(count: int.tryParse(value) ?? 0));
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // N Count Section
+                  CustomFormField(
+                    label: 'N Count (Neutral Feedback)',
+                    hintText: 'Enter N count',
+                    icon: Icons.remove,
+                    controller: _nCountController,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      context.read<AddCSATEntryBloc>().add(NCountChanged(count: int.tryParse(value) ?? 0));
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Preview Section
+                  if (state.t2Count > 0 || state.b2Count > 0 || state.nCount > 0) ...[
+                    _buildSectionTitle(context, 'Preview'),
+                    const SizedBox(height: 8),
+                    CustomCard(
+                      child: Column(
+                        children: [
+                          _buildPreviewRow('Total Survey Hits', '${state.t2Count + state.b2Count + state.nCount}'),
+                          const Divider(),
+                          _buildPreviewRow('T2 Score', '${_calculateScore(state.t2Count, state).toStringAsFixed(2)}%'),
+                          _buildPreviewRow('B2 Score', '${_calculateScore(state.b2Count, state).toStringAsFixed(2)}%'),
+                          _buildPreviewRow('N Score', '${_calculateScore(state.nCount, state).toStringAsFixed(2)}%'),
+                          const Divider(),
+                          _buildPreviewRow(
+                            'CSAT Percentage',
+                            '${_calculateCSAT(state).toStringAsFixed(2)}%',
+                            isHighlight: true,
+                            color: _calculateCSAT(state) >= 60 ? Colors.green : Theme.of(context).colorScheme.error,
+                          ),
+                          if (_calculateCSAT(state) < 60)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: Theme.of(context).colorScheme.error,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'CSAT below 60% - Needs Improvement',
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: Theme.of(context).colorScheme.error,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                   ],
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
 
-            // Submit Button
-            SizedBox(
-              width: double.infinity,
-              child: CustomButton(
-                text: widget.entryToEdit != null ? 'Update CSAT Entry' : 'Add CSAT Entry',
-                onPressed: _isLoading ? null : _submitEntry,
-                icon: widget.entryToEdit != null ? Icons.update : Icons.add,
-              ),
-            ),
+                  // Submit Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      text: state.isUpdate ? 'Update CSAT Entry' : 'Add CSAT Entry',
+                      onPressed: state.status == AddCSATEntryStatus.loading ? null : () {
+                        context.read<AddCSATEntryBloc>().add(const SubmitCSATEntry());
+                      },
+                      icon: state.isUpdate ? Icons.update : Icons.add,
+                    ),
+                  ),
 
-            if (widget.entryToEdit != null) ...[
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: CustomButton(
-                  text: 'Delete Entry',
-                  onPressed: _isLoading ? null : () => _showDeleteConfirmationDialog(context),
-                  isPrimary: false,
-                  icon: Icons.delete_outline,
-                ),
+                  if (state.isUpdate) ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: CustomButton(
+                        text: 'Delete Entry',
+                        onPressed: state.status == AddCSATEntryStatus.loading ? null : () => _showDeleteConfirmationDialog(context),
+                        isPrimary: false,
+                        icon: Icons.delete_outline,
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ],
-          ],
+            );
+          },
         ),
       ),
     );
@@ -273,19 +296,20 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
     );
   }
 
-  double _calculateScore(int count) {
-    final total = _t2Count + _b2Count + _nCount;
+  double _calculateScore(int count, AddCSATEntryState state) {
+    final total = state.t2Count + state.b2Count + state.nCount;
     if (total == 0) return 0.0;
     return (100 / total) * count;
   }
 
-  double _calculateCSAT() {
-    return _calculateScore(_t2Count) - _calculateScore(_b2Count);
+  double _calculateCSAT(AddCSATEntryState state) {
+    return _calculateScore(state.t2Count, state) - _calculateScore(state.b2Count, state);
   }
-  Future<void> _selectDate(BuildContext context) async {
+
+  Future<void> _selectDate(BuildContext context, DateTime initialDate) async {
     final selectedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: initialDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
       builder: (BuildContext context, Widget? child) {
@@ -300,56 +324,7 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
       },
     );
     if (selectedDate != null) {
-      setState(() {
-        _selectedDate = selectedDate;
-      });
-    }
-  }
-
-  void _submitEntry() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final entry = CSATEntry(
-        id: widget.entryToEdit?.id,
-        date: _selectedDate,
-        t2Count: int.tryParse(_t2CountController.text) ?? 0,
-        b2Count: int.tryParse(_b2CountController.text) ?? 0,
-        nCount: int.tryParse(_nCountController.text) ?? 0,
-      );
-
-      await context.read<PerformanceRepository>().saveCSATEntry(entry); // Use the repository
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.entryToEdit != null
-                  ? 'CSAT entry updated successfully!'
-                  : 'CSAT entry added successfully!',
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context, true); // Signal success to previous screen
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save CSAT entry: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      context.read<AddCSATEntryBloc>().add(CSATDateChanged(date: selectedDate));
     }
   }
 
@@ -375,8 +350,8 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
               ),
               child: const Text('Delete'),
               onPressed: () {
+                context.read<AddCSATEntryBloc>().add(const DeleteCSATEntry());
                 Navigator.of(dialogContext).pop();
-                _deleteEntry();
               },
             ),
           ],
@@ -384,43 +359,7 @@ class _AddCSATEntryScreenState extends State<AddCSATEntryScreen> {
       },
     );
   }
-
-  void _deleteEntry() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      if (widget.entryToEdit?.id != null) {
-        await context.read<PerformanceRepository>().deleteCSATEntry(widget.entryToEdit!.id!); // Use the repository
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('CSAT entry deleted successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context, true); // Signal success to previous screen
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save CSAT entry: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
 }
+
 
 

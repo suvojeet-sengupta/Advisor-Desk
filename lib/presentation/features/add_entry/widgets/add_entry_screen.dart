@@ -13,6 +13,8 @@ import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_state.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_bloc.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_bloc.dart';
 
 class AddEntryScreen extends StatelessWidget {
   final DailyEntry? entryToEdit;
@@ -21,10 +23,24 @@ class AddEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AddEntryBloc(
-        repository: context.read<PerformanceRepository>(),
-      )..add(InitializeAddEntry(entry: entryToEdit)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AddEntryBloc(
+            repository: context.read<PerformanceRepository>(),
+          )..add(InitializeAddEntry(entry: entryToEdit)),
+        ),
+        BlocProvider(
+          create: (context) => AddCSATEntryBloc(
+            repository: context.read<PerformanceRepository>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => AddCQEntryBloc(
+            repository: context.read<PerformanceRepository>(),
+          ),
+        ),
+      ],
       child: const AddEntryView(),
     );
   }
@@ -344,4 +360,5 @@ class _AddEntryViewState extends State<AddEntryView> {
     );
   }
 }
+
 

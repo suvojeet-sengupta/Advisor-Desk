@@ -101,9 +101,9 @@ class CQPerformanceSection extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _getQualityColor(averageCQ).withOpacity(0.1),
+                    color: _getQualityColor(averageCQ, context).withOpacity(0.1),
                     border: Border.all(
-                      color: _getQualityColor(averageCQ),
+                      color: _getQualityColor(averageCQ, context),
                       width: 3,
                     ),
                   ),
@@ -115,13 +115,13 @@ class CQPerformanceSection extends StatelessWidget {
                           '${averageCQ.toStringAsFixed(1)}%',
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: _getQualityColor(averageCQ),
+                            color: _getQualityColor(averageCQ, context),
                           ),
                         ),
                         Text(
                           'CQ Avg',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: _getQualityColor(averageCQ),
+                            color: _getQualityColor(averageCQ, context),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -135,14 +135,14 @@ class CQPerformanceSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: _getQualityColor(averageCQ).withOpacity(0.1),
+                    color: _getQualityColor(averageCQ, context).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: _getQualityColor(averageCQ).withOpacity(0.3)),
+                    border: Border.all(color: _getQualityColor(averageCQ, context).withOpacity(0.3)),
                   ),
                   child: Text(
                     qualityRating,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: _getQualityColor(averageCQ),
+                      color: _getQualityColor(averageCQ, context),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -217,8 +217,8 @@ class CQPerformanceSection extends StatelessWidget {
     );
   }
 
-  Color _getQualityColor(double percentage) {
-    if (percentage == 0) return Colors.black;
+    Color _getQualityColor(double percentage, BuildContext context) {
+    if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
     if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
     if (percentage >= 75) return Theme.of(context).colorScheme.primary;
     return Theme.of(context).colorScheme.error;

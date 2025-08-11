@@ -23,6 +23,7 @@ class ThemeSelectionScreen extends StatelessWidget {
                 context.read<ThemeCubit>().setTheme(newValue);
               }
             },
+            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).colorScheme.background)),
           ),
           RadioListTile<AppThemeMode>(
             title: const Text('Light Mode'),
@@ -33,6 +34,7 @@ class ThemeSelectionScreen extends StatelessWidget {
                 context.read<ThemeCubit>().setTheme(newValue);
               }
             },
+            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white)),
           ),
           RadioListTile<AppThemeMode>(
             title: const Text('Dark Mode'),
@@ -43,6 +45,7 @@ class ThemeSelectionScreen extends StatelessWidget {
                 context.read<ThemeCubit>().setTheme(newValue);
               }
             },
+            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black)),
           ),
           RadioListTile<AppThemeMode>(
             title: const Text('Orange Mode'),
@@ -53,6 +56,7 @@ class ThemeSelectionScreen extends StatelessWidget {
                 context.read<ThemeCubit>().setTheme(newValue);
               }
             },
+            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.orange[700])), // Visual indicator
           ),
           RadioListTile<AppThemeMode>(
             title: const Text('Teal Mode'),
@@ -63,6 +67,7 @@ class ThemeSelectionScreen extends StatelessWidget {
                 context.read<ThemeCubit>().setTheme(newValue);
               }
             },
+            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.teal[700])), // Visual indicator
           ),
           RadioListTile<AppThemeMode>(
             title: const Text('Pink Mode'),
@@ -73,6 +78,7 @@ class ThemeSelectionScreen extends StatelessWidget {
                 context.read<ThemeCubit>().setTheme(newValue);
               }
             },
+            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.pink[700])), // Visual indicator
           ),
         ],
       ),

@@ -14,6 +14,8 @@ class ThemeSelectionScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
+          _buildAnimatedThemeToggle(context),
+          const Divider(),
           RadioListTile<AppThemeMode>(
             title: const Text('System Default'),
             value: AppThemeMode.system,
@@ -24,28 +26,6 @@ class ThemeSelectionScreen extends StatelessWidget {
               }
             },
             secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).colorScheme.background)),
-          ),
-          RadioListTile<AppThemeMode>(
-            title: const Text('Light Mode'),
-            value: AppThemeMode.light,
-            groupValue: context.watch<ThemeCubit>().state,
-            onChanged: (AppThemeMode? newValue) {
-              if (newValue != null) {
-                context.read<ThemeCubit>().setTheme(newValue);
-              }
-            },
-            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white)),
-          ),
-          RadioListTile<AppThemeMode>(
-            title: const Text('Dark Mode'),
-            value: AppThemeMode.dark,
-            groupValue: context.watch<ThemeCubit>().state,
-            onChanged: (AppThemeMode? newValue) {
-              if (newValue != null) {
-                context.read<ThemeCubit>().setTheme(newValue);
-              }
-            },
-            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black)),
           ),
           RadioListTile<AppThemeMode>(
             title: const Text('Orange Mode'),
@@ -82,6 +62,35 @@ class ThemeSelectionScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAnimatedThemeToggle(BuildContext context) {
+    return BlocBuilder<ThemeCubit, AppThemeMode>(
+      builder: (context, state) {
+        final isDarkMode = state == AppThemeMode.dark ||
+            (state == AppThemeMode.system &&
+                MediaQuery.of(context).platformBrightness == Brightness.dark);
+
+        return SwitchListTile(
+          title: const Text('Theme'),
+          subtitle: Text(isDarkMode ? 'Dark Mode' : 'Light Mode'),
+          value: isDarkMode,
+          onChanged: (value) {
+            final newTheme = value ? AppThemeMode.dark : AppThemeMode.light;
+            context.read<ThemeCubit>().setTheme(newTheme);
+          },
+          secondary: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, animation) {
+              return ScaleTransition(scale: animation, child: child);
+            },
+            child: isDarkMode
+                ? Icon(Icons.nightlight_round, key: UniqueKey())
+                : Icon(Icons.wb_sunny, key: UniqueKey()),
+          ),
+        );
+      },
     );
   }
 }

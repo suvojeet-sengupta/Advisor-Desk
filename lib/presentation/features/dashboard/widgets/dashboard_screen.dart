@@ -342,7 +342,7 @@ class _DashboardViewState extends State<DashboardView> {
                 title: 'Login Days',
                 value: summary.loginDays.toString(),
                 icon: Icons.calendar_today,
-                iconColor: Theme.of(context).colorScheme.tertiaryContainer,
+                iconColor: Theme.of(context).colorScheme.tertiary,
               ),
             ]),
           ),

@@ -7,8 +7,8 @@ class AppTheme {
 
   static final Map<AppColor, ColorScheme> _lightColorSchemes = {
     AppColor.orange: ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent, brightness: Brightness.light),
-    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.teal[700]!, brightness: Brightness.light),
-    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pink[700]!, brightness: Brightness.light),
+    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.tealAccent[400]!, brightness: Brightness.light),
+    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pinkAccent[400]!, brightness: Brightness.light),
     AppColor.blue: ColorScheme.fromSeed(seedColor: Colors.blueAccent[700]!, brightness: Brightness.light),
     AppColor.green: ColorScheme.fromSeed(seedColor: Colors.lightGreenAccent[700]!, brightness: Brightness.light),
     AppColor.purple: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent[400]!, brightness: Brightness.light),
@@ -17,8 +17,68 @@ class AppTheme {
 
   static final Map<AppColor, ColorScheme> _darkColorSchemes = {
     AppColor.orange: ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent, brightness: Brightness.dark),
-    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.teal[700]!, brightness: Brightness.dark),
-    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pink[700]!, brightness: Brightness.dark),
+    AppColor.teal: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFF80CBC4), // Teal 200
+      onPrimary: Colors.black,
+      primaryContainer: Color(0xFF004D40), // Darker teal for container
+      onPrimaryContainer: Color(0xFFE0F2F1), // Lighter text on container
+      secondary: Color(0xFF80CBC4), // Using same for secondary for consistency
+      onSecondary: Colors.black,
+      secondaryContainer: Color(0xFF004D40),
+      onSecondaryContainer: Color(0xFFE0F2F1),
+      tertiary: Color(0xFF80CBC4),
+      onTertiary: Colors.black,
+      tertiaryContainer: Color(0xFF004D40),
+      onTertiaryContainer: Color(0xFFE0F2F1),
+      error: Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Color(0xFF121212), // Dark background
+      onBackground: Colors.white,
+      surface: Color(0xFF121212), // Dark surface
+      onSurface: Colors.white,
+      surfaceVariant: Color(0xFF424242), // Slightly lighter surface variant
+      onSurfaceVariant: Colors.white,
+      outline: Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: Color(0xFF00897B), // Original vibrant teal for inverse
+      surfaceTint: Color(0xFF80CBC4),
+    ),
+    AppColor.pink: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFFF48FB1), // Pink 200
+      onPrimary: Colors.black,
+      primaryContainer: Color(0xFF880E4F), // Darker pink for container
+      onPrimaryContainer: Color(0xFFFCE4EC), // Lighter text on container
+      secondary: Color(0xFFF48FB1), // Using same for secondary for consistency
+      onSecondary: Colors.black,
+      secondaryContainer: Color(0xFF880E4F),
+      onSecondaryContainer: Color(0xFFFCE4EC),
+      tertiary: Color(0xFFF48FB1),
+      onTertiary: Colors.black,
+      tertiaryContainer: Color(0xFF880E4F),
+      onTertiaryContainer: Color(0xFFFCE4EC),
+      error: Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Color(0xFF121212), // Dark background
+      onBackground: Colors.white,
+      surface: Color(0xFF121212), // Dark surface
+      onSurface: Colors.white,
+      surfaceVariant: Color(0xFF424242), // Slightly lighter surface variant
+      onSurfaceVariant: Colors.white,
+      outline: Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: Color(0xFFD81B60), // Original vibrant pink for inverse
+      surfaceTint: Color(0xFFF48FB1),
+    ),
     AppColor.blue: ColorScheme.fromSeed(seedColor: Colors.blueAccent[700]!, brightness: Brightness.dark),
     AppColor.green: ColorScheme.fromSeed(seedColor: Colors.lightGreenAccent[700]!, brightness: Brightness.dark),
     AppColor.purple: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent[400]!, brightness: Brightness.dark),

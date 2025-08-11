@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
@@ -21,16 +20,16 @@ class CQPerformanceSection extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                Icons.assessment,
-                color: Theme.of(context).colorScheme.primary,
-                size: 24,
-              ),
+                  Icons.assessment,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 24,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Call Quality (CQ) Performance',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -47,15 +46,15 @@ class CQPerformanceSection extends StatelessWidget {
                   Text(
                     'No CQ data available',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                    ),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Add CQ audit entries to see performance',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                    ),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -67,8 +66,8 @@ class CQPerformanceSection extends StatelessWidget {
     }
 
     final averageCQ = cqSummary!.monthlyAverageCQ;
-    final needsImprovement = cqSummary!.needsImprovement;
     final qualityRating = cqSummary!.qualityRating;
+    final qualityColor = _getQualityColor(averageCQ, context);
 
     return CustomCard(
       child: Column(
@@ -78,15 +77,15 @@ class CQPerformanceSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.assessment,
-                color: Theme.of(context).colorScheme.primary,
+                color: qualityColor,
                 size: 24,
               ),
               const SizedBox(width: 8),
               Text(
                 'Call Quality (CQ) Performance',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ),
@@ -101,9 +100,9 @@ class CQPerformanceSection extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _getQualityColor(averageCQ, context).withOpacity(0.1),
+                    color: qualityColor.withOpacity(0.1),
                     border: Border.all(
-                      color: _getQualityColor(averageCQ, context),
+                      color: qualityColor,
                       width: 3,
                     ),
                   ),
@@ -114,16 +113,16 @@ class CQPerformanceSection extends StatelessWidget {
                         Text(
                           '${averageCQ.toStringAsFixed(1)}%',
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: _getQualityColor(averageCQ, context),
-                          ),
+                                fontWeight: FontWeight.bold,
+                                color: qualityColor,
+                              ),
                         ),
                         Text(
                           'CQ Avg',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: _getQualityColor(averageCQ, context),
-                            fontWeight: FontWeight.w500,
-                          ),
+                                color: qualityColor,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ],
                     ),
@@ -135,16 +134,16 @@ class CQPerformanceSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: _getQualityColor(averageCQ, context).withOpacity(0.1),
+                    color: qualityColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: _getQualityColor(averageCQ, context).withOpacity(0.3)),
+                    border: Border.all(color: qualityColor.withOpacity(0.3)),
                   ),
                   child: Text(
                     qualityRating,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: _getQualityColor(averageCQ, context),
-                      fontWeight: FontWeight.w600,
-                    ),
+                          color: qualityColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
                 
@@ -163,7 +162,7 @@ class CQPerformanceSection extends StatelessWidget {
                   context,
                   'Total Audits',
                   cqSummary!.totalAudits.toString(),
-                  _getQualityColor(averageCQ, context),
+                  qualityColor,
                   Icons.assignment_turned_in,
                 ),
               ),
@@ -200,16 +199,16 @@ class CQPerformanceSection extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w500,
-            ),
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -219,8 +218,8 @@ class CQPerformanceSection extends StatelessWidget {
 
   Color _getQualityColor(double percentage, BuildContext context) {
     if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
-    if (percentage >= 85) return Colors.green;
-    if (percentage >= 75) return Colors.orange;
-    return Colors.red;
+    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
+    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
+    return Theme.of(context).colorScheme.error;
   }
 }

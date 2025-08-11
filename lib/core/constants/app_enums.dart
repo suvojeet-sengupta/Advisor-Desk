@@ -2,13 +2,16 @@ enum AppThemeMode {
   system,
   light,
   dark,
+}
+
+enum AppColor {
+  orange,
+  teal,
+  pink,
   blue,
   green,
   purple,
   red,
-  orange,
-  teal,
-  pink,
 }
 
 enum DashboardSection {

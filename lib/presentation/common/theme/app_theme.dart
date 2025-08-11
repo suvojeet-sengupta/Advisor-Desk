@@ -1,10 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/core/constants/app_enums.dart';
 
 class AppTheme {
   AppTheme._();
 
-  // बेहतर लाइट थीम
+  static final Map<AppColor, ColorScheme> _lightColorSchemes = {
+    AppColor.orange: ColorScheme.fromSeed(seedColor: Colors.orange, brightness: Brightness.light),
+    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.teal, brightness: Brightness.light),
+    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pink, brightness: Brightness.light),
+    AppColor.blue: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),
+    AppColor.green: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.light),
+    AppColor.purple: ColorScheme.fromSeed(seedColor: Colors.purple, brightness: Brightness.light),
+    AppColor.red: ColorScheme.fromSeed(seedColor: Colors.red, brightness: Brightness.light),
+  };
+
+  static final Map<AppColor, ColorScheme> _darkColorSchemes = {
+    AppColor.orange: ColorScheme.fromSeed(seedColor: Colors.orange, brightness: Brightness.dark),
+    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.teal, brightness: Brightness.dark),
+    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pink, brightness: Brightness.dark),
+    AppColor.blue: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
+    AppColor.green: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark),
+    AppColor.purple: ColorScheme.fromSeed(seedColor: Colors.purple, brightness: Brightness.dark),
+    AppColor.red: ColorScheme.fromSeed(seedColor: Colors.red, brightness: Brightness.dark),
+  };
+
+  static ThemeData getTheme(Brightness brightness, AppColor color) {
+    final colorScheme = brightness == Brightness.light
+        ? _lightColorSchemes[color]!
+        : _darkColorSchemes[color]!;
+    
+    return brightness == Brightness.light 
+        ? getLightTheme(colorScheme) 
+        : getDarkTheme(colorScheme);
+  }
+
   static ThemeData getLightTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
@@ -174,123 +204,4 @@ class AppTheme {
       ),
     );
   }
-
-  static final ThemeData lightTheme = getLightTheme(
-    const ColorScheme.light(
-      primary: Colors.orange,
-      secondary: Colors.orangeAccent,
-      background: Color(0xFFF5F5F7),
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ),
-  );
-
-  static final ThemeData darkTheme = getDarkTheme(
-    const ColorScheme.dark(
-      primary: Colors.orange,
-      secondary: Colors.orangeAccent,
-      background: AppColors.primaryBackground,
-      surface: AppColors.secondaryBackground,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
-      onBackground: AppColors.textPrimary,
-      onSurface: AppColors.textPrimary,
-      error: AppColors.accentRed,
-    ),
-  );
-
-  // नया ब्लू थीम
-  static final ThemeData blueTheme = getLightTheme(ColorScheme.light(
-      primary: Colors.blue[700]!,
-      secondary: Colors.blue[300]!,
-      background: Colors.blue[50]!,
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ));
-
-  // नया ग्रीन थीम
-  static final ThemeData greenTheme = getLightTheme(ColorScheme.light(
-      primary: Colors.green[700]!,
-      secondary: Colors.green[300]!,
-      background: Colors.green[50]!,
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ));
-
-  // नया पर्पल थीम
-  static final ThemeData purpleTheme = getLightTheme(ColorScheme.light(
-      primary: Colors.purple[700]!,
-      secondary: Colors.purple[300]!,
-      background: Colors.purple[50]!,
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ));
-
-  // नया रेड थीम
-  static final ThemeData redTheme = getLightTheme(ColorScheme.light(
-      primary: Colors.red[700]!,
-      secondary: Colors.red[300]!,
-      background: Colors.red[50]!,
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ));
-
-  // नया ऑरेंज थीम
-  static final ThemeData orangeTheme = getLightTheme(ColorScheme.light(
-      primary: Colors.orange[700]!,
-      secondary: Colors.orange[300]!,
-      background: Colors.orange[50]!,
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ));
-
-  // नया टील थीम
-  static final ThemeData tealTheme = getLightTheme(ColorScheme.light(
-      primary: Colors.teal[700]!,
-      secondary: Colors.teal[300]!,
-      background: Colors.teal[50]!,
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ));
-
-  // नया पिंक थीम
-  static final ThemeData pinkTheme = getLightTheme(ColorScheme.light(
-      primary: Colors.pink[700]!,
-      secondary: Colors.pink[300]!,
-      background: Colors.pink[50]!,
-      surface: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.black,
-      onBackground: Colors.black,
-      onSurface: Colors.black,
-      error: AppColors.accentRed,
-    ));
 }

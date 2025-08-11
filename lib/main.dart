@@ -86,63 +86,17 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => ThemeCubit()),
           BlocProvider(create: (context) => DashboardCustomizationCubit()),
         ],
-        child: BlocBuilder<ThemeCubit, AppThemeMode>(
-          builder: (context, appThemeMode) {
-            ThemeData selectedTheme;
-            ThemeMode themeMode;
-
-            switch (appThemeMode) {
-              case AppThemeMode.system:
-                selectedTheme = AppTheme.lightTheme; // Default theme for system mode, actual theme determined by system brightness
-                themeMode = ThemeMode.system;
-                break;
-              case AppThemeMode.light:
-                selectedTheme = AppTheme.lightTheme;
-                themeMode = ThemeMode.light;
-                break;
-              case AppThemeMode.dark:
-                selectedTheme = AppTheme.darkTheme;
-                themeMode = ThemeMode.dark;
-                break;
-              case AppThemeMode.blue:
-                selectedTheme = AppTheme.blueTheme;
-                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
-                break;
-              case AppThemeMode.green:
-                selectedTheme = AppTheme.greenTheme;
-                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
-                break;
-              case AppThemeMode.purple:
-                selectedTheme = AppTheme.purpleTheme;
-                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
-                break;
-              case AppThemeMode.red:
-                selectedTheme = AppTheme.redTheme;
-                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
-                break;
-              case AppThemeMode.orange:
-                selectedTheme = AppTheme.orangeTheme;
-                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
-                break;
-              case AppThemeMode.teal:
-                selectedTheme = AppTheme.tealTheme;
-                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
-                break;
-              case AppThemeMode.pink:
-                selectedTheme = AppTheme.pinkTheme;
-                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
-                break;
-              default: // Fallback for any unhandled AppThemeMode, though all are handled now
-                selectedTheme = AppTheme.lightTheme;
-                themeMode = ThemeMode.light;
-                break;
-            }
-
+        child: BlocBuilder<ThemeCubit, ThemeState>(
+          builder: (context, themeState) {
             return MaterialApp(
               title: AppConstants.appName,
-              theme: selectedTheme,
-              darkTheme: AppTheme.darkTheme, // Keep darkTheme for system dark mode fallback
-              themeMode: themeMode,
+              theme: AppTheme.getTheme(Brightness.light, themeState.color),
+              darkTheme: AppTheme.getTheme(Brightness.dark, themeState.color),
+              themeMode: themeState.themeMode == AppThemeMode.system
+                  ? ThemeMode.system
+                  : themeState.themeMode == AppThemeMode.dark
+                      ? ThemeMode.dark
+                      : ThemeMode.light,
               debugShowCheckedModeBanner: false,
               scrollBehavior: SmoothScrollBehavior(),
               onGenerateRoute: AppRouter.onGenerateRoute,

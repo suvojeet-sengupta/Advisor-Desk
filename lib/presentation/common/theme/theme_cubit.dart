@@ -3,25 +3,50 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 
-// यह क्यूबिट ऐप की थीम (लाइट/डार्क) को मैनेज करेगा
-class ThemeCubit extends Cubit<AppThemeMode> {
-  static const String _themePrefKey = 'theme_mode';
+class ThemeState {
+  final AppThemeMode themeMode;
+  final AppColor color;
 
-  ThemeCubit() : super(AppThemeMode.system) {
+  const ThemeState({required this.themeMode, required this.color});
+
+  ThemeState copyWith({
+    AppThemeMode? themeMode,
+    AppColor? color,
+  }) {
+    return ThemeState(
+      themeMode: themeMode ?? this.themeMode,
+      color: color ?? this.color,
+    );
+  }
+}
+
+class ThemeCubit extends Cubit<ThemeState> {
+  static const String _themeModePrefKey = 'theme_mode';
+  static const String _themeColorPrefKey = 'theme_color';
+
+  ThemeCubit() : super(const ThemeState(themeMode: AppThemeMode.system, color: AppColor.orange)) {
     _loadTheme();
   }
 
-  // ऐप शुरू होने पर सेव की गई थीम को लोड करें
   void _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeIndex = prefs.getInt(_themePrefKey) ?? AppThemeMode.system.index;
-    emit(AppThemeMode.values[themeIndex]);
+    final themeModeIndex = prefs.getInt(_themeModePrefKey) ?? AppThemeMode.system.index;
+    final colorIndex = prefs.getInt(_themeColorPrefKey) ?? AppColor.orange.index;
+    emit(ThemeState(
+      themeMode: AppThemeMode.values[themeModeIndex],
+      color: AppColor.values[colorIndex],
+    ));
   }
 
-  // थीम को बदलें
-  void setTheme(AppThemeMode newThemeMode) async {
+  void setThemeMode(AppThemeMode newThemeMode) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_themePrefKey, newThemeMode.index);
-    emit(newThemeMode);
+    await prefs.setInt(_themeModePrefKey, newThemeMode.index);
+    emit(state.copyWith(themeMode: newThemeMode));
+  }
+
+  void setColor(AppColor newColor) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_themeColorPrefKey, newColor.index);
+    emit(state.copyWith(color: newColor));
   }
 }

@@ -7,10 +7,6 @@ class AppColors {
   static const Color secondaryBackground = Color(0xFF2D2D2D);
   static const Color cardBackground = Color(0xFF252525);
   
-  // Brand colors
-  static const Color dishTvOrange = Color(0xFFFF5722);
-  static const Color dishTvOrangeLight = Color(0xFFFF8A65);
-  
   // Text colors
   static const Color textPrimary = Colors.white;
   static const Color textSecondary = Color(0xFFB3B3B3);
@@ -23,7 +19,6 @@ class AppColors {
   static const Color accentPurple = Color(0xFF9C27B0);
   
   // Chart colors
-  static const Color chartBar = dishTvOrange;
   static const Color chartLine = accentBlue;
   
   // Divider and border colors

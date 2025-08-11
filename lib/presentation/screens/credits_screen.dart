@@ -67,7 +67,7 @@ class CreditsScreen extends StatelessWidget {
   }
 
   Widget _buildContributorTile(BuildContext context, String name, int index) {
-    final colors = [Colors.amber, Colors.blue, Colors.green, Colors.red, Colors.purple, Colors.orange];
+    final colors = [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary, Colors.green, Colors.red, Colors.purple, Colors.blue];
     return Container(
       margin: const EdgeInsets.only(bottom: 12.0),
       padding: const EdgeInsets.all(16.0),

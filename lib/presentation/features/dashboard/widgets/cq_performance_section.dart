@@ -22,7 +22,7 @@ class CQPerformanceSection extends StatelessWidget {
               children: [
                 Icon(
                 Icons.assessment,
-                color: AppColors.dishTvOrange,
+                color: Theme.of(context).colorScheme.primary,
                 size: 24,
               ),
                 const SizedBox(width: 8),

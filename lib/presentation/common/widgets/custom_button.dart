@@ -20,7 +20,7 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isPrimary ? AppColors.dishTvOrange : AppColors.secondaryBackground,
+        backgroundColor: isPrimary ? Theme.of(context).colorScheme.primary : AppColors.secondaryBackground,
         foregroundColor: isPrimary ? Colors.white : AppColors.textPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(

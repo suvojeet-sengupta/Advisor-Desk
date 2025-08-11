@@ -56,7 +56,7 @@ class ThemeSelectionScreen extends StatelessWidget {
                 context.read<ThemeCubit>().setTheme(newValue);
               }
             },
-            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.orange[700])), // Visual indicator
+            secondary: Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.orange)), // Visual indicator
           ),
           RadioListTile<AppThemeMode>(
             title: const Text('Teal Mode'),

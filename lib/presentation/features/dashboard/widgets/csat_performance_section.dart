@@ -22,7 +22,7 @@ class CSATPerformanceSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.sentiment_satisfied_alt,
-                color: AppColors.dishTvOrange,
+                color: Theme.of(context).colorScheme.primary,
                 size: 24,
               ),
                 const SizedBox(width: 8),

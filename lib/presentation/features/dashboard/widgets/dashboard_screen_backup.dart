@@ -108,7 +108,7 @@ class DashboardView extends StatelessWidget {
                 context.read<DashboardBloc>().add(RefreshDashboard());
                 context.read<GoalsBloc>().add(LoadGoals());
               },
-              color: AppColors.dishTvOrange,
+              color: Theme.of(context).colorScheme.primary,
               child: ListView(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 children: [
@@ -172,7 +172,7 @@ class DashboardView extends StatelessWidget {
             context.read<GoalsBloc>().add(LoadGoals());
           }
         },
-        backgroundColor: AppColors.dishTvOrange,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(

@@ -126,7 +126,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
                 return Theme(
                   data: Theme.of(context).copyWith(
                     colorScheme: Theme.of(context).colorScheme.copyWith(
-                      primary: AppColors.dishTvOrange,
+                      primary: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   child: child!,

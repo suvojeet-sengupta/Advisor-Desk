@@ -129,7 +129,7 @@ class _CQEntryManagementView extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.calendar_today,
-                          color: AppColors.dishTvOrange,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -188,7 +188,7 @@ class _CQEntryManagementView extends StatelessWidget {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: AppColors.dishTvOrange,
+              primary: Theme.of(context).colorScheme.primary,
             ),
           ),
           child: child!,

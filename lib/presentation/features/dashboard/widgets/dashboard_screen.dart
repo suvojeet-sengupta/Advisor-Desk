@@ -56,6 +56,13 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
+class DashboardView extends StatefulWidget {
+  const DashboardView({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
 class _DashboardViewState extends State<DashboardView> {
   final ScreenshotController screenshotController = ScreenshotController();
 
@@ -398,5 +405,3 @@ class _DashboardViewState extends State<DashboardView> {
     }
   }
 }
-
-

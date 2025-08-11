@@ -56,13 +56,6 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class DashboardView extends StatefulWidget {
-  const DashboardView({Key? key}) : super(key: key);
-
-  @override
-  State<DashboardView> createState() => _DashboardViewState();
-}
-
 class _DashboardViewState extends State<DashboardView> {
   final ScreenshotController screenshotController = ScreenshotController();
 
@@ -105,7 +98,7 @@ class _DashboardViewState extends State<DashboardView> {
 
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Performance image shared!')),
+          const SnackBar(content: Text('Performance image shared!'))
         );
       } else {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -119,6 +112,13 @@ class _DashboardViewState extends State<DashboardView> {
         SnackBar(content: Text('Error sharing performance: $e')),
       );
     }
+  }
+
+  Color _getQualityColor(double percentage, BuildContext context) {
+    if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
+    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
+    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
+    return Theme.of(context).colorScheme.error;
   }
 
   @override
@@ -330,7 +330,7 @@ class _DashboardViewState extends State<DashboardView> {
                 title: 'CQ Score',
                 value: '${dashboardState.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%',
                 icon: Icons.assessment,
-                iconColor: Theme.of(context).colorScheme.error,
+                iconColor: _getQualityColor(dashboardState.cqSummary!.monthlyAverageCQ, context),
               ),
               DashboardCard(
                 title: 'Total Salary',

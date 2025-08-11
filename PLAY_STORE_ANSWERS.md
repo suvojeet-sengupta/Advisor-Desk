@@ -49,7 +49,7 @@ This app provides significant value to its target audience by offering **clarity
 
 ### 5. What changes did you make to your app based on what you learned during your closed test?
 
-The closed test was instrumental in shaping the app. Nearly every major feature and recent update has been a direct result of tester feedback. We maintained an active and responsive feedback loop, which allowed us to make the following critical changes, as evidenced by our commit history since July 31st:
+The closed test was instrumental in shaping the app. Nearly every major feature and recent update has been a direct result of tester feedback. We maintained an active and responsive feedback loop, which allowed us to make the following critical changes, as evidenced by our commit history:
 
 1.  **Customizable Salary Parameters (Commit `3a2bbf8`):** Testers noted that the company occasionally adjusts salary and bonus parameters. In response, we built a settings screen where users can customize these values themselves, ensuring the app remains accurate even if the official pay structure changes.
 
@@ -59,7 +59,16 @@ The closed test was instrumental in shaping the app. Nearly every major feature 
 
 4.  **Dashboard Information Density (Commits `2760866`, `48b0152`, `a3c81b9`):** Testers wanted more at-a-glance information. Based on this, we iteratively added several new cards to the dashboard, including 'Total Login Hours', 'Average Calls', and most recently, 'Login Days' to help them track their monthly activity more effectively.
 
-5.  **UI/UX Refinements:** We made numerous small but important UI tweaks based on daily feedback. This included adding illustrations for empty states (`bf0b01e`), improving the settings screen UI (`2ab640e`), and ensuring the app's version is clearly displayed (`947f7ef`).
+5.  **UI/UX Refinements & Theming (Commits `5b31299`, `6e49ca9`, `45f652f`, `20f7779`, `7aa636f`, `f8890c0`, `2c99376`, `8cee8ec`, `b541b63`, `cc8da2e`, `9bc95e2`, `044f85a`, `5ca32a8`, `18138d8`, `97f3e7e`, `1fed57f`, `326846e`, `7845609`, `5d31c41`):** We made numerous small but important UI tweaks and significant theming improvements based on daily feedback. This includes:
+    *   Optimizing DashboardScreen with `const` constructors for performance.
+    *   Resolving build errors and reordering classes for stability.
+    *   Ensuring CQ score card follows theme colors and applies a traffic light color system.
+    *   Enhancing vibrancy and contrast for various dark and light themes (Orange, Red, Pink, Teal).
+    *   Fixing fading issues with the Login Days card.
+    *   Implementing custom color schemes and an animated theme toggle.
+    *   Replacing hardcoded colors with theme-based colors.
+    *   Improving the settings screen UI and ensuring the app's version is clearly displayed (`947f7ef`).
+    *   Adding illustrations for empty states (`bf0b01e`).
 
 This continuous cycle of feedback and implementation has been the cornerstone of our development process.
 

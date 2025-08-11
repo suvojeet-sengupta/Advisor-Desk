@@ -177,8 +177,8 @@ class AppTheme {
 
   static final ThemeData lightTheme = getLightTheme(
     const ColorScheme.light(
-      primary: AppColors.dishTvOrange,
-      secondary: AppColors.dishTvOrangeLight,
+      primary: Colors.orange,
+      secondary: Colors.orangeAccent,
       background: Color(0xFFF5F5F7),
       surface: Colors.white,
       onPrimary: Colors.white,
@@ -191,8 +191,8 @@ class AppTheme {
 
   static final ThemeData darkTheme = getDarkTheme(
     const ColorScheme.dark(
-      primary: AppColors.dishTvOrange,
-      secondary: AppColors.dishTvOrangeLight,
+      primary: Colors.orange,
+      secondary: Colors.orangeAccent,
       background: AppColors.primaryBackground,
       surface: AppColors.secondaryBackground,
       onPrimary: Colors.white,

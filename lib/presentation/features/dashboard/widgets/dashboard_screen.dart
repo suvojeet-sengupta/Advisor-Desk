@@ -34,7 +34,7 @@ import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_cus
 
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class DashboardScreen extends StatelessWidget {
 }
 
 class DashboardView extends StatefulWidget {
-  const DashboardView({Key? key}) : super(key: key);
+  const DashboardView({super.key});
 
   @override
   State<DashboardView> createState() => _DashboardViewState();
@@ -233,7 +233,7 @@ class _DashboardViewState extends State<DashboardView> {
                             return CustomScrollView(
                               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                               slivers: [
-                                SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                                const SliverToBoxAdapter(child: SizedBox(height: 16)),
                                 ...customizationState.visibleSections.map((section) {
                                   return _buildDashboardSection(
                                     context,
@@ -242,7 +242,7 @@ class _DashboardViewState extends State<DashboardView> {
                                     dashboardState,
                                   );
                                 }).toList(),
-                                SliverToBoxAdapter(child: const SizedBox(height: 100)),
+                                const SliverToBoxAdapter(child: SizedBox(height: 100)),
                               ],
                             );
                           },

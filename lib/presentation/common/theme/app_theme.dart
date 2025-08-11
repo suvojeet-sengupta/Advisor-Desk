@@ -228,18 +228,18 @@ class AppTheme {
   static final Map<AppColor, ColorScheme> _darkColorSchemes = {
     AppColor.orange: ColorScheme(
       brightness: Brightness.dark,
-      primary: const Color(0xFFFFAB91), // Deep Orange 200
-      onPrimary: Colors.black,
-      primaryContainer: const Color(0xFFBF360C), // Darker orange for container
-      onPrimaryContainer: const Color(0xFFFFE0B2), // Lighter text on container
-      secondary: const Color(0xFFFFAB91),
-      onSecondary: Colors.black,
-      secondaryContainer: const Color(0xFFBF360C),
-      onSecondaryContainer: const Color(0xFFFFE0B2),
-      tertiary: const Color(0xFFFFAB91),
-      onTertiary: Colors.black,
-      tertiaryContainer: const Color(0xFFBF360C),
-      onTertiaryContainer: const Color(0xFFFFE0B2),
+      primary: const Color(0xFFFF7043), // Deep Orange 400
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFFD84315), // Darker orange for container
+      onPrimaryContainer: const Color(0xFFFBE9E7), // Lighter text on container
+      secondary: const Color(0xFFFF7043),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFFD84315),
+      onSecondaryContainer: const Color(0xFFFBE9E7),
+      tertiary: const Color(0xFFFF7043),
+      onTertiary: Colors.white,
+      tertiaryContainer: const Color(0xFFD84315),
+      onTertiaryContainer: const Color(0xFFFBE9E7),
       error: const Color(0xFFCF6679), // Standard error color
       onError: Colors.black,
       errorContainer: const Color(0xFFB00020),
@@ -255,7 +255,7 @@ class AppTheme {
       inverseSurface: Colors.white,
       onInverseSurface: Colors.black,
       inversePrimary: const Color(0xFFFF6E40), // Original vibrant orange for inverse
-      surfaceTint: const Color(0xFFFFAB91),
+      surfaceTint: const Color(0xFFFF7043),
     ),
     AppColor.teal: ColorScheme(
       brightness: Brightness.dark,

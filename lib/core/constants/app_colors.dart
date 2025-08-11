@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary colors
-  static const Color primaryDark = Color(0xFF121212);
-  static const Color primaryBackground = Color(0xFF1E1E1E);
-  static const Color secondaryBackground = Color(0xFF2D2D2D);
-  static const Color cardBackground = Color(0xFF252525);
+  static const Color primaryDark = Color(0xFF1F1F1F);
+  static const Color primaryBackground = Color(0xFF282828);
+  static const Color secondaryBackground = Color(0xFF363636);
+  static const Color cardBackground = Color(0xFF303030);
   
   // Text colors
   static const Color textPrimary = Colors.white;
@@ -22,7 +22,7 @@ class AppColors {
   static const Color chartLine = accentBlue;
   
   // Divider and border colors
-  static const Color divider = Color(0xFF3D3D3D);
-  static const Color border = Color(0xFF424242);
+  static const Color divider = Color(0xFF4A4A4A);
+  static const Color border = Color(0xFF505050);
 }
 

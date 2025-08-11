@@ -7,8 +7,8 @@ class AppTheme {
 
   static final Map<AppColor, ColorScheme> _lightColorSchemes = {
     AppColor.orange: ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent, brightness: Brightness.light),
-    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.tealAccent[700]!, brightness: Brightness.light),
-    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pinkAccent[400]!, brightness: Brightness.light),
+    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.teal[700]!, brightness: Brightness.light),
+    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pink[700]!, brightness: Brightness.light),
     AppColor.blue: ColorScheme.fromSeed(seedColor: Colors.blueAccent[700]!, brightness: Brightness.light),
     AppColor.green: ColorScheme.fromSeed(seedColor: Colors.lightGreenAccent[700]!, brightness: Brightness.light),
     AppColor.purple: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent[400]!, brightness: Brightness.light),
@@ -17,8 +17,8 @@ class AppTheme {
 
   static final Map<AppColor, ColorScheme> _darkColorSchemes = {
     AppColor.orange: ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent, brightness: Brightness.dark),
-    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.tealAccent[700]!, brightness: Brightness.dark),
-    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pinkAccent[400]!, brightness: Brightness.dark),
+    AppColor.teal: ColorScheme.fromSeed(seedColor: Colors.teal[700]!, brightness: Brightness.dark),
+    AppColor.pink: ColorScheme.fromSeed(seedColor: Colors.pink[700]!, brightness: Brightness.dark),
     AppColor.blue: ColorScheme.fromSeed(seedColor: Colors.blueAccent[700]!, brightness: Brightness.dark),
     AppColor.green: ColorScheme.fromSeed(seedColor: Colors.lightGreenAccent[700]!, brightness: Brightness.dark),
     AppColor.purple: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent[400]!, brightness: Brightness.dark),

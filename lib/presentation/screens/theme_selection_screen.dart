@@ -44,6 +44,36 @@ class ThemeSelectionScreen extends StatelessWidget {
               }
             },
           ),
+          RadioListTile<AppThemeMode>(
+            title: const Text('Orange Mode'),
+            value: AppThemeMode.orange,
+            groupValue: context.watch<ThemeCubit>().state,
+            onChanged: (AppThemeMode? newValue) {
+              if (newValue != null) {
+                context.read<ThemeCubit>().setTheme(newValue);
+              }
+            },
+          ),
+          RadioListTile<AppThemeMode>(
+            title: const Text('Teal Mode'),
+            value: AppThemeMode.teal,
+            groupValue: context.watch<ThemeCubit>().state,
+            onChanged: (AppThemeMode? newValue) {
+              if (newValue != null) {
+                context.read<ThemeCubit>().setTheme(newValue);
+              }
+            },
+          ),
+          RadioListTile<AppThemeMode>(
+            title: const Text('Pink Mode'),
+            value: AppThemeMode.pink,
+            groupValue: context.watch<ThemeCubit>().state,
+            onChanged: (AppThemeMode? newValue) {
+              if (newValue != null) {
+                context.read<ThemeCubit>().setTheme(newValue);
+              }
+            },
+          ),
         ],
       ),
     );

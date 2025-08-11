@@ -73,7 +73,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                           ? 'CSAT entry updated successfully!'
                           : 'CSAT entry added successfully!'),
                 ),
-                backgroundColor: AppColors.accentGreen,
+                backgroundColor: Theme.of(context).colorScheme.tertiary,
               ),
             );
           Navigator.pop(context, true);
@@ -83,7 +83,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
             ..showSnackBar(
               SnackBar(
                 content: Text(state.errorMessage ?? 'Failed to save entry'),
-                backgroundColor: AppColors.accentRed,
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
         }
@@ -119,9 +119,9 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.calendar_today,
-                              color: AppColors.dishTvOrange,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             const SizedBox(width: 12),
                             Text(
@@ -288,7 +288,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: color ?? (isHighlight ? AppColors.dishTvOrange : null),
+              color: color ?? (isHighlight ? Theme.of(context).colorScheme.primary : null),
             ),
           ),
         ],
@@ -316,7 +316,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: AppColors.dishTvOrange,
+              primary: Theme.of(context).colorScheme.primary,
             ),
           ),
           child: child!,

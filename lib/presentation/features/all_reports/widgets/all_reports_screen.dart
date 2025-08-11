@@ -182,14 +182,14 @@ class AllReportsView extends StatelessWidget {
         children: [
           Text(
             summary.formattedMonthYear,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppColors.dishTvOrange),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
           ),
           const Divider(height: 24),
-          _buildInfoRow(context, Icons.call, 'Total Calls', '${summary.totalCalls}', AppColors.dishTvOrangeLight),
+          _buildInfoRow(context, Icons.call, 'Total Calls', '${summary.totalCalls}', Theme.of(context).colorScheme.secondary),
           const SizedBox(height: 8),
-          _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', AppColors.dishTvOrangeLight),
+          _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', Theme.of(context).colorScheme.secondary),
           const SizedBox(height: 8),
-          _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', AppColors.dishTvOrange),
+          _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', Theme.of(context).colorScheme.primary),
           const SizedBox(height: 16),
         ],
       ),

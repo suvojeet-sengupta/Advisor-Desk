@@ -85,14 +85,14 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
                       Icon(
                         _onboardingPages[index]['image'] as IconData,
                         size: 120, // Increased icon size
-                        color: AppColors.dishTvOrange,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(height: 40), // Increased spacing
                       Text(
                         _onboardingPages[index]['title'] as String,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.dishTvOrange,
+                              color: Theme.of(context).colorScheme.primary,
                             ), // Larger title
                         textAlign: TextAlign.center,
                       ),
@@ -127,7 +127,7 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
           width: _currentPage == index ? 36 : 12, // Increased width
           margin: const EdgeInsets.symmetric(horizontal: 6), // Increased margin
           decoration: BoxDecoration(
-            color: _currentPage == index ? AppColors.dishTvOrange : Colors.grey.shade400, // Lighter grey for inactive
+            color: _currentPage == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withOpacity(0.4), // Lighter grey for inactive
             borderRadius: BorderRadius.circular(6),
           ),
         ),
@@ -150,8 +150,8 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.dishTvOrange, // Orange button
-                foregroundColor: Colors.white, // White text
+                backgroundColor: Theme.of(context).colorScheme.primary, // Orange button
+                foregroundColor: Theme.of(context).colorScheme.onPrimary, // White text
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), // Larger padding
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Rounded corners
               ),
@@ -167,8 +167,8 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.dishTvOrange,
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
@@ -180,8 +180,8 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
                 Navigator.pop(context); // Or navigate to home screen
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.dishTvOrange,
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),

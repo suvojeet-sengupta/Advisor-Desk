@@ -208,7 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildInfoTile(String title, String subtitle, IconData icon) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.dishTvOrange),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       subtitle: Text(subtitle),
       contentPadding: EdgeInsets.zero,
@@ -217,7 +217,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildLinkTile(BuildContext context, String title, String target, IconData icon) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.dishTvOrange),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       contentPadding: EdgeInsets.zero,

@@ -77,7 +77,7 @@ class CSATPerformanceSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.sentiment_satisfied_alt,
-                color: AppColors.dishTvOrange,
+                color: Theme.of(context).colorScheme.primary,
                 size: 24,
               ),
               const SizedBox(width: 8),
@@ -101,12 +101,12 @@ class CSATPerformanceSection extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: needsImprovement 
-                        ? AppColors.accentRed.withOpacity(0.1)
-                        : AppColors.accentGreen.withOpacity(0.1),
+                        ? Theme.of(context).colorScheme.error.withOpacity(0.1)
+                        : Theme.of(context).colorScheme.tertiary.withOpacity(0.1),
                     border: Border.all(
                       color: needsImprovement 
-                          ? AppColors.accentRed
-                          : AppColors.accentGreen,
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.tertiary,
                       width: 3,
                     ),
                   ),
@@ -119,16 +119,16 @@ class CSATPerformanceSection extends StatelessWidget {
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: needsImprovement 
-                                ? AppColors.accentRed
-                                : AppColors.accentGreen,
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context).colorScheme.tertiary,
                           ),
                         ),
                         Text(
                           'CSAT',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: needsImprovement 
-                                ? AppColors.accentRed
-                                : AppColors.accentGreen,
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context).colorScheme.tertiary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -143,23 +143,23 @@ class CSATPerformanceSection extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: AppColors.accentRed.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.accentRed.withOpacity(0.3)),
+                      border: Border.all(color: Theme.of(context).colorScheme.error.withOpacity(0.3)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.warning_amber_rounded,
-                          color: AppColors.accentRed,
+                          color: Theme.of(context).colorScheme.error,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Needs Improvement',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.accentRed,
+                            color: Theme.of(context).colorScheme.error,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -180,7 +180,7 @@ class CSATPerformanceSection extends StatelessWidget {
                   context,
                   'T2',
                   csatSummary!.totalT2Count.toString(),
-                  AppColors.accentGreen,
+                  Theme.of(context).colorScheme.tertiary,
                   Icons.thumb_up,
                 ),
               ),
@@ -190,7 +190,7 @@ class CSATPerformanceSection extends StatelessWidget {
                   context,
                   'B2',
                   csatSummary!.totalB2Count.toString(),
-                  AppColors.accentRed,
+                  Theme.of(context).colorScheme.error,
                   Icons.thumb_down,
                 ),
               ),
@@ -200,7 +200,7 @@ class CSATPerformanceSection extends StatelessWidget {
                   context,
                   'N',
                   csatSummary!.totalNCount.toString(),
-                  AppColors.textSecondary,
+                  Theme.of(context).colorScheme.onSurfaceVariant,
                   Icons.remove,
                 ),
               ),
@@ -214,9 +214,9 @@ class CSATPerformanceSection extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.dishTvOrange.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.dishTvOrange.withOpacity(0.3)),
+              border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -231,7 +231,7 @@ class CSATPerformanceSection extends StatelessWidget {
                   csatSummary!.totalSurveyHits.toString(),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.dishTvOrange,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],

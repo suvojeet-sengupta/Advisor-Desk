@@ -67,7 +67,7 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
                           ? 'CQ entry updated successfully!'
                           : 'CQ entry added successfully!'),
                 ),
-                backgroundColor: AppColors.accentGreen,
+                backgroundColor: Theme.of(context).colorScheme.tertiary,
               ),
             );
           Navigator.pop(context, true);
@@ -77,7 +77,7 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
             ..showSnackBar(
               SnackBar(
                 content: Text(state.errorMessage ?? 'Failed to save entry'),
-                backgroundColor: AppColors.accentRed,
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
         }
@@ -113,9 +113,9 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.calendar_today,
-                              color: AppColors.dishTvOrange,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             const SizedBox(width: 12),
                             Text(
@@ -253,7 +253,7 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: color ?? (isHighlight ? AppColors.dishTvOrange : null),
+              color: color ?? (isHighlight ? Theme.of(context).colorScheme.primary : null),
             ),
           ),
         ],
@@ -271,10 +271,10 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
   }
 
   Color _getQualityColor(double percentage) {
-    if (percentage == 0) return Colors.black;
-    if (percentage >= 85) return Colors.green;
-    if (percentage >= 75) return AppColors.dishTvOrange;
-    return Colors.red;
+    if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
+    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
+    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
+    return Theme.of(context).colorScheme.error;
   }
 
   Future<void> _selectDate(BuildContext context, DateTime initialDate) async {
@@ -287,7 +287,7 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: AppColors.dishTvOrange,
+              primary: Theme.of(context).colorScheme.primary,
             ),
           ),
           child: child!,

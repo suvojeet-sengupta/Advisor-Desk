@@ -162,6 +162,7 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
                 text: 'Save Salary Settings',
                 onPressed: _saveSettings,
                 icon: Icons.save,
+                isPrimary: true, // Ensure it uses the primary color
               ),
             ),
           ],

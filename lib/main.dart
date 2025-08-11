@@ -120,6 +120,18 @@ class MyApp extends StatelessWidget {
                 selectedTheme = AppTheme.redTheme;
                 themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
                 break;
+              case AppThemeMode.orange:
+                selectedTheme = AppTheme.orangeTheme;
+                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+                break;
+              case AppThemeMode.teal:
+                selectedTheme = AppTheme.tealTheme;
+                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+                break;
+              case AppThemeMode.pink:
+                selectedTheme = AppTheme.pinkTheme;
+                themeMode = selectedTheme.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+                break;
               default: // Fallback for any unhandled AppThemeMode, though all are handled now
                 selectedTheme = AppTheme.lightTheme;
                 themeMode = ThemeMode.light;

@@ -145,7 +145,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.calendar_today, size: 20, color: AppColors.dishTvOrange),
+                const Icon(Icons.calendar_today, size: 20, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(DateFormat('dd MMM yyyy').format(selectedDate)),
               ],

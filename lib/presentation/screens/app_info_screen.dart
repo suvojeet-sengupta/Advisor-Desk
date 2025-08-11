@@ -54,7 +54,7 @@ class _AppInfoScreenState extends State<AppInfoScreen> {
                     AppConstants.appName,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.dishTvOrange,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                   ),
                   const SizedBox(height: 8),
@@ -72,7 +72,7 @@ class _AppInfoScreenState extends State<AppInfoScreen> {
                         ),
                   ),
                   ListTile(
-                    leading: Icon(Icons.person, color: AppColors.dishTvOrangeLight),
+                    leading: Icon(Icons.person, color: Theme.of(context).colorScheme.secondary),
                     title: Text(
                       'Suvojeet Sengupta',
                       style: Theme.of(context).textTheme.bodyLarge,
@@ -81,11 +81,11 @@ class _AppInfoScreenState extends State<AppInfoScreen> {
                     contentPadding: EdgeInsets.zero,
                   ),
                   ListTile(
-                    leading: Icon(Icons.email, color: AppColors.dishTvOrangeLight),
+                    leading: Icon(Icons.email, color: Theme.of(context).colorScheme.secondary),
                     title: Text(
                       'suvojitsengupta21@gmail.com',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.dishTvOrange,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
                     onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
@@ -102,11 +102,11 @@ class _AppInfoScreenState extends State<AppInfoScreen> {
                         ),
                   ),
                   ListTile(
-                    leading: Icon(Icons.code, color: AppColors.dishTvOrangeLight),
+                    leading: Icon(Icons.code, color: Theme.of(context).colorScheme.secondary),
                     title: Text(
                       'GitHub Repository',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.dishTvOrange,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
                     onTap: () => _launchURL('https://github.com/suvojit213/Advisor-Desk'),
@@ -118,11 +118,11 @@ class _AppInfoScreenState extends State<AppInfoScreen> {
                   const SizedBox(height: 16),
                   CustomCard(
                     child: ListTile(
-                      leading: Icon(Icons.people, color: AppColors.dishTvOrangeLight),
+                      leading: Icon(Icons.people, color: Theme.of(context).colorScheme.secondary),
                       title: Text(
                         'Credits',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: AppColors.dishTvOrange,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                       ),
                       onTap: () => Navigator.pushNamed(context, AppRouter.creditsRoute),

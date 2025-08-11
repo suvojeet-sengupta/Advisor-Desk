@@ -61,7 +61,7 @@ class DailyEntriesSection extends StatelessWidget {
             DateFormat('dd').format(entry.date),
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: AppColors.dishTvOrange,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
@@ -74,7 +74,7 @@ class DailyEntriesSection extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         trailing: IconButton(
-          icon: Icon(Icons.edit_outlined, color: AppColors.dishTvOrangeLight),
+          icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.secondary),
           onPressed: () {
             // Edit ke liye AddEntryScreen par navigate karein
             Navigator.pushNamed(

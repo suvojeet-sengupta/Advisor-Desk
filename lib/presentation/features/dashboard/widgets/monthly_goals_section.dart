@@ -44,8 +44,8 @@ class MonthlyGoalsSection extends StatelessWidget {
                   Text('Monthly Goals', style: theme.textTheme.titleLarge),
                   TextButton.icon(
                     onPressed: () => _showEditGoalsDialog(context, state.targetHours, state.targetCalls),
-                    icon: const Icon(Icons.edit_outlined, size: 16),
-                    label: const Text('Edit'),
+                    icon: Icon(Icons.edit_outlined, size: 16, color: Theme.of(context).colorScheme.primary),
+                    label: Text('Edit', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                   )
                 ],
               ),

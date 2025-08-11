@@ -220,7 +220,7 @@ class _DashboardViewState extends State<DashboardView> {
                           context.read<DashboardBloc>().add(RefreshDashboard());
                           context.read<GoalsBloc>().add(LoadGoals());
                         },
-                        color: AppColors.dishTvOrange,
+                        color: Theme.of(context).colorScheme.primary,
                         child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
                           builder: (context, customizationState) {
                             return CustomScrollView(
@@ -254,8 +254,8 @@ class _DashboardViewState extends State<DashboardView> {
             context.read<GoalsBloc>().add(LoadGoals());
           }
         },
-        backgroundColor: AppColors.dishTvOrange,
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: 0,
@@ -300,49 +300,49 @@ class _DashboardViewState extends State<DashboardView> {
                 title: 'Total Calls',
                 value: summary.totalCalls.toString(),
                 icon: Icons.call,
-                iconColor: AppColors.accentBlue,
+                iconColor: Theme.of(context).colorScheme.secondary,
               ),
               DashboardCard(
                 title: 'Total Login Hours',
                 value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
                 icon: Icons.timer,
-                iconColor: AppColors.accentGreen,
+                iconColor: Theme.of(context).colorScheme.tertiary,
               ),
               DashboardCard(
                 title: 'Avg. Login Hours',
                 value: summary.averageDailyLoginHours.toStringAsFixed(2),
                 icon: Icons.timer,
-                iconColor: AppColors.accentGreen,
+                iconColor: Theme.of(context).colorScheme.tertiary,
               ),
               DashboardCard(
                 title: 'Avg. Calls',
                 value: summary.averageDailyCalls.toStringAsFixed(2),
                 icon: Icons.call,
-                iconColor: AppColors.accentBlue,
+                iconColor: Theme.of(context).colorScheme.secondary,
               ),
               DashboardCard(
                 title: 'CSAT Score',
                 value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
                 icon: Icons.sentiment_satisfied_alt,
-                iconColor: AppColors.dishTvOrange,
+                iconColor: Theme.of(context).colorScheme.primary,
               ),
               DashboardCard(
                 title: 'CQ Score',
                 value: '${dashboardState.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%',
                 icon: Icons.assessment,
-                iconColor: AppColors.accentRed,
+                iconColor: Theme.of(context).colorScheme.error,
               ),
               DashboardCard(
                 title: 'Total Salary',
                 value: '₹${summary.totalSalary.toStringAsFixed(2)}',
                 icon: Icons.currency_rupee,
-                iconColor: AppColors.accentBlue,
+                iconColor: Theme.of(context).colorScheme.secondary,
               ),
               DashboardCard(
                 title: 'Login Days',
                 value: summary.loginDays.toString(),
                 icon: Icons.calendar_today,
-                iconColor: AppColors.accentPurple,
+                iconColor: Theme.of(context).colorScheme.tertiaryContainer,
               ),
             ]),
           ),

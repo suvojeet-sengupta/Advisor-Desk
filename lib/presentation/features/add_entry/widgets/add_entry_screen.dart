@@ -101,7 +101,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                             ? 'Entry updated successfully!'
                             : 'Entry added successfully!'),
                   ),
-                  backgroundColor: AppColors.accentGreen,
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
                 ),
               );
             Navigator.pop(context, true); 
@@ -111,7 +111,7 @@ class _AddEntryViewState extends State<AddEntryView> {
               ..showSnackBar(
                 SnackBar(
                   content: Text(state.errorMessage ?? 'Failed to save entry'),
-                  backgroundColor: AppColors.accentRed,
+                  backgroundColor: Theme.of(context).colorScheme.error,
                 ),
               );
           }
@@ -122,9 +122,9 @@ class _AddEntryViewState extends State<AddEntryView> {
                 ? 'Edit Entry'
                 : 'Add New Entry',
             bottom: TabBar(
-              labelColor: AppColors.dishTvOrange,
-              unselectedLabelColor: AppColors.textSecondary,
-              indicatorColor: AppColors.dishTvOrange,
+              labelColor: Theme.of(context).colorScheme.primary,
+              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+              indicatorColor: Theme.of(context).colorScheme.primary,
               tabs: const [
                 Tab(
                   icon: Icon(Icons.work_outline),
@@ -185,7 +185,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                       children: [
                         Icon(
                           Icons.calendar_today,
-                          color: AppColors.dishTvOrange,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -315,7 +315,7 @@ class _AddEntryViewState extends State<AddEntryView> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: AppColors.dishTvOrange,
+                  primary: Theme.of(context).colorScheme.primary,
                 ),
           ),
           child: child!,

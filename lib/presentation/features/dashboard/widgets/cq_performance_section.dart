@@ -78,7 +78,7 @@ class CQPerformanceSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.assessment,
-                color: AppColors.dishTvOrange,
+                color: Theme.of(context).colorScheme.primary,
                 size: 24,
               ),
               const SizedBox(width: 8),
@@ -163,7 +163,7 @@ class CQPerformanceSection extends StatelessWidget {
                   context,
                   'Total Audits',
                   cqSummary!.totalAudits.toString(),
-                  AppColors.dishTvOrange,
+                  Theme.of(context).colorScheme.primary,
                   Icons.assignment_turned_in,
                 ),
               ),
@@ -219,8 +219,8 @@ class CQPerformanceSection extends StatelessWidget {
 
   Color _getQualityColor(double percentage) {
     if (percentage == 0) return Colors.black;
-    if (percentage >= 85) return AppColors.accentGreen;
-    if (percentage >= 75) return AppColors.dishTvOrange;
-    return AppColors.accentRed;
+    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
+    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
+    return Theme.of(context).colorScheme.error;
   }
 }

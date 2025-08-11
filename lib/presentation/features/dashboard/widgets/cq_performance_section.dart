@@ -163,7 +163,7 @@ class CQPerformanceSection extends StatelessWidget {
                   context,
                   'Total Audits',
                   cqSummary!.totalAudits.toString(),
-                  Theme.of(context).colorScheme.primary,
+                  _getQualityColor(averageCQ, context),
                   Icons.assignment_turned_in,
                 ),
               ),
@@ -217,10 +217,10 @@ class CQPerformanceSection extends StatelessWidget {
     );
   }
 
-    Color _getQualityColor(double percentage, BuildContext context) {
+  Color _getQualityColor(double percentage, BuildContext context) {
     if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
-    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
-    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
-    return Theme.of(context).colorScheme.error;
+    if (percentage >= 85) return Colors.green;
+    if (percentage >= 75) return Colors.orange;
+    return Colors.red;
   }
 }

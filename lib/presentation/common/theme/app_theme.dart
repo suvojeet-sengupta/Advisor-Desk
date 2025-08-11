@@ -289,10 +289,130 @@ class AppTheme {
       inversePrimary: Color(0xFFD81B60), // Original vibrant pink for inverse
       surfaceTint: Color(0xFFF48FB1),
     ),
-    AppColor.blue: ColorScheme.fromSeed(seedColor: Colors.blueAccent[700]!, brightness: Brightness.dark),
-    AppColor.green: ColorScheme.fromSeed(seedColor: Colors.lightGreenAccent[700]!, brightness: Brightness.dark),
-    AppColor.purple: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent[400]!, brightness: Brightness.dark),
-    AppColor.red: ColorScheme.fromSeed(seedColor: Colors.redAccent[700]!, brightness: Brightness.dark),
+    AppColor.blue: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFF90CAF9), // Blue 200
+      onPrimary: Colors.black,
+      primaryContainer: Color(0xFF0D47A1), // Darker blue for container
+      onPrimaryContainer: Color(0xFFE3F2FD), // Lighter text on container
+      secondary: Color(0xFF90CAF9), // Using same for secondary for consistency
+      onSecondary: Colors.black,
+      secondaryContainer: Color(0xFF0D47A1),
+      onSecondaryContainer: Color(0xFFE3F2FD),
+      tertiary: Color(0xFF90CAF9),
+      onTertiary: Colors.black,
+      tertiaryContainer: Color(0xFF0D47A1),
+      onTertiaryContainer: Color(0xFFE3F2FD),
+      error: Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Color(0xFF121212), // Dark background
+      onBackground: Colors.white,
+      surface: Color(0xFF121212), // Dark surface
+      onSurface: Colors.white,
+      surfaceVariant: Color(0xFF424242), // Slightly lighter surface variant
+      onSurfaceVariant: Colors.white,
+      outline: Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: Color(0xFF2196F3), // Original vibrant blue for inverse
+      surfaceTint: Color(0xFF90CAF9),
+    ),
+    AppColor.green: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFFA5D6A7), // Green 200
+      onPrimary: Colors.black,
+      primaryContainer: Color(0xFF1B5E20), // Darker green for container
+      onPrimaryContainer: Color(0xFFE8F5E9), // Lighter text on container
+      secondary: Color(0xFFA5D6A7), // Using same for secondary for consistency
+      onSecondary: Colors.black,
+      secondaryContainer: Color(0xFF1B5E20),
+      onSecondaryContainer: Color(0xFFE8F5E9),
+      tertiary: Color(0xFFA5D6A7),
+      onTertiary: Colors.black,
+      tertiaryContainer: Color(0xFF1B5E20),
+      onTertiaryContainer: Color(0xFFE8F5E9),
+      error: Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Color(0xFF121212), // Dark background
+      onBackground: Colors.white,
+      surface: Color(0xFF121212), // Dark surface
+      onSurface: Colors.white,
+      surfaceVariant: Color(0xFF424242), // Slightly lighter surface variant
+      onSurfaceVariant: Colors.white,
+      outline: Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: Color(0xFF4CAF50), // Original vibrant green for inverse
+      surfaceTint: Color(0xFFA5D6A7),
+    ),
+    AppColor.purple: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFFCE93D8), // Purple 200
+      onPrimary: Colors.black,
+      primaryContainer: Color(0xFF4A148C), // Darker purple for container
+      onPrimaryContainer: Color(0xFFF3E5F5), // Lighter text on container
+      secondary: Color(0xFFCE93D8), // Using same for secondary for consistency
+      onSecondary: Colors.black,
+      secondaryContainer: Color(0xFF4A148C),
+      onSecondaryContainer: Color(0xFFF3E5F5),
+      tertiary: Color(0xFFCE93D8),
+      onTertiary: Colors.black,
+      tertiaryContainer: Color(0xFF4A148C),
+      onTertiaryContainer: Color(0xFFF3E5F5),
+      error: Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Color(0xFF121212), // Dark background
+      onBackground: Colors.white,
+      surface: Color(0xFF121212), // Dark surface
+      onSurface: Colors.white,
+      surfaceVariant: Color(0xFF424242), // Slightly lighter surface variant
+      onSurfaceVariant: Colors.white,
+      outline: Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: Color(0xFF9C27B0), // Original vibrant purple for inverse
+      surfaceTint: Color(0xFFCE93D8),
+    ),
+    AppColor.red: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFFEF9A9A), // Red 200
+      onPrimary: Colors.black,
+      primaryContainer: Color(0xFFB71C1C), // Darker red for container
+      onPrimaryContainer: Color(0xFFFFEBEE), // Lighter text on container
+      secondary: Color(0xFFEF9A9A), // Using same for secondary for consistency
+      onSecondary: Colors.black,
+      secondaryContainer: Color(0xFFB71C1C),
+      onSecondaryContainer: Color(0xFFFFEBEE),
+      tertiary: Color(0xFFEF9A9A),
+      onTertiary: Colors.black,
+      tertiaryContainer: Color(0xFFB71C1C),
+      onTertiaryContainer: Color(0xFFFFEBEE),
+      error: Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Color(0xFF121212), // Dark background
+      onBackground: Colors.white,
+      surface: Color(0xFF121212), // Dark surface
+      onSurface: Colors.white,
+      surfaceVariant: Color(0xFF424242), // Slightly lighter surface variant
+      onSurfaceVariant: Colors.white,
+      outline: Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: Color(0xFFF44336), // Original vibrant red for inverse
+      surfaceTint: Color(0xFFEF9A9A),
+    ),
   };
 
   static ThemeData getTheme(Brightness brightness, AppColor color) {

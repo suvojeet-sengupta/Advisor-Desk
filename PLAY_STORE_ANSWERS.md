@@ -12,7 +12,7 @@ We recruited testers directly from our target audience: customer service agents 
 
 ### 2. Describe the engagement you received from testers during your closed test.
 
-Tester engagement was excellent. Users consistently used the app daily, testing all features from data entry to report generation. Their active feedback drove key improvements, such as a dedicated "Monthly Goals" section. This confirmed the app is intuitive and meets their daily needs.
+We collected feedback directly from testers via WhatsApp. The feedback was highly constructive, focusing on feature requests like custom reports and UI improvements for better data visibility. Testers praised the app's accuracy and confirmed it solved their core need for salary tracking.
 
 ---
 

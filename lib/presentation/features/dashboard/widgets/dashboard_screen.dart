@@ -31,7 +31,7 @@ import 'package:advisor_desk/presentation/common/widgets/performance_share_card.
 import 'package:advisor_desk/core/constants/app_enums.dart'; // Import DashboardSection
 import 'package:advisor_desk/core/models/dashboard_models.dart'; // Import DashboardCustomization
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart'; // Import Cubit
-
+import 'package:advisor_desk/presentation/common/widgets/independence_day_banner.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -233,6 +233,7 @@ class _DashboardViewState extends State<DashboardView> {
                             return CustomScrollView(
                               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                               slivers: [
+                                const SliverToBoxAdapter(child: IndependenceDayBanner()),
                                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
                                 ...customizationState.visibleSections.map((section) {
                                   return _buildDashboardSection(

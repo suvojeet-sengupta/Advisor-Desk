@@ -16,7 +16,9 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_bloc
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_state.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_bloc.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_state.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_bloc.dart';
+import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_state.dart';
 
 class AddEntryScreen extends StatelessWidget {
   final DailyEntry? entryToEdit;
@@ -92,35 +94,99 @@ class _AddEntryViewState extends State<AddEntryView> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      child: BlocListener<AddEntryBloc, AddEntryState>(
-        listener: (context, state) {
-          if (state.status == AddEntryStatus.success) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.isDelete
-                        ? 'Entry deleted successfully!'
-                        : (state.isUpdate
-                            ? 'Entry updated successfully!'
-                            : 'Entry added successfully!'),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                ),
-              );
-            Navigator.pop(context, true); 
-          } else if (state.status == AddEntryStatus.failure) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage ?? 'Failed to save entry'),
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                ),
-              );
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AddEntryBloc, AddEntryState>(
+            listener: (context, state) {
+              if (state.status == AddEntryStatus.success) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        state.isDelete
+                            ? 'Entry deleted successfully!'
+                            : (state.isUpdate
+                                ? 'Entry updated successfully!'
+                                : 'Entry added successfully!'),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    ),
+                  );
+                Navigator.pop(context, true);
+              } else if (state.status == AddEntryStatus.failure) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(state.errorMessage ?? 'Failed to save entry'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+              }
+            },
+          ),
+          BlocListener<AddCSATEntryBloc, AddCSATEntryState>(
+            listener: (context, state) {
+              if (state.status == AddCSATEntryStatus.success) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        state.isDelete
+                            ? 'CSAT entry deleted successfully!'
+                            : (state.isUpdate
+                                ? 'CSAT entry updated successfully!'
+                                : 'CSAT entry added successfully!'),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    ),
+                  );
+                Navigator.pop(context, true);
+              } else if (state.status == AddCSATEntryStatus.failure) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(state.errorMessage ?? 'Failed to save entry'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+              }
+            },
+          ),
+          BlocListener<AddCQEntryBloc, AddCQEntryState>(
+            listener: (context, state) {
+              if (state.status == AddCQEntryStatus.success) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        state.isDelete
+                            ? 'CQ entry deleted successfully!'
+                            : (state.isUpdate
+                                ? 'CQ entry updated successfully!'
+                                : 'CQ entry added successfully!'),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    ),
+                  );
+                Navigator.pop(context, true);
+              } else if (state.status == AddCQEntryStatus.failure) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(state.errorMessage ?? 'Failed to save entry'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+              }
+            },
+          ),
+        ],
         child: Scaffold(
           appBar: CustomAppBar(
             title: context.watch<AddEntryBloc>().state.isUpdate

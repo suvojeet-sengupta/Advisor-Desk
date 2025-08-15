@@ -16,6 +16,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     on<NCountChanged>(_onNCountChanged);
     on<SubmitCSATEntry>(_onSubmitEntry);
     on<DeleteCSATEntry>(_onDeleteEntry);
+    on<ShowSuccessMessage>(_onShowSuccessMessage);
   }
 
   Future<void> _onInitializeCSATEntry(
@@ -82,21 +83,32 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
 
       if (state.isUpdate) {
         await repository.saveCSATEntry(entry); // Assuming saveCSATEntry handles updates
+        emit(state.copyWith(
+          status: AddCSATEntryStatus.success,
+          errorMessage: null,
+        ));
       } else {
         await repository.saveCSATEntry(entry);
-        adService.showAd();
+        adService.showAd(onAdDismissed: () {
+          add(const ShowSuccessMessage());
+        });
       }
-
-      emit(state.copyWith(
-        status: AddCSATEntryStatus.success,
-        errorMessage: null,
-      ));
     } catch (e) {
       emit(state.copyWith(
         status: AddCSATEntryStatus.failure,
         errorMessage: 'Failed to save CSAT entry: ${e.toString()}',
       ));
     }
+  }
+
+  void _onShowSuccessMessage(
+    ShowSuccessMessage event,
+    Emitter<AddCSATEntryState> emit,
+  ) {
+    emit(state.copyWith(
+      status: AddCSATEntryStatus.success,
+      errorMessage: null,
+    ));
   }
 
   Future<void> _onDeleteEntry(

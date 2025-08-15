@@ -58,6 +58,10 @@ class SubmitCSATEntry extends AddCSATEntryEvent {
   const SubmitCSATEntry();
 }
 
+class ShowSuccessMessage extends AddCSATEntryEvent {
+  const ShowSuccessMessage();
+}
+
 class DeleteCSATEntry extends AddCSATEntryEvent {
   const DeleteCSATEntry();
 }

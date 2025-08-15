@@ -14,6 +14,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     on<CQPercentageChanged>(_onPercentageChanged);
     on<SubmitCQEntry>(_onSubmitEntry);
     on<DeleteCQEntry>(_onDeleteEntry);
+    on<ShowSuccessMessage>(_onShowSuccessMessage);
   }
 
   Future<void> _onInitializeCQEntry(
@@ -70,21 +71,32 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
 
       if (state.isUpdate) {
         await repository.saveCQEntry(entry);
+        emit(state.copyWith(
+          status: AddCQEntryStatus.success,
+          errorMessage: null,
+        ));
       } else {
         await repository.saveCQEntry(entry);
-        adService.showAd();
+        adService.showAd(onAdDismissed: () {
+          add(const ShowSuccessMessage());
+        });
       }
-
-      emit(state.copyWith(
-        status: AddCQEntryStatus.success,
-        errorMessage: null,
-      ));
     } catch (e) {
       emit(state.copyWith(
         status: AddCQEntryStatus.failure,
         errorMessage: 'Failed to save CQ entry: ${e.toString()}',
       ));
     }
+  }
+
+  void _onShowSuccessMessage(
+    ShowSuccessMessage event,
+    Emitter<AddCQEntryState> emit,
+  ) {
+    emit(state.copyWith(
+      status: AddCQEntryStatus.success,
+      errorMessage: null,
+    ));
   }
 
   Future<void> _onDeleteEntry(

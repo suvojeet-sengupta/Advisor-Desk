@@ -40,6 +40,10 @@ class SubmitCQEntry extends AddCQEntryEvent {
   const SubmitCQEntry();
 }
 
+class ShowSuccessMessage extends AddCQEntryEvent {
+  const ShowSuccessMessage();
+}
+
 class DeleteCQEntry extends AddCQEntryEvent {
   const DeleteCQEntry();
 }

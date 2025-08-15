@@ -67,6 +67,10 @@ class SubmitEntry extends AddEntryEvent {
   const SubmitEntry();
 }
 
+class ShowSuccessMessage extends AddEntryEvent {
+  const ShowSuccessMessage();
+}
+
 // नया डिलीट इवेंट यहाँ जोड़ा गया है
 class DeleteEntry extends AddEntryEvent {
   const DeleteEntry();

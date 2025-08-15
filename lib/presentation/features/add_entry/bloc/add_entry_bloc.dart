@@ -28,6 +28,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     on<CallCountChanged>(_onCallCountChanged);
     on<SubmitEntry>(_onSubmitEntry);
     on<DeleteEntry>(_onDeleteEntry);
+    on<ShowSuccessMessage>(_onShowSuccessMessage);
   }
 
   Future<void> _onInitializeAddEntry(
@@ -140,21 +141,32 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
 
       if (state.isUpdate) {
         await _updateEntryUseCase.execute(entry);
+        emit(state.copyWith(
+          status: AddEntryStatus.success,
+          errorMessage: null,
+        ));
       } else {
         await _addEntryUseCase.execute(entry);
-        adService.showAd();
+        adService.showAd(onAdDismissed: () {
+          add(const ShowSuccessMessage());
+        });
       }
-
-      emit(state.copyWith(
-        status: AddEntryStatus.success,
-        errorMessage: null,
-      ));
     } catch (e) {
       emit(state.copyWith(
         status: AddEntryStatus.failure,
         errorMessage: 'Failed to save entry: ${e.toString()}',
       ));
     }
+  }
+
+  void _onShowSuccessMessage(
+    ShowSuccessMessage event,
+    Emitter<AddEntryState> emit,
+  ) {
+    emit(state.copyWith(
+      status: AddEntryStatus.success,
+      errorMessage: null,
+    ));
   }
 
   Future<void> _onDeleteEntry(

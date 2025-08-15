@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.suvojeet.advisordesk"
-    compileSdk 35 // यहाँ 34 से 35 में बदला गया है
+    compileSdk 36 // Updated for plugin compatibility
 
     ndkVersion flutter.ndkVersion
 

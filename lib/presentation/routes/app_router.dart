@@ -1,6 +1,8 @@
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
 import 'package:advisor_desk/presentation/screens/theme_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/features/onboarding/onboarding_tutorial_screen.dart';
@@ -12,6 +14,8 @@ import 'package:advisor_desk/presentation/features/all_reports/widgets/all_repor
 import 'package:advisor_desk/presentation/screens/app_info_screen.dart';
 import 'package:advisor_desk/presentation/features/settings/widgets/settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dart';
+import 'package:advisor_desk/presentation/screens/cq_details_screen.dart';
+import 'package:advisor_desk/presentation/screens/csat_details_screen.dart';
 
 
 import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
@@ -33,6 +37,8 @@ class AppRouter {
   static const String customizeDashboardRoute = '/customize-dashboard';
   static const String salarySettingsRoute = '/salary-settings';
   static const String reportOptionsRoute = '/report-options';
+  static const String cqDetailsRoute = '/cq-details';
+  static const String csatDetailsRoute = '/csat-details';
   
   static const String creditsRoute = '/credits';
 
@@ -89,6 +95,16 @@ class AppRouter {
       case reportOptionsRoute:
         return MaterialPageRoute(
           builder: (_) => const ReportOptionsScreen(),
+        );
+      case cqDetailsRoute:
+        final CQSummary cqSummary = settings.arguments as CQSummary;
+        return MaterialPageRoute(
+          builder: (_) => CqDetailsScreen(cqSummary: cqSummary),
+        );
+      case csatDetailsRoute:
+        final CSATSummary csatSummary = settings.arguments as CSATSummary;
+        return MaterialPageRoute(
+          builder: (_) => CsatDetailsScreen(csatSummary: csatSummary),
         );
       
       case creditsRoute:

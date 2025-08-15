@@ -6,6 +6,7 @@ class DashboardCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color iconColor;
+  final VoidCallback? onTap;
 
   const DashboardCard({
     Key? key,
@@ -13,11 +14,13 @@ class DashboardCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.iconColor,
+    this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomCard(
+      onTap: onTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

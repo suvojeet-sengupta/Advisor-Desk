@@ -309,48 +309,64 @@ class _DashboardViewState extends State<DashboardView> {
                 value: summary.totalCalls.toString(),
                 icon: Icons.call,
                 iconColor: Theme.of(context).colorScheme.secondary,
+                onTap: () => _navigateToMonthlyPerformance(context),
               ),
               DashboardCard(
                 title: 'Total Login Hours',
                 value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
                 icon: Icons.timer,
                 iconColor: Theme.of(context).colorScheme.tertiary,
+                onTap: () => _navigateToMonthlyPerformance(context),
               ),
               DashboardCard(
                 title: 'Avg. Login Hours',
                 value: summary.averageDailyLoginHours.toStringAsFixed(2),
                 icon: Icons.timer,
                 iconColor: Theme.of(context).colorScheme.tertiary,
+                onTap: () => _navigateToMonthlyPerformance(context),
               ),
               DashboardCard(
                 title: 'Avg. Calls',
                 value: summary.averageDailyCalls.toStringAsFixed(2),
                 icon: Icons.call,
                 iconColor: Theme.of(context).colorScheme.secondary,
+                onTap: () => _navigateToMonthlyPerformance(context),
               ),
               DashboardCard(
                 title: 'CSAT Score',
                 value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
                 icon: Icons.sentiment_satisfied_alt,
                 iconColor: Theme.of(context).colorScheme.primary,
+                onTap: () {
+                  if (dashboardState.csatSummary != null) {
+                    Navigator.pushNamed(context, AppRouter.csatDetailsRoute, arguments: dashboardState.csatSummary);
+                  }
+                },
               ),
               DashboardCard(
                 title: 'CQ Score',
                 value: '${dashboardState.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%',
                 icon: Icons.assessment,
                 iconColor: _getQualityColor(dashboardState.cqSummary!.monthlyAverageCQ, context),
+                onTap: () {
+                  if (dashboardState.cqSummary != null) {
+                    Navigator.pushNamed(context, AppRouter.cqDetailsRoute, arguments: dashboardState.cqSummary);
+                  }
+                },
               ),
               DashboardCard(
                 title: 'Total Salary',
                 value: '₹${summary.totalSalary.toStringAsFixed(2)}',
                 icon: Icons.currency_rupee,
                 iconColor: Theme.of(context).colorScheme.secondary,
+                onTap: () => _navigateToMonthlyPerformance(context),
               ),
               DashboardCard(
                 title: 'Login Days',
                 value: summary.loginDays.toString(),
                 icon: Icons.calendar_today,
                 iconColor: Theme.of(context).colorScheme.tertiary,
+                onTap: () => _navigateToMonthlyPerformance(context),
               ),
             ]),
           ),

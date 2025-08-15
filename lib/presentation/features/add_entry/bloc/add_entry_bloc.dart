@@ -1,3 +1,4 @@
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
@@ -9,11 +10,12 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_stat
 
 class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
   final PerformanceRepository repository;
+  final AdService adService;
   late final AddEntryUseCase _addEntryUseCase;
   late final UpdateEntryUseCase _updateEntryUseCase;
   late final DeleteEntryUseCase _deleteEntryUseCase;
 
-  AddEntryBloc({required this.repository}) : super(AddEntryState.initial()) {
+  AddEntryBloc({required this.repository, required this.adService}) : super(AddEntryState.initial()) {
     _addEntryUseCase = AddEntryUseCase(repository);
     _updateEntryUseCase = UpdateEntryUseCase(repository);
     _deleteEntryUseCase = DeleteEntryUseCase(repository);
@@ -140,6 +142,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
         await _updateEntryUseCase.execute(entry);
       } else {
         await _addEntryUseCase.execute(entry);
+        adService.showAd();
       }
 
       emit(state.copyWith(

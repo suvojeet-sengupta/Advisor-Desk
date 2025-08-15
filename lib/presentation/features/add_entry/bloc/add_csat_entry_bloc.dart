@@ -1,3 +1,4 @@
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'add_csat_entry_event.dart';
@@ -5,8 +6,9 @@ import 'add_csat_entry_state.dart';
 
 class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
   final PerformanceRepository repository;
+  final AdService adService;
 
-  AddCSATEntryBloc({required this.repository}) : super(AddCSATEntryState.initial()) {
+  AddCSATEntryBloc({required this.repository, required this.adService}) : super(AddCSATEntryState.initial()) {
     on<InitializeCSATEntry>(_onInitializeCSATEntry);
     on<CSATDateChanged>(_onDateChanged);
     on<T2CountChanged>(_onT2CountChanged);
@@ -82,6 +84,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
         await repository.saveCSATEntry(entry); // Assuming saveCSATEntry handles updates
       } else {
         await repository.saveCSATEntry(entry);
+        adService.showAd();
       }
 
       emit(state.copyWith(

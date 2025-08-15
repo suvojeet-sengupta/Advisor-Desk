@@ -1,3 +1,4 @@
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/data/datasources/goal_data_source.dart';
 import 'package:advisor_desk/data/repositories/goal_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/goal_repository.dart';
@@ -32,6 +33,7 @@ void main() async {
   MobileAds.instance.initialize();
   await AppConstants.init();
   
+  final adService = AdService()..loadAd();
   final localDataSource = await LocalDataSource.init();
   final goalDataSource = GoalDataSource();
   
@@ -50,6 +52,7 @@ void main() async {
   }
   
   runApp(MyApp(
+    adService: adService,
     performanceRepository: performanceRepository,
     goalRepository: goalRepository,
     deleteCQEntriesByDateUseCase: deleteCQEntriesByDateUseCase,
@@ -59,6 +62,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  final AdService adService;
   final PerformanceRepository performanceRepository;
   final GoalRepository goalRepository;
   final DeleteCQEntriesByDateUseCase deleteCQEntriesByDateUseCase;
@@ -67,6 +71,7 @@ class MyApp extends StatefulWidget {
   
   const MyApp({
     Key? key,
+    required this.adService,
     required this.performanceRepository,
     required this.goalRepository,
     required this.deleteCQEntriesByDateUseCase,
@@ -121,6 +126,7 @@ class _MyAppState extends State<MyApp> {
     // एक से ज़्यादा Repository और BLoC प्रोवाइड करें
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<AdService>.value(value: widget.adService),
         RepositoryProvider<PerformanceRepository>.value(value: widget.performanceRepository),
         RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
         RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),

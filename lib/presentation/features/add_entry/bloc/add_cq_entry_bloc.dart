@@ -1,3 +1,4 @@
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'add_cq_entry_event.dart';
@@ -5,8 +6,9 @@ import 'add_cq_entry_state.dart';
 
 class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
   final PerformanceRepository repository;
+  final AdService adService;
 
-  AddCQEntryBloc({required this.repository}) : super(AddCQEntryState.initial()) {
+  AddCQEntryBloc({required this.repository, required this.adService}) : super(AddCQEntryState.initial()) {
     on<InitializeCQEntry>(_onInitializeCQEntry);
     on<CQDateChanged>(_onDateChanged);
     on<CQPercentageChanged>(_onPercentageChanged);
@@ -70,6 +72,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
         await repository.saveCQEntry(entry);
       } else {
         await repository.saveCQEntry(entry);
+        adService.showAd();
       }
 
       emit(state.copyWith(

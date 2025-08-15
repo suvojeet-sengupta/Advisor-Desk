@@ -1,3 +1,4 @@
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
@@ -29,16 +30,19 @@ class AddEntryScreen extends StatelessWidget {
         BlocProvider(
           create: (context) => AddEntryBloc(
             repository: context.read<PerformanceRepository>(),
+            adService: context.read<AdService>(),
           )..add(InitializeAddEntry(entry: entryToEdit)),
         ),
         BlocProvider(
           create: (context) => AddCSATEntryBloc(
             repository: context.read<PerformanceRepository>(),
+            adService: context.read<AdService>(),
           ),
         ),
         BlocProvider(
           create: (context) => AddCQEntryBloc(
             repository: context.read<PerformanceRepository>(),
+            adService: context.read<AdService>(),
           ),
         ),
       ],

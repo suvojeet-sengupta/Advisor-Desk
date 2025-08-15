@@ -12,7 +12,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
 
-  final adUnitId = 'ca-app-pub-3940256099942544/6300978111'; // Test Ad Unit ID
+  final adUnitId = 'ca-app-pub-4208901337652644/4026534944'; // Add new entry bottom ads
 
   @override
   void initState() {

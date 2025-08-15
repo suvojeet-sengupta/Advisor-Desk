@@ -17,6 +17,7 @@ import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart';
 import 'package:in_app_update/in_app_update.dart'; // For in-app updates
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -28,6 +29,7 @@ class SmoothScrollBehavior extends ScrollBehavior {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   await AppConstants.init();
   
   final localDataSource = await LocalDataSource.init();

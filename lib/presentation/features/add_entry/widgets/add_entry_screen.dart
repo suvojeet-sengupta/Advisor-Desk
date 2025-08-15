@@ -1,3 +1,4 @@
+import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_csat_entry_screen.dart';
@@ -151,6 +152,7 @@ class _AddEntryViewState extends State<AddEntryView> {
               const AddCQEntryScreen(),
             ],
           ),
+           bottomNavigationBar: const BannerAdWidget(),
         ),),
     );
   }

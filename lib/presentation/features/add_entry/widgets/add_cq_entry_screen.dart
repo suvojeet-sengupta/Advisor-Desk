@@ -19,12 +19,7 @@ class AddCQEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AddCQEntryBloc(
-        repository: context.read<PerformanceRepository>(),
-      )..add(InitializeCQEntry(entry: entryToEdit)),
-      child: const AddCQEntryView(),
-    );
+    return const AddCQEntryView();
   }
 }
 

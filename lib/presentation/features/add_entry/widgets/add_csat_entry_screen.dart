@@ -19,12 +19,7 @@ class AddCSATEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AddCSATEntryBloc(
-        repository: context.read<PerformanceRepository>(),
-      )..add(InitializeCSATEntry(entry: entryToEdit)),
-      child: const AddCSATEntryView(),
-    );
+    return const AddCSATEntryView();
   }
 }
 

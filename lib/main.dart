@@ -16,6 +16,7 @@ import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart';
+import 'package:in_app_update/in_app_update.dart'; // For in-app updates
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -55,7 +56,7 @@ void main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final PerformanceRepository performanceRepository;
   final GoalRepository goalRepository;
   final DeleteCQEntriesByDateUseCase deleteCQEntriesByDateUseCase;
@@ -72,14 +73,56 @@ class MyApp extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    checkForUpdate();
+  }
+
+  Future<void> checkForUpdate() async {
+    try {
+      AppUpdateInfo appUpdateInfo = await InAppUpdate.checkForUpdate();
+
+      if (appUpdateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        if (appUpdateInfo.immediateUpdateAllowed) {
+          // Perform an immediate update
+          await InAppUpdate.performImmediateUpdate();
+        } else if (appUpdateInfo.flexibleUpdateAllowed) {
+          // Start a flexible update
+          await InAppUpdate.startFlexibleUpdate();
+          // When the flexible update is downloaded, prompt the user to complete it.
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Update downloaded! Restart to apply.'),
+              action: SnackBarAction(
+                label: 'RESTART',
+                onPressed: () async {
+                  await InAppUpdate.completeFlexibleUpdate();
+                },
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Failed to check for update: $e');
+      // Handle error, e.g., show a message to the user
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // एक से ज़्यादा Repository और BLoC प्रोवाइड करें
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<PerformanceRepository>.value(value: performanceRepository),
-        RepositoryProvider<GoalRepository>.value(value: goalRepository),
-        RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: deleteCQEntriesByDateUseCase),
-        RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: deleteCSATEntriesByDateUseCase),
+        RepositoryProvider<PerformanceRepository>.value(value: widget.performanceRepository),
+        RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
+        RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
+        RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -100,7 +143,7 @@ class MyApp extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               scrollBehavior: SmoothScrollBehavior(),
               onGenerateRoute: AppRouter.onGenerateRoute,
-              initialRoute: initialRoute,
+              initialRoute: widget.initialRoute,
             );
           },
         ),

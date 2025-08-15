@@ -31,6 +31,7 @@ dependencies:
   percent_indicator: ^4.2.3 # <-- यह नया पैकेज जोड़ा गया है
   url_launcher: ^6.3.0
   excel: ^2.1.0
+  in_app_update: ^4.2.3 # Add this line for in-app updates
   
   
   screenshot: ^3.0.0

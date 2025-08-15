@@ -366,7 +366,11 @@ class _DashboardViewState extends State<DashboardView> {
                 value: summary.loginDays.toString(),
                 icon: Icons.calendar_today,
                 iconColor: Theme.of(context).colorScheme.tertiary,
-                onTap: () => _navigateToMonthlyPerformance(context),
+                onTap: () {
+                  if (dashboardState.monthlySummary != null) {
+                    Navigator.pushNamed(context, AppRouter.loginDaysDetailsRoute, arguments: dashboardState.monthlySummary);
+                  }
+                },
               ),
             ]),
           ),

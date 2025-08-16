@@ -1,3 +1,4 @@
+import 'package:advisor_desk/presentation/common/widgets/details_screen_banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:advisor_desk/domain/entities/csat_summary.dart';
@@ -113,6 +114,7 @@ class CsatDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const DetailsScreenBannerAd(),
     );
   }
 

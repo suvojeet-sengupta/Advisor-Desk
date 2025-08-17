@@ -69,16 +69,11 @@ class _AddEntryViewState extends State<AddEntryView> {
   @override
   void initState() {
     super.initState();
-    final state = context.read<AddEntryBloc>().state;
-
-    _loginHoursController = TextEditingController(
-        text: state.isUpdate ? state.loginHours.toString() : (state.loginHours == 0 ? '' : state.loginHours.toString()));
-    _loginMinutesController = TextEditingController(
-        text: state.isUpdate ? state.loginMinutes.toString() : (state.loginMinutes == 0 ? '' : state.loginMinutes.toString()));
-    _loginSecondsController = TextEditingController(
-        text: state.isUpdate ? state.loginSeconds.toString() : (state.loginSeconds == 0 ? '' : state.loginSeconds.toString()));
-    _callCountController = TextEditingController(
-        text: state.isUpdate ? state.callCount.toString() : (state.callCount == 0 ? '' : state.callCount.toString()));
+    // Initialize controllers without text
+    _loginHoursController = TextEditingController();
+    _loginMinutesController = TextEditingController();
+    _loginSecondsController = TextEditingController();
+    _callCountController = TextEditingController();
   }
 
   @override
@@ -98,6 +93,22 @@ class _AddEntryViewState extends State<AddEntryView> {
         listeners: [
           BlocListener<AddEntryBloc, AddEntryState>(
             listener: (context, state) {
+              // Update controllers when the state changes
+              if (state.isUpdate) {
+                if (_loginHoursController.text != state.loginHours.toString()) {
+                  _loginHoursController.text = state.loginHours.toString();
+                }
+                if (_loginMinutesController.text != state.loginMinutes.toString()) {
+                  _loginMinutesController.text = state.loginMinutes.toString();
+                }
+                if (_loginSecondsController.text != state.loginSeconds.toString()) {
+                  _loginSecondsController.text = state.loginSeconds.toString();
+                }
+                if (_callCountController.text != state.callCount.toString()) {
+                  _callCountController.text = state.callCount.toString();
+                }
+              }
+
               if (state.status == AddEntryStatus.success) {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()

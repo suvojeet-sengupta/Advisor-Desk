@@ -32,6 +32,9 @@ class AdService {
         onAdFailedToShowFullScreenContent: (ad, error) {
           ad.dispose();
           loadAd();
+          if (onAdDismissed != null) {
+            onAdDismissed();
+          }
         },
       );
       _interstitialAd!.show();

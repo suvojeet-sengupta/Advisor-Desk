@@ -141,16 +141,12 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
 
       if (state.isUpdate) {
         await _updateEntryUseCase.execute(entry);
-        emit(state.copyWith(
-          status: AddEntryStatus.success,
-          errorMessage: null,
-        ));
       } else {
         await _addEntryUseCase.execute(entry);
-        adService.showAd(onAdDismissed: () {
-          add(const ShowSuccessMessage());
-        });
       }
+      adService.showAd(onAdDismissed: () {
+        add(const ShowSuccessMessage());
+      });
     } catch (e) {
       emit(state.copyWith(
         status: AddEntryStatus.failure,

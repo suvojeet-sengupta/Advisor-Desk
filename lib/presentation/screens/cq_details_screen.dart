@@ -26,36 +26,6 @@ class CqDetailsScreen extends StatelessWidget {
               style: theme.textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
-            CustomCard(
-              child: Column(
-                children: [
-                  _buildSummaryRow(
-                    context,
-                    'Average CQ Score',
-                    '${cqSummary.monthlyAverageCQ.toStringAsFixed(2)}%',
-                    _getQualityColor(cqSummary.monthlyAverageCQ, context),
-                  ),
-                  _buildSummaryRow(
-                    context,
-                    'Total Audits',
-                    '${cqSummary.totalAudits}',
-                    theme.colorScheme.onSurface,
-                  ),
-                  _buildSummaryRow(
-                    context,
-                    'Quality Rating',
-                    cqSummary.qualityRating,
-                    _getQualityColor(cqSummary.monthlyAverageCQ, context),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Daily CQ Entries',
-              style: theme.textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
             if (cqSummary.entries.isEmpty)
               const CustomCard(
                 child: Center(
@@ -66,36 +36,71 @@ class CqDetailsScreen extends StatelessWidget {
                 ),
               )
             else
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: cqSummary.entries.length,
-                itemBuilder: (context, index) {
-                  final entry = cqSummary.entries[index];
-                  return CustomCard(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: _getQualityColor(entry.percentage, context).withOpacity(0.2),
-                        child: Text(
-                          DateFormat('dd').format(entry.auditDate),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: _getQualityColor(entry.percentage, context),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomCard(
+                    child: Column(
+                      children: [
+                        _buildSummaryRow(
+                          context,
+                          'Average CQ Score',
+                          '${cqSummary.monthlyAverageCQ.toStringAsFixed(2)}%',
+                          _getQualityColor(cqSummary.monthlyAverageCQ, context),
+                        ),
+                        _buildSummaryRow(
+                          context,
+                          'Total Audits',
+                          '${cqSummary.totalAudits}',
+                          theme.colorScheme.onSurface,
+                        ),
+                        _buildSummaryRow(
+                          context,
+                          'Quality Rating',
+                          cqSummary.qualityRating,
+                          _getQualityColor(cqSummary.monthlyAverageCQ, context),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Daily CQ Entries',
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 12),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: cqSummary.entries.length,
+                    itemBuilder: (context, index) {
+                      final entry = cqSummary.entries[index];
+                      return CustomCard(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: _getQualityColor(entry.percentage, context).withOpacity(0.2),
+                            child: Text(
+                              DateFormat('dd').format(entry.auditDate),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _getQualityColor(entry.percentage, context),
+                              ),
+                            ),
+                          ),
+                          title: Text('Audit Date: ${DateFormat('MMM dd, yyyy').format(entry.auditDate)}'),
+                          trailing: Text(
+                            '${entry.percentage.toStringAsFixed(2)}%',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _getQualityColor(entry.percentage, context),
+                            ),
                           ),
                         ),
-                      ),
-                      title: Text('Audit Date: ${DateFormat('MMM dd, yyyy').format(entry.auditDate)}'),
-                      trailing: Text(
-                        '${entry.percentage.toStringAsFixed(2)}%',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: _getQualityColor(entry.percentage, context),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                ],
               ),
           ],
         ),

@@ -33,7 +33,7 @@ class CQSummary extends Equatable {
   
   // Get quality rating based on average percentage
   String get qualityRating {
-    if (monthlyAverageCQ == 0) return 'FATAL';
+    if (entries.isEmpty) return 'No Audits';
     if (monthlyAverageCQ >= 85) return 'Quality Met';
     return 'Quality Not Met';
   }

@@ -21,7 +21,7 @@
 
 ## 📲 Get The App
 
-<a href='https://play.google.com/store/apps/details?id=com.suvojeet.advisordesk&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='200'/></a> <a href='https://advisor-desk.en.uptodown.com/android' title='Download Advisor Desk' >
+<a href='https://play.google.com/store/apps/details?id=com.suvojeet.advisordesk&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='200'/></a> <a href='https://advisor-desk.en.uptodown.com/android' title='Download Advisor Desk' >
                 <img src='https://stc.utdstc.com/img/mediakit/download-gio-big.png' alt='Download Advisor Desk'>
                 </a>
 

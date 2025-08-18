@@ -19,30 +19,20 @@ class AdService {
     );
   }
 
-  void showAd({Function? onAdDismissed}) {
+  void showAd() {
     if (_interstitialAd != null) {
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (ad) {
           ad.dispose();
           loadAd();
-          if (onAdDismissed != null) {
-            onAdDismissed();
-          }
         },
         onAdFailedToShowFullScreenContent: (ad, error) {
           ad.dispose();
           loadAd();
-          if (onAdDismissed != null) {
-            onAdDismissed();
-          }
         },
       );
       _interstitialAd!.show();
       _interstitialAd = null;
-    } else {
-      if (onAdDismissed != null) {
-        onAdDismissed();
-      }
     }
   }
 }

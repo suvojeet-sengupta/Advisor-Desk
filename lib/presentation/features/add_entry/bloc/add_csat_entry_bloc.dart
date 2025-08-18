@@ -16,7 +16,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     on<NCountChanged>(_onNCountChanged);
     on<SubmitCSATEntry>(_onSubmitEntry);
     on<DeleteCSATEntry>(_onDeleteEntry);
-    on<ShowSuccessMessage>(_onShowSuccessMessage);
+    
   }
 
   Future<void> _onInitializeCSATEntry(
@@ -89,9 +89,11 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
         ));
       } else {
         await repository.saveCSATEntry(entry);
-        adService.showAd(onAdDismissed: () {
-          add(const ShowSuccessMessage());
-        });
+        emit(state.copyWith(
+          status: AddCSATEntryStatus.success,
+          errorMessage: null,
+        ));
+        adService.showAd();
       }
     } catch (e) {
       emit(state.copyWith(
@@ -101,15 +103,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     }
   }
 
-  void _onShowSuccessMessage(
-    ShowSuccessMessage event,
-    Emitter<AddCSATEntryState> emit,
-  ) {
-    emit(state.copyWith(
-      status: AddCSATEntryStatus.success,
-      errorMessage: null,
-    ));
-  }
+  
 
   Future<void> _onDeleteEntry(
     DeleteCSATEntry event,

@@ -14,7 +14,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     on<CQPercentageChanged>(_onPercentageChanged);
     on<SubmitCQEntry>(_onSubmitEntry);
     on<DeleteCQEntry>(_onDeleteEntry);
-    on<ShowSuccessMessage>(_onShowSuccessMessage);
+    
   }
 
   Future<void> _onInitializeCQEntry(
@@ -77,9 +77,11 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
         ));
       } else {
         await repository.saveCQEntry(entry);
-        adService.showAd(onAdDismissed: () {
-          add(const ShowSuccessMessage());
-        });
+        emit(state.copyWith(
+          status: AddCQEntryStatus.success,
+          errorMessage: null,
+        ));
+        adService.showAd();
       }
     } catch (e) {
       emit(state.copyWith(
@@ -89,15 +91,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     }
   }
 
-  void _onShowSuccessMessage(
-    ShowSuccessMessage event,
-    Emitter<AddCQEntryState> emit,
-  ) {
-    emit(state.copyWith(
-      status: AddCQEntryStatus.success,
-      errorMessage: null,
-    ));
-  }
+  
 
   Future<void> _onDeleteEntry(
     DeleteCQEntry event,

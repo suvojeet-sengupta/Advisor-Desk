@@ -54,8 +54,176 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AddCSATEntryBloc, AddCSATEntryState>(
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: context.watch<AddCSATEntryBloc>().state.isUpdate ? 'Edit CSAT Entry' : 'Add CSAT Entry',
+      ),
       body: BlocBuilder<AddCSATEntryBloc, AddCSATEntryState>(
+        builder: (context, state) {
+          if (state.status == AddCSATEntryStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Date Section
+                _buildSectionTitle(context, 'Date'),
+                const SizedBox(height: 8),
+                CustomCard(
+                  child: InkWell(
+                    onTap: () => _selectDate(context, state.date),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).inputDecorationTheme.fillColor,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Theme.of(context).colorScheme.outline),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            DateFormat('dd MMM yyyy').format(state.date),
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // T2 Count Section
+                CustomFormField(
+                  label: 'T2 Count (Positive Feedback)',
+                  hintText: 'Enter T2 count',
+                  icon: Icons.thumb_up,
+                  controller: _t2CountController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    context.read<AddCSATEntryBloc>().add(T2CountChanged(count: int.tryParse(value) ?? 0));
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // B2 Count Section
+                CustomFormField(
+                  label: 'B2 Count (Negative Feedback)',
+                  hintText: 'Enter B2 count',
+                  icon: Icons.thumb_down,
+                  controller: _b2CountController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    context.read<AddCSATEntryBloc>().add(B2CountChanged(count: int.tryParse(value) ?? 0));
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // N Count Section
+                CustomFormField(
+                  label: 'N Count (Neutral Feedback)',
+                  hintText: 'Enter N count',
+                  icon: Icons.remove,
+                  controller: _nCountController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    context.read<AddCSATEntryBloc>().add(NCountChanged(count: int.tryParse(value) ?? 0));
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // Preview Section
+                if (state.t2Count > 0 || state.b2Count > 0 || state.nCount > 0) ...[
+                  _buildSectionTitle(context, 'Preview'),
+                  const SizedBox(height: 8),
+                  CustomCard(
+                    child: Column(
+                      children: [
+                        _buildPreviewRow('Total Survey Hits', '${state.t2Count + state.b2Count + state.nCount}'),
+                        const Divider(),
+                        _buildPreviewRow('T2 Score', '${_calculateScore(state.t2Count, state).toStringAsFixed(2)}%'),
+                        _buildPreviewRow('B2 Score', '${_calculateScore(state.b2Count, state).toStringAsFixed(2)}%'),
+                        _buildPreviewRow('N Score', '${_calculateScore(state.nCount, state).toStringAsFixed(2)}%'),
+                        const Divider(),
+                        _buildPreviewRow(
+                          'CSAT Percentage',
+                          '${_calculateCSAT(state).toStringAsFixed(2)}%',
+                          isHighlight: true,
+                          color: _calculateCSAT(state) >= 60 ? Colors.green : Theme.of(context).colorScheme.error,
+                        ),
+                        if (_calculateCSAT(state) < 60)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Theme.of(context).colorScheme.error,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'CSAT below 60% - Needs Improvement',
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: Theme.of(context).colorScheme.error,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                // Submit Button
+                SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                    text: state.isUpdate ? 'Update CSAT Entry' : 'Add CSAT Entry',
+                    onPressed: state.status == AddCSATEntryStatus.loading ? null : () {
+                      context.read<AddCSATEntryBloc>().add(const SubmitCSATEntry());
+                    },
+                    icon: state.isUpdate ? Icons.update : Icons.add,
+                  ),
+                ),
+
+                if (state.isUpdate) ...[
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      text: 'Delete Entry',
+                      onPressed: state.status == AddCSATEntryStatus.loading ? null : () => _showDeleteConfirmationDialog(context),
+                      isPrimary: false,
+                      icon: Icons.delete_outline,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 

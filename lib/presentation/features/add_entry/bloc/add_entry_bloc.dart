@@ -145,6 +145,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
           status: AddEntryStatus.success,
           errorMessage: null,
         ));
+        adService.showAd();
       } else {
         await _addEntryUseCase.execute(entry);
         emit(state.copyWith(

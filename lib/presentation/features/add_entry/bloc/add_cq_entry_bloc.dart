@@ -75,6 +75,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
           status: AddCQEntryStatus.success,
           errorMessage: null,
         ));
+        adService.showAd();
       } else {
         await repository.saveCQEntry(entry);
         emit(state.copyWith(

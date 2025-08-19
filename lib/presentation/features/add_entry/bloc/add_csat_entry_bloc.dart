@@ -87,6 +87,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
           status: AddCSATEntryStatus.success,
           errorMessage: null,
         ));
+        adService.showAd();
       } else {
         await repository.saveCSATEntry(entry);
         emit(state.copyWith(

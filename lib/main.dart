@@ -1,3 +1,4 @@
+import 'package:advisor_desk/data/datasources/notification_service.dart';
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/data/datasources/goal_data_source.dart';
 import 'package:advisor_desk/data/repositories/goal_repository_impl.dart';
@@ -42,6 +43,9 @@ void main() async {
   final deleteCQEntriesByDateUseCase = DeleteCQEntriesByDateUseCase(performanceRepository);
   final deleteCSATEntriesByDateUseCase = DeleteCSATEntriesByDateUseCase(performanceRepository);
 
+  final notificationService = NotificationService(performanceRepository: performanceRepository);
+  await notificationService.init();
+
   final prefs = await SharedPreferences.getInstance();
   final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
 
@@ -57,6 +61,7 @@ void main() async {
     goalRepository: goalRepository,
     deleteCQEntriesByDateUseCase: deleteCQEntriesByDateUseCase,
     deleteCSATEntriesByDateUseCase: deleteCSATEntriesByDateUseCase,
+    notificationService: notificationService,
     initialRoute: initialRoute,
   ));
 }
@@ -67,6 +72,7 @@ class MyApp extends StatefulWidget {
   final GoalRepository goalRepository;
   final DeleteCQEntriesByDateUseCase deleteCQEntriesByDateUseCase;
   final DeleteCSATEntriesByDateUseCase deleteCSATEntriesByDateUseCase;
+  final NotificationService notificationService;
   final String initialRoute;
   
   const MyApp({
@@ -76,6 +82,7 @@ class MyApp extends StatefulWidget {
     required this.goalRepository,
     required this.deleteCQEntriesByDateUseCase,
     required this.deleteCSATEntriesByDateUseCase,
+    required this.notificationService,
     required this.initialRoute,
   }) : super(key: key);
 
@@ -88,6 +95,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     checkForUpdate();
+    widget.notificationService.cancelTodaysRemindersIfEntryExists();
   }
 
   Future<void> checkForUpdate() async {
@@ -131,6 +139,7 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
         RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
         RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
+        RepositoryProvider<NotificationService>.value(value: widget.notificationService),
       ],
       child: MultiBlocProvider(
         providers: [

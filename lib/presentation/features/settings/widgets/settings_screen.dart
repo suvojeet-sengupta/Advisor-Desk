@@ -58,6 +58,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 16),
           _buildSectionCard(
             context,
+            'Notifications',
+            [
+              _buildLinkTile(
+                context,
+                'Reminder Settings',
+                AppRouter.reminderSettingsRoute,
+                Icons.notifications,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildSectionCard(
+            context,
             'Salary Settings',
             [
               _buildLinkTile(

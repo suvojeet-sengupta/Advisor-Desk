@@ -33,6 +33,8 @@ dependencies:
   excel: ^2.1.0
   in_app_update: ^4.2.3 # Add this line for in-app updates
   google_mobile_ads: ^6.0.0
+  flutter_local_notifications: ^19.4.0
+  timezone: ^0.9.4
   
   
   screenshot: ^3.0.0

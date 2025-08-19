@@ -1,3 +1,4 @@
+import 'package:advisor_desk/presentation/screens/reminder_settings_screen.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
@@ -41,6 +42,7 @@ class AppRouter {
   static const String cqDetailsRoute = '/cq-details';
   static const String csatDetailsRoute = '/csat-details';
   static const String loginDaysDetailsRoute = '/login-days-details';
+  static const String reminderSettingsRoute = '/reminder-settings';
   
   static const String creditsRoute = '/credits';
 
@@ -117,6 +119,10 @@ class AppRouter {
       case creditsRoute:
         return MaterialPageRoute(
           builder: (_) => const CreditsScreen(),
+        );
+      case reminderSettingsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const ReminderSettingsScreen(),
         );
       default:
         return MaterialPageRoute(

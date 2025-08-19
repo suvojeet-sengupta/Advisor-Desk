@@ -95,10 +95,7 @@ class _MyAppState extends State<MyApp> {
       AppUpdateInfo appUpdateInfo = await InAppUpdate.checkForUpdate();
 
       if (appUpdateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
-        if (appUpdateInfo.immediateUpdateAllowed) {
-          // Perform an immediate update
-          await InAppUpdate.performImmediateUpdate();
-        } else if (appUpdateInfo.flexibleUpdateAllowed) {
+        if (appUpdateInfo.flexibleUpdateAllowed) {
           // Start a flexible update
           await InAppUpdate.startFlexibleUpdate();
           // When the flexible update is downloaded, prompt the user to complete it.
@@ -113,6 +110,9 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
           );
+        } else if (appUpdateInfo.immediateUpdateAllowed) {
+          // Perform an immediate update if flexible is not allowed
+          await InAppUpdate.performImmediateUpdate();
         }
       }
     } catch (e) {

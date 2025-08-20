@@ -55,19 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildInfoTile('Version', _appVersion, Icons.info_outline),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildSectionCard(
-            context,
-            'Notifications',
-            [
-              _buildLinkTile(
-                context,
-                'Reminder Settings',
-                AppRouter.reminderSettingsRoute,
-                Icons.notifications,
-              ),
-            ],
-          ),
+          
           const SizedBox(height: 16),
           _buildSectionCard(
             context,

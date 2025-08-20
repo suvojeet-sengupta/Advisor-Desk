@@ -47,7 +47,7 @@ class NotificationService {
         'Advisor Desk Reminder',
         "Don't forget to add today's entry!",
         scheduledDate,
-        const NotificationDetails(
+        NotificationDetails(
           android: AndroidNotificationDetails(
             channelId,
             'Daily Reminders',
@@ -57,8 +57,6 @@ class NotificationService {
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
         payload: 'daily_reminder',
       );

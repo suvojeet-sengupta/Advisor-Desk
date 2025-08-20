@@ -30,6 +30,25 @@ class NotificationService {
     await _scheduleNotification(12, 0, 0, 0, 'Morning Reminder'); // 12:00 PM
     await _scheduleNotification(17, 0, 0, 1, 'Afternoon Reminder'); // 5:00 PM
     await _scheduleNotification(21, 0, 0, 2, 'Evening Reminder'); // 9:00 PM
+    await _scheduleNotification(23, 0, 0, 3, 'Night Reminder'); // 11:00 PM
+  }
+
+  Future<void> sendTestNotification() async {
+    await flutterLocalNotificationsPlugin.show(
+      99,
+      'Test Notification',
+      'This is a test notification from Advisor Desk.',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'test_channel',
+          'Test Notifications',
+          channelDescription: 'Channel for test notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+      payload: 'test_payload',
+    );
   }
 
   Future<void> _scheduleNotification(int hour, int minute, int second, int id, String channelId) async {

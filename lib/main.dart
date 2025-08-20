@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart';
 import 'package:in_app_update/in_app_update.dart'; // For in-app updates
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -95,7 +96,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     checkForUpdate();
+    _requestNotificationPermission();
     widget.notificationService.cancelTodaysRemindersIfEntryExists();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    await Permission.notification.request();
   }
 
   Future<void> checkForUpdate() async {

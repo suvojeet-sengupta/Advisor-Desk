@@ -33,24 +33,6 @@ class NotificationService {
     await _scheduleNotification(23, 0, 0, 3, 'Night Reminder'); // 11:00 PM
   }
 
-  Future<void> sendTestNotification() async {
-    await flutterLocalNotificationsPlugin.show(
-      99,
-      'Test Notification',
-      'This is a test notification from Advisor Desk.',
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'test_channel',
-          'Test Notifications',
-          channelDescription: 'Channel for test notifications',
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-      ),
-      payload: 'test_payload',
-    );
-  }
-
   Future<void> _scheduleNotification(int hour, int minute, int second, int id, String channelId) async {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate =

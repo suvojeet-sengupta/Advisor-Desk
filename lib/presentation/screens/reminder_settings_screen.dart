@@ -61,19 +61,6 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
             value: _remindersEnabled,
             onChanged: _updateReminderSetting,
           ),
-          const Divider(),
-          ListTile(
-            title: const Text('Send Test Notification'),
-            subtitle: const Text('Click to check if notifications are working.'),
-            trailing: const Icon(Icons.send),
-            onTap: () async {
-              final notificationService = context.read<NotificationService>();
-              await notificationService.sendTestNotification();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Test notification sent!')),
-              );
-            },
-          ),
         ],
       ),
     );

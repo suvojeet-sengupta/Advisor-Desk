@@ -37,7 +37,7 @@ dependencies:
   timezone: ^0.10.1
   image_picker: ^1.2.0
   file_picker: ^10.3.2
-  in_app_review: ^6.0.0 # Added for in-app review
+  in_app_review: ^2.0.10 # Added for in-app review
 
 
   screenshot: ^3.0.0

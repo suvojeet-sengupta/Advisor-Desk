@@ -167,7 +167,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       InAppUpdate.checkForUpdate().then((info) {
-        if (info.updateAvailability == UpdateAvailability.developerTriggeredUpdateNeeded) {
+        if (info.updateAvailability == UpdateAvailability.updateAvailable) {
           InAppUpdate.completeFlexibleUpdate();
         }
       }).catchError((e) {

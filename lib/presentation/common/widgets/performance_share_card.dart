@@ -59,10 +59,11 @@ class PerformanceShareCard extends StatelessWidget {
               style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 10),
-            Text(
-              profile.name,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
-            ),
+            if (profile.name.isNotEmpty)
+              Text(
+                profile.name,
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+              ),
             const SizedBox(height: 20),
             _buildInfoRow(
               context,

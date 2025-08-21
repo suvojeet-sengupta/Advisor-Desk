@@ -42,7 +42,7 @@ class _ProfileViewState extends State<ProfileView> {
     final profile = context.read<ProfileCubit>().state;
     _nameController = TextEditingController(text: profile.name);
     _companyController = TextEditingController(text: profile.companyName);
-    _isEditing = profile.name == 'Your Name';
+    _isEditing = profile.name.isEmpty;
   }
 
   @override
@@ -67,7 +67,7 @@ class _ProfileViewState extends State<ProfileView> {
         listener: (context, state) {
           _nameController.text = state.name;
           _companyController.text = state.companyName;
-          if (state.name != 'Your Name' && state.companyName != 'Your Company') {
+          if (state.name.isNotEmpty && state.companyName.isNotEmpty) {
             setState(() {
               _isEditing = false;
             });

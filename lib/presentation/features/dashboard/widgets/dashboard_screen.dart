@@ -281,8 +281,9 @@ class _DashboardViewState extends State<DashboardView> {
                                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                     child: BlocBuilder<ProfileCubit, Profile>(
                                       builder: (context, profile) {
+                                        final showName = profile.name.isNotEmpty;
                                         return Text(
-                                          '${_getGreeting()}, ${profile.name}',
+                                          showName ? '${_getGreeting()}, ${profile.name}' : _getGreeting(),
                                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                                 fontWeight: FontWeight.bold,
                                               ),

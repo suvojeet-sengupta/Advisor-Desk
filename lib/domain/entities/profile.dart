@@ -2,20 +2,20 @@
 import 'package:equatable/equatable.dart';
 
 class Profile extends Equatable {
-  final String name;
-  final String companyName;
+  final String? name;
+  final String? companyName;
   final String profilePicturePath;
 
   const Profile({
-    required this.name,
-    required this.companyName,
+    this.name,
+    this.companyName,
     required this.profilePicturePath,
   });
 
   factory Profile.initial() {
     return const Profile(
-      name: 'Your Name',
-      companyName: 'Your Company',
+      name: '',
+      companyName: '',
       profilePicturePath: '',
     );
   }

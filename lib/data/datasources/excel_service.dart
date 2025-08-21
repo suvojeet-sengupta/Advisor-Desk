@@ -24,30 +24,35 @@ class ExcelService {
     ]);
     sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
         CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0));
-    sheet.appendRow([
-      'Advisor: ${profile.name}',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
-    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
-        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 1));
-    sheet.appendRow([
-      'Company: ${profile.companyName}',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
-    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 2),
-        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 2));
+
+    final showProfileInfo = profile.name.isNotEmpty;
+    if (showProfileInfo) {
+      sheet.appendRow([
+        'Advisor: ${profile.name}',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: sheet.maxRows - 1),
+          CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: sheet.maxRows - 1));
+      sheet.appendRow([
+        'Company: ${profile.companyName}',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: sheet.maxRows - 1),
+          CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: sheet.maxRows - 1));
+    }
+
     sheet.appendRow([
       'Period: ${summary.formattedDateRange}',
       '',
@@ -58,8 +63,8 @@ class ExcelService {
       '',
       '',
     ]);
-    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 3),
-        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 3));
+    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: sheet.maxRows - 1),
+        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: sheet.maxRows - 1));
     sheet.appendRow([]); // Empty row for spacing
 
     if (sectionsToInclude.contains(ReportSection.monthlySummary)) {

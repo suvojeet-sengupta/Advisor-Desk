@@ -67,6 +67,11 @@ class _ProfileViewState extends State<ProfileView> {
         listener: (context, state) {
           _nameController.text = state.name;
           _companyController.text = state.companyName;
+          if (state.name != 'Your Name' && state.companyName != 'Your Company') {
+            setState(() {
+              _isEditing = false;
+            });
+          }
         },
         builder: (context, profile) {
           return SingleChildScrollView(

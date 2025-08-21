@@ -37,6 +37,18 @@ class ExcelService {
     sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
         CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 1));
     sheet.appendRow([
+      'Company: ${profile.companyName}',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ]);
+    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 2),
+        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 2));
+    sheet.appendRow([
       'Period: ${summary.formattedDateRange}',
       '',
       '',
@@ -46,8 +58,8 @@ class ExcelService {
       '',
       '',
     ]);
-    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
-        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 1));
+    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 3),
+        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 3));
     sheet.appendRow([]); // Empty row for spacing
 
     if (sectionsToInclude.contains(ReportSection.monthlySummary)) {

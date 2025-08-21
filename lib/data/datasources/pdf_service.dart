@@ -18,6 +18,8 @@ class PdfService {
           pw.Text('Advisor Desk Performance Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 10),
           pw.Text('Advisor: ${profile.name}', style: pw.TextStyle(fontSize: 18)),
+          pw.SizedBox(height: 5),
+          pw.Text('Company: ${profile.companyName}', style: pw.TextStyle(fontSize: 18)),
           pw.SizedBox(height: 10),
           pw.Text('Period: ${summary.formattedDateRange}', style: pw.TextStyle(fontSize: 18)),
           pw.SizedBox(height: 20),

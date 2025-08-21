@@ -17,12 +17,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileCubit(
-        ProfileRepositoryImpl(ProfileDataSource()),
-      ),
-      child: ProfileView(isMandatoryFill: isMandatoryFill),
-    );
+    return ProfileView(isMandatoryFill: isMandatoryFill);
   }
 }
 

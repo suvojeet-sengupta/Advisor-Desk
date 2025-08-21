@@ -1,4 +1,5 @@
 
+import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';

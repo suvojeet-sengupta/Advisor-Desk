@@ -132,11 +132,35 @@ class _DashboardViewState extends State<DashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Dashboard',
-        leading: IconButton(
-          icon: const Icon(Icons.info_outline_rounded),
-          onPressed: () => Navigator.pushNamed(context, AppRouter.appInfoRoute),
+        title: BlocBuilder<ProfileCubit, Profile>(
+          builder: (context, profile) {
+            return GestureDetector(
+              onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: profile.profilePicturePath.isNotEmpty
+                        ? FileImage(File(profile.profilePicturePath))
+                        : null,
+                    child: profile.profilePicturePath.isEmpty
+                        ? const Icon(Icons.person)
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(profile.name, style: Theme.of(context).textTheme.titleMedium),
+                      Text(profile.companyName, style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
         ),
+        
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),

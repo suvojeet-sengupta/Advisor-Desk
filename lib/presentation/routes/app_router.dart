@@ -120,6 +120,10 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const CreditsScreen(),
         );
+      case profileRoute:
+        return MaterialPageRoute(
+          builder: (_) => const ProfileScreen(),
+        );
       
       default:
         return MaterialPageRoute(

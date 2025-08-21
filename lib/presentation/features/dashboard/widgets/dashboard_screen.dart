@@ -57,11 +57,7 @@ class DashboardScreen extends StatelessWidget {
             goalRepository: context.read<GoalRepository>(),
           )..add(LoadGoals()),
         ),
-        BlocProvider(
-          create: (context) => ProfileCubit(
-            ProfileRepositoryImpl(ProfileDataSource()),
-          ),
-        ),
+        
       ],
       child: const DashboardView(),
     );

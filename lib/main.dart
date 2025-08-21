@@ -22,12 +22,16 @@ import 'package:in_app_update/in_app_update.dart'; // For in-app updates
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import the new service
+import 'package:advisor_desk/data/datasources/profile_data_source.dart';
+import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
+import 'package:advisor_desk/domain/repositories/profile_repository.dart';
+import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {
-    return const BouncingScrollPhysics();
+    return const BouncingScrollBehavior();
   }
 }
 
@@ -54,13 +58,19 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
-  final hasFilledProfileInfo = prefs.getBool('hasFilledProfileInfo') ?? false; // New flag
+
+  // Instantiate Profile related services
+  final profileDataSource = ProfileDataSource();
+  final profileRepository = ProfileRepositoryImpl(profileDataSource);
+  // Load profile to determine if it's filled
+  final initialProfile = await profileRepository.getProfile();
+  final bool isProfileFilled = initialProfile.name != null && initialProfile.companyName != null; // Assuming both are required
 
   String initialRoute = AppRouter.dashboardRoute;
   if (!hasShownOnboarding) {
     initialRoute = AppRouter.onboardingTutorialRoute;
     await prefs.setBool('hasShownOnboarding', true);
-  } else if (!hasFilledProfileInfo) { // If onboarding is done but profile not filled
+  } else if (!isProfileFilled) { // If onboarding is done but profile not filled
     initialRoute = AppRouter.profileRoute;
   }
   
@@ -72,6 +82,7 @@ void main() async {
     deleteCSATEntriesByDateUseCase: deleteCSATEntriesByDateUseCase,
     notificationService: notificationService,
     initialRoute: initialRoute,
+    profileRepository: profileRepository, // Pass profileRepository to MyApp
   ));
 }
 
@@ -83,7 +94,8 @@ class MyApp extends StatefulWidget {
   final DeleteCSATEntriesByDateUseCase deleteCSATEntriesByDateUseCase;
   final NotificationService notificationService;
   final String initialRoute;
-  
+  final ProfileRepository profileRepository; // New
+
   const MyApp({
     Key? key,
     required this.adService,
@@ -93,6 +105,7 @@ class MyApp extends StatefulWidget {
     required this.deleteCSATEntriesByDateUseCase,
     required this.notificationService,
     required this.initialRoute,
+    required this.profileRepository, // New
   }) : super(key: key);
 
   @override
@@ -154,11 +167,13 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
         RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
         RepositoryProvider<NotificationService>.value(value: widget.notificationService),
+        RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository), // New
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => ThemeCubit()),
           BlocProvider(create: (context) => DashboardCustomizationCubit()),
+          BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>())), // New
         ],
         child: BlocBuilder<ThemeCubit, ThemeState>(
           builder: (context, themeState) {

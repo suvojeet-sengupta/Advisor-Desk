@@ -202,10 +202,6 @@ class _ProfileViewState extends State<ProfileView> {
             );
             context.read<ProfileCubit>().saveProfile(updatedProfile);
 
-            // Set hasFilledProfileInfo to true
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('hasFilledProfileInfo', true);
-
             // Navigate to dashboard if it was a mandatory fill
             if (widget.isMandatoryFill) {
               Navigator.pushReplacementNamed(context, AppRouter.dashboardRoute);

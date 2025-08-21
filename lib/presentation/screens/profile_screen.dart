@@ -65,8 +65,8 @@ class _ProfileViewState extends State<ProfileView> {
       appBar: CustomAppBar(title: _isEditing ? 'Edit Profile' : 'Profile'),
       body: BlocConsumer<ProfileCubit, Profile>(
         listener: (context, state) {
-          _nameController.text = state.name;
-          _companyController.text = state.companyName;
+          _nameController.text = state.name ?? '';
+          _companyController.text = state.companyName ?? '';
           setState(() {
             _isEditing = state.name == null;
           });

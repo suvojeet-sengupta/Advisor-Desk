@@ -186,7 +186,7 @@ class _DashboardViewState extends State<DashboardView> {
           builder: (context, state) {
             final profile = state.profile;
             return GestureDetector(
-              onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute),
+              onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
               child: Padding(
                 padding: const EdgeInsets.only(left: 16.0),
                 child: CircleAvatar(

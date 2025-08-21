@@ -122,8 +122,9 @@ class AppRouter {
           builder: (_) => const CreditsScreen(),
         );
       case profileRoute:
+        final bool isMandatoryFill = settings.arguments as bool? ?? false;
         return MaterialPageRoute(
-          builder: (_) => const ProfileScreen(),
+          builder: (_) => ProfileScreen(isMandatoryFill: isMandatoryFill),
         );
       
       default:

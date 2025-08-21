@@ -55,11 +55,14 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
+  final hasFilledProfileInfo = prefs.getBool('hasFilledProfileInfo') ?? false; // New flag
 
   String initialRoute = AppRouter.dashboardRoute;
   if (!hasShownOnboarding) {
     initialRoute = AppRouter.onboardingTutorialRoute;
     await prefs.setBool('hasShownOnboarding', true);
+  } else if (!hasFilledProfileInfo) { // If onboarding is done but profile not filled
+    initialRoute = AppRouter.profileRoute;
   }
   
   runApp(MyApp(

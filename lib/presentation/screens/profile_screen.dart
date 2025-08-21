@@ -8,9 +8,12 @@ import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.da
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/data/datasources/profile_data_source.dart';
+import 'package:advisor_desk/presentation/routes/app_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final bool isMandatoryFill;
+  const ProfileScreen({Key? key, this.isMandatoryFill = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +21,14 @@ class ProfileScreen extends StatelessWidget {
       create: (context) => ProfileCubit(
         ProfileRepositoryImpl(ProfileDataSource()),
       ),
-      child: const ProfileView(),
+      child: ProfileView(isMandatoryFill: isMandatoryFill),
     );
   }
 }
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({Key? key}) : super(key: key);
+  final bool isMandatoryFill;
+  const ProfileView({Key? key, this.isMandatoryFill = false}) : super(key: key);
 
   @override
   _ProfileViewState createState() => _ProfileViewState();
@@ -38,9 +42,13 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   void initState() {
     super.initState();
-    final profile = context.read<ProfileCubit>().state.profile;
-    _nameController = TextEditingController(text: profile.name);
-    _companyController = TextEditingController(text: profile.companyName);
+    final profileCubit = context.read<ProfileCubit>();
+    _nameController = TextEditingController(text: profileCubit.state.profile.name);
+    _companyController = TextEditingController(text: profileCubit.state.profile.companyName);
+
+    if (widget.isMandatoryFill) {
+      profileCubit.setEditing(true);
+    }
   }
 
   @override
@@ -177,14 +185,31 @@ class _ProfileViewState extends State<ProfileView> {
         const SizedBox(height: 24),
         CustomButton(
           text: 'Save Profile',
-          onPressed: () {
+          onPressed: () async {
             final name = _nameController.text.trim();
             final companyName = _companyController.text.trim();
+
+            if (name.isEmpty || companyName.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Name and Company Name cannot be empty.')),
+              );
+              return; // Prevent saving if fields are empty
+            }
+
             final updatedProfile = profile.copyWith(
-              name: name.isEmpty ? null : name,
-              companyName: companyName.isEmpty ? null : companyName,
+              name: name,
+              companyName: companyName,
             );
             context.read<ProfileCubit>().saveProfile(updatedProfile);
+
+            // Set hasFilledProfileInfo to true
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('hasFilledProfileInfo', true);
+
+            // Navigate to dashboard if it was a mandatory fill
+            if (widget.isMandatoryFill) {
+              Navigator.pushReplacementNamed(context, AppRouter.dashboardRoute);
+            }
           },
         ),
       ],

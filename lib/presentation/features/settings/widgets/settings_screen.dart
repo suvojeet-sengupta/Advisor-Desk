@@ -9,8 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
 
-import 'package:flutter/services.dart'; // Import for MethodChannel and PlatformException
-
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -53,9 +51,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'App Information',
             [
               _buildInfoTile('Version', _appVersion, Icons.info_outline),
+              _buildLinkTile(
+                context,
+                'Credits',
+                AppRouter.creditsRoute,
+                Icons.people,
+              ),
+              _buildLinkTile(
+                context,
+                'GitHub Repository',
+                'https://github.com/suvojit213/Advisor-Desk',
+                Icons.code,
+              ),
+              ListTile(
+                leading: Icon(Icons.email, color: Theme.of(context).colorScheme.secondary),
+                title: Text(
+                  'suvojitsengupta21@gmail.com',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                ),
+                onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
             ],
           ),
-          
           const SizedBox(height: 16),
           _buildSectionCard(
             context,
@@ -229,11 +250,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           final Uri uri = Uri.parse(target);
           if (!await launchUrl(uri)) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Could not launch \$target')),
+              SnackBar(content: Text('Could not launch $target')),
             );
           }
         }
       },
     );
+  }
+
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw 'Could not launch $url';
+    }
   }
 }

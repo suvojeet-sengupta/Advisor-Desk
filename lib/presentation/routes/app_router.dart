@@ -12,7 +12,7 @@ import 'package:advisor_desk/presentation/features/add_entry/widgets/add_entry_s
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
 import 'package:advisor_desk/presentation/features/monthly_performance/widgets/monthly_performance_screen.dart';
 import 'package:advisor_desk/presentation/features/all_reports/widgets/all_reports_screen.dart';
-import 'package:advisor_desk/presentation/screens/app_info_screen.dart';
+
 import 'package:advisor_desk/presentation/features/settings/widgets/settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dart';
 import 'package:advisor_desk/presentation/screens/cq_details_screen.dart';
@@ -35,7 +35,7 @@ class AppRouter {
   static const String allReportsRoute = '/all-reports';
   static const String onboardingTutorialRoute = '/onboarding-tutorial';
   static const String themeSelectionRoute = '/theme-selection';
-  static const String appInfoRoute = '/app-info';
+  
   static const String settingsRoute = '/settings';
   static const String customizeDashboardRoute = '/customize-dashboard';
   static const String salarySettingsRoute = '/salary-settings';
@@ -82,10 +82,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const ThemeSelectionScreen(),
         );
-      case appInfoRoute:
-        return MaterialPageRoute(
-          builder: (_) => const AppInfoScreen(),
-        );
+      
       case settingsRoute:
         return MaterialPageRoute(
           builder: (_) => const SettingsScreen(),

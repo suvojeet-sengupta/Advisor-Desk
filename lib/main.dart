@@ -21,6 +21,7 @@ import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_cus
 import 'package:in_app_update/in_app_update.dart'; // For in-app updates
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import the new service
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -29,8 +30,6 @@ class SmoothScrollBehavior extends ScrollBehavior {
     return const BouncingScrollPhysics();
   }
 }
-
-import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import the new service
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

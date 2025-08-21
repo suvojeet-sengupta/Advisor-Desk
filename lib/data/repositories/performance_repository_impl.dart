@@ -10,6 +10,7 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/csat_summary.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 
@@ -183,13 +184,13 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
-  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude) async {
-    return _pdfService.generateReportPdf(summary, sectionsToInclude);
+  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
+    return _pdfService.generateReportPdf(summary, sectionsToInclude, profile);
   }
 
   @override
-  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude) async {
-    return _excelService.generateReportExcel(summary, sectionsToInclude);
+  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
+    return _excelService.generateReportExcel(summary, sectionsToInclude, profile);
   }
 
   @override

@@ -2,10 +2,11 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:intl/intl.dart';
 
 class PdfService {
-  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude) async {
+  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     final pdf = pw.Document();
     final formatter = NumberFormat('#,##0.00');
 
@@ -15,6 +16,8 @@ class PdfService {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text('Advisor Desk Performance Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 10),
+          pw.Text('Advisor: ${profile.name}', style: pw.TextStyle(fontSize: 18)),
           pw.SizedBox(height: 10),
           pw.Text('Period: ${summary.formattedDateRange}', style: pw.TextStyle(fontSize: 18)),
           pw.SizedBox(height: 20),

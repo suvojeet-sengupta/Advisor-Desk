@@ -18,6 +18,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
+import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 
 class AllReportsScreen extends StatelessWidget {
@@ -25,10 +27,17 @@ class AllReportsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AllReportsBloc(
-        repository: context.read<PerformanceRepository>(),
-      )..add(LoadAllMonthlySummaries()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AllReportsBloc(
+            repository: context.read<PerformanceRepository>(),
+          )..add(LoadAllMonthlySummaries()),
+        ),
+        BlocProvider(
+          create: (context) => ProfileCubit(context.read()),
+        ),
+      ],
       child: const AllReportsView(),
     );
   }
@@ -39,7 +48,7 @@ class AllReportsView extends StatelessWidget {
 
   static const platform = MethodChannel('com.suvojeet.advisordesk/pdf');
 
-  Future<void> _generateAndSharePdf(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude) async {
+  Future<void> _generateAndSharePdf(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(const SnackBar(content: Text("Generating PDF Report...")));
@@ -51,7 +60,7 @@ class AllReportsView extends StatelessWidget {
       }
 
       final generatePdf = GeneratePdfReportUseCase(context.read<PerformanceRepository>());
-      final pdfBytes = await generatePdf.execute(summary, sectionsToInclude);
+      final pdfBytes = await generatePdf.execute(summary, sectionsToInclude, profile);
       
       final result = await platform.invokeMethod('savePdf', {
         'pdfBytes': pdfBytes,
@@ -73,14 +82,14 @@ class AllReportsView extends StatelessWidget {
     }
   }
 
-  Future<void> _generateAndShareExcel(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude) async {
+  Future<void> _generateAndShareExcel(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(const SnackBar(content: Text("Generating Excel Report...")));
 
     try {
       final generateExcel = GenerateExcelReportUseCase(context.read<PerformanceRepository>());
-      final excelFile = await generateExcel.execute(summary, sectionsToInclude);
+      final excelFile = await generateExcel.execute(summary, sectionsToInclude, profile);
 
       final xFile = XFile(excelFile.path, mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       await Share.shareXFiles([xFile], subject: "Advisor Desk Report - ${summary.formattedDateRange}");
@@ -107,6 +116,7 @@ class AllReportsView extends StatelessWidget {
                 final startDate = result['startDate'] as DateTime;
                 final endDate = result['endDate'] as DateTime;
                 final selectedSections = result['selectedSections'] as List<ReportSection>;
+                final profile = context.read<ProfileCubit>().state;
 
                 // Fetch ReportSummary for the selected date range
                 final reportSummary = await context.read<PerformanceRepository>().getReportSummary(startDate, endDate);
@@ -122,7 +132,7 @@ class AllReportsView extends StatelessWidget {
                         title: const Text('PDF'),
                         onTap: () {
                           Navigator.pop(dialogContext);
-                          _generateAndSharePdf(context, reportSummary, selectedSections);
+                          _generateAndSharePdf(context, reportSummary, selectedSections, profile);
                         },
                       ),
                       ListTile(
@@ -130,7 +140,7 @@ class AllReportsView extends StatelessWidget {
                         title: const Text('Excel'),
                         onTap: () {
                           Navigator.pop(dialogContext);
-                          _generateAndShareExcel(context, reportSummary, selectedSections);
+                          _generateAndShareExcel(context, reportSummary, selectedSections, profile);
                         },
                       ),
                     ],

@@ -3,10 +3,11 @@ import 'package:excel/excel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:advisor_desk/domain/entities/report_summary.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 
 class ExcelService {
-  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude) async {
+  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     final excel = Excel.createExcel();
     final sheet = excel['Report'];
 
@@ -23,6 +24,18 @@ class ExcelService {
     ]);
     sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
         CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0));
+    sheet.appendRow([
+      'Advisor: ${profile.name}',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ]);
+    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
+        CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 1));
     sheet.appendRow([
       'Period: ${summary.formattedDateRange}',
       '',

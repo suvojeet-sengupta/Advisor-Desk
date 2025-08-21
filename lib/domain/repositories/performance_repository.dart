@@ -5,6 +5,7 @@ import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart'; // Import CQSummary
 import 'dart:io';
 
@@ -40,8 +41,8 @@ abstract class PerformanceRepository {
   Future<List<int>> generateMonthlyReportPdf(MonthlySummary summary); // Deprecated
   Future<File> generateMonthlyReportExcel(MonthlySummary summary); // Deprecated
 
-  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude);
-  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude);
+  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile);
+  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile);
 
   // Database backup and restore
   Future<String> backupDatabase();

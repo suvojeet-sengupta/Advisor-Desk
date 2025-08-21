@@ -24,8 +24,8 @@ class ProfileDataSource {
 
   Future<Profile> getProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString(_nameKey) ?? '';
-    final companyName = prefs.getString(_companyKey) ?? '';
+    final name = prefs.getString(_nameKey);
+    final companyName = prefs.getString(_companyKey);
     final picturePath = prefs.getString(_picturePathKey) ?? '';
     return Profile(
       name: name,

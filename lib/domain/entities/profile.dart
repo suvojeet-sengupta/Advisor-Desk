@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 
 class Profile extends Equatable {
@@ -14,8 +13,8 @@ class Profile extends Equatable {
 
   factory Profile.initial() {
     return const Profile(
-      name: '',
-      companyName: '',
+      name: null,
+      companyName: null,
       profilePicturePath: '',
     );
   }

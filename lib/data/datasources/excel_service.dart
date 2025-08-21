@@ -25,10 +25,10 @@ class ExcelService {
     sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
         CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0));
 
-    final showProfileInfo = profile.name.isNotEmpty;
+    final showProfileInfo = profile.name != null;
     if (showProfileInfo) {
       sheet.appendRow([
-        'Advisor: ${profile.name}',
+        'Advisor: ${profile.name!}',
         '',
         '',
         '',
@@ -40,7 +40,7 @@ class ExcelService {
       sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: sheet.maxRows - 1),
           CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: sheet.maxRows - 1));
       sheet.appendRow([
-        'Company: ${profile.companyName}',
+        'Company: ${profile.companyName!}',
         '',
         '',
         '',

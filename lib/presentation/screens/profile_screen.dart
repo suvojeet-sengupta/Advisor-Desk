@@ -42,7 +42,7 @@ class _ProfileViewState extends State<ProfileView> {
     final profile = context.read<ProfileCubit>().state;
     _nameController = TextEditingController(text: profile.name);
     _companyController = TextEditingController(text: profile.companyName);
-    _isEditing = profile.name.isEmpty;
+    _isEditing = profile.name == null;
   }
 
   @override
@@ -67,11 +67,9 @@ class _ProfileViewState extends State<ProfileView> {
         listener: (context, state) {
           _nameController.text = state.name;
           _companyController.text = state.companyName;
-          if (state.name.isNotEmpty && state.companyName.isNotEmpty) {
-            setState(() {
-              _isEditing = false;
-            });
-          }
+          setState(() {
+            _isEditing = state.name == null;
+          });
         },
         builder: (context, profile) {
           return SingleChildScrollView(
@@ -127,13 +125,13 @@ class _ProfileViewState extends State<ProfileView> {
                 ListTile(
                   leading: const Icon(Icons.person_outline),
                   title: const Text('Name'),
-                  subtitle: Text(profile.name, style: Theme.of(context).textTheme.titleLarge),
+                  subtitle: Text(profile.name ?? 'Not Set', style: Theme.of(context).textTheme.titleLarge),
                 ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.business_center_outlined),
                   title: const Text('Company'),
-                  subtitle: Text(profile.companyName, style: Theme.of(context).textTheme.titleLarge),
+                  subtitle: Text(profile.companyName ?? 'Not Set', style: Theme.of(context).textTheme.titleLarge),
                 ),
               ],
             ),
@@ -164,12 +162,20 @@ class _ProfileViewState extends State<ProfileView> {
               children: [
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    hintText: 'Enter your name',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _companyController,
-                  decoration: const InputDecoration(labelText: 'Company Name', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Company Name',
+                    hintText: 'Enter your company name',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ],
             ),
@@ -179,9 +185,11 @@ class _ProfileViewState extends State<ProfileView> {
         CustomButton(
           text: 'Save Profile',
           onPressed: () {
+            final name = _nameController.text.trim();
+            final companyName = _companyController.text.trim();
             final updatedProfile = profile.copyWith(
-              name: _nameController.text,
-              companyName: _companyController.text,
+              name: name.isEmpty ? null : name,
+              companyName: companyName.isEmpty ? null : companyName,
             );
             context.read<ProfileCubit>().saveProfile(updatedProfile);
             setState(() {

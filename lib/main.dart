@@ -31,7 +31,7 @@ import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.da
 class SmoothScrollBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {
-    return BouncingScrollBehavior();
+    return BouncingScrollPhysics();
   }
 }
 

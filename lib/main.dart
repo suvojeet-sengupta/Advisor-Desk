@@ -112,10 +112,11 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     checkForUpdate();
     _requestNotificationPermission();
     widget.notificationService.cancelTodaysRemindersIfEntryExists();
@@ -153,6 +154,25 @@ class _MyAppState extends State<MyApp> {
     } catch (e) {
       print('Failed to check for update: $e');
       // Handle error, e.g., show a message to the user
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      InAppUpdate.checkForUpdate().then((info) {
+        if (info.updateAvailability == UpdateAvailability.developerTriggeredUpdateNeeded) {
+          InAppUpdate.completeFlexibleUpdate();
+        }
+      }).catchError((e) {
+        print('Failed to check for update on resume: $e');
+      });
     }
   }
 

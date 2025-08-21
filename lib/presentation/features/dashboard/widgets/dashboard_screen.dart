@@ -87,7 +87,7 @@ class _DashboardViewState extends State<DashboardView> {
     }
   }
 
-  Future<void> _sharePerformance(BuildContext context, MonthlySummary summary) async {
+  Future<void> _sharePerformance(BuildContext context, MonthlySummary summary, Profile profile) async {
     // Show a loading indicator
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Preparing performance image...')),
@@ -98,7 +98,7 @@ class _DashboardViewState extends State<DashboardView> {
       final imageFile = await screenshotController.captureFromWidget(
         InheritedTheme.captureAll(
           context,
-          PerformanceShareCard(summary: summary),
+          PerformanceShareCard(summary: summary, profile: profile),
         ),
         delay: const Duration(milliseconds: 100),
         pixelRatio: 2.0, // Adjust pixel ratio for better quality
@@ -136,6 +136,20 @@ class _DashboardViewState extends State<DashboardView> {
     if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
     if (percentage >= 75) return Theme.of(context).colorScheme.primary;
     return Theme.of(context).colorScheme.error;
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    }
+    if (hour < 17) {
+      return 'Good Afternoon';
+    }
+    if (hour < 21) {
+      return 'Good Evening';
+    }
+    return 'Good Night';
   }
 
   @override
@@ -177,7 +191,10 @@ class _DashboardViewState extends State<DashboardView> {
               if (state.status == DashboardStatus.loaded && state.monthlySummary != null) {
                 return IconButton(
                   icon: const Icon(Icons.share),
-                  onPressed: () => _sharePerformance(context, state.monthlySummary!),
+                  onPressed: () {
+                    final profile = context.read<ProfileCubit>().state;
+                    _sharePerformance(context, state.monthlySummary!, profile);
+                  },
                 );
               }
               return const SizedBox.shrink();
@@ -259,6 +276,21 @@ class _DashboardViewState extends State<DashboardView> {
                             return CustomScrollView(
                               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                               slivers: [
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    child: BlocBuilder<ProfileCubit, Profile>(
+                                      builder: (context, profile) {
+                                        return Text(
+                                          '${_getGreeting()}, ${profile.name}',
+                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
                                 const SliverToBoxAdapter(child: IndependenceDayBanner()),
                                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
                                 ...customizationState.visibleSections.map((section) {

@@ -1,14 +1,11 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
-import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/data/datasources/profile_data_source.dart';
 
@@ -37,6 +34,7 @@ class _ProfileViewState extends State<ProfileView> {
   late final TextEditingController _nameController;
   late final TextEditingController _companyController;
   final ImagePicker _picker = ImagePicker();
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -44,6 +42,7 @@ class _ProfileViewState extends State<ProfileView> {
     final profile = context.read<ProfileCubit>().state;
     _nameController = TextEditingController(text: profile.name);
     _companyController = TextEditingController(text: profile.companyName);
+    _isEditing = profile.name == 'Your Name';
   }
 
   @override
@@ -63,61 +62,129 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Edit Profile'),
+      appBar: CustomAppBar(title: _isEditing ? 'Edit Profile' : 'Profile'),
       body: BlocConsumer<ProfileCubit, Profile>(
         listener: (context, state) {
-          // You can show a snackbar on successful save if you want
+          _nameController.text = state.name;
+          _companyController.text = state.companyName;
         },
         builder: (context, profile) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: profile.profilePicturePath.isNotEmpty
-                        ? FileImage(File(profile.profilePicturePath))
-                        : null,
-                    child: profile.profilePicturePath.isEmpty
-                        ? const Icon(Icons.camera_alt, size: 50)
-                        : null,
-                  ),
-                ),
+                _buildProfileHeader(context, profile),
                 const SizedBox(height: 24),
-                CustomCard(
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(labelText: 'Name'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _companyController,
-                        decoration: const InputDecoration(labelText: 'Company Name'),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                CustomButton(
-                  text: 'Save Profile',
-                  onPressed: () {
-                    final updatedProfile = profile.copyWith(
-                      name: _nameController.text,
-                      companyName: _companyController.text,
-                    );
-                    context.read<ProfileCubit>().saveProfile(updatedProfile);
-                    Navigator.pop(context);
-                  },
-                ),
+                _isEditing
+                    ? _buildEditView(context, profile)
+                    : _buildInfoView(context, profile),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildProfileHeader(BuildContext context, Profile profile) {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        CircleAvatar(
+          radius: 80,
+          backgroundImage: profile.profilePicturePath.isNotEmpty
+              ? FileImage(File(profile.profilePicturePath))
+              : null,
+          child: profile.profilePicturePath.isEmpty
+              ? const Icon(Icons.person, size: 80)
+              : null,
+        ),
+        if (_isEditing)
+          FloatingActionButton(
+            mini: true,
+            onPressed: _pickImage,
+            child: const Icon(Icons.camera_alt),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildInfoView(BuildContext context, Profile profile) {
+    return Column(
+      children: [
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.person_outline),
+                  title: const Text('Name'),
+                  subtitle: Text(profile.name, style: Theme.of(context).textTheme.titleLarge),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.business_center_outlined),
+                  title: const Text('Company'),
+                  subtitle: Text(profile.companyName, style: Theme.of(context).textTheme.titleLarge),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        CustomButton(
+          text: 'Edit Profile',
+          onPressed: () {
+            setState(() {
+              _isEditing = true;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEditView(BuildContext context, Profile profile) {
+    return Column(
+      children: [
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _companyController,
+                  decoration: const InputDecoration(labelText: 'Company Name', border: OutlineInputBorder()),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        CustomButton(
+          text: 'Save Profile',
+          onPressed: () {
+            final updatedProfile = profile.copyWith(
+              name: _nameController.text,
+              companyName: _companyController.text,
+            );
+            context.read<ProfileCubit>().saveProfile(updatedProfile);
+            setState(() {
+              _isEditing = false;
+            });
+          },
+        ),
+      ],
     );
   }
 }

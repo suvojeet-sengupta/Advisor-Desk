@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:intl/intl.dart';
 
 class PerformanceShareCard extends StatelessWidget {
   final MonthlySummary summary;
+  final Profile profile;
 
-  const PerformanceShareCard({Key? key, required this.summary}) : super(key: key);
+  const PerformanceShareCard({Key? key, required this.summary, required this.profile}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +17,11 @@ class PerformanceShareCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Material(
-      color: theme.scaffoldBackgroundColor, // Use scaffold background for consistent look
+      color: theme.scaffoldBackgroundColor,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: theme.cardColor, // Use card color for the background
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: theme.colorScheme.outline, width: 1),
           boxShadow: [
@@ -33,7 +35,6 @@ class PerformanceShareCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // App Branding
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -49,8 +50,6 @@ class PerformanceShareCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-
-            // Performance Summary
             Text(
               'Monthly Performance Summary',
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
@@ -59,8 +58,12 @@ class PerformanceShareCard extends StatelessWidget {
               summary.formattedMonthYear,
               style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
+            const SizedBox(height: 10),
+            Text(
+              profile.name,
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+            ),
             const SizedBox(height: 20),
-
             _buildInfoRow(
               context,
               Icons.timer,
@@ -104,8 +107,6 @@ class PerformanceShareCard extends StatelessWidget {
               theme.colorScheme.primary,
             ),
             const SizedBox(height: 20),
-
-            // Motivational Message
             Text(
               'Keep up the great work!',
               style: theme.textTheme.titleMedium?.copyWith(

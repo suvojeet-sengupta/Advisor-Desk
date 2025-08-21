@@ -157,8 +157,9 @@ class _DashboardViewState extends State<DashboardView> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Dashboard',
-        leading: BlocBuilder<ProfileCubit, Profile>(
-          builder: (context, profile) {
+        leading: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, state) {
+            final profile = state.profile;
             return GestureDetector(
               onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute),
               child: Padding(
@@ -192,7 +193,7 @@ class _DashboardViewState extends State<DashboardView> {
                 return IconButton(
                   icon: const Icon(Icons.share),
                   onPressed: () {
-                    final profile = context.read<ProfileCubit>().state;
+                    final profile = context.read<ProfileCubit>().state.profile;
                     _sharePerformance(context, state.monthlySummary!, profile);
                   },
                 );
@@ -279,8 +280,9 @@ class _DashboardViewState extends State<DashboardView> {
                                 SliverToBoxAdapter(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                    child: BlocBuilder<ProfileCubit, Profile>(
-                                      builder: (context, profile) {
+                                    child: BlocBuilder<ProfileCubit, ProfileState>(
+                                      builder: (context, state) {
+                                        final profile = state.profile;
                                         final showName = profile.name != null;
                                         return Text(
                                           showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
@@ -334,7 +336,7 @@ class _DashboardViewState extends State<DashboardView> {
               _navigateToMonthlyPerformance(context);
               break;
             case 2:
-              final profile = context.read<ProfileCubit>().state;
+              final profile = context.read<ProfileCubit>().state.profile;
               Navigator.pushNamed(context, AppRouter.allReportsRoute, arguments: profile);
               break;
             case 3:

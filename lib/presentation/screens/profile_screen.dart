@@ -34,15 +34,13 @@ class _ProfileViewState extends State<ProfileView> {
   late final TextEditingController _nameController;
   late final TextEditingController _companyController;
   final ImagePicker _picker = ImagePicker();
-  bool _isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    final profile = context.read<ProfileCubit>().state;
+    final profile = context.read<ProfileCubit>().state.profile;
     _nameController = TextEditingController(text: profile.name);
     _companyController = TextEditingController(text: profile.companyName);
-    _isEditing = profile.name == null;
   }
 
   @override
@@ -61,35 +59,32 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(title: _isEditing ? 'Edit Profile' : 'Profile'),
-      body: BlocConsumer<ProfileCubit, Profile>(
-        listener: (context, state) {
-          _nameController.text = state.name ?? '';
-          _companyController.text = state.companyName ?? '';
-          setState(() {
-            _isEditing = state.name == null;
-          });
-        },
-        builder: (context, profile) {
-          return SingleChildScrollView(
+    return BlocConsumer<ProfileCubit, ProfileState>(
+      listener: (context, state) {
+        _nameController.text = state.profile.name ?? '';
+        _companyController.text = state.profile.companyName ?? '';
+      },
+      builder: (context, state) {
+        return Scaffold(
+          appBar: CustomAppBar(title: state.isEditing ? 'Edit Profile' : 'Profile'),
+          body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                _buildProfileHeader(context, profile),
+                _buildProfileHeader(context, state.profile, state.isEditing),
                 const SizedBox(height: 24),
-                _isEditing
-                    ? _buildEditView(context, profile)
-                    : _buildInfoView(context, profile),
+                state.isEditing
+                    ? _buildEditView(context, state.profile)
+                    : _buildInfoView(context, state.profile),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, Profile profile) {
+  Widget _buildProfileHeader(BuildContext context, Profile profile, bool isEditing) {
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
@@ -102,7 +97,7 @@ class _ProfileViewState extends State<ProfileView> {
               ? const Icon(Icons.person, size: 80)
               : null,
         ),
-        if (_isEditing)
+        if (isEditing)
           FloatingActionButton(
             mini: true,
             onPressed: _pickImage,
@@ -141,9 +136,7 @@ class _ProfileViewState extends State<ProfileView> {
         CustomButton(
           text: 'Edit Profile',
           onPressed: () {
-            setState(() {
-              _isEditing = true;
-            });
+            context.read<ProfileCubit>().setEditing(true);
           },
         ),
       ],
@@ -192,9 +185,6 @@ class _ProfileViewState extends State<ProfileView> {
               companyName: companyName.isEmpty ? null : companyName,
             );
             context.read<ProfileCubit>().saveProfile(updatedProfile);
-            setState(() {
-              _isEditing = false;
-            });
           },
         ),
       ],

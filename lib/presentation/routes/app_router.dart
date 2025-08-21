@@ -71,8 +71,9 @@ class AppRouter {
           builder: (_) => MonthlyPerformanceScreen(summary: summary),
         );
       case allReportsRoute:
+        final Profile profile = settings.arguments as Profile;
         return MaterialPageRoute(
-          builder: (_) => const AllReportsScreen(),
+          builder: (_) => AllReportsScreen(profile: profile),
         );
       case onboardingTutorialRoute:
         return MaterialPageRoute(

@@ -333,7 +333,8 @@ class _DashboardViewState extends State<DashboardView> {
               _navigateToMonthlyPerformance(context);
               break;
             case 2:
-              Navigator.pushNamed(context, AppRouter.allReportsRoute);
+              final profile = context.read<ProfileCubit>().state;
+              Navigator.pushNamed(context, AppRouter.allReportsRoute, arguments: profile);
               break;
             case 3:
               Navigator.pushNamed(context, AppRouter.settingsRoute);

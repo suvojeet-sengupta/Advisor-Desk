@@ -19,32 +19,26 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
-import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 
 class AllReportsScreen extends StatelessWidget {
-  const AllReportsScreen({Key? key}) : super(key: key);
+  final Profile profile;
+  const AllReportsScreen({Key? key, required this.profile}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => AllReportsBloc(
-            repository: context.read<PerformanceRepository>(),
-          )..add(LoadAllMonthlySummaries()),
-        ),
-        BlocProvider(
-          create: (context) => ProfileCubit(context.read()),
-        ),
-      ],
-      child: const AllReportsView(),
+    return BlocProvider(
+      create: (context) => AllReportsBloc(
+        repository: context.read<PerformanceRepository>(),
+      )..add(LoadAllMonthlySummaries()),
+      child: AllReportsView(profile: profile),
     );
   }
 }
 
 class AllReportsView extends StatelessWidget {
-  const AllReportsView({Key? key}) : super(key: key);
+  final Profile profile;
+  const AllReportsView({Key? key, required this.profile}) : super(key: key);
 
   static const platform = MethodChannel('com.suvojeet.advisordesk/pdf');
 
@@ -116,7 +110,6 @@ class AllReportsView extends StatelessWidget {
                 final startDate = result['startDate'] as DateTime;
                 final endDate = result['endDate'] as DateTime;
                 final selectedSections = result['selectedSections'] as List<ReportSection>;
-                final profile = context.read<ProfileCubit>().state;
 
                 // Fetch ReportSummary for the selected date range
                 final reportSummary = await context.read<PerformanceRepository>().getReportSummary(startDate, endDate);

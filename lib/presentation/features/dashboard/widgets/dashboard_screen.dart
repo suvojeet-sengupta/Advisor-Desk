@@ -73,8 +73,33 @@ class DashboardView extends StatefulWidget {
   State<DashboardView> createState() => _DashboardViewState();
 }
 
+import 'package:in_app_review/in_app_review.dart'; // Import in_app_review
+import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import UsageTrackingService
+
 class _DashboardViewState extends State<DashboardView> {
   final ScreenshotController screenshotController = ScreenshotController();
+  final InAppReview _inAppReview = InAppReview.instance;
+  final UsageTrackingService _usageTrackingService = UsageTrackingService();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAndRequestReview();
+  }
+
+  Future<void> _checkAndRequestReview() async {
+    final launchCount = await _usageTrackingService.incrementLaunchCount();
+    final lastReviewRequestDate = await _usageTrackingService.getLastReviewRequestDate();
+
+    // Show review prompt after 5 launches, and not within 30 days of last request
+    if (launchCount >= 5 && (lastReviewRequestDate == null || DateTime.now().difference(lastReviewRequestDate).inDays >= 30)) {
+      if (await _inAppReview.isAvailable()) {
+        _inAppReview.requestReview();
+        await _usageTrackingService.setLastReviewRequestDate(DateTime.now());
+        await _usageTrackingService.resetLaunchCount(); // Reset count after requesting review
+      }
+    }
+  }
 
   void _navigateToMonthlyPerformance(BuildContext context) {
     final dashboardState = context.read<DashboardBloc>().state;

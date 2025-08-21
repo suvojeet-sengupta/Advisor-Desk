@@ -30,10 +30,16 @@ class SmoothScrollBehavior extends ScrollBehavior {
   }
 }
 
+import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import the new service
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
   await AppConstants.init();
+  
+  // Increment app launch count
+  final usageTrackingService = UsageTrackingService();
+  await usageTrackingService.incrementLaunchCount();
   
   final adService = AdService()..loadAd();
   final localDataSource = await LocalDataSource.init();

@@ -37,6 +37,8 @@ import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/data/datasources/profile_data_source.dart';
+import 'package:in_app_review/in_app_review.dart'; // Import in_app_review
+import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import UsageTrackingService
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -72,9 +74,6 @@ class DashboardView extends StatefulWidget {
   @override
   State<DashboardView> createState() => _DashboardViewState();
 }
-
-import 'package:in_app_review/in_app_review.dart'; // Import in_app_review
-import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import UsageTrackingService
 
 class _DashboardViewState extends State<DashboardView> {
   final ScreenshotController screenshotController = ScreenshotController();

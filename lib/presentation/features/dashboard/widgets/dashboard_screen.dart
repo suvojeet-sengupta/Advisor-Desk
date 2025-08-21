@@ -32,6 +32,11 @@ import 'package:advisor_desk/core/constants/app_enums.dart'; // Import Dashboard
 import 'package:advisor_desk/core/models/dashboard_models.dart'; // Import DashboardCustomization
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart'; // Import Cubit
 import 'package:advisor_desk/presentation/common/widgets/independence_day_banner.dart';
+import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
+import 'package:advisor_desk/domain/repositories/profile_repository.dart';
+import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
+import 'package:advisor_desk/data/datasources/profile_data_source.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -49,6 +54,11 @@ class DashboardScreen extends StatelessWidget {
           create: (context) => GoalsBloc(
             goalRepository: context.read<GoalRepository>(),
           )..add(LoadGoals()),
+        ),
+        BlocProvider(
+          create: (context) => ProfileCubit(
+            ProfileRepositoryImpl(ProfileDataSource()),
+          ),
         ),
       ],
       child: const DashboardView(),
@@ -132,30 +142,22 @@ class _DashboardViewState extends State<DashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: BlocBuilder<ProfileCubit, Profile>(
+        title: 'Dashboard',
+        leading: BlocBuilder<ProfileCubit, Profile>(
           builder: (context, profile) {
             return GestureDetector(
               onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: profile.profilePicturePath.isNotEmpty
-                        ? FileImage(File(profile.profilePicturePath))
-                        : null,
-                    child: profile.profilePicturePath.isEmpty
-                        ? const Icon(Icons.person)
-                        : null,
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(profile.name, style: Theme.of(context).textTheme.titleMedium),
-                      Text(profile.companyName, style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundImage: profile.profilePicturePath.isNotEmpty
+                      ? FileImage(File(profile.profilePicturePath))
+                      : null,
+                  child: profile.profilePicturePath.isEmpty
+                      ? const Icon(Icons.person)
+                      : null,
+                ),
               ),
             );
           },

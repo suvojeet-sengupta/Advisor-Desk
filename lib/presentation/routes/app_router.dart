@@ -23,6 +23,7 @@ import 'package:advisor_desk/presentation/screens/login_days_details_screen.dart
 import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 import 'package:advisor_desk/presentation/screens/credits_screen.dart';
+import 'package:advisor_desk/presentation/screens/profile_screen.dart';
 
 
 class AppRouter {
@@ -42,6 +43,7 @@ class AppRouter {
   static const String cqDetailsRoute = '/cq-details';
   static const String csatDetailsRoute = '/csat-details';
   static const String loginDaysDetailsRoute = '/login-days-details';
+  static const String profileRoute = '/profile';
   
   
   static const String creditsRoute = '/credits';

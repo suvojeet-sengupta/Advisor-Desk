@@ -1,27 +1,26 @@
-
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc/bloc.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 
 class ProfileCubit extends Cubit<Profile> {
-  final ProfileRepository repository;
+  final ProfileRepository _repository;
 
-  ProfileCubit(this.repository) : super(Profile.initial()) {
-    loadProfile();
+  ProfileCubit(this._repository) : super(Profile.initial()) {
+    _loadProfile();
   }
 
-  Future<void> loadProfile() async {
-    final profile = await repository.getProfile();
-    emit(profile);
-  }
-
-  Future<void> saveProfile(Profile profile) async {
-    await repository.saveProfile(profile);
+  void _loadProfile() async {
+    final profile = await _repository.getProfile();
     emit(profile);
   }
 
   void updateProfilePicture(String path) {
     final newProfile = state.copyWith(profilePicturePath: path);
-    saveProfile(newProfile);
+    emit(newProfile);
+  }
+
+  void saveProfile(Profile profile) async {
+    await _repository.saveProfile(profile);
+    emit(profile);
   }
 }

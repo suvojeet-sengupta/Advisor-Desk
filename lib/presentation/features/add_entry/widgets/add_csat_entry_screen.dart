@@ -12,6 +12,8 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_state.dart';
 
+import 'package:advisor_desk/data/datasources/ad_service.dart'; // Import AdService
+
 class AddCSATEntryScreen extends StatelessWidget {
   final CSATEntry? entryToEdit;
 
@@ -19,7 +21,13 @@ class AddCSATEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AddCSATEntryView();
+    return BlocProvider(
+      create: (context) => AddCSATEntryBloc(
+        repository: context.read<PerformanceRepository>(),
+        adService: context.read<AdService>(), // Provide AdService
+      )..add(InitializeCSATEntry(entry: entryToEdit)), // Dispatch InitializeCSATEntry event
+      child: const AddCSATEntryView(),
+    );
   }
 }
 

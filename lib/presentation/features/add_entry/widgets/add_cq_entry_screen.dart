@@ -12,6 +12,8 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_b
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_state.dart';
 
+import 'package:advisor_desk/data/datasources/ad_service.dart'; // Import AdService
+
 class AddCQEntryScreen extends StatelessWidget {
   final CQEntry? entryToEdit;
 
@@ -19,7 +21,13 @@ class AddCQEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AddCQEntryView();
+    return BlocProvider(
+      create: (context) => AddCQEntryBloc(
+        repository: context.read<PerformanceRepository>(),
+        adService: context.read<AdService>(), // Provide AdService
+      )..add(InitializeCQEntry(entry: entryToEdit)), // Dispatch InitializeCQEntry event
+      child: const AddCQEntryView(),
+    );
   }
 }
 

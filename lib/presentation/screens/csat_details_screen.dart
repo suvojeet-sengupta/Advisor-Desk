@@ -202,7 +202,7 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
                   final entry = _currentCsatSummary.entries[index];
                   final dailyCsat = entry.csatPercentage;
                   return Slidable(
-                    key: ValueKey(entry.id),
+                    key: index == 0 ? _firstCsatEntryKey : ValueKey(entry.id),
                     endActionPane: ActionPane(
                       motion: const ScrollMotion(),
                       children: [

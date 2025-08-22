@@ -193,7 +193,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                     itemBuilder: (context, index) {
                       final entry = _currentCqSummary.entries[index];
                       return Slidable(
-                        key: ValueKey(entry.id),
+                        key: index == 0 ? _firstCqEntryKey : ValueKey(entry.id),
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
                           children: [

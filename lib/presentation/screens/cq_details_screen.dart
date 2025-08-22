@@ -43,7 +43,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
         TutorialStep(
           targetKey: _firstCqEntryKey,
           text: 'Swipe left on an entry to reveal options like Edit and Delete.',
-          textAlignment: Alignment.topCenter,
+          textAlignment: Alignment.bottomCenter,
           textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Adjust padding to avoid overlapping
           showSwipeHint: true,
         ),

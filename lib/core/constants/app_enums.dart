@@ -2,10 +2,10 @@ enum AppThemeMode {
   system,
   light,
   dark,
-  materialYou,
 }
 
 enum AppColor {
+  materialYou,
   orange,
   teal,
   pink,

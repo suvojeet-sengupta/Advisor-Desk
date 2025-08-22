@@ -203,35 +203,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ThemeData lightTheme;
                 ThemeData darkTheme;
 
-                if (themeState.themeMode == AppThemeMode.materialYou && lightDynamic != null && darkDynamic != null) {
+                if (themeState.color == AppColor.materialYou && lightDynamic != null && darkDynamic != null) {
+                  // Use dynamic colors for both light and dark themes
                   lightTheme = AppTheme.getLightTheme(lightDynamic);
                   darkTheme = AppTheme.getDarkTheme(darkDynamic);
                 } else {
+                  // Use the selected predefined color for both light and dark themes
                   lightTheme = AppTheme.getTheme(Brightness.light, themeState.color);
                   darkTheme = AppTheme.getTheme(Brightness.dark, themeState.color);
-                }
-
-                var themeMode = ThemeMode.light;
-                switch (themeState.themeMode) {
-                  case AppThemeMode.system:
-                    themeMode = ThemeMode.system;
-                    break;
-                  case AppThemeMode.dark:
-                    themeMode = ThemeMode.dark;
-                    break;
-                  case AppThemeMode.light:
-                    themeMode = ThemeMode.light;
-                    break;
-                  case AppThemeMode.materialYou:
-                    themeMode = ThemeMode.system;
-                    break;
                 }
 
                 return MaterialApp(
                   title: AppConstants.appName,
                   theme: lightTheme,
                   darkTheme: darkTheme,
-                  themeMode: themeMode,
+                  themeMode: themeState.themeMode == AppThemeMode.system
+                      ? ThemeMode.system
+                      : themeState.themeMode == AppThemeMode.dark
+                          ? ThemeMode.dark
+                          : ThemeMode.light,
                   debugShowCheckedModeBanner: false,
                   scrollBehavior: SmoothScrollBehavior(),
                   onGenerateRoute: AppRouter.onGenerateRoute,

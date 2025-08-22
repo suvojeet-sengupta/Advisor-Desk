@@ -50,52 +50,37 @@ class ThemeSelectionScreen extends StatelessWidget {
                   }
                 },
               ),
-              RadioListTile<AppThemeMode>(
-                title: const Text('Material You'),
-                subtitle: const Text('Wallpaper colors (Android 12+)'),
-                value: AppThemeMode.materialYou,
-                groupValue: themeState.themeMode,
-                onChanged: (AppThemeMode? newValue) {
-                  if (newValue != null) {
-                    context.read<ThemeCubit>().setThemeMode(newValue);
-                  }
-                },
-              ),
               const Divider(),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text('Accent Color', style: Theme.of(context).textTheme.titleLarge),
               ),
-              if (themeState.themeMode == AppThemeMode.materialYou)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Text(
-                    'Accent color is controlled by your system settings.',
-                    style: Theme.of(context).textTheme.bodySmall,
+              for (final color in AppColor.values)
+                RadioListTile<AppColor>(
+                  title: Text(
+                    color == AppColor.materialYou
+                        ? 'Material You'
+                        : color.toString().split('.').last.toUpperCase(),
                   ),
-                )
-              else
-                ...[
-                  for (final color in AppColor.values)
-                    RadioListTile<AppColor>(
-                      title: Text(color.toString().split('.').last.toUpperCase()),
-                      value: color,
-                      groupValue: themeState.color,
-                      onChanged: (AppColor? newValue) {
-                        if (newValue != null) {
-                          context.read<ThemeCubit>().setColor(newValue);
-                        }
-                      },
-                      secondary: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _getColorForEnum(color),
-                        ),
-                      ),
+                  subtitle: color == AppColor.materialYou
+                      ? const Text('Uses wallpaper colors (Android 12+)')
+                      : null,
+                  value: color,
+                  groupValue: themeState.color,
+                  onChanged: (AppColor? newValue) {
+                    if (newValue != null) {
+                      context.read<ThemeCubit>().setColor(newValue);
+                    }
+                  },
+                  secondary: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _getColorForEnum(color),
                     ),
-                ],
+                  ),
+                ),
             ],
           );
         },
@@ -107,6 +92,8 @@ class ThemeSelectionScreen extends StatelessWidget {
 
   Color _getColorForEnum(AppColor color) {
     switch (color) {
+      case AppColor.materialYou:
+        return Colors.blueGrey; // Placeholder color for the radio button circle
       case AppColor.orange:
         return Colors.orange;
       case AppColor.teal:

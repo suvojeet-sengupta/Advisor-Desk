@@ -9,6 +9,7 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_csat_entry_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
+import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
 
 class CsatDetailsScreen extends StatefulWidget {
   final CSATSummary csatSummary;
@@ -21,11 +22,42 @@ class CsatDetailsScreen extends StatefulWidget {
 
 class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
   late CSATSummary _currentCsatSummary;
+  final GlobalKey _firstCsatEntryKey = GlobalKey(); // Declare GlobalKey
 
   @override
   void initState() {
     super.initState();
     _currentCsatSummary = widget.csatSummary;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showCsatTutorial();
+    });
+  }
+
+  void _showCsatTutorial() async {
+    final hasSeen = await TutorialHelper.hasSeenCsatTutorial();
+    if (!hasSeen && _currentCsatSummary.entries.isNotEmpty) { // Only show if there are entries
+      final List<TutorialStep> steps = [
+        TutorialStep(
+          targetKey: _firstCsatEntryKey,
+          text: 'Swipe left on an entry to reveal options like Edit and Delete.',
+          textAlignment: Alignment.topCenter,
+          textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Adjust padding to avoid overlapping
+          showSwipeHint: true,
+        ),
+      ];
+
+      final OverlayEntry overlayEntry = OverlayEntry(
+        builder: (context) => InteractiveTutorialOverlay(
+          steps: steps,
+          onFinish: () {
+            overlayEntry.remove();
+            TutorialHelper.setCsatTutorialSeen();
+          },
+        ),
+      );
+
+      Overlay.of(context).insert(overlayEntry);
+    }
   }
 
   Future<void> _refreshData() async {

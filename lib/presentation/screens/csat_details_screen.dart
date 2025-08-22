@@ -10,6 +10,7 @@ import 'package:advisor_desk/presentation/features/add_entry/widgets/add_csat_en
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
+import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart'; // Import InteractiveTutorialOverlay
 
 class CsatDetailsScreen extends StatefulWidget {
   final CSATSummary csatSummary;

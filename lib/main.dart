@@ -26,6 +26,7 @@ import 'package:advisor_desk/data/datasources/profile_data_source.dart';
 import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -197,19 +198,46 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         ],
         child: BlocBuilder<ThemeCubit, ThemeState>(
           builder: (context, themeState) {
-            return MaterialApp(
-              title: AppConstants.appName,
-              theme: AppTheme.getTheme(Brightness.light, themeState.color),
-              darkTheme: AppTheme.getTheme(Brightness.dark, themeState.color),
-              themeMode: themeState.themeMode == AppThemeMode.system
-                  ? ThemeMode.system
-                  : themeState.themeMode == AppThemeMode.dark
-                      ? ThemeMode.dark
-                      : ThemeMode.light,
-              debugShowCheckedModeBanner: false,
-              scrollBehavior: SmoothScrollBehavior(),
-              onGenerateRoute: AppRouter.onGenerateRoute,
-              initialRoute: widget.initialRoute,
+            return DynamicColorBuilder(
+              builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+                ThemeData lightTheme;
+                ThemeData darkTheme;
+
+                if (themeState.themeMode == AppThemeMode.materialYou && lightDynamic != null && darkDynamic != null) {
+                  lightTheme = AppTheme.getLightTheme(lightDynamic);
+                  darkTheme = AppTheme.getDarkTheme(darkDynamic);
+                } else {
+                  lightTheme = AppTheme.getTheme(Brightness.light, themeState.color);
+                  darkTheme = AppTheme.getTheme(Brightness.dark, themeState.color);
+                }
+
+                var themeMode = ThemeMode.light;
+                switch (themeState.themeMode) {
+                  case AppThemeMode.system:
+                    themeMode = ThemeMode.system;
+                    break;
+                  case AppThemeMode.dark:
+                    themeMode = ThemeMode.dark;
+                    break;
+                  case AppThemeMode.light:
+                    themeMode = ThemeMode.light;
+                    break;
+                  case AppThemeMode.materialYou:
+                    themeMode = ThemeMode.system;
+                    break;
+                }
+
+                return MaterialApp(
+                  title: AppConstants.appName,
+                  theme: lightTheme,
+                  darkTheme: darkTheme,
+                  themeMode: themeMode,
+                  debugShowCheckedModeBanner: false,
+                  scrollBehavior: SmoothScrollBehavior(),
+                  onGenerateRoute: AppRouter.onGenerateRoute,
+                  initialRoute: widget.initialRoute,
+                );
+              },
             );
           },
         ),

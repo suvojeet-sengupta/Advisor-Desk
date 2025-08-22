@@ -38,6 +38,7 @@ dependencies:
   image_picker: ^1.2.0
   file_picker: ^10.3.2
   in_app_review: ^2.0.10 # Added for in-app review
+  dynamic_color: ^1.8.1
 
 
   screenshot: ^3.0.0

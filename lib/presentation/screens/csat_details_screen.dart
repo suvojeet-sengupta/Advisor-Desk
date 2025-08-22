@@ -24,6 +24,7 @@ class CsatDetailsScreen extends StatefulWidget {
 class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
   late CSATSummary _currentCsatSummary;
   final GlobalKey _firstCsatEntryKey = GlobalKey(); // Declare GlobalKey
+  late OverlayEntry overlayEntry; // Declare here
 
   @override
   void initState() {
@@ -47,7 +48,7 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
         ),
       ];
 
-      final OverlayEntry overlayEntry = OverlayEntry(
+      overlayEntry = OverlayEntry(
         builder: (context) => InteractiveTutorialOverlay(
           steps: steps,
           onFinish: () {

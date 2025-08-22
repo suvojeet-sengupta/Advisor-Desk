@@ -25,6 +25,7 @@ class CqDetailsScreen extends StatefulWidget {
 class _CqDetailsScreenState extends State<CqDetailsScreen> {
   late CQSummary _currentCqSummary;
   final GlobalKey _firstCqEntryKey = GlobalKey(); // Declare GlobalKey
+  late OverlayEntry overlayEntry; // Declare here
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
         ),
       ];
 
-      final OverlayEntry overlayEntry = OverlayEntry(
+      overlayEntry = OverlayEntry(
         builder: (context) => InteractiveTutorialOverlay(
           steps: steps,
           onFinish: () {

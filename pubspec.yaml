@@ -39,6 +39,7 @@ dependencies:
   file_picker: ^10.3.2
   in_app_review: ^2.0.10 # Added for in-app review
   dynamic_color: ^1.8.1
+  flutter_slidable: ^3.1.0
 
 
   screenshot: ^3.0.0

@@ -4,11 +4,93 @@ import 'package:intl/intl.dart';
 import 'package:advisor_desk/domain/entities/csat_summary.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/presentation/features/add_entry/widgets/add_csat_entry_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:advisor_desk/domain/entities/csat_entry.dart';
 
-class CsatDetailsScreen extends StatelessWidget {
+class CsatDetailsScreen extends StatefulWidget {
   final CSATSummary csatSummary;
 
   const CsatDetailsScreen({Key? key, required this.csatSummary}) : super(key: key);
+
+  @override
+  _CsatDetailsScreenState createState() => _CsatDetailsScreenState();
+}
+
+class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
+  late CSATSummary _currentCsatSummary;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentCsatSummary = widget.csatSummary;
+  }
+
+  Future<void> _refreshData() async {
+    final repository = context.read<PerformanceRepository>();
+    final updatedSummary = await repository.getCSATSummary(
+      widget.csatSummary.month,
+      widget.csatSummary.year,
+    );
+    setState(() {
+      _currentCsatSummary = updatedSummary;
+    });
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, CSATEntry entry) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
+          shape: Theme.of(context).dialogTheme.shape,
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this CSAT entry? This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.error,
+              ),
+              child: const Text('Delete'),
+              onPressed: () {
+                _deleteEntry(entry);
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteEntry(CSATEntry entry) async {
+    try {
+      final repository = context.read<PerformanceRepository>();
+      await repository.deleteCSATEntry(entry.id!); // id is guaranteed to be non-null for existing entries
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('CSAT entry deleted successfully!'),
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+        ),
+      );
+      _refreshData(); // Refresh the list after deletion
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete CSAT entry: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +104,7 @@ class CsatDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              csatSummary.formattedMonthYear,
+              _currentCsatSummary.formattedMonthYear,
               style: theme.textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
@@ -32,31 +114,31 @@ class CsatDetailsScreen extends StatelessWidget {
                   _buildSummaryRow(
                     context,
                     'Monthly CSAT',
-                    '${csatSummary.monthlyCSATPercentage.toStringAsFixed(2)}%',
-                    csatSummary.needsImprovement ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                    '${_currentCsatSummary.monthlyCSATPercentage.toStringAsFixed(2)}%',
+                    _currentCsatSummary.needsImprovement ? theme.colorScheme.error : theme.colorScheme.tertiary,
                   ),
                   _buildSummaryRow(
                     context,
                     'Total Survey Hits',
-                    '${csatSummary.totalSurveyHits}',
+                    '${_currentCsatSummary.totalSurveyHits}',
                     theme.colorScheme.onSurface,
                   ),
                   _buildSummaryRow(
                     context,
                     'Total T2',
-                    '${csatSummary.totalT2Count}',
+                    '${_currentCsatSummary.totalT2Count}',
                     theme.colorScheme.tertiary,
                   ),
                   _buildSummaryRow(
                     context,
                     'Total B2',
-                    '${csatSummary.totalB2Count}',
+                    '${_currentCsatSummary.totalB2Count}',
                     theme.colorScheme.error,
                   ),
                   _buildSummaryRow(
                     context,
                     'Total N',
-                    '${csatSummary.totalNCount}',
+                    '${_currentCsatSummary.totalNCount}',
                     theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
@@ -68,7 +150,7 @@ class CsatDetailsScreen extends StatelessWidget {
               style: theme.textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
-            if (csatSummary.entries.isEmpty)
+            if (_currentCsatSummary.entries.isEmpty)
               const CustomCard(
                 child: Center(
                   child: Padding(
@@ -81,30 +163,62 @@ class CsatDetailsScreen extends StatelessWidget {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: csatSummary.entries.length,
+                itemCount: _currentCsatSummary.entries.length,
                 itemBuilder: (context, index) {
-                  final entry = csatSummary.entries[index];
+                  final entry = _currentCsatSummary.entries[index];
                   final dailyCsat = entry.csatPercentage;
-                  return CustomCard(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: (dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary).withOpacity(0.2),
-                        child: Text(
-                          DateFormat('dd').format(entry.date),
-                          style: TextStyle(
+                  return Slidable(
+                    key: ValueKey(entry.id),
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddCSATEntryScreen(entryToEdit: entry),
+                              ),
+                            );
+                            if (result == true) {
+                              _refreshData();
+                            }
+                          },
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          icon: Icons.edit,
+                          label: 'Edit',
+                        ),
+                        SlidableAction(
+                          onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                      ],
+                    ),
+                    child: CustomCard(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: (dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary).withOpacity(0.2),
+                          child: Text(
+                            DateFormat('dd').format(entry.date),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                            ),
+                          ),
+                        ),
+                        title: Text('T2: ${entry.t2Count}, B2: ${entry.b2Count}, N: ${entry.nCount}'),
+                        subtitle: Text(DateFormat('MMM dd, yyyy').format(entry.date)),
+                        trailing: Text(
+                          '${dailyCsat.toStringAsFixed(2)}%',
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
                           ),
-                        ),
-                      ),
-                      title: Text('T2: ${entry.t2Count}, B2: ${entry.b2Count}, N: ${entry.nCount}'),
-                      subtitle: Text(DateFormat('MMM dd, yyyy').format(entry.date)),
-                      trailing: Text(
-                        '${dailyCsat.toStringAsFixed(2)}%',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
                         ),
                       ),
                     ),

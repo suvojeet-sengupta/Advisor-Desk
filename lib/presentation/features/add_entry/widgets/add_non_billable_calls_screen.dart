@@ -4,7 +4,7 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_non_billab
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_non_billable_calls_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
@@ -86,35 +86,6 @@ class _AddNonBillableCallsViewState extends State<AddNonBillableCallsView> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _buildSectionTitle(context, 'Date'),
-                const SizedBox(height: 8),
-                CustomCard(
-                  child: InkWell(
-                    onTap: () => _selectDate(context),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).inputDecorationTheme.fillColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Theme.of(context).colorScheme.outline),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            DateFormat('dd MMM yyyy').format(state.date),
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 24),
                 CustomFormField(
                   label: 'Non-billable Calls',
@@ -155,31 +126,5 @@ class _AddNonBillableCallsViewState extends State<AddNonBillableCallsView> {
         style: Theme.of(context).textTheme.titleMedium,
       ),
     );
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final bloc = context.read<AddNonBillableCallsBloc>();
-    final currentDate = bloc.state.date;
-
-    final selectedDate = await showDatePicker(
-      context: context,
-      initialDate: currentDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: Theme.of(context).colorScheme.primary,
-                ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (selectedDate != null) {
-      bloc.add(NonBillableCallsDateChanged(date: selectedDate));
-    }
   }
 }

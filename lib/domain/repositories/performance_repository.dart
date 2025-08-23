@@ -14,6 +14,7 @@ abstract class PerformanceRepository {
   Future<List<DailyEntry>> getAllEntries();
   Future<List<DailyEntry>> getEntriesForMonth(int month, int year);
   Future<DailyEntry?> getEntryForDate(DateTime date);
+  Future<DailyEntry?> getLatestNonBillableCallsEntry();
   Future<int> addEntry(DailyEntry entry);
   Future<int> updateEntry(DailyEntry entry);
   Future<int> deleteEntry(int id);

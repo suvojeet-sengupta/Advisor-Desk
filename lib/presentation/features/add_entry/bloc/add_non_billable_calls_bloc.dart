@@ -16,7 +16,6 @@ class AddNonBillableCallsBloc extends Bloc<AddNonBillableCallsEvent, AddNonBilla
     _updateEntryUseCase = UpdateEntryUseCase(repository);
 
     on<InitializeNonBillableCalls>(_onInitializeNonBillableCalls);
-    on<NonBillableCallsDateChanged>(_onNonBillableCallsDateChanged);
     on<NonBillableCallsValuechanged>(_onNonBillableCallsValueChanged);
     on<SubmitNonBillableCalls>(_onSubmitNonBillableCalls);
   }
@@ -25,38 +24,28 @@ class AddNonBillableCallsBloc extends Bloc<AddNonBillableCallsEvent, AddNonBilla
     InitializeNonBillableCalls event,
     Emitter<AddNonBillableCallsState> emit,
   ) async {
-    final date = event.date ?? DateTime.now();
     try {
-      final existingEntry = await repository.getEntryForDate(date);
+      final existingEntry = await repository.getLatestNonBillableCallsEntry();
       if (existingEntry != null) {
         emit(state.copyWith(
           status: AddNonBillableCallsStatus.loaded,
-          date: date,
           nonBillableCalls: existingEntry.nonBillableCalls,
           existingEntry: existingEntry,
         ));
       } else {
-        emit(AddNonBillableCallsState(
+        emit(const AddNonBillableCallsState(
           status: AddNonBillableCallsStatus.loaded,
-          date: date,
         ));
       }
     } catch (e) {
       emit(state.copyWith(
         status: AddNonBillableCallsStatus.failure,
-        date: date,
         errorMessage: 'Failed to check for existing entry: ${e.toString()}',
       ));
     }
   }
 
-  void _onNonBillableCallsDateChanged(
-    NonBillableCallsDateChanged event,
-    Emitter<AddNonBillableCallsState> emit,
-  ) {
-    emit(state.copyWith(status: AddNonBillableCallsStatus.loading));
-    add(InitializeNonBillableCalls(date: event.date));
-  }
+  
 
   void _onNonBillableCallsValueChanged(
     NonBillableCallsValuechanged event,
@@ -80,7 +69,7 @@ class AddNonBillableCallsBloc extends Bloc<AddNonBillableCallsEvent, AddNonBilla
         await _updateEntryUseCase.execute(entryToSave);
       } else {
         entryToSave = DailyEntry(
-          date: state.date,
+          date: DateTime.now(),
           loginHours: 0,
           loginMinutes: 0,
           loginSeconds: 0,

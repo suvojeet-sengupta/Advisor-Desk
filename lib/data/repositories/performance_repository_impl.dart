@@ -39,6 +39,11 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
+  Future<DailyEntry?> getLatestNonBillableCallsEntry() async {
+    return await localDataSource.getLatestNonBillableCallsEntry();
+  }
+
+  @override
   Future<int> addEntry(DailyEntry entry) async {
     return await localDataSource.insertEntry(entry);
   }

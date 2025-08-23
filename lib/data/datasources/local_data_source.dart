@@ -225,6 +225,23 @@ class LocalDataSource {
     return DailyEntry.fromMap(maps.first);
   }
 
+  // Read latest non-billable calls entry
+  Future<DailyEntry?> getLatestNonBillableCallsEntry() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      AppConstants.tableEntries,
+      where: 'non_billable_calls > ?',
+      whereArgs: [0],
+      orderBy: 'date DESC',
+      limit: 1,
+    );
+
+    if (maps.isEmpty) {
+      return null;
+    }
+    return DailyEntry.fromMap(maps.first);
+  }
+
   // Update an existing entry
   Future<int> updateEntry(DailyEntry entry) async {
     final db = await database;

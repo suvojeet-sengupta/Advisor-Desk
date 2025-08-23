@@ -87,12 +87,22 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       value: '${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%',
                       icon: Icons.sentiment_satisfied_alt,
                       iconColor: Theme.of(context).colorScheme.primary,
+                      onTap: () {
+                        if (summary.csatSummary != null) {
+                          Navigator.pushNamed(context, AppRouter.csatDetailsRoute, arguments: summary.csatSummary);
+                        }
+                      },
                     ),
                     DashboardCard(
                       title: 'CQ Score',
                       value: '${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%',
                       icon: Icons.assessment,
                       iconColor: Theme.of(context).colorScheme.secondary,
+                      onTap: () {
+                        if (summary.cqSummary != null) {
+                          Navigator.pushNamed(context, AppRouter.cqDetailsRoute, arguments: summary.cqSummary);
+                        }
+                      },
                     ),
                     DashboardCard(
                       title: 'Total Salary',

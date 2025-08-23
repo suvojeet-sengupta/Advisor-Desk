@@ -453,31 +453,34 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   }
 
   Widget _buildFabMenuItem(BuildContext context, {required IconData icon, required String label, required VoidCallback onPressed}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    return GestureDetector(
+      onTap: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
           ),
-          child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-        ),
-        const SizedBox(width: 12),
-        FloatingActionButton(
-          onPressed: onPressed,
-          mini: true,
-          child: Icon(icon),
-        ),
-      ],
+          const SizedBox(width: 12),
+          FloatingActionButton(
+            onPressed: null, // The GestureDetector handles the tap
+            mini: true,
+            child: Icon(icon),
+          ),
+        ],
+      ),
     );
   }
 

@@ -83,7 +83,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     super.initState();
     _fabAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 75),
     );
     _checkAndRequestReview();
   }

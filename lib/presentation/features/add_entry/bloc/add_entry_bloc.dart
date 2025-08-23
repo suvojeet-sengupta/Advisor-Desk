@@ -26,6 +26,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     on<LoginMinutesChanged>(_onLoginMinutesChanged);
     on<LoginSecondsChanged>(_onLoginSecondsChanged);
     on<CallCountChanged>(_onCallCountChanged);
+    on<NonBillableCallsChanged>(_onNonBillableCallsChanged);
     on<SubmitEntry>(_onSubmitEntry);
     on<DeleteEntry>(_onDeleteEntry);
     
@@ -44,6 +45,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
         loginMinutes: event.entry!.loginMinutes,
         loginSeconds: event.entry!.loginSeconds,
         callCount: event.entry!.callCount,
+        nonBillableCalls: event.entry!.nonBillableCalls,
         existingEntry: event.entry,
       ));
       return;
@@ -64,6 +66,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
           loginMinutes: existingEntry.loginMinutes,
           loginSeconds: existingEntry.loginSeconds,
           callCount: existingEntry.callCount,
+          nonBillableCalls: existingEntry.nonBillableCalls,
           existingEntry: existingEntry,
         ));
       } else {
@@ -119,6 +122,13 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     Emitter<AddEntryState> emit,
   ) {
     emit(state.copyWith(callCount: event.callCount));
+  }
+
+  void _onNonBillableCallsChanged(
+    NonBillableCallsChanged event,
+    Emitter<AddEntryState> emit,
+  ) {
+    emit(state.copyWith(nonBillableCalls: event.nonBillableCalls));
   }
 
   Future<void> _onSubmitEntry(

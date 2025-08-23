@@ -53,6 +53,18 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       iconColor: Theme.of(context).colorScheme.primary,
                     ),
                     DashboardCard(
+                      title: 'Non-billable Calls',
+                      value: summary.totalNonBillableCalls.toString(),
+                      icon: Icons.phone_disabled,
+                      iconColor: Theme.of(context).colorScheme.error,
+                    ),
+                    DashboardCard(
+                      title: 'Billable Calls',
+                      value: summary.billableCalls.toString(),
+                      icon: Icons.phone_in_talk,
+                      iconColor: Colors.green,
+                    ),
+                    DashboardCard(
                       title: 'Total Login Hours',
                       value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
                       icon: Icons.timer,
@@ -139,6 +151,7 @@ class MonthlyPerformanceScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         children: breakdown.entries.map((entry) {
+          final isCallEntry = entry.key.toLowerCase().contains('calls');
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Row(
@@ -149,7 +162,9 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 Text(
-                  '₹${entry.value.toStringAsFixed(2)}',
+                  isCallEntry
+                      ? entry.value.toInt().toString()
+                      : '₹${entry.value.toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

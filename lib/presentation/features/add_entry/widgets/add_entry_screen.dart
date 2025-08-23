@@ -65,6 +65,7 @@ class _AddEntryViewState extends State<AddEntryView> {
   late final TextEditingController _loginMinutesController;
   late final TextEditingController _loginSecondsController;
   late final TextEditingController _callCountController;
+  late final TextEditingController _nonBillableCallsController;
 
   @override
   void initState() {
@@ -74,6 +75,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     _loginMinutesController = TextEditingController();
     _loginSecondsController = TextEditingController();
     _callCountController = TextEditingController();
+    _nonBillableCallsController = TextEditingController();
   }
 
   @override
@@ -82,6 +84,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     _loginMinutesController.dispose();
     _loginSecondsController.dispose();
     _callCountController.dispose();
+    _nonBillableCallsController.dispose();
     super.dispose();
   }
 
@@ -106,6 +109,9 @@ class _AddEntryViewState extends State<AddEntryView> {
                 }
                 if (_callCountController.text != state.callCount.toString()) {
                   _callCountController.text = state.callCount.toString();
+                }
+                if (_nonBillableCallsController.text != state.nonBillableCalls.toString()) {
+                  _nonBillableCallsController.text = state.nonBillableCalls.toString();
                 }
               }
 
@@ -339,6 +345,21 @@ class _AddEntryViewState extends State<AddEntryView> {
                 onChanged: (value) {
                   context.read<AddEntryBloc>().add(
                         CallCountChanged(callCount: int.tryParse(value) ?? 0),
+                      );
+                },
+              ),
+              const SizedBox(height: 24),
+
+              // Non-billable Calls Section
+              CustomFormField(
+                label: 'Non-billable Calls',
+                hintText: 'Enter number of non-billable calls',
+                icon: Icons.phone_disabled,
+                controller: _nonBillableCallsController,
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  context.read<AddEntryBloc>().add(
+                        NonBillableCallsChanged(nonBillableCalls: int.tryParse(value) ?? 0),
                       );
                 },
               ),

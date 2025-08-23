@@ -394,6 +394,13 @@ class _DashboardViewState extends State<DashboardView> {
                 onTap: () => _navigateToMonthlyPerformance(context),
               ),
               DashboardCard(
+                title: 'Non-billable Calls',
+                value: summary.totalNonBillableCalls.toString(),
+                icon: Icons.phone_disabled,
+                iconColor: Theme.of(context).colorScheme.error,
+                onTap: () => _navigateToMonthlyPerformance(context),
+              ),
+              DashboardCard(
                 title: 'Total Login Hours',
                 value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
                 icon: Icons.timer,

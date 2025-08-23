@@ -20,7 +20,7 @@ class AppConstants {
 
   // Database constants
   static const String databaseName = 'advisor_desk.db';
-  static const int databaseVersion = 3; // Updated version for CQ feature
+  static const int databaseVersion = 4; // Updated version for non-billable calls
 
   // Table names
   static const String tableEntries = 'daily_entries';

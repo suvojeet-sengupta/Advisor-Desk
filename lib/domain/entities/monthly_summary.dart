@@ -33,6 +33,17 @@ class MonthlySummary extends Equatable {
     return entries.fold(0, (sum, entry) => sum + entry.callCount);
   }
 
+  // Total non-billable calls for the month
+  int get totalNonBillableCalls {
+    if (entries.isEmpty) return 0;
+    return entries.fold(0, (sum, entry) => sum + entry.nonBillableCalls);
+  }
+
+  // Total billable calls for the month
+  int get billableCalls {
+    return totalCalls - totalNonBillableCalls;
+  }
+
   // Average daily login hours
   double get averageDailyLoginHours {
     if (entries.isEmpty) return 0;
@@ -53,7 +64,7 @@ class MonthlySummary extends Equatable {
   
   // Calculate base salary (₹4.30 per call)
   double get baseSalary {
-    return totalCalls * AppConstants.baseRatePerCall;
+    return billableCalls * AppConstants.baseRatePerCall;
   }
   
   // Calculate bonus amount (₹2000 if targets are met)
@@ -94,6 +105,9 @@ class MonthlySummary extends Equatable {
   // Detailed salary breakdown
   Map<String, double> get salaryBreakdown {
     return {
+      'Total Calls': totalCalls.toDouble(),
+      'Non-billable Calls': totalNonBillableCalls.toDouble(),
+      'Billable Calls': billableCalls.toDouble(),
       'Base Salary': baseSalary,
       'Bonus Amount': bonusAmount,
       'CSAT Bonus': csatBonus,

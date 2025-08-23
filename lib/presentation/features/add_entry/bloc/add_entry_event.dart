@@ -63,6 +63,15 @@ class CallCountChanged extends AddEntryEvent {
   List<Object> get props => [callCount];
 }
 
+class NonBillableCallsChanged extends AddEntryEvent {
+  final int nonBillableCalls;
+
+  const NonBillableCallsChanged({required this.nonBillableCalls});
+
+  @override
+  List<Object> get props => [nonBillableCalls];
+}
+
 class SubmitEntry extends AddEntryEvent {
   const SubmitEntry();
 }

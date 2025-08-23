@@ -43,7 +43,8 @@ class LocalDataSource {
             login_hours INTEGER NOT NULL,
             login_minutes INTEGER NOT NULL,
             login_seconds INTEGER NOT NULL,
-            call_count INTEGER NOT NULL
+            call_count INTEGER NOT NULL,
+            non_billable_calls INTEGER NOT NULL DEFAULT 0
           )
         ''');
         // Create CSAT entries table
@@ -84,6 +85,11 @@ class LocalDataSource {
               audit_date INTEGER NOT NULL,
               percentage REAL NOT NULL
             )
+          ''');
+        }
+        if (oldVersion < 4) {
+          await db.execute('''
+            ALTER TABLE ${AppConstants.tableEntries} ADD COLUMN non_billable_calls INTEGER NOT NULL DEFAULT 0
           ''');
         }
       },

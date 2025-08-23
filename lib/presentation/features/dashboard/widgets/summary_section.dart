@@ -30,6 +30,20 @@ class SummarySection extends StatelessWidget {
             ),
             _buildSummaryRow(
               context,
+              'Non-billable Calls',
+              summary.totalNonBillableCalls.toString(),
+              Icons.phone_disabled,
+              Theme.of(context).colorScheme.error,
+            ),
+            _buildSummaryRow(
+              context,
+              'Billable Calls',
+              summary.billableCalls.toString(),
+              Icons.phone_in_talk,
+              Colors.green,
+            ),
+            _buildSummaryRow(
+              context,
               'Total Login Hours',
               '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
               Icons.timer,

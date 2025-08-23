@@ -11,6 +11,7 @@ import 'package:advisor_desk/presentation/features/onboarding/onboarding_tutoria
 import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_screen.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_entry_screen.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
+import 'package:advisor_desk/presentation/features/add_entry/widgets/add_non_billable_calls_screen.dart';
 import 'package:advisor_desk/presentation/features/monthly_performance/widgets/monthly_performance_screen.dart';
 import 'package:advisor_desk/presentation/features/all_reports/widgets/all_reports_screen.dart';
 
@@ -31,6 +32,7 @@ class AppRouter {
   // Route names
   static const String dashboardRoute = '/';
   static const String addEntryRoute = '/add-entry';
+  static const String addNonBillableCallsRoute = '/add-non-billable-calls';
   static const String addCQEntryRoute = '/add-cq-entry';
   static const String monthlyPerformanceRoute = '/monthly-performance';
   static const String allReportsRoute = '/all-reports';
@@ -60,6 +62,10 @@ class AppRouter {
         final DailyEntry? entryToEdit = settings.arguments as DailyEntry?;
         return MaterialPageRoute(
           builder: (_) => AddEntryScreen(entryToEdit: entryToEdit),
+        );
+      case addNonBillableCallsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AddNonBillableCallsScreen(),
         );
       case addCQEntryRoute:
         final CQEntry? entryToEdit = settings.arguments as CQEntry?;

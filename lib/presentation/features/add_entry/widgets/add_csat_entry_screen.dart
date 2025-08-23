@@ -62,21 +62,38 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: context.watch<AddCSATEntryBloc>().state.isUpdate ? 'Edit CSAT Entry' : 'Add CSAT Entry',
-      ),
-      body: BlocBuilder<AddCSATEntryBloc, AddCSATEntryState>(
-        builder: (context, state) {
-          if (state.status == AddCSATEntryStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+    return BlocConsumer<AddCSATEntryBloc, AddCSATEntryState>(
+      listener: (context, state) {
+        if (state.status == AddCSATEntryStatus.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.isDelete ? 'CSAT Entry deleted successfully!' : 'CSAT Entry saved successfully!'),
+              backgroundColor: AppColors.successColor,
+            ),
+          );
+          Navigator.of(context).pop(); // Go back to the previous screen
+        } else if (state.status == AddCSATEntryStatus.failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage ?? 'Failed to save CSAT entry.'),
+              backgroundColor: AppColors.errorColor,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          appBar: CustomAppBar(
+            title: state.isUpdate ? 'Edit CSAT Entry' : 'Add CSAT Entry',
+          ),
+          body: state.status == AddCSATEntryStatus.loading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                 // Date Section
                 _buildSectionTitle(context, 'Date'),
                 const SizedBox(height: 8),

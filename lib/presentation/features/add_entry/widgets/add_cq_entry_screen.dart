@@ -56,21 +56,38 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: context.watch<AddCQEntryBloc>().state.isUpdate ? 'Edit CQ Entry' : 'Add CQ Entry',
-      ),
-      body: BlocBuilder<AddCQEntryBloc, AddCQEntryState>(
-        builder: (context, state) {
-          if (state.status == AddCQEntryStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+    return BlocConsumer<AddCQEntryBloc, AddCQEntryState>(
+      listener: (context, state) {
+        if (state.status == AddCQEntryStatus.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.isDelete ? 'CQ Entry deleted successfully!' : 'CQ Entry saved successfully!'),
+              backgroundColor: AppColors.successColor,
+            ),
+          );
+          Navigator.of(context).pop(); // Go back to the previous screen
+        } else if (state.status == AddCQEntryStatus.failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage ?? 'Failed to save CQ entry.'),
+              backgroundColor: AppColors.errorColor,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          appBar: CustomAppBar(
+            title: state.isUpdate ? 'Edit CQ Entry' : 'Add CQ Entry',
+          ),
+          body: state.status == AddCQEntryStatus.loading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                 // Date Section
                 _buildSectionTitle(context, 'Audit Date'),
                 const SizedBox(height: 8),

@@ -443,9 +443,8 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             });
           },
           backgroundColor: Theme.of(context).colorScheme.primary,
-          child: AnimatedIcon(
-            icon: AnimatedIcons.menu_close,
-            progress: _fabAnimationController,
+          child: Icon(
+            Icons.add,
             color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),

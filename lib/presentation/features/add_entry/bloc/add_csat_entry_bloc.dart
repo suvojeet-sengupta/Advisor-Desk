@@ -87,14 +87,14 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
           status: AddCSATEntryStatus.success,
           errorMessage: null,
         ));
-        adService.showAd();
+        await adService.showAd();
       } else {
         await repository.saveCSATEntry(entry);
         emit(state.copyWith(
           status: AddCSATEntryStatus.success,
           errorMessage: null,
         ));
-        adService.showAd();
+        await adService.showAd();
       }
     } catch (e) {
       emit(state.copyWith(

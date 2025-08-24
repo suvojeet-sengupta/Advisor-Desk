@@ -103,7 +103,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ],
           ),
-          
+          const SizedBox(height: 16),
+          _buildSectionCard(
+            context,
+            'About Developer',
+            [
+              _buildLinkTile(
+                context,
+                'About Developer',
+                AppRouter.aboutDeveloperRoute,
+                Icons.person,
+              ),
+            ],
+          ),
         ],
       ),
     );

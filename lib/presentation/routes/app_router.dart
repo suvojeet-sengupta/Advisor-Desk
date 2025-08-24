@@ -27,6 +27,7 @@ import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 import 'package:advisor_desk/presentation/screens/credits_screen.dart';
 import 'package:advisor_desk/presentation/screens/profile_screen.dart';
+import 'package:advisor_desk/presentation/screens/about_developer_screen.dart';
 
 
 class AppRouter {
@@ -52,6 +53,7 @@ class AppRouter {
   
   
   static const String creditsRoute = '/credits';
+  static const String aboutDeveloperRoute = '/about-developer';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -135,6 +137,10 @@ class AppRouter {
       case creditsRoute:
         return MaterialPageRoute(
           builder: (_) => const CreditsScreen(),
+        );
+      case aboutDeveloperRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AboutDeveloperScreen(),
         );
       case profileRoute:
         final bool isMandatoryFill = settings.arguments as bool? ?? false;

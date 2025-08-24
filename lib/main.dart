@@ -120,6 +120,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     checkForUpdate();
     _requestNotificationPermission();
+    widget.notificationService.scheduleDailyReminders();
     widget.notificationService.cancelTodaysRemindersIfEntryExists();
   }
 

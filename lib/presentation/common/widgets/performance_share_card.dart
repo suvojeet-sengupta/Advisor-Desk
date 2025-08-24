@@ -1,5 +1,5 @@
+import 'package:advisor_desk/presentation/common/theme/share_card_themes.dart';
 import 'package:flutter/material.dart';
-import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
@@ -8,135 +8,179 @@ import 'package:intl/intl.dart';
 class PerformanceShareCard extends StatelessWidget {
   final MonthlySummary summary;
   final Profile profile;
+  final ShareCardTheme theme;
 
-  const PerformanceShareCard({Key? key, required this.summary, required this.profile}) : super(key: key);
+  const PerformanceShareCard({
+    Key? key,
+    required this.summary,
+    required this.profile,
+    required this.theme,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat('#,##0.00');
-    final theme = Theme.of(context);
 
-    return Material(
-      color: theme.scaffoldBackgroundColor,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: theme.colorScheme.outline, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: theme.colorScheme.shadow.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: theme.backgroundGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('assets/icon/app_icon.png', width: 40, height: 40),
-                const SizedBox(width: 10),
-                Text(
-                  AppConstants.appName,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Monthly Performance Summary',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
-            ),
-            Text(
-              summary.formattedMonthYear,
-              style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 10),
-            if (profile.name != null)
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Image.asset('assets/icon/app_icon.png', width: 36, height: 36),
+              const SizedBox(width: 12),
               Text(
-                profile.name!,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+                AppConstants.appName,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: theme.textColor,
+                ),
               ),
-            const SizedBox(height: 20),
-            _buildInfoRow(
-              context,
-              Icons.timer,
-              'Total Login Hours',
-              '${formatter.format(summary.totalLoginHours)} hrs',
-              theme.colorScheme.secondary,
+            ],
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Monthly Performance',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: theme.textColor,
             ),
-            _buildInfoRow(
-              context,
-              Icons.call,
-              'Total Calls',
-              summary.totalCalls.toString(),
-              theme.colorScheme.secondary,
+          ),
+          Text(
+            summary.formattedMonthYear,
+            style: TextStyle(
+              fontSize: 18,
+              color: theme.textColor.withOpacity(0.8),
             ),
-            _buildInfoRow(
-              context,
-              Icons.sentiment_satisfied_alt,
-              'CSAT Score',
-              '${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%',
-              theme.colorScheme.primary,
-            ),
-            _buildInfoRow(
-              context,
-              Icons.assessment,
-              'CQ Score',
-              '${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%',
-              theme.colorScheme.primary,
-            ),
-            _buildInfoRow(
-              context,
-              Icons.currency_rupee,
-              'Total Salary',
-              'Rs. ${formatter.format(summary.totalSalary)}',
-              theme.colorScheme.primary,
-            ),
-            _buildInfoRow(
-              context,
-              Icons.payments,
-              'Net Salary',
-              'Rs. ${formatter.format(summary.netSalary)}',
-              theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 20),
+          ),
+          if (profile.name != null) ...[
+            const SizedBox(height: 8),
             Text(
-              'Keep up the great work!',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontStyle: FontStyle.italic,
-                color: theme.colorScheme.tertiary,
+              profile.name!,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: theme.textColor,
               ),
             ),
           ],
-        ),
+          const SizedBox(height: 24),
+          _buildInfoRow(
+            context,
+            Icons.timer_outlined,
+            'Total Login Hours',
+            '${formatter.format(summary.totalLoginHours)} hrs',
+          ),
+          _buildInfoRow(
+            context,
+            Icons.phone_in_talk_outlined,
+            'Total Calls',
+            summary.totalCalls.toString(),
+          ),
+          _buildInfoRow(
+            context,
+            Icons.star_border_rounded,
+            'CSAT Score',
+            '${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%',
+          ),
+          _buildInfoRow(
+            context,
+            Icons.check_circle_outline_rounded,
+            'CQ Score',
+            '${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%',
+          ),
+          const SizedBox(height: 12),
+          Divider(color: theme.textColor.withOpacity(0.2)),
+          const SizedBox(height: 12),
+          _buildSalaryRow(
+            context,
+            Icons.account_balance_wallet_outlined,
+            'Net Salary',
+            '₹ ${formatter.format(summary.netSalary)}',
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: Text(
+              'Generated by Advisor Desk',
+              style: TextStyle(
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+                color: theme.footerTextColor,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value, Color iconColor) {
-    final theme = Theme.of(context);
+  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: iconColor),
-          const SizedBox(width: 10),
+          Icon(icon, size: 22, color: theme.iconColor),
+          const SizedBox(width: 16),
           Text(
-            '$label:',
-            style: theme.textTheme.bodyLarge,
+            label,
+            style: TextStyle(fontSize: 16, color: theme.textColor),
           ),
           const Spacer(),
           Text(
             value,
-            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: theme.textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSalaryRow(BuildContext context, IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 28, color: theme.iconColor),
+          const SizedBox(width: 16),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: theme.textColor,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: theme.textColor,
+            ),
           ),
         ],
       ),

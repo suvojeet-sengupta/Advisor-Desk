@@ -23,11 +23,7 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_even
 import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_state.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/daily_entries_section.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:advisor_desk/presentation/common/widgets/performance_share_card.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart'; // Import DashboardSection
 import 'package:advisor_desk/core/models/dashboard_models.dart'; // Import DashboardCustomization
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart'; // Import Cubit
@@ -72,7 +68,6 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> with TickerProviderStateMixin {
-  final ScreenshotController screenshotController = ScreenshotController();
   final InAppReview _inAppReview = InAppReview.instance;
   final UsageTrackingService _usageTrackingService = UsageTrackingService();
   bool _isFabMenuOpen = false;
@@ -115,50 +110,6 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         context,
         AppRouter.monthlyPerformanceRoute,
         arguments: dashboardState.monthlySummary,
-      );
-    }
-  }
-
-  Future<void> _sharePerformance(BuildContext context, MonthlySummary summary, Profile profile) async {
-    // Show a loading indicator
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Preparing performance image...')),
-    );
-
-    try {
-      // Capture the widget as an image
-      final imageFile = await screenshotController.captureFromWidget(
-        InheritedTheme.captureAll(
-          context,
-          PerformanceShareCard(summary: summary, profile: profile),
-        ),
-        delay: const Duration(milliseconds: 100),
-        pixelRatio: 2.0, // Adjust pixel ratio for better quality
-      );
-
-      if (imageFile != null) {
-        final directory = await getTemporaryDirectory();
-        final imagePath = '${directory.path}/performance_summary.png';
-        final file = File(imagePath);
-        await file.writeAsBytes(imageFile);
-
-        // Share the image
-        await Share.shareXFiles([XFile(file.path)], text: 'Check out my Advisor Desk performance!');
-
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Performance image shared!'))
-        );
-      } else {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to capture image.')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sharing performance: $e')),
       );
     }
   }
@@ -226,7 +177,14 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                   icon: const Icon(Icons.share),
                   onPressed: () {
                     final profile = context.read<ProfileCubit>().state.profile;
-                    _sharePerformance(context, state.monthlySummary!, profile);
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.shareThemeSelectorRoute,
+                      arguments: {
+                        'summary': state.monthlySummary!,
+                        'profile': profile,
+                      },
+                    );
                   },
                 );
               }
@@ -329,7 +287,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                       ),
                                     ),
                                     const SliverToBoxAdapter(child: IndependenceDayBanner()),
-                                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                                    const SliverToBoxAdapter(child: const SizedBox(height: 16)),
                                     ...customizationState.visibleSections.map((section) {
                                       return _buildDashboardSection(
                                         context,

@@ -1,0 +1,135 @@
+
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
+import 'package:advisor_desk/presentation/common/theme/share_card_themes.dart';
+import 'package:advisor_desk/presentation/common/widgets/performance_share_card.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
+
+class ShareThemeSelectorScreen extends StatefulWidget {
+  final MonthlySummary summary;
+  final Profile profile;
+
+  const ShareThemeSelectorScreen({
+    Key? key,
+    required this.summary,
+    required this.profile,
+  }) : super(key: key);
+
+  @override
+  _ShareThemeSelectorScreenState createState() => _ShareThemeSelectorScreenState();
+}
+
+class _ShareThemeSelectorScreenState extends State<ShareThemeSelectorScreen> {
+  final ScreenshotController _screenshotController = ScreenshotController();
+  late ShareCardTheme _selectedTheme;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTheme = shareCardThemes.first;
+  }
+
+  void _onThemeSelected(ShareCardTheme theme) {
+    setState(() {
+      _selectedTheme = theme;
+    });
+  }
+
+  Future<void> _sharePerformanceCard() async {
+    try {
+      final Uint8List? image = await _screenshotController.capture();
+      if (image == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not capture performance card.')),
+        );
+        return;
+      }
+
+      final directory = await getTemporaryDirectory();
+      final imagePath = await File('${directory.path}/performance_card.png').create();
+      await imagePath.writeAsBytes(image);
+
+      await Share.shareXFiles(
+        [XFile(imagePath.path)],
+        text: 'Here is my performance summary for ${widget.summary.formattedMonthYear}!',
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred while sharing: \$e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Choose Theme & Share'),
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: Screenshot(
+                  controller: _screenshotController,
+                  child: PerformanceShareCard(
+                    summary: widget.summary,
+                    profile: widget.profile,
+                    theme: _selectedTheme,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('Select a Theme', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 60,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: shareCardThemes.length,
+                itemBuilder: (context, index) {
+                  final theme = shareCardThemes[index];
+                  final isSelected = theme == _selectedTheme;
+                  return GestureDetector(
+                    onTap: () => _onThemeSelected(theme),
+                    child: Container(
+                      width: 60,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: theme.backgroundGradient),
+                        borderRadius: BorderRadius.circular(30),
+                        border: isSelected ? Border.all(color: Theme.of(context).colorScheme.primary, width: 3) : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _sharePerformanceCard,
+        label: const Text('Share Now'),
+        icon: const Icon(Icons.share),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}

@@ -1,4 +1,5 @@
 
+import 'package:advisor_desk/presentation/features/monthly_performance/widgets/share_theme_selector_screen.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
@@ -38,6 +39,7 @@ class AppRouter {
   static const String allReportsRoute = '/all-reports';
   static const String onboardingTutorialRoute = '/onboarding-tutorial';
   static const String themeSelectionRoute = '/theme-selection';
+  static const String shareThemeSelectorRoute = '/share-theme-selector';
   
   static const String settingsRoute = '/settings';
   static const String customizeDashboardRoute = '/customize-dashboard';
@@ -76,6 +78,13 @@ class AppRouter {
         final MonthlySummary summary = settings.arguments as MonthlySummary;
         return MaterialPageRoute(
           builder: (_) => MonthlyPerformanceScreen(summary: summary),
+        );
+       case shareThemeSelectorRoute:
+        final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
+        final MonthlySummary summary = args['summary'] as MonthlySummary;
+        final Profile profile = args['profile'] as Profile;
+        return MaterialPageRoute(
+          builder: (_) => ShareThemeSelectorScreen(summary: summary, profile: profile),
         );
       case allReportsRoute:
         final Profile profile = settings.arguments as Profile;

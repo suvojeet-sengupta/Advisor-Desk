@@ -139,7 +139,13 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Dashboard',
+        titleWidget: FittedBox(
+          fit: BoxFit.contain,
+          child: Text(
+            'Dashboard',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        ),
         leading: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
             final profile = state.profile;

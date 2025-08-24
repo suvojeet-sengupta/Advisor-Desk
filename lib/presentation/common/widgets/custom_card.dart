@@ -16,29 +16,20 @@ class CustomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // यहाँ थीम का उपयोग किया गया है
     final cardTheme = Theme.of(context).cardTheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: margin,
-        padding: padding ?? const EdgeInsets.all(16),
-        // सही तरीका ShapeDecoration का उपयोग करना है
-        decoration: ShapeDecoration(
-          color: cardTheme.color, // थीम से रंग
-          shape: cardTheme.shape!, // थीम से आकार (बॉर्डर और रेडियस सहित)
-          shadows: cardTheme.shadowColor != null && cardTheme.elevation! > 0
-              ? [
-                  BoxShadow(
-                    color: cardTheme.shadowColor!,
-                    blurRadius: cardTheme.elevation!,
-                    offset: const Offset(0, 2),
-                  )
-                ]
-              : null,
+    return Card(
+      margin: margin,
+      shape: cardTheme.shape,
+      color: cardTheme.color,
+      elevation: cardTheme.elevation,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: padding ?? const EdgeInsets.all(16),
+          child: child,
         ),
-        child: child,
       ),
     );
   }

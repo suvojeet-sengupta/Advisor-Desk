@@ -472,7 +472,7 @@ class AppTheme {
         elevation: 1,
         shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -480,7 +480,7 @@ class AppTheme {
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(30),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           elevation: 0,
@@ -495,15 +495,15 @@ class AppTheme {
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
         ),
         hintStyle: const TextStyle(color: Colors.grey),
@@ -534,7 +534,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(28),
         ),
       ),
     );
@@ -557,7 +557,7 @@ class AppTheme {
         elevation: 1,
         shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -565,7 +565,7 @@ class AppTheme {
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(30),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           elevation: 0,
@@ -580,15 +580,15 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.secondaryBackground,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.divider),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.divider),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: colorScheme.primary, width: 1),
         ),
         hintStyle: const TextStyle(color: AppColors.textHint),
@@ -619,7 +619,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.secondaryBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(28),
         ),
       ),
     );

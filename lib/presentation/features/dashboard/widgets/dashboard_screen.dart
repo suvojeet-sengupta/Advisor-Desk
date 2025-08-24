@@ -458,20 +458,11 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
             ),
-            child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
           ),
           const SizedBox(width: 12),
           FloatingActionButton(

@@ -17,20 +17,24 @@ class CustomButton extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final buttonStyle = theme.elevatedButtonTheme.style?.copyWith(
+      backgroundColor: MaterialStateProperty.all(
+        isPrimary ? theme.colorScheme.primary : AppColors.secondaryBackground,
+      ),
+      foregroundColor: MaterialStateProperty.all(
+        isPrimary ? theme.colorScheme.onPrimary : AppColors.textPrimary,
+      ),
+      side: MaterialStateProperty.all(
+        isPrimary
+            ? BorderSide.none
+            : const BorderSide(color: AppColors.border, width: 0.5),
+      ),
+    );
+
     return ElevatedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isPrimary ? Theme.of(context).colorScheme.primary : AppColors.secondaryBackground,
-        foregroundColor: isPrimary ? Colors.white : AppColors.textPrimary,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: isPrimary 
-              ? BorderSide.none 
-              : const BorderSide(color: AppColors.border, width: 0.5),
-        ),
-        elevation: 0,
-      ),
+      style: buttonStyle,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

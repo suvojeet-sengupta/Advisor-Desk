@@ -1,3 +1,4 @@
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_non_billable_calls_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_non_billable_calls_event.dart';
@@ -33,11 +34,13 @@ class AddNonBillableCallsView extends StatefulWidget {
 
 class _AddNonBillableCallsViewState extends State<AddNonBillableCallsView> {
   late final TextEditingController _nonBillableCallsController;
+  final AdService _adService = AdService();
 
   @override
   void initState() {
     super.initState();
     _nonBillableCallsController = TextEditingController();
+    _adService.loadAd();
   }
 
   @override
@@ -104,7 +107,8 @@ class _AddNonBillableCallsViewState extends State<AddNonBillableCallsView> {
                   width: double.infinity,
                   child: CustomButton(
                     text: state.isUpdate ? 'Update Entry' : 'Add Entry',
-                    onPressed: () {
+                    onPressed: () async {
+                      await _adService.showAd();
                       context.read<AddNonBillableCallsBloc>().add(const SubmitNonBillableCalls());
                     },
                     icon: state.isUpdate ? Icons.update : Icons.add,

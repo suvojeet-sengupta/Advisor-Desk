@@ -35,6 +35,9 @@ import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/data/datasources/profile_data_source.dart';
 import 'package:in_app_review/in_app_review.dart'; // Import in_app_review
 import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import UsageTrackingService
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -81,6 +84,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       duration: const Duration(milliseconds: 75),
     );
     _checkAndRequestReview();
+    _checkVersionAndShowChangelog();
   }
 
   @override
@@ -584,6 +588,24 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       
       default:
         return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
+  }
+
+  Future<void> _checkVersionAndShowChangelog() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+    final prefs = await SharedPreferences.getInstance();
+    final lastVersion = prefs.getString('last_version');
+
+    if (lastVersion != currentVersion) {
+      // It's a new version, so show the changelog.
+      // We are targeting users updating from 1.0.12+28, but this will show for any new version.
+      // This is a good thing, as we can update the changelog for every new version.
+      showDialog(
+        context: context,
+        builder: (context) => const ChangelogDialog(),
+      );
+      await prefs.setString('last_version', currentVersion);
     }
   }
 }

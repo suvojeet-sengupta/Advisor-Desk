@@ -500,13 +500,14 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 iconColor: Theme.of(context).colorScheme.secondary,
                 onTap: () => _navigateToMonthlyPerformance(context),
               ),
-              DashboardCard(
-                title: 'Non-billable Calls',
-                value: summary.totalNonBillableCalls.toString(),
-                icon: Icons.phone_disabled,
-                iconColor: Theme.of(context).colorScheme.error,
-                onTap: () => _navigateToMonthlyPerformance(context),
-              ),
+              if (summary.totalNonBillableCalls > 0)
+                DashboardCard(
+                  title: 'Non-billable Calls',
+                  value: summary.totalNonBillableCalls.toString(),
+                  icon: Icons.phone_disabled,
+                  iconColor: Theme.of(context).colorScheme.error,
+                  onTap: () => _navigateToMonthlyPerformance(context),
+                ),
               DashboardCard(
                 title: 'Total Login Hours',
                 value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',

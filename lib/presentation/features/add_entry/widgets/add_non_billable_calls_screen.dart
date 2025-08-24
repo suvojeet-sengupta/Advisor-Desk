@@ -1,4 +1,5 @@
 import 'package:advisor_desk/data/datasources/ad_service.dart';
+import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_non_billable_calls_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_non_billable_calls_event.dart';
@@ -53,6 +54,7 @@ class _AddNonBillableCallsViewState extends State<AddNonBillableCallsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Add Non-billable Calls'),
+      bottomNavigationBar: const BannerAdWidget(),
       body: BlocConsumer<AddNonBillableCallsBloc, AddNonBillableCallsState>(
         listener: (context, state) {
           if (state.status == AddNonBillableCallsStatus.success) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
+import 'package:advisor_desk/core/constants/app_enums.dart';
+
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -15,7 +17,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDarkMode = context.watch<ThemeCubit>().state.isDarkMode;
+        final themeCubit = context.watch<ThemeCubit>();
+    final isDarkMode = themeCubit.state.themeMode == AppThemeMode.dark ||
+        (themeCubit.state.themeMode == AppThemeMode.system &&
+            MediaQuery.of(context).platformBrightness == Brightness.dark);
 
     return Container(
       decoration: BoxDecoration(

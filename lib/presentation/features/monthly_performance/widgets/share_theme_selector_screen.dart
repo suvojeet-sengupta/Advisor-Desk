@@ -60,7 +60,7 @@ class _ShareThemeSelectorScreenState extends State<ShareThemeSelectorScreen> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred while sharing: \$e')),
+        SnackBar(content: Text('An error occurred while sharing: $e')),
       );
     }
   }
@@ -72,12 +72,12 @@ class _ShareThemeSelectorScreenState extends State<ShareThemeSelectorScreen> {
         title: const Text('Choose Theme & Share'),
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Center(
                 child: Screenshot(
                   controller: _screenshotController,
                   child: PerformanceShareCard(
@@ -87,41 +87,42 @@ class _ShareThemeSelectorScreenState extends State<ShareThemeSelectorScreen> {
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            const Text('Select a Theme', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 60,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: shareCardThemes.length,
-                itemBuilder: (context, index) {
-                  final theme = shareCardThemes[index];
-                  final isSelected = theme == _selectedTheme;
-                  return GestureDetector(
-                    onTap: () => _onThemeSelected(theme),
-                    child: Container(
-                      width: 60,
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: theme.backgroundGradient),
-                        borderRadius: BorderRadius.circular(30),
-                        border: isSelected ? Border.all(color: Theme.of(context).colorScheme.primary, width: 3) : null,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
-                          )
-                        ],
+              const SizedBox(height: 20),
+              const Text('Select a Theme', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: shareCardThemes.length,
+                  itemBuilder: (context, index) {
+                    final theme = shareCardThemes[index];
+                    final isSelected = theme == _selectedTheme;
+                    return GestureDetector(
+                      onTap: () => _onThemeSelected(theme),
+                      child: Container(
+                        width: 60,
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: theme.backgroundGradient),
+                          borderRadius: BorderRadius.circular(30),
+                          border: isSelected ? Border.all(color: Theme.of(context).colorScheme.primary, width: 3) : null,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 5,
+                              offset: const Offset(0, 2),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 80), // To make space for the FAB
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

@@ -105,8 +105,8 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       },
                     ),
                     DashboardCard(
-                      title: 'Total Salary',
-                      value: '₹${summary.totalSalary.toStringAsFixed(2)}',
+                      title: 'Net Salary',
+                      value: '₹${summary.netSalary.toStringAsFixed(2)}',
                       icon: Icons.currency_rupee,
                       iconColor: Theme.of(context).colorScheme.primary,
                     ),

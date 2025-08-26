@@ -64,17 +64,27 @@ class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
   }
 
   void _emitLoadedState(Emitter<LoginDaysState> emit, List<DailyEntry> loginEntries, List<LeaveEntry> leaveEntries, int year, int month) {
-    final daysInMonth = DateTime(year, month + 1, 0).day;
+    final now = DateTime.now();
+    int daysToConsider;
+
+    if (year == now.year && month == now.month) {
+      daysToConsider = now.day; // Only consider days up to today for the current month
+    } else {
+      daysToConsider = DateTime(year, month + 1, 0).day; // All days for past months
+    }
+
     final presentCount = loginEntries.length;
     final weekOffCount = leaveEntries.where((e) => e.type == LeaveType.weekOff).length;
     final personalLeaveCount = leaveEntries.where((e) => e.type == LeaveType.personal).length;
-    final absentCount = daysInMonth - presentCount - weekOffCount - personalLeaveCount;
+    
+    // Calculate actual absent days based on daysToConsider
+    final actualAbsentCount = daysToConsider - presentCount - weekOffCount - personalLeaveCount;
 
     emit(LoginDaysLoaded(
       loginEntries: loginEntries,
       leaveEntries: leaveEntries,
       presentCount: presentCount,
-      absentCount: absentCount,
+      absentCount: actualAbsentCount < 0 ? 0 : actualAbsentCount, // Ensure absent count is not negative
       weekOffCount: weekOffCount,
       personalLeaveCount: personalLeaveCount,
     ));

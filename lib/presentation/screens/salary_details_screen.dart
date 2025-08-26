@@ -1,51 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
-import 'package:advisor_desk/presentation/routes/app_router.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 
-class SalarySection extends StatelessWidget {
-  final MonthlySummary summary;
+class SalaryDetailsScreen extends StatelessWidget {
+  final MonthlySummary monthlySummary;
 
-  const SalarySection({Key? key, required this.summary}) : super(key: key);
+  const SalaryDetailsScreen({Key? key, required this.monthlySummary}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final breakdown = summary.salaryBreakdown;
+    final breakdown = monthlySummary.salaryBreakdown;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            AppRouter.salaryDetailsRoute,
-            arguments: summary,
-          );
-        },
-        child: CustomCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Salary Details',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 16),
-              ...breakdown.entries.map((entry) {
-                return _buildSalaryRow(
-                  context,
-                  entry.key,
-                  entry.value,
-                );
-              }).toList(),
-            ],
-          ),
+    return Scaffold(
+      appBar: CustomAppBar(title: 'Salary Details'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            Text(
+              'Monthly Salary Breakdown',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            ...breakdown.entries.map((entry) {
+              return _buildSalaryDetailRow(
+                context,
+                entry.key,
+                entry.value,
+              );
+            }).toList(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSalaryRow(
+  Widget _buildSalaryDetailRow(
     BuildContext context,
     String title,
     double value,
@@ -77,11 +67,11 @@ class SalarySection extends StatelessWidget {
         break;
       case 'Bonus Amount':
         icon = Icons.card_giftcard;
-        iconColor = summary.isBonusAchieved ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error;
+        iconColor = monthlySummary.isBonusAchieved ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error;
         break;
       case 'CSAT Bonus':
         icon = Icons.star;
-        iconColor = summary.isCSATBonusAchieved ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error;
+        iconColor = monthlySummary.isCSATBonusAchieved ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error;
         break;
       case 'Gross Salary':
         icon = Icons.account_balance_wallet;

@@ -28,6 +28,7 @@ import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 import 'package:advisor_desk/presentation/screens/credits_screen.dart';
 import 'package:advisor_desk/presentation/screens/profile_screen.dart';
 import 'package:advisor_desk/presentation/screens/about_developer_screen.dart';
+import 'package:advisor_desk/presentation/screens/salary_details_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/repositories/leave_repository.dart';
@@ -62,6 +63,7 @@ class AppRouter {
   
   static const String creditsRoute = '/credits';
   static const String aboutDeveloperRoute = '/about-developer';
+  static const String salaryDetailsRoute = '/salary-details';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -162,6 +164,11 @@ class AppRouter {
         final bool isMandatoryFill = settings.arguments as bool? ?? false;
         return MaterialPageRoute(
           builder: (_) => ProfileScreen(isMandatoryFill: isMandatoryFill),
+        );
+      case salaryDetailsRoute:
+        final MonthlySummary summary = settings.arguments as MonthlySummary;
+        return MaterialPageRoute(
+          builder: (_) => SalaryDetailsScreen(monthlySummary: summary),
         );
       
       default:

@@ -1,3 +1,4 @@
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -100,6 +101,11 @@ class MonthlyGoalsSection extends StatelessWidget {
                       'Daily Avg. Calls Needed:',
                       '${dailyAvgCalls.toInt()}',
                     ),
+                    _buildSalaryProjection(
+                      context,
+                      summary, // current summary
+                      _calculateProjectedSummary(state, summary), // projected summary
+                    ),
                   ],
                 ),
               )
@@ -125,7 +131,10 @@ class MonthlyGoalsSection extends StatelessWidget {
       center: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(current, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(current, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          ),
           Text('/ $target', style: theme.textTheme.bodySmall),
         ],
       ),
@@ -147,7 +156,81 @@ class MonthlyGoalsSection extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: theme.textTheme.bodyLarge),
-        Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  MonthlySummary _calculateProjectedSummary(GoalsState goalsState, MonthlySummary currentSummary) {
+    // Create a dummy list of entries that represents the goal achieved.
+    // We can create a single entry with the total values.
+    final projectedEntry = DailyEntry(
+      date: DateTime.now(),
+      callCount: goalsState.targetCalls,
+      loginHours: goalsState.targetHours,
+      loginMinutes: 0,
+      loginSeconds: 0,
+      nonBillableCalls: currentSummary.totalNonBillableCalls, // Assuming non-billable calls remain the same
+    );
+
+    return MonthlySummary(
+      month: currentSummary.month,
+      year: currentSummary.year,
+      entries: [projectedEntry],
+      csatSummary: currentSummary.csatSummary,
+      cqSummary: currentSummary.cqSummary,
+      loginDays: currentSummary.loginDays, // This might not be accurate for projection, but it's the best we have
+    );
+  }
+
+  Widget _buildSalaryProjection(BuildContext context, MonthlySummary currentSummary, MonthlySummary projectedSummary) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Divider(color: theme.colorScheme.onSurface.withOpacity(0.1)),
+        const SizedBox(height: 16),
+        Text(
+          'Salary Projection',
+          style: theme.textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        _buildSalaryRow(
+          context,
+          'Current Salary',
+          '₹${currentSummary.netSalary.toStringAsFixed(2)}',
+          Icons.trending_up,
+          theme.colorScheme.primary,
+        ),
+        const SizedBox(height: 8),
+        _buildSalaryRow(
+          context,
+          'Projected Salary (at 100% goal)',
+          '₹${projectedSummary.netSalary.toStringAsFixed(2)}',
+          Icons.military_tech,
+          theme.colorScheme.tertiary,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSalaryRow(BuildContext context, String label, String value, IconData icon, Color color) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Icon(icon, color: color, size: 24),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(label, style: theme.textTheme.bodyLarge),
+        ),
+        const SizedBox(width: 8), // Add some space between label and value
+        Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: color)),
       ],
     );
   }

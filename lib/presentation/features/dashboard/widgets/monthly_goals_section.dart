@@ -125,7 +125,10 @@ class MonthlyGoalsSection extends StatelessWidget {
       center: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(current, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(current, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          ),
           Text('/ $target', style: theme.textTheme.bodySmall),
         ],
       ),
@@ -147,7 +150,12 @@ class MonthlyGoalsSection extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: theme.textTheme.bodyLarge),
-        Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          ),
+        ),
       ],
     );
   }

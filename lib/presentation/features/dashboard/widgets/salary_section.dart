@@ -102,13 +102,18 @@ class SalarySection extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          Text(
-            isCallEntry
-                ? value.toInt().toString()
-                : '₹${value.toStringAsFixed(2)}',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: (isNetSalary || isGrossSalary) ? FontWeight.bold : FontWeight.normal,
-                ),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                isCallEntry
+                    ? value.toInt().toString()
+                    : '₹${value.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: (isNetSalary || isGrossSalary) ? FontWeight.bold : FontWeight.normal,
+                    ),
+              ),
+            ),
           ),
         ],
       ),

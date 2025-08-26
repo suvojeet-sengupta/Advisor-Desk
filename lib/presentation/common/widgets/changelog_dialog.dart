@@ -12,6 +12,7 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '✨ New Features'),
+            _buildListItem('You can now see the day of the week (e.g., Mon, Tue) in the login days calendar for easier reference.'),
             _buildListItem('The onboarding tutorial has been completely revamped to reflect the latest app features and provide a better user experience.'),
             _buildListItem('A new "About Developer" screen has been added to the settings, with a professional bio and links to social media.'),
             _buildListItem('The shareable performance card has a new design and now includes a theme selector to customize its appearance.'),
@@ -22,7 +23,8 @@ class ChangelogDialog extends StatelessWidget {
             _buildListItem('You can now swipe to edit or delete CSAT and CQ entries.'),
             const SizedBox(height: 16),
             _buildSectionTitle(context, '🚀 Improvements'),
-            _buildListItem('The "Dashboard" title is now responsive and will always be fully visible, regardless of your device\'s screen size.'),
+            _buildListItem('Improved dashboard scrolling behavior for a smoother, more native feel on Android devices.'),
+            _buildListItem('The "Dashboard" title is now responsive and will always be fully visible, regardless of your device\'s screen size.')
             _buildListItem('The UI has been updated to the Material You expressive style for a more modern look and feel.'),
             _buildListItem('The FAB menu animation is now faster and more responsive.'),
             _buildListItem('The entire FAB menu item is now clickable, making it easier to use.'),

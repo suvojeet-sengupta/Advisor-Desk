@@ -69,13 +69,9 @@ class DailyEntriesSection extends StatelessWidget {
           DateFormat('EEEE, MMM dd, yyyy').format(entry.date),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
-        subtitle: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(
-            '${entry.callCount} calls • Login Time: ${entry.formattedLoginTime}',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+        subtitle: Text(
+          '${entry.callCount} calls • Login Time: ${entry.formattedLoginTime}',
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         trailing: IconButton(
           icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.secondary),

@@ -110,15 +110,12 @@ class CQPerformanceSection extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            '${averageCQ.toStringAsFixed(1)}%',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: qualityColor,
-                                ),
-                          ),
+                        Text(
+                          '${averageCQ.toStringAsFixed(1)}%',
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: qualityColor,
+                              ),
                         ),
                         Text(
                           'CQ Avg',
@@ -141,15 +138,12 @@ class CQPerformanceSection extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: qualityColor.withOpacity(0.3)),
                   ),
-                  child:                   FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      qualityRating,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: qualityColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
+                  child: Text(
+                    qualityRating,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: qualityColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
                 
@@ -202,15 +196,12 @@ class CQPerformanceSection extends StatelessWidget {
             size: 20,
           ),
           const SizedBox(height: 4),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-            ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
           Text(
             label,

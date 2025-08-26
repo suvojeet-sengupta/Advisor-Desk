@@ -114,16 +114,13 @@ class CSATPerformanceSection extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            '${csatPercentage.toStringAsFixed(1)}%',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: needsImprovement 
-                                  ? Theme.of(context).colorScheme.error
-                                  : Theme.of(context).colorScheme.tertiary,
-                            ),
+                        Text(
+                          '${csatPercentage.toStringAsFixed(1)}%',
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: needsImprovement 
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context).colorScheme.tertiary,
                           ),
                         ),
                         Text(
@@ -230,14 +227,11 @@ class CSATPerformanceSection extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    csatSummary!.totalSurveyHits.toString(),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                Text(
+                  csatSummary!.totalSurveyHits.toString(),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -270,14 +264,11 @@ class CSATPerformanceSection extends StatelessWidget {
             size: 20,
           ),
           const SizedBox(height: 4),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
           Text(

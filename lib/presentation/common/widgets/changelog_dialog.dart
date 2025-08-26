@@ -12,6 +12,7 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '✨ New Features'),
+            _buildListItem('Monthly performance screen now displays Net Salary instead of Total Salary.'),
             _buildListItem('The dashboard now displays Net Salary instead of Total Salary for a more accurate reflection of your earnings.'),
             _buildListItem('You can now see the day of the week (e.g., Mon, Tue) in the login days calendar for easier reference.'),
             _buildListItem('Restored the projected summary feature in monthly goals.'),

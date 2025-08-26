@@ -28,6 +28,14 @@ import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 import 'package:advisor_desk/presentation/screens/credits_screen.dart';
 import 'package:advisor_desk/presentation/screens/profile_screen.dart';
 import 'package:advisor_desk/presentation/screens/about_developer_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:advisor_desk/domain/repositories/leave_repository.dart';
+import 'package:advisor_desk/domain/usecases/get_leave_entries_usecase.dart';
+import 'package:advisor_desk/domain/usecases/mark_leave_usecase.dart';
+import 'package:advisor_desk/domain/usecases/delete_leave_usecase.dart';
+import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bloc.dart';
+import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
 
 
 class AppRouter {
@@ -131,7 +139,15 @@ class AppRouter {
       case loginDaysDetailsRoute:
         final MonthlySummary summary = settings.arguments as MonthlySummary;
         return MaterialPageRoute(
-          builder: (_) => LoginDaysDetailsScreen(summary: summary),
+          builder: (context) => BlocProvider(
+            create: (context) => LoginDaysBloc(
+              performanceRepository: context.read<PerformanceRepository>(),
+              getLeaveEntriesUseCase: GetLeaveEntriesUseCase(context.read<LeaveRepository>()),
+              markLeaveUseCase: MarkLeaveUseCase(context.read<LeaveRepository>()),
+              deleteLeaveUseCase: DeleteLeaveUseCase(context.read<LeaveRepository>()),
+            )..add(LoadLoginDays(summary.year, summary.month)),
+            child: LoginDaysDetailsScreen(summary: summary),
+          ),
         );
       
       case creditsRoute:

@@ -20,12 +20,13 @@ class AppConstants {
 
   // Database constants
   static const String databaseName = 'advisor_desk.db';
-  static const int databaseVersion = 4; // Updated version for non-billable calls
+  static const int databaseVersion = 5; // Updated version for leave entries
 
   // Table names
   static const String tableEntries = 'daily_entries';
   static const String tableCSATEntries = 'csat_entries';
   static const String tableCQEntries = 'cq_entries'; // New CQ table
+  static const String tableLeaveEntries = 'leave_entries'; // New Leave table
 
   // Shared preferences keys
   static const String prefThemeMode = 'theme_mode';

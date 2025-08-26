@@ -27,6 +27,8 @@ import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:advisor_desk/data/repositories/leave_repository_impl.dart';
+import 'package:advisor_desk/domain/repositories/leave_repository.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -53,6 +55,8 @@ void main() async {
   final goalRepository = GoalRepositoryImpl(goalDataSource);
   final deleteCQEntriesByDateUseCase = DeleteCQEntriesByDateUseCase(performanceRepository);
   final deleteCSATEntriesByDateUseCase = DeleteCSATEntriesByDateUseCase(performanceRepository);
+
+  final leaveRepository = LeaveRepositoryImpl(localDataSource: localDataSource);
 
   final notificationService = NotificationService(performanceRepository: performanceRepository);
   await notificationService.init();
@@ -84,6 +88,7 @@ void main() async {
     notificationService: notificationService,
     initialRoute: initialRoute,
     profileRepository: profileRepository, // Pass profileRepository to MyApp
+    leaveRepository: leaveRepository,
   ));
 }
 
@@ -96,6 +101,7 @@ class MyApp extends StatefulWidget {
   final NotificationService notificationService;
   final String initialRoute;
   final ProfileRepository profileRepository; // New
+  final LeaveRepository leaveRepository;
 
   const MyApp({
     Key? key,
@@ -107,6 +113,7 @@ class MyApp extends StatefulWidget {
     required this.notificationService,
     required this.initialRoute,
     required this.profileRepository, // New
+    required this.leaveRepository,
   }) : super(key: key);
 
   @override
@@ -185,6 +192,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
         RepositoryProvider<NotificationService>.value(value: widget.notificationService),
         RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository), // New
+        RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
       ],
       child: MultiBlocProvider(
         providers: [

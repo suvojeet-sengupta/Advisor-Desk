@@ -4,6 +4,7 @@ import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/domain/entities/leave_entry.dart';
 
 class LocalDataSource {
   static Database? _database;
@@ -65,6 +66,14 @@ class LocalDataSource {
             percentage REAL NOT NULL
           )
         ''');
+        // Create Leave entries table
+        await db.execute('''
+          CREATE TABLE ${AppConstants.tableLeaveEntries} (
+            date INTEGER PRIMARY KEY,
+            type INTEGER NOT NULL,
+            reason TEXT
+          )
+        ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -90,6 +99,15 @@ class LocalDataSource {
         if (oldVersion < 4) {
           await db.execute('''
             ALTER TABLE ${AppConstants.tableEntries} ADD COLUMN non_billable_calls INTEGER NOT NULL DEFAULT 0
+          ''');
+        }
+        if (oldVersion < 5) {
+          await db.execute('''
+            CREATE TABLE ${AppConstants.tableLeaveEntries} (
+              date INTEGER PRIMARY KEY,
+              type INTEGER NOT NULL,
+              reason TEXT
+            )
           ''');
         }
       },
@@ -549,5 +567,40 @@ class LocalDataSource {
     }
 
     return result;
+  }
+
+  // Leave Entry CRUD operations
+
+  Future<void> saveLeaveEntry(LeaveEntry entry) async {
+    final db = await database;
+    await db.insert(
+      AppConstants.tableLeaveEntries,
+      entry.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<LeaveEntry>> getLeaveEntriesForMonth(int year, int month) async {
+    final db = await database;
+    final startDate = DateTime(year, month, 1);
+    final endDate = DateTime(year, month + 1, 0);
+    final List<Map<String, dynamic>> maps = await db.query(
+      AppConstants.tableLeaveEntries,
+      where: 'date >= ? AND date <= ?',
+      whereArgs: [startDate.millisecondsSinceEpoch, endDate.millisecondsSinceEpoch],
+    );
+    return List.generate(maps.length, (i) {
+      return LeaveEntry.fromMap(maps[i]);
+    });
+  }
+
+  Future<void> deleteLeaveEntry(DateTime date) async {
+    final db = await database;
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+    await db.delete(
+      AppConstants.tableLeaveEntries,
+      where: 'date = ?',
+      whereArgs: [normalizedDate.millisecondsSinceEpoch],
+    );
   }
 }

@@ -1,3 +1,6 @@
+
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:advisor_desk/domain/entities/report_summary.dart';
@@ -6,149 +9,279 @@ import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:intl/intl.dart';
 
 class PdfService {
-  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
+  Future<List<int>> generateReportPdf(ReportSummary summary,
+      List<ReportSection> sectionsToInclude, Profile profile) async {
     final pdf = pw.Document();
     final formatter = NumberFormat('#,##0.00');
 
-    // Helper function to build the common header for each page
+    final ByteData regularFont =
+        await rootBundle.load("assets/fonts/Poppins-Regular.ttf");
+    final ByteData boldFont =
+        await rootBundle.load("assets/fonts/Poppins-Bold.ttf");
+
+    final pw.Font regular = pw.Font.ttf(regularFont);
+    final pw.Font bold = pw.Font.ttf(boldFont);
+
+    final pw.ThemeData theme = pw.ThemeData.withFont(
+      base: regular,
+      bold: bold,
+    );
+
+    final PdfColor primaryColor = PdfColor.fromHex('#1A237E');
+    final PdfColor secondaryColor = PdfColor.fromHex('#FFFFFF');
+    final PdfColor textColor = PdfColor.fromHex('#333333');
+    final PdfColor cardBgColor = PdfColor.fromHex('#F5F5F5');
+
     pw.Widget _buildHeader(pw.Context context, String title) {
-      final showProfileInfo = profile.name != null;
-      return pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Text('Advisor Desk Performance Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 10),
-          if (showProfileInfo) ...[
-            pw.Text('Advisor: ${profile.name!}', style: pw.TextStyle(fontSize: 18)),
-            pw.SizedBox(height: 5),
-            pw.Text('Company: ${profile.companyName!}', style: pw.TextStyle(fontSize: 18)),
+      return pw.Container(
+        padding: const pw.EdgeInsets.only(bottom: 20),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(
+              'Advisor Desk Performance Report',
+              style: pw.TextStyle(
+                  fontSize: 24, fontWeight: pw.FontWeight.bold, color: primaryColor),
+            ),
             pw.SizedBox(height: 10),
+            pw.Text(
+              'Period: ${summary.formattedDateRange}',
+              style: pw.TextStyle(fontSize: 16, color: textColor),
+            ),
+            if (profile.name != null) ...[
+              pw.SizedBox(height: 5),
+              pw.Text(
+                'Advisor: ${profile.name!}',
+                style: pw.TextStyle(fontSize: 16, color: textColor),
+              ),
+            ],
+            pw.SizedBox(height: 20),
+            pw.Text(
+              title,
+              style: pw.TextStyle(
+                  fontSize: 20, fontWeight: pw.FontWeight.bold, color: primaryColor),
+            ),
           ],
-          pw.Text('Period: ${summary.formattedDateRange}', style: pw.TextStyle(fontSize: 18)),
-          pw.SizedBox(height: 20),
-          pw.Text(title, style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 10),
-        ],
+        ),
       );
     }
 
-    // Add content based on selected sections
+    pw.Widget _buildInfoCard(
+        {required String title, required List<pw.Widget> children}) {
+      return pw.Container(
+        margin: const pw.EdgeInsets.only(bottom: 20),
+        padding: const pw.EdgeInsets.all(16),
+        decoration: pw.BoxDecoration(
+          color: cardBgColor,
+          borderRadius: pw.BorderRadius.circular(10),
+        ),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(
+              title,
+              style: pw.TextStyle(
+                  fontSize: 18, fontWeight: pw.FontWeight.bold, color: primaryColor),
+            ),
+            pw.SizedBox(height: 10),
+            ...children,
+          ],
+        ),
+      );
+    }
+
+    pw.Widget _buildInfoRow(String label, String value) {
+      return pw.Padding(
+        padding: const pw.EdgeInsets.symmetric(vertical: 4),
+        child: pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Text(label, style: pw.TextStyle(color: textColor)),
+            pw.Text(value,
+                style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold, color: textColor)),
+          ],
+        ),
+      );
+    }
+
+    List<pw.Widget> content = [];
+
+    if (sectionsToInclude.contains(ReportSection.monthlySummary)) {
+      content.add(
+        _buildInfoCard(
+          title: 'Overall Summary',
+          children: [
+            _buildInfoRow('Total Login Hours',
+                '${formatter.format(summary.totalLoginHours)} hrs'),
+            _buildInfoRow(
+                'Total Calls', summary.totalCalls.toString()),
+            _buildInfoRow('Average Daily Hours',
+                '${formatter.format(summary.averageDailyLoginHours)} hrs'),
+            _buildInfoRow('Average Daily Calls',
+                formatter.format(summary.averageDailyCalls)),
+          ],
+        ),
+      );
+    }
+
+    if (sectionsToInclude.contains(ReportSection.csatSummary) &&
+        summary.csatSummary != null &&
+        summary.csatSummary!.entries.isNotEmpty) {
+      content.add(
+        _buildInfoCard(
+          title: 'CSAT Performance',
+          children: [
+            _buildInfoRow('Total T2 Count',
+                summary.csatSummary!.totalT2Count.toString()),
+            _buildInfoRow('Total B2 Count',
+                summary.csatSummary!.totalB2Count.toString()),
+            _buildInfoRow('Total N Count',
+                summary.csatSummary!.totalNCount.toString()),
+            _buildInfoRow('Total Survey Hits',
+                summary.csatSummary!.totalSurveyHits.toString()),
+            _buildInfoRow('Monthly CSAT Percentage',
+                '${formatter.format(summary.csatSummary!.monthlyCSATPercentage)}%'),
+            _buildInfoRow('Average Daily CSAT Score',
+                '${formatter.format(summary.csatSummary!.averageScore)}%'),
+          ],
+        ),
+      );
+    }
+
+    if (sectionsToInclude.contains(ReportSection.cqSummary) &&
+        summary.cqSummary != null &&
+        summary.cqSummary!.entries.isNotEmpty) {
+      content.add(
+        _buildInfoCard(
+          title: 'CQ Performance',
+          children: [
+            _buildInfoRow('Total CQ Entries',
+                summary.cqSummary!.entries.length.toString()),
+            _buildInfoRow('Average CQ Score',
+                formatter.format(summary.cqSummary!.averageScore)),
+          ],
+        ),
+      );
+    }
+
+    if (sectionsToInclude.contains(ReportSection.salaryDetails)) {
+      content.add(
+        _buildInfoCard(
+          title: 'Salary Details',
+          children: [
+            _buildInfoRow(
+                'Base Salary', 'Rs. ${formatter.format(summary.baseSalary)}'),
+            _buildInfoRow(
+                'Bonus Amount', 'Rs. ${formatter.format(summary.bonusAmount)}'),
+            _buildInfoRow(
+                'CSAT Bonus', 'Rs. ${formatter.format(summary.csatBonus)}'),
+            _buildInfoRow('Gross Salary',
+                'Rs. ${formatter.format(summary.totalSalary + summary.csatBonus)}'),
+            _buildInfoRow('TDS Deduction',
+                'Rs. -${formatter.format(summary.tdsDeduction)}'),
+            pw.Divider(color: primaryColor.shade(0.5)),
+            _buildInfoRow(
+                'Net Salary', 'Rs. ${formatter.format(summary.netSalary)}'),
+          ],
+        ),
+      );
+    }
+
+    pw.Widget _buildTable(String title, List<String> headers, List<List<String>> data) {
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(title, style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: primaryColor)),
+          pw.SizedBox(height: 10),
+          pw.Table.fromTextArray(
+            headers: headers,
+            data: data,
+            headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: secondaryColor),
+            headerDecoration: pw.BoxDecoration(color: primaryColor),
+            cellAlignment: pw.Alignment.center,
+            cellStyle: pw.TextStyle(color: textColor),
+          ),
+          pw.SizedBox(height: 20),
+        ]
+      );
+    }
+
+    if (sectionsToInclude.contains(ReportSection.dailyEntries) && summary.entries.isNotEmpty) {
+      content.add(
+        _buildTable(
+          'Daily Entries',
+          ['Date', 'Login Time', 'Call Count'],
+          summary.entries
+              .map((entry) => [
+                    DateFormat('dd-MMM-yyyy').format(entry.date),
+                    entry.formattedLoginTime,
+                    entry.callCount.toString(),
+                  ])
+              .toList(),
+        ),
+      );
+    }
+
+    if (sectionsToInclude.contains(ReportSection.csatDailyBreakdown) &&
+        summary.csatSummary != null &&
+        summary.csatSummary!.entries.isNotEmpty) {
+      content.add(
+        _buildTable(
+          'CSAT Daily Breakdown',
+          ['Date', 'T2', 'B2', 'N', 'CSAT %'],
+          summary.csatSummary!.entries.map((entry) {
+            final total = entry.t2Count + entry.b2Count + entry.nCount;
+            final csatPercentage =
+                total == 0 ? 0.0 : ((entry.t2Count - entry.b2Count) / total) * 100;
+            return [
+              DateFormat('dd-MMM-yyyy').format(entry.date),
+              entry.t2Count.toString(),
+              entry.b2Count.toString(),
+              entry.nCount.toString(),
+              '${csatPercentage.toStringAsFixed(2)}%',
+            ];
+          }).toList(),
+        ),
+      );
+    }
+
+    if (sectionsToInclude.contains(ReportSection.cqDailyBreakdown) &&
+        summary.cqSummary != null &&
+        summary.cqSummary!.entries.isNotEmpty) {
+      content.add(
+        _buildTable(
+          'CQ Daily Breakdown',
+          ['Date', 'Percentage', 'Quality Rating'],
+          summary.cqSummary!.entries
+              .map((entry) => [
+                    DateFormat('dd-MMM-yyyy').format(entry.auditDate),
+                    '${entry.percentage.toStringAsFixed(2)}%',
+                    _getQualityRating(entry.percentage),
+                  ])
+              .toList(),
+        ),
+      );
+    }
+
     pdf.addPage(
       pw.MultiPage(
+        theme: theme,
+        pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) => [
-          if (sectionsToInclude.contains(ReportSection.monthlySummary)) ...[
-            _buildHeader(context, 'Summary'),
-            pw.Table.fromTextArray(
-              headers: ['Description', 'Value'],
-              data: [
-                ['Total Login Hours', '${formatter.format(summary.totalLoginHours)} hrs'],
-                ['Total Calls', summary.totalCalls.toString()],
-                ['Average Daily Hours', '${formatter.format(summary.averageDailyLoginHours)} hrs'],
-                ['Average Daily Calls', formatter.format(summary.averageDailyCalls)],
-              ],
-            ),
-            pw.SizedBox(height: 20),
-          ],
-
-          if (sectionsToInclude.contains(ReportSection.csatSummary)) ...[
-            if (summary.csatSummary != null && summary.csatSummary!.entries.isNotEmpty) ...[
-              _buildHeader(context, 'Overall CSAT Performance'),
-              pw.Table.fromTextArray(
-                headers: ['Description', 'Value'],
-                data: [
-                  ['Total T2 Count', summary.csatSummary!.totalT2Count.toString()],
-                  ['Total B2 Count', summary.csatSummary!.totalB2Count.toString()],
-                  ['Total N Count', summary.csatSummary!.totalNCount.toString()],
-                  ['Total Survey Hits', summary.csatSummary!.totalSurveyHits.toString()],
-                  ['Monthly CSAT Percentage', '${formatter.format(summary.csatSummary!.monthlyCSATPercentage)}%'],
-                  ['Average Daily CSAT Score', '${formatter.format(summary.csatSummary!.averageScore)}%'],
-                ],
-              ),
-              pw.SizedBox(height: 20),
-            ],
-          ],
-
-          if (sectionsToInclude.contains(ReportSection.cqSummary)) ...[
-            if (summary.cqSummary != null && summary.cqSummary!.entries.isNotEmpty) ...[
-              _buildHeader(context, 'Overall CQ Performance'),
-              pw.Table.fromTextArray(
-                headers: ['Description', 'Value'],
-                data: [
-                  ['Total CQ Entries', summary.cqSummary!.entries.length.toString()],
-                  ['Average CQ Score', formatter.format(summary.cqSummary!.averageScore)],
-                ],
-              ),
-              pw.SizedBox(height: 20),
-            ],
-          ],
-
-          if (sectionsToInclude.contains(ReportSection.salaryDetails)) ...[
-            _buildHeader(context, 'Salary Details'),
-            pw.Table.fromTextArray(
-              headers: ['Description', 'Amount', 'Status'],
-              data: [
-                ['Base Salary', 'Rs. ${formatter.format(summary.baseSalary)}', ''],
-                ['Bonus Amount', 'Rs. ${formatter.format(summary.bonusAmount)}', summary.isBonusAchieved ? 'Achieved' : 'Not Achieved'],
-                ['CSAT Bonus', 'Rs. ${formatter.format(summary.csatBonus)}', summary.isCSATBonusAchieved ? 'Achieved' : 'Not Achieved'],
-                ['Gross Salary', 'Rs. ${formatter.format(summary.totalSalary + summary.csatBonus)}', ''],
-                ['TDS Deduction', 'Rs. -${formatter.format(summary.tdsDeduction)}', ''],
-                ['Net Salary', 'Rs. ${formatter.format(summary.netSalary)}', ''],
-              ],
-            ),
-            pw.SizedBox(height: 20),
-          ],
-
-          if (sectionsToInclude.contains(ReportSection.dailyEntries)) ...[
-            if (summary.entries.isNotEmpty) ...[
-              _buildHeader(context, 'Daily Entries'),
-              pw.Table.fromTextArray(
-                headers: ['Date', 'Login Time', 'Call Count'],
-                data: summary.entries.map((entry) => [
-                  DateFormat('dd-MMM-yyyy').format(entry.date),
-                  entry.formattedLoginTime,
-                  entry.callCount.toString(),
-                ]).toList(),
-              ),
-              pw.SizedBox(height: 20),
-            ],
-          ],
-
-          if (sectionsToInclude.contains(ReportSection.csatDailyBreakdown)) ...[
-            if (summary.csatSummary != null && summary.csatSummary!.entries.isNotEmpty) ...[
-              _buildHeader(context, 'CSAT Daily Breakdown'),
-              pw.Table.fromTextArray(
-                headers: ['Date', 'T2', 'B2', 'N', 'CSAT %'],
-                data: summary.csatSummary!.entries.map((entry) {
-                  final total = entry.t2Count + entry.b2Count + entry.nCount;
-                  final csatPercentage = total == 0 ? 0.0 : ((entry.t2Count - entry.b2Count) / total) * 100;
-                  return [
-                    DateFormat('dd-MMM-yyyy').format(entry.date),
-                    entry.t2Count.toString(),
-                    entry.b2Count.toString(),
-                    entry.nCount.toString(),
-                    '${csatPercentage.toStringAsFixed(2)}%',
-                  ];
-                }).toList(),
-              ),
-              pw.SizedBox(height: 20),
-            ],
-          ],
-
-          if (sectionsToInclude.contains(ReportSection.cqDailyBreakdown)) ...[
-            if (summary.cqSummary != null && summary.cqSummary!.entries.isNotEmpty) ...[
-              _buildHeader(context, 'CQ Daily Breakdown'),
-              pw.Table.fromTextArray(
-                headers: ['Date', 'Percentage', 'Quality Rating'],
-                data: summary.cqSummary!.entries.map((entry) => [
-                  DateFormat('dd-MMM-yyyy').format(entry.auditDate),
-                  entry.percentage.toStringAsFixed(2) + '%',
-                  _getQualityRating(entry.percentage),
-                ]).toList(),
-              ),
-              pw.SizedBox(height: 20),
-            ],
-          ],
+          _buildHeader(context, 'Performance Report'),
+          ...content,
         ],
+        footer: (pw.Context context) {
+          return pw.Container(
+            alignment: pw.Alignment.center,
+            margin: const pw.EdgeInsets.only(top: 10),
+            child: pw.Text(
+              'Generated by Advisor Desk',
+              style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+            ),
+          );
+        },
       ),
     );
 

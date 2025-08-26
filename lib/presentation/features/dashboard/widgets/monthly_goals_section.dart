@@ -26,13 +26,28 @@ class MonthlyGoalsSection extends StatelessWidget {
 
         final now = DateTime.now();
         final lastDayOfMonth = DateTime(now.year, now.month + 1, 0).day;
-        final remainingDays = (lastDayOfMonth - now.day + 1).clamp(1, lastDayOfMonth);
+
+        // Check if an entry for today exists
+        final hasTodayEntry = summary.entries.any((entry) =>
+            entry.date.year == now.year &&
+            entry.date.month == now.month &&
+            entry.date.day == now.day);
+
+        int remainingDays;
+        if (hasTodayEntry) {
+          remainingDays = lastDayOfMonth - now.day;
+        } else {
+          remainingDays = lastDayOfMonth - now.day + 1;
+        }
+
+        // Ensure remainingDays is not negative
+        remainingDays = remainingDays.clamp(0, lastDayOfMonth);
 
         final remainingHours = (state.targetHours - summary.totalLoginHours).clamp(0.0, double.infinity);
-        final dailyAvgHours = remainingHours / remainingDays;
+        final dailyAvgHours = remainingDays > 0 ? remainingHours / remainingDays : 0.0;
 
         final remainingCalls = (state.targetCalls - summary.totalCalls).clamp(0, double.infinity).toInt();
-        final dailyAvgCalls = (remainingCalls / remainingDays).ceil();
+        final dailyAvgCalls = remainingDays > 0 ? (remainingCalls / remainingDays).ceil() : 0;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

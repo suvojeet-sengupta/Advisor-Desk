@@ -136,18 +136,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         if (appUpdateInfo.flexibleUpdateAllowed) {
           // Start a flexible update
           await InAppUpdate.startFlexibleUpdate();
-          // When the flexible update is downloaded, prompt the user to complete it.
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Update downloaded! Restart to apply.'),
-              action: SnackBarAction(
-                label: 'RESTART',
-                onPressed: () async {
-                  await InAppUpdate.completeFlexibleUpdate();
-                },
-              ),
-            ),
-          );
+          // Listen for the update to be downloaded
+          InAppUpdate.installUpdateListener.listen((status) {
+            if (status == InstallStatus.downloaded) {
+              // When the update is downloaded, complete it
+              InAppUpdate.completeFlexibleUpdate();
+            }
+          });
         } else if (appUpdateInfo.immediateUpdateAllowed) {
           // Perform an immediate update if flexible is not allowed
           await InAppUpdate.performImmediateUpdate();
@@ -169,7 +164,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       InAppUpdate.checkForUpdate().then((info) {
-        if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        if (info.installStatus == InstallStatus.downloaded) {
           InAppUpdate.completeFlexibleUpdate();
         }
       }).catchError((e) {

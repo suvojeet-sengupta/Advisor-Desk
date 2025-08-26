@@ -4,18 +4,55 @@ import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
+import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 
 class ReportOptionsScreen extends StatefulWidget {
-  const ReportOptionsScreen({Key? key}) : super(key: key);
+  final GetAllMonthlySummariesUseCase getAllMonthlySummariesUseCase;
+
+  const ReportOptionsScreen(
+      {Key? key, required this.getAllMonthlySummariesUseCase})
+      : super(key: key);
 
   @override
   State<ReportOptionsScreen> createState() => _ReportOptionsScreenState();
 }
 
 class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
-  DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
-  DateTime _endDate = DateTime.now();
   List<ReportSection> _selectedSections = ReportSection.values.toList();
+
+  List<int> _years = [];
+  List<int> _months = [];
+  int? _selectedYear;
+  int? _selectedMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAvailableDates();
+  }
+
+  Future<void> _fetchAvailableDates() async {
+    final summaries = await widget.getAllMonthlySummariesUseCase.execute();
+    final Map<int, Set<int>> yearMonthMap = {};
+    for (final summary in summaries) {
+      if (!yearMonthMap.containsKey(summary.year)) {
+        yearMonthMap[summary.year] = {};
+      }
+      yearMonthMap[summary.year]!.add(summary.month);
+    }
+
+    setState(() {
+      _years = yearMonthMap.keys.toList()..sort((a, b) => b.compareTo(a));
+      if (_years.isNotEmpty) {
+        _selectedYear = _years.first;
+        _months = yearMonthMap[_selectedYear]!.toList()..sort((a, b) => b.compareTo(a));
+        if (_months.isNotEmpty) {
+          _selectedMonth = _months.first;
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,26 +63,16 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(context, 'Select Date Range'),
+            _buildSectionTitle(context, 'Select Period'),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
-                  child: _buildDateSelectionField(
-                    context,
-                    'Start Date',
-                    _startDate,
-                    (date) => setState(() => _startDate = date),
-                  ),
+                  child: _buildYearDropdown(),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildDateSelectionField(
-                    context,
-                    'End Date',
-                    _endDate,
-                    (date) => setState(() => _endDate = date),
-                  ),
+                  child: _buildMonthDropdown(),
                 ),
               ],
             ),
@@ -75,15 +102,21 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
                 onPressed: () {
                   if (_selectedSections.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please select at least one section.'), backgroundColor: Colors.red),
+                      const SnackBar(
+                          content: Text('Please select at least one section.'),
+                          backgroundColor: Colors.red),
                     );
                     return;
                   }
-                  Navigator.pop(context, {
-                    'startDate': _startDate,
-                    'endDate': _endDate,
-                    'selectedSections': _selectedSections,
-                  });
+                  if (_selectedYear != null && _selectedMonth != null) {
+                    final startDate = DateTime(_selectedYear!, _selectedMonth!, 1);
+                    final endDate = DateTime(_selectedYear!, _selectedMonth! + 1, 0);
+                    Navigator.pop(context, {
+                      'startDate': startDate,
+                      'endDate': endDate,
+                      'selectedSections': _selectedSections,
+                    });
+                  }
                 },
                 icon: Icons.picture_as_pdf,
               ),
@@ -94,65 +127,61 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
     );
   }
 
+  Widget _buildYearDropdown() {
+    return DropdownButtonFormField<int>(
+      value: _selectedYear,
+      items: _years.map((year) {
+        return DropdownMenuItem<int>(
+          value: year,
+          child: Text(year.toString()),
+        );
+      }).toList(),
+      onChanged: (int? newValue) {
+        setState(() {
+          _selectedYear = newValue;
+          // Update months based on selected year
+          // This logic needs to be re-implemented based on how you get the months for a year
+          _selectedMonth = null;
+        });
+      },
+      decoration: const InputDecoration(
+        labelText: 'Year',
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildMonthDropdown() {
+    return DropdownButtonFormField<int>(
+      value: _selectedMonth,
+      items: _months.map((month) {
+        return DropdownMenuItem<int>(
+          value: month,
+          child: Text(DateFormat.MMMM().format(DateTime(0, month))),
+        );
+      }).toList(),
+      onChanged: (int? newValue) {
+        setState(() {
+          _selectedMonth = newValue;
+        });
+      },
+      decoration: const InputDecoration(
+        labelText: 'Month',
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium
+            ?.copyWith(fontWeight: FontWeight.bold),
       ),
-    );
-  }
-
-  Widget _buildDateSelectionField(
-    BuildContext context,
-    String label,
-    DateTime selectedDate,
-    Function(DateTime) onDateSelected,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: () async {
-            final DateTime? picked = await showDatePicker(
-              context: context,
-              initialDate: selectedDate,
-              firstDate: DateTime(2000),
-              lastDate: DateTime.now(),
-              builder: (BuildContext context, Widget? child) {
-                return Theme(
-                  data: Theme.of(context).copyWith(
-                    colorScheme: Theme.of(context).colorScheme.copyWith(
-                      primary: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  child: child!,
-                );
-              },
-            );
-            if (picked != null && picked != selectedDate) {
-              onDateSelected(picked);
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Theme.of(context).colorScheme.outline),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.calendar_today, size: 20, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 8),
-                Text(DateFormat('dd MMM yyyy').format(selectedDate)),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 

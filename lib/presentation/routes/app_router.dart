@@ -1,4 +1,5 @@
 
+import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
 import 'package:advisor_desk/presentation/features/monthly_performance/widgets/share_theme_selector_screen.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
@@ -126,7 +127,11 @@ class AppRouter {
         );
       case reportOptionsRoute:
         return MaterialPageRoute(
-          builder: (_) => const ReportOptionsScreen(),
+          builder: (context) => ReportOptionsScreen(
+            getAllMonthlySummariesUseCase: GetAllMonthlySummariesUseCase(
+              context.read<PerformanceRepository>(),
+            ),
+          ),
         );
       case cqDetailsRoute:
         final CQSummary cqSummary = settings.arguments as CQSummary;

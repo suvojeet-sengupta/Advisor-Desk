@@ -40,39 +40,26 @@ class AllReportsView extends StatelessWidget {
   final Profile profile;
   const AllReportsView({Key? key, required this.profile}) : super(key: key);
 
-  static const platform = MethodChannel('com.suvojeet.advisordesk/pdf');
-
   Future<void> _generateAndSharePdf(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(const SnackBar(content: Text("Generating PDF Report...")));
 
     try {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        await Permission.storage.request();
-      }
-
       final generatePdf = GeneratePdfReportUseCase(context.read<PerformanceRepository>());
       final pdfBytes = await generatePdf.execute(summary, sectionsToInclude, profile);
-      
-      final result = await platform.invokeMethod('savePdf', {
-        'pdfBytes': pdfBytes,
-        'fileName': "Advisor_Desk_Report_${summary.formattedDateRange.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}.pdf"
-      });
 
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(result ?? "PDF Saved")));
+      final tempDir = await getTemporaryDirectory();
+      final fileName = "Advisor_Desk_Report_${summary.formattedDateRange.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}.pdf";
+      final file = await File('${tempDir.path}/$fileName').writeAsBytes(pdfBytes);
 
-    } on PlatformException catch (e) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text("Failed to save PDF: '${e.message}'.")));
+      final xFile = XFile(file.path, mimeType: "application/pdf");
+      await Share.shareXFiles([xFile], subject: "Advisor Desk Report - ${summary.formattedDateRange}");
+
     } catch (e) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text("Error creating PDF report: \$e")));
+        ..showSnackBar(SnackBar(content: Text("Error creating PDF report: $e")));
     }
   }
 

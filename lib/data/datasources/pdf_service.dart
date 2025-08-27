@@ -12,11 +12,17 @@ import 'package:intl/intl.dart';
 class PdfService {
   Future<List<int>> generateReportPdf(ReportSummary summary,
       List<ReportSection> sectionsToInclude, Profile profile) async {
+    // Load fonts in the main isolate
+    final regularFontData = await rootBundle.load("assets/fonts/Poppins-Regular.ttf");
+    final boldFontData = await rootBundle.load("assets/fonts/Poppins-Bold.ttf");
+
     // Use compute to run PDF generation in a separate isolate
     return compute(_generatePdfInBackground, {
       'summary': summary,
       'sectionsToInclude': sectionsToInclude,
       'profile': profile,
+      'regularFontData': regularFontData,
+      'boldFontData': boldFontData,
     });
   }
 }
@@ -26,13 +32,12 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   final ReportSummary summary = params['summary'];
   final List<ReportSection> sectionsToInclude = params['sectionsToInclude'];
   final Profile profile = params['profile'];
+  final ByteData regularFontData = params['regularFontData'];
+  final ByteData boldFontData = params['boldFontData'];
 
   final pdf = pw.Document();
   final formatter = NumberFormat('#,##0.00');
 
-  // Font loading needs to be adapted for isolates
-  final regularFontData = await rootBundle.load("assets/fonts/Poppins-Regular.ttf");
-  final boldFontData = await rootBundle.load("assets/fonts/Poppins-Bold.ttf");
   final regularFont = pw.Font.ttf(regularFontData);
   final boldFont = pw.Font.ttf(boldFontData);
 

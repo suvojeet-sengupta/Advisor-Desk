@@ -13,6 +13,8 @@ import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:archive/archive_io.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PerformanceRepositoryImpl implements PerformanceRepository {
   final LocalDataSource localDataSource;
@@ -200,35 +202,53 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
 
   @override
   Future<String> backupDatabase() async {
-    final dbPath = await localDataSource.getDatabasePath();
-    final dbFile = File(dbPath);
-    final backupDir = await getExternalStorageDirectory();
-    if (backupDir == null) {
-      throw Exception("Could not get external storage directory for backup.");
+    if (await Permission.storage.request().isGranted) {
+      final dbPath = await localDataSource.getDatabasePath();
+      final dbFile = File(dbPath);
+      final downloadsDir = await getExternalStoragePublicDirectory(StorageDirectory.downloads);
+      if (downloadsDir == null) {
+        throw Exception("Could not get downloads directory for backup.");
+      }
+      final backupPath = '${downloadsDir.path}/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip';
+
+      final encoder = ZipFileEncoder();
+      encoder.create(backupPath);
+      encoder.addFile(dbFile);
+      encoder.close();
+
+      return backupPath;
+    } else {
+      throw Exception("Storage permission not granted");
     }
-    final backupPath = '${backupDir.path}/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.db';
-    await dbFile.copy(backupPath);
-    return backupPath;
   }
 
   @override
   Future<void> restoreDatabase(String backupFilePath) async {
     final dbPath = await localDataSource.getDatabasePath();
     final dbFile = File(dbPath);
-    final backupFile = File(backupFilePath);
 
-    if (!await backupFile.exists()) {
-      throw Exception("Backup file not found at $backupFilePath");
+    final inputStream = InputFileStream(backupFilePath);
+    final archive = ZipDecoder().decodeBuffer(inputStream);
+
+    if (archive.files.isEmpty) {
+      throw Exception("Invalid backup file.");
     }
+
+    final backupDbFile = archive.files.first;
 
     // Close the database before restoring
     await localDataSource.closeDatabase();
 
-    await backupFile.copy(dbPath);
+    dbFile.writeAsBytesSync(backupDbFile.content as List<int>);
 
     // Re-initialize the database after restoring
     await LocalDataSource.init();
   }
+
+  Future<Directory?> getExternalStoragePublicDirectory(StorageDirectory downloads) async {
+    if (Platform.isAndroid) {
+        return await getExternalStorageDirectory();
+    }
+    return null;
+  }
 }
-
-

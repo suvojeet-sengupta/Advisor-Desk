@@ -8,6 +8,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:archive/archive_io.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -36,6 +42,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         _appVersion = 'Error: ${e.message}';
       });
+    }
+  }
+
+  Future<void> _backupDatabase() async {
+    try {
+      final repository = context.read<PerformanceRepository>();
+      final backupPath = await repository.backupDatabase();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Backup created successfully at $backupPath')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Backup failed: $e')),
+      );
+    }
+  }
+
+  Future<void> _restoreDatabase() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['zip'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final backupFilePath = result.files.single.path!;
+
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Restore Database'),
+            content: const Text('Are you sure you want to restore the database? This will overwrite all current data.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  try {
+                    final repository = context.read<PerformanceRepository>();
+                    await repository.restoreDatabase(backupFilePath);
+                    Navigator.pop(context); // Close the dialog
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Database restored successfully. Please restart the app.')),
+                    );
+                  } catch (e) {
+                    Navigator.pop(context); // Close the dialog
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Restore failed: $e')),
+                    );
+                  }
+                },
+                child: const Text('Restore'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to pick file: $e')),
+      );
     }
   }
 
@@ -74,6 +143,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildSectionCard(
+            context,
+            'Data Management',
+            [
+              _buildDataManagementTile(
+                context,
+                'Backup Data',
+                'Save your data to a file',
+                Icons.backup,
+                _backupDatabase,
+              ),
+              _buildDataManagementTile(
+                context,
+                'Restore Data',
+                'Restore your data from a file',
+                Icons.restore,
+                _restoreDatabase,
               ),
             ],
           ),
@@ -179,5 +269,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!await launchUrl(uri)) {
       throw 'Could not launch $url';
     }
+  }
+
+  Widget _buildDataManagementTile(BuildContext context, String title, String subtitle, IconData icon, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
+      title: Text(title),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      contentPadding: EdgeInsets.zero,
+      onTap: onTap,
+    );
   }
 }

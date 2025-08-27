@@ -202,24 +202,17 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
 
   @override
   Future<String> backupDatabase() async {
-    if (await Permission.storage.request().isGranted) {
-      final dbPath = await localDataSource.getDatabasePath();
-      final dbFile = File(dbPath);
-      final downloadsDir = await getExternalStoragePublicDirectory(StorageDirectory.downloads);
-      if (downloadsDir == null) {
-        throw Exception("Could not get downloads directory for backup.");
-      }
-      final backupPath = '${downloadsDir.path}/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip';
+    final dbPath = await localDataSource.getDatabasePath();
+    final dbFile = File(dbPath);
+    final tempDir = await getTemporaryDirectory();
+    final backupPath = '${tempDir.path}/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip';
 
-      final encoder = ZipFileEncoder();
-      encoder.create(backupPath);
-      encoder.addFile(dbFile);
-      encoder.close();
+    final encoder = ZipFileEncoder();
+    encoder.create(backupPath);
+    encoder.addFile(dbFile);
+    encoder.close();
 
-      return backupPath;
-    } else {
-      throw Exception("Storage permission not granted");
-    }
+    return backupPath;
   }
 
   @override
@@ -245,10 +238,5 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     await LocalDataSource.init();
   }
 
-  Future<Directory?> getExternalStoragePublicDirectory(StorageDirectory downloads) async {
-    if (Platform.isAndroid) {
-        return await getExternalStorageDirectory();
-    }
-    return null;
-  }
+  
 }

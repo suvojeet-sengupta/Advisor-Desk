@@ -48,10 +48,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _backupDatabase() async {
     try {
       final repository = context.read<PerformanceRepository>();
-      final backupPath = await repository.backupDatabase();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup created successfully at $backupPath')),
+      final tempBackupPath = await repository.backupDatabase();
+      final tempBackupFile = File(tempBackupPath);
+
+      final String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Your Backup',
+        fileName: 'advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip',
       );
+
+      if (outputFile != null) {
+        final savedFile = await tempBackupFile.copy(outputFile);
+        await tempBackupFile.delete();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Backup saved to ${savedFile.path}')),
+        );
+      } else {
+        await tempBackupFile.delete(); // Clean up if user cancels
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Backup failed: $e')),

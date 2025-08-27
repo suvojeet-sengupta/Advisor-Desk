@@ -51,20 +51,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final tempBackupPath = await repository.backupDatabase();
       final tempBackupFile = File(tempBackupPath);
 
+      // Read the file as bytes
+      final fileBytes = await tempBackupFile.readAsBytes();
+
       final String? outputFile = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Your Backup',
         fileName: 'advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip',
+        bytes: fileBytes, // Pass the bytes here
       );
 
       if (outputFile != null) {
-        final savedFile = await tempBackupFile.copy(outputFile);
-        await tempBackupFile.delete();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup saved to ${savedFile.path}')),
+          SnackBar(content: Text('Backup saved to $outputFile')),
         );
       } else {
-        await tempBackupFile.delete(); // Clean up if user cancels
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Backup cancelled.')),
+        );
       }
+      await tempBackupFile.delete(); // Always delete the temporary file
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Backup failed: $e')),

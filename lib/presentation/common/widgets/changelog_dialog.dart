@@ -12,7 +12,8 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '🐛 Bug Fixes'),
-            _buildListItem('Fixed an issue where the app would freeze or crash when generating a PDF report, especially on certain devices.'),
+            _buildListItem('Fixed a crash during PDF export on certain Android 14 devices by updating the sharing mechanism.'),
+            _buildListItem('Resolved an error caused by a missing `dart:io` import when handling file operations.'),
           ],
         ),
       ),

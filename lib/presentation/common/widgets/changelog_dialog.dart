@@ -11,9 +11,12 @@ class ChangelogDialog extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildSectionTitle(context, '🚀 Features'),
+            _buildListItem('You can now backup and restore your data from the settings screen.'),
+            const SizedBox(height: 16),
             _buildSectionTitle(context, '🐛 Bug Fixes'),
-            _buildListItem('Fixed a crash during PDF export on certain Android 14 devices by updating the sharing mechanism.'),
-            _buildListItem('Resolved an error caused by a missing `dart:io` import when handling file operations.'),
+            _buildListItem('Fixed an issue where creating a backup would fail on some devices. The app now uses a file picker to save the backup file.'),
+            _buildListItem('Resolved a dependency conflict that caused issues with some features.'),
           ],
         ),
       ),

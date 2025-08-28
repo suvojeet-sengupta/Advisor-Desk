@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -12,9 +11,10 @@ import 'package:intl/intl.dart';
 class PdfService {
   Future<List<int>> generateReportPdf(ReportSummary summary,
       List<ReportSection> sectionsToInclude, Profile profile) async {
-    // Load fonts in the main isolate
+    // Load fonts and SVG in the main isolate
     final regularFontData = await rootBundle.load("assets/fonts/Poppins-Regular.ttf");
     final boldFontData = await rootBundle.load("assets/fonts/Poppins-Bold.ttf");
+    final playStoreIconSvg = await rootBundle.loadString('assets/images/google-play-store-icon.svg');
 
     // Use compute to run PDF generation in a separate isolate
     return compute(_generatePdfInBackground, {
@@ -23,6 +23,7 @@ class PdfService {
       'profile': profile,
       'regularFontData': regularFontData,
       'boldFontData': boldFontData,
+      'playStoreIconSvg': playStoreIconSvg,
     });
   }
 }
@@ -34,6 +35,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   final Profile profile = params['profile'];
   final ByteData regularFontData = params['regularFontData'];
   final ByteData boldFontData = params['boldFontData'];
+  final String playStoreIconSvg = params['playStoreIconSvg'];
 
   final pdf = pw.Document();
   final formatter = NumberFormat('#,##0.00');
@@ -292,8 +294,6 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
         ...content,
       ],
       footer: (pw.Context context) {
-        // TODO: Replace with actual Play Store icon
-        final String playStoreIconSvg = '''<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.3,12.23,6.2,2.15a2.36,2.36,0,0,0-2.36,0L2.15,6.2a2.36,2.36,0,0,0,0,2.36l12.23,12.23a2.36,2.36,0,0,0,2.36,0l4.56-4.56A2.36,2.36,0,0,0,21.3,12.23Z" fill="#4CAF50"/><path d="M2.15,16.34,6.2,20.4a2.36,2.36,0,0,0,2.36,0L20.4,6.2a2.36,2.36,0,0,0,0-2.36L16.34,2.15a2.36,2.36,0,0,0-2.36,0L2.15,13.91A2.36,2.36,0,0,0,2.15,16.34Z" fill="#F44336"/><path d="M2.15,6.2,2.15,16.34a2.36,2.36,0,0,0,1.18,2.05l9.89-9.89L3.33,4.15A2.36,2.36,0,0,0,2.15,6.2Z" fill="#FFC107"/><path d="M21.3,12.23,11.41,2.34,3.33,10.42l9.89,9.89,6.9-6.9A2.36,2.36,0,0,0,21.3,12.23Z" fill="#2196F3"/></svg>''';
         return pw.Container(
           alignment: pw.Alignment.center,
           margin: const pw.EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -349,4 +349,3 @@ String _getQualityRating(double percentage) {
   if (percentage >= 60) return 'Below Average';
   return 'Poor';
 }
-

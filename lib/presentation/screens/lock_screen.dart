@@ -56,53 +56,84 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      body: Center(
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.lock_outline,
-                size: 64,
-                color: Theme.of(context).colorScheme.primary,
+              const SizedBox.shrink(),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.lock_outline,
+                    size: 64,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'App Locked',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+                  if (_isBiometricAvailable)
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(Icons.fingerprint),
+                        label: const Text('Unlock with Biometrics'),
+                        onPressed: _authenticateWithBiometrics,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: _pinController,
+                    keyboardType: TextInputType.number,
+                    maxLength: 4,
+                    obscureText: true,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 24, letterSpacing: 16),
+                    decoration: InputDecoration(
+                      labelText: 'Enter PIN',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      counterText: "",
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      text: 'Unlock',
+                      onPressed: _authenticateWithPin,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              Text(
-                'App Locked',
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 48),
-              if (_isBiometricAvailable)
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.fingerprint),
-                  label: const Text('Unlock with Biometrics'),
-                  onPressed: _authenticateWithBiometrics,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 32.0),
+                child: Text(
+                  'Protected By Advisor Desk',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
                   ),
                 ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: _pinController,
-                keyboardType: TextInputType.number,
-                maxLength: 4,
-                obscureText: true,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24, letterSpacing: 16),
-                decoration: const InputDecoration(
-                  labelText: 'Enter PIN',
-                  border: OutlineInputBorder(),
-                  counterText: "",
-                ),
-              ),
-              const SizedBox(height: 16),
-              CustomButton(
-                text: 'Unlock',
-                onPressed: _authenticateWithPin,
               ),
             ],
           ),

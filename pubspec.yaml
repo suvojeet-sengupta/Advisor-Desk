@@ -43,6 +43,7 @@ dependencies:
   package_info_plus: ^8.0.0
   archive: ^3.6.1
   qr_flutter: ^4.1.0
+  local_auth: ^2.3.0
 
 
   screenshot: ^3.0.0

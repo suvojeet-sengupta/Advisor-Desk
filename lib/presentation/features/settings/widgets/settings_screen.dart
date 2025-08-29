@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -25,11 +26,20 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   String _appVersion = 'Loading...';
   static const platform = MethodChannel('com.suvojeet.advisordesk/app_info');
+  bool _isAppLockEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _getAppVersion();
+    _loadAppLockState();
+  }
+
+  Future<void> _loadAppLockState() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isAppLockEnabled = prefs.getBool('isAppLockEnabled') ?? false;
+    });
   }
 
   Future<void> _getAppVersion() async {
@@ -203,6 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             context,
             'Privacy & Security',
             [
+              _buildAppLockTile(),
               _buildLinkTile(
                 context,
                 'Privacy Policy',
@@ -279,6 +290,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
         }
       },
+    );
+  }
+
+  Widget _buildAppLockTile() {
+    return SwitchListTile(
+      title: const Text('App Lock'),
+      subtitle: const Text('Secure app with PIN or Biometrics'),
+      value: _isAppLockEnabled,
+      onChanged: (bool newValue) async {
+        if (newValue) {
+          // If enabling, navigate to PIN setup and wait for a result
+          final pinWasSet = await Navigator.pushNamed(context, AppRouter.pinSetupRoute);
+          if (pinWasSet == true) {
+            // Only enable if PIN was successfully set
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('isAppLockEnabled', true);
+            setState(() {
+              _isAppLockEnabled = true;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('App Lock enabled.')),
+            );
+          }
+        } else {
+          // If disabling, just turn it off and clear data
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isAppLockEnabled', false);
+          await prefs.remove('app_pin');
+          setState(() {
+            _isAppLockEnabled = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('App Lock disabled.')),
+          );
+        }
+      },
+      secondary: Icon(Icons.fingerprint, color: Theme.of(context).colorScheme.primary),
+      contentPadding: EdgeInsets.zero,
     );
   }
 

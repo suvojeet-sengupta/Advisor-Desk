@@ -38,6 +38,7 @@ import 'package:advisor_desk/domain/usecases/mark_leave_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_leave_usecase.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bloc.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
+import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 
 
 class AppRouter {
@@ -65,6 +66,7 @@ class AppRouter {
   static const String creditsRoute = '/credits';
   static const String aboutDeveloperRoute = '/about-developer';
   static const String salaryDetailsRoute = '/salary-details';
+  static const String pinSetupRoute = '/pin-setup';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -174,6 +176,10 @@ class AppRouter {
         final MonthlySummary summary = settings.arguments as MonthlySummary;
         return MaterialPageRoute(
           builder: (_) => SalaryDetailsScreen(monthlySummary: summary),
+        );
+      case AppRouter.pinSetupRoute:
+        return MaterialPageRoute(
+          builder: (_) => const PinSetupScreen(),
         );
       
       default:

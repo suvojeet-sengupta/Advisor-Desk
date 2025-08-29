@@ -1,11 +1,11 @@
 package com.suvojeet.advisordesk
 
 import android.content.Context
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity: FlutterActivity() {
+class MainActivity: FlutterFragmentActivity() {
     
     
 
@@ -35,7 +35,7 @@ class MainActivity: FlutterActivity() {
 
     private fun getAppVersion(): String {
         return try {
-            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            val packageInfo = applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0)
             packageInfo.versionName ?: "N/A"
         } catch (e: Exception) {
             "N/A"

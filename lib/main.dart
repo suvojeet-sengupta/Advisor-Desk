@@ -30,6 +30,8 @@ import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.da
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:advisor_desk/data/repositories/leave_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/leave_repository.dart';
+import 'package:advisor_desk/core/utils/authentication_service.dart';
+import 'package:advisor_desk/presentation/screens/lock_screen.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -123,14 +125,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final ValueNotifier<bool> isLocked = ValueNotifier(false);
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _initializeLockState();
     checkForUpdate();
     _requestNotificationPermission();
     widget.notificationService.scheduleDailyReminders();
     widget.notificationService.cancelTodaysRemindersIfEntryExists();
+  }
+
+  Future<void> _initializeLockState() async {
+    final isEnabled = await AuthenticationService.isAppLockEnabled();
+    if (isEnabled) {
+      isLocked.value = true;
+    }
   }
 
   Future<void> _requestNotificationPermission() async {
@@ -166,12 +178,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    isLocked.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
+      // Check for app updates on resume
       InAppUpdate.checkForUpdate().then((info) {
         if (info.installStatus == InstallStatus.downloaded) {
           InAppUpdate.completeFlexibleUpdate();
@@ -179,65 +194,81 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       }).catchError((e) {
         print('Failed to check for update on resume: $e');
       });
+
+      // Check for app lock on resume
+      _initializeLockState();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // एक से ज़्यादा Repository और BLoC प्रोवाइड करें
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider<AdService>.value(value: widget.adService),
-        RepositoryProvider<PerformanceRepository>.value(value: widget.performanceRepository),
-        RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
-        RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
-        RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
-        RepositoryProvider<NotificationService>.value(value: widget.notificationService),
-        RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository), // New
-        RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => ThemeCubit()),
-          BlocProvider(create: (context) => DashboardCustomizationCubit()),
-          BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>())), // New
-        ],
-        child: BlocBuilder<ThemeCubit, ThemeState>(
-          builder: (context, themeState) {
-            return DynamicColorBuilder(
-              builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-                ThemeData lightTheme;
-                ThemeData darkTheme;
+    return ValueListenableBuilder<bool>(
+      valueListenable: isLocked,
+      builder: (context, locked, _) {
+        if (locked) {
+          return MaterialApp(
+            title: AppConstants.appName,
+            home: LockScreen(onUnlocked: () => isLocked.value = false),
+            debugShowCheckedModeBanner: false,
+          );
+        }
 
-                if (themeState.color == AppColor.materialYou && lightDynamic != null && darkDynamic != null) {
-                  // Use dynamic colors for both light and dark themes
-                  lightTheme = AppTheme.getLightTheme(lightDynamic);
-                  darkTheme = AppTheme.getDarkTheme(darkDynamic);
-                } else {
-                  // Use the selected predefined color for both light and dark themes
-                  lightTheme = AppTheme.getTheme(Brightness.light, themeState.color);
-                  darkTheme = AppTheme.getTheme(Brightness.dark, themeState.color);
-                }
+        // Main App UI
+        return MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<AdService>.value(value: widget.adService),
+            RepositoryProvider<PerformanceRepository>.value(value: widget.performanceRepository),
+            RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
+            RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
+            RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
+            RepositoryProvider<NotificationService>.value(value: widget.notificationService),
+            RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository), // New
+            RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
+          ],
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => ThemeCubit()),
+              BlocProvider(create: (context) => DashboardCustomizationCubit()),
+              BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>())), // New
+            ],
+            child: BlocBuilder<ThemeCubit, ThemeState>(
+              builder: (context, themeState) {
+                return DynamicColorBuilder(
+                  builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+                    ThemeData lightTheme;
+                    ThemeData darkTheme;
 
-                return MaterialApp(
-                  title: AppConstants.appName,
-                  theme: lightTheme,
-                  darkTheme: darkTheme,
-                  themeMode: themeState.themeMode == AppThemeMode.system
-                      ? ThemeMode.system
-                      : themeState.themeMode == AppThemeMode.dark
-                          ? ThemeMode.dark
-                          : ThemeMode.light,
-                  debugShowCheckedModeBanner: false,
-                  scrollBehavior: SmoothScrollBehavior(),
-                  onGenerateRoute: AppRouter.onGenerateRoute,
-                  initialRoute: widget.initialRoute,
+                    if (themeState.color == AppColor.materialYou && lightDynamic != null && darkDynamic != null) {
+                      // Use dynamic colors for both light and dark themes
+                      lightTheme = AppTheme.getLightTheme(lightDynamic);
+                      darkTheme = AppTheme.getDarkTheme(darkDynamic);
+                    } else {
+                      // Use the selected predefined color for both light and dark themes
+                      lightTheme = AppTheme.getTheme(Brightness.light, themeState.color);
+                      darkTheme = AppTheme.getTheme(Brightness.dark, themeState.color);
+                    }
+
+                    return MaterialApp(
+                      title: AppConstants.appName,
+                      theme: lightTheme,
+                      darkTheme: darkTheme,
+                      themeMode: themeState.themeMode == AppThemeMode.system
+                          ? ThemeMode.system
+                          : themeState.themeMode == AppThemeMode.dark
+                              ? ThemeMode.dark
+                              : ThemeMode.light,
+                      debugShowCheckedModeBanner: false,
+                      scrollBehavior: SmoothScrollBehavior(),
+                      onGenerateRoute: AppRouter.onGenerateRoute,
+                      initialRoute: widget.initialRoute,
+                    );
+                  },
                 );
               },
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

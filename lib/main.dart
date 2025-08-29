@@ -126,6 +126,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final ValueNotifier<bool> isLocked = ValueNotifier(false);
+  bool _justUnlocked = false;
 
   @override
   void initState() {
@@ -196,7 +197,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       });
 
       // Check for app lock on resume
-      _initializeLockState();
+      if (_justUnlocked) {
+        _justUnlocked = false;
+      } else {
+        _initializeLockState();
+      }
     }
   }
 
@@ -208,7 +213,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         if (locked) {
           return MaterialApp(
             title: AppConstants.appName,
-            home: LockScreen(onUnlocked: () => isLocked.value = false),
+            home: LockScreen(onUnlocked: () {
+              _justUnlocked = true;
+              isLocked.value = false;
+            }),
             debugShowCheckedModeBanner: false,
           );
         }

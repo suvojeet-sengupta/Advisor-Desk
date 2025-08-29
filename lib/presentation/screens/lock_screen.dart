@@ -141,11 +141,12 @@ class _LockScreenState extends State<LockScreen> {
                     ),
                     const Spacer(),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 32.0),
+                      padding: const EdgeInsets.only(bottom: 16.0),
                       child: Text(
                         'Protected By Advisor Desk',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: Colors.grey,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

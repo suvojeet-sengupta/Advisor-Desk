@@ -10,6 +10,7 @@ class CustomFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final Function(String) onChanged;
   final String? suffixText;
+  final String? Function(String?)? validator; // Added validator
 
   const CustomFormField({
     Key? key,
@@ -21,6 +22,7 @@ class CustomFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     required this.onChanged,
     this.suffixText,
+    this.validator, // Added validator
   }) : super(key: key);
 
   @override
@@ -55,6 +57,7 @@ class CustomFormField extends StatelessWidget {
             ),
           ),
           onChanged: onChanged,
+          validator: validator, // Added validator
         ),
       ],
     );

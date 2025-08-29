@@ -37,7 +37,13 @@ class CQPercentageChanged extends AddCQEntryEvent {
 }
 
 class SubmitCQEntry extends AddCQEntryEvent {
-  const SubmitCQEntry();
+  final CQEntry entry;
+  final bool isUpdate;
+
+  const SubmitCQEntry({required this.entry, this.isUpdate = false});
+
+  @override
+  List<Object> get props => [entry, isUpdate];
 }
 
 class ShowSuccessMessage extends AddCQEntryEvent {

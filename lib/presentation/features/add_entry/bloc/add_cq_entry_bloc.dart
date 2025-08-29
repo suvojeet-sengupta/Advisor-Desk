@@ -56,7 +56,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     SubmitCQEntry event,
     Emitter<AddCQEntryState> emit,
   ) async {
-    if (state.percentage < 0 || state.percentage > 100) {
+    if (event.entry.percentage < 0 || event.entry.percentage > 100) {
       emit(state.copyWith(
         status: AddCQEntryStatus.failure,
         errorMessage: 'Please enter a valid percentage between 0 and 100',
@@ -67,9 +67,9 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     emit(state.copyWith(status: AddCQEntryStatus.loading));
 
     try {
-      final entry = state.toEntry();
+      final entry = event.entry;
 
-      if (state.isUpdate) {
+      if (event.isUpdate) {
         await repository.saveCQEntry(entry);
         emit(state.copyWith(
           status: AddCQEntryStatus.success,

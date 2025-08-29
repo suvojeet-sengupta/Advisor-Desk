@@ -11,315 +11,227 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_state.dart';
-
-import 'package:advisor_desk/data/datasources/ad_service.dart'; // Import AdService
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 
 class AddCQEntryScreen extends StatelessWidget {
   final CQEntry? entryToEdit;
 
-  const AddCQEntryScreen({Key? key, this.entryToEdit}) : super(key: key);
+  const AddCQEntryScreen({super.key, this.entryToEdit});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AddCQEntryBloc(
         repository: context.read<PerformanceRepository>(),
-        adService: context.read<AdService>(), // Provide AdService
-      )..add(InitializeCQEntry(entry: entryToEdit)), // Dispatch InitializeCQEntry event
-      child: const AddCQEntryView(),
+        adService: context.read<AdService>(),
+      )..add(InitializeCQEntry(entry: entryToEdit)),
+      child: AddCQEntryView(entryToEdit: entryToEdit),
     );
   }
 }
 
 class AddCQEntryView extends StatefulWidget {
-  const AddCQEntryView({Key? key}) : super(key: key);
+  final CQEntry? entryToEdit;
+  const AddCQEntryView({super.key, this.entryToEdit});
 
   @override
   State<AddCQEntryView> createState() => _AddCQEntryViewState();
 }
 
 class _AddCQEntryViewState extends State<AddCQEntryView> {
-  late final TextEditingController _percentageController;
+  int? _numberOfAudits;
+  final List<_CQEntryFormData> _formEntries = [];
 
   @override
   void initState() {
     super.initState();
-    final state = context.read<AddCQEntryBloc>().state;
-    _percentageController = TextEditingController(text: state.isUpdate ? state.percentage.toString() : '');
+    if (widget.entryToEdit != null) {
+      _numberOfAudits = 1;
+      _formEntries.add(_CQEntryFormData(entry: widget.entryToEdit));
+    }
   }
 
-  @override
-  void dispose() {
-    _percentageController.dispose();
-    super.dispose();
+  void _onNumberOfAuditsChanged(int? value) {
+    if (value != null) {
+      setState(() {
+        _numberOfAudits = value;
+        _formEntries.clear();
+        for (int i = 0; i < _numberOfAudits!; i++) {
+          _formEntries.add(_CQEntryFormData());
+        }
+      });
+    }
+  }
+
+  void _addEntries() {
+    final bloc = context.read<AddCQEntryBloc>();
+    for (final formData in _formEntries) {
+        final entry = CQEntry(
+          id: formData.entry?.id,
+          auditDate: formData.selectedDate,
+          percentage: double.tryParse(formData.percentageController.text) ?? 0.0,
+        );
+        bloc.add(SubmitCQEntry(entry: entry, isUpdate: formData.entry != null));
+    }
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AddCQEntryBloc, AddCQEntryState>(
-      listener: (context, state) {
-        if (state.status == AddCQEntryStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.isDelete ? 'CQ Entry deleted successfully!' : 'CQ Entry saved successfully!'),
-              backgroundColor: AppColors.accentGreen, // Corrected color
-            ),
-          );
-          Navigator.of(context).pop(); // Go back to the previous screen
-        } else if (state.status == AddCQEntryStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage ?? 'Failed to save CQ entry.'),
-              backgroundColor: AppColors.accentRed, // Corrected color
-            ),
-          );
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: CustomAppBar(
-            title: state.isUpdate ? 'Edit CQ Entry' : 'Add CQ Entry',
-          ),
-          body: state.status == AddCQEntryStatus.loading
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Date Section
-                      _buildSectionTitle(context, 'Audit Date'),
-                      const SizedBox(height: 8),
-                      CustomCard(
-                        child: InkWell(
-                          onTap: () => _selectDate(context, state.auditDate),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).inputDecorationTheme.fillColor,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Theme.of(context).colorScheme.outline),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  DateFormat('dd MMM yyyy').format(state.auditDate),
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // CQ Percentage Section
-                      CustomFormField(
-                        label: 'Call Quality Percentage',
-                        hintText: 'Enter CQ percentage (0-100)',
-                        icon: Icons.assessment,
-                        controller: _percentageController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        suffixText: '%',
-                        onChanged: (value) {
-                          context.read<AddCQEntryBloc>().add(CQPercentageChanged(percentage: double.tryParse(value) ?? 0.0));
-                        },
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Preview Section
-                      if (state.percentage > 0) ...[
-                        _buildSectionTitle(context, 'Preview'),
-                        const SizedBox(height: 8),
-                        CustomCard(
-                          child: Column(
-                            children: [
-                              _buildPreviewRow('CQ Percentage', '${state.percentage.toStringAsFixed(2)}%'),
-                              const Divider(),
-                              _buildPreviewRow(
-                                'Quality Rating',
-                                _getQualityRating(state.percentage),
-                                isHighlight: true,
-                                color: _getQualityColor(state.percentage),
-                              ),
-                              if (state.percentage < 80)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.warning_amber_rounded,
-                                          color: Theme.of(context).colorScheme.error,
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            'CQ below 80% - Needs Improvement',
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: Theme.of(context).colorScheme.error,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-
-                      // Submit Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: CustomButton(
-                          text: state.isUpdate ? 'Update CQ Entry' : 'Add CQ Entry',
-                          onPressed: state.status == AddCQEntryStatus.loading ? null : () {
-                            context.read<AddCQEntryBloc>().add(const SubmitCQEntry());
-                          },
-                          icon: state.isUpdate ? Icons.update : Icons.add,
-                        ),
-                      ),
-
-                      if (state.isUpdate) ...[
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: CustomButton(
-                            text: 'Delete Entry',
-                            onPressed: state.status == AddCQEntryStatus.loading ? null : () => _showDeleteConfirmationDialog(context),
-                            isPrimary: false,
-                            icon: Icons.delete_outline,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium,
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: widget.entryToEdit != null ? 'Edit CQ Entry' : 'Add CQ Entries',
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _numberOfAudits == null
+            ? _buildAuditNumberSelector()
+            : _buildForms(),
       ),
     );
   }
 
-  Widget _buildPreviewRow(String label, String value, {bool isHighlight = false, Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal,
-            ),
+  Widget _buildAuditNumberSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Select the number of audits Today',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<int>(
+          value: _numberOfAudits,
+          items: List.generate(5, (index) => index + 1)
+              .map((value) => DropdownMenuItem(
+                    value: value,
+                    child: Text(value.toString()),
+                  ))
+              .toList(),
+          onChanged: _onNumberOfAuditsChanged,
+          decoration: const InputDecoration(
+            labelText: 'Number of Audits',
+            border: OutlineInputBorder(),
           ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color ?? (isHighlight ? Theme.of(context).colorScheme.primary : null),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  String _getQualityRating(double percentage) {
-    if (percentage == 0) return 'FATAL';
-    if (percentage >= 95) return 'Excellent';
-    if (percentage >= 85) return 'Good';
-    if (percentage >= 75) return 'Average';
-    if (percentage >= 60) return 'Below Average';
-    return 'Poor';
-  }
-
-  Color _getQualityColor(double percentage) {
-    if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
-    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
-    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
-    return Theme.of(context).colorScheme.error;
-  }
-
-  Future<void> _selectDate(BuildContext context, DateTime initialDate) async {
-    final selectedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: Theme.of(context).colorScheme.primary,
-            ),
+  Widget _buildForms() {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: _numberOfAudits,
+            itemBuilder: (context, index) {
+              return _CQEntryForm(
+                formData: _formEntries[index],
+                formIndex: index + 1,
+              );
+            },
           ),
-          child: child!,
-        );
-      },
+        ),
+        CustomButton(
+          text: 'Add Entries',
+          onPressed: _addEntries,
+        ),
+      ],
     );
-    if (selectedDate != null) {
-      context.read<AddCQEntryBloc>().add(CQDateChanged(auditDate: selectedDate));
+  }
+
+  @override
+  void dispose() {
+    for (final formData in _formEntries) {
+      formData.dispose();
     }
-  }
-
-  void _showDeleteConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-          shape: Theme.of(context).dialogTheme.shape,
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this CQ entry? This action cannot be undone.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.error,
-              ),
-              child: const Text('Delete'),
-              onPressed: () {
-                context.read<AddCQEntryBloc>().add(const DeleteCQEntry());
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    super.dispose();
   }
 }
 
+class _CQEntryFormData {
+  final CQEntry? entry;
+  late final TextEditingController percentageController;
+  DateTime selectedDate;
 
+  _CQEntryFormData({this.entry}) : selectedDate = entry?.auditDate ?? DateTime.now() {
+    percentageController = TextEditingController(text: entry?.percentage.toString());
+  }
+
+  void dispose() {
+    percentageController.dispose();
+  }
+}
+
+class _CQEntryForm extends StatefulWidget {
+  final _CQEntryFormData formData;
+  final int formIndex;
+
+  const _CQEntryForm({required this.formData, required this.formIndex});
+
+  @override
+  __CQEntryFormState createState() => __CQEntryFormState();
+}
+
+class __CQEntryFormState extends State<_CQEntryForm> {
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: widget.formData.selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != widget.formData.selectedDate) {
+      setState(() {
+        widget.formData.selectedDate = picked;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Entry ${widget.formIndex}', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Date: ${DateFormat.yMd().format(widget.formData.selectedDate)}',
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () => _selectDate(context),
+                ),
+              ],
+            ),
+            CustomFormField(
+              controller: widget.formData.percentageController,
+              label: 'CQ Percentage',
+              hintText: 'Enter CQ percentage (0-100)',
+              icon: Icons.assessment,
+              keyboardType: TextInputType.number,
+              onChanged: (value) {},
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter percentage';
+                }
+                if (double.tryParse(value) == null) {
+                  return 'Please enter a valid number';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

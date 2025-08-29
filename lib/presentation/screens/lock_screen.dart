@@ -74,81 +74,83 @@ class _LockScreenState extends State<LockScreen> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(),
-                  Icon(
-                    Icons.security,
-                    size: 80,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Enter PIN to Unlock',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Spacer(),
+                    Icon(
+                      Icons.security,
+                      size: 80,
+                      color: theme.colorScheme.primary,
                     ),
-                  ),
-                  const SizedBox(height: 48),
-                  if (_isBiometricAvailable)
+                    const SizedBox(height: 24),
+                    Text(
+                      'Enter PIN to Unlock',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+                    if (_isBiometricAvailable)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24.0),
+                        child: GestureDetector(
+                          onTap: _authenticateWithBiometrics,
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.fingerprint,
+                                size: 60,
+                                color: theme.colorScheme.primary,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Unlock with Biometrics',
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    SizedBox(
+                      width: 200,
+                      child: TextField(
+                        controller: _pinController,
+                        keyboardType: TextInputType.number,
+                        maxLength: 4,
+                        obscureText: true,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 24, letterSpacing: 16),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          counterText: "",
+                          filled: true,
+                          fillColor: theme.cardColor.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    CustomButton(
+                      text: 'Unlock',
+                      onPressed: _authenticateWithPin,
+                    ),
+                    const Spacer(),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 24.0),
-                      child: GestureDetector(
-                        onTap: _authenticateWithBiometrics,
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.fingerprint,
-                              size: 60,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Unlock with Biometrics',
-                              style: theme.textTheme.bodyLarge,
-                            ),
-                          ],
+                      padding: const EdgeInsets.only(bottom: 32.0),
+                      child: Text(
+                        'Protected By Advisor Desk',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey,
                         ),
                       ),
                     ),
-                  SizedBox(
-                    width: 200,
-                    child: TextField(
-                      controller: _pinController,
-                      keyboardType: TextInputType.number,
-                      maxLength: 4,
-                      obscureText: true,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 24, letterSpacing: 16),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        counterText: "",
-                        filled: true,
-                        fillColor: theme.cardColor.withOpacity(0.5),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  CustomButton(
-                    text: 'Unlock',
-                    onPressed: _authenticateWithPin,
-                  ),
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 32.0),
-                    child: Text(
-                      'Protected By Advisor Desk',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

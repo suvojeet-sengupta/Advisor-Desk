@@ -44,7 +44,6 @@ dependencies:
   archive: ^3.6.1
   qr_flutter: ^4.1.0
   local_auth: ^2.3.0
-  simple_animations: ^5.2.0
 
 
   screenshot: ^3.0.0

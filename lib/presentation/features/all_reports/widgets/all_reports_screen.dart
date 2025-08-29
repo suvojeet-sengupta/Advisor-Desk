@@ -21,6 +21,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/core/utils/rate_app_helper.dart';
 
 class AllReportsScreen extends StatelessWidget {
   final Profile profile;
@@ -56,6 +57,7 @@ class AllReportsView extends StatelessWidget {
 
       final xFile = XFile(file.path, mimeType: "application/pdf");
       await Share.shareXFiles([xFile], subject: "Advisor Desk Report - ${summary.formattedDateRange}");
+      InAppReviewHelper.incrementActionCountAndRequestReview();
 
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -75,6 +77,7 @@ class AllReportsView extends StatelessWidget {
 
       final xFile = XFile(excelFile.path, mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       await Share.shareXFiles([xFile], subject: "Advisor Desk Report - ${summary.formattedDateRange}");
+      InAppReviewHelper.incrementActionCountAndRequestReview();
 
     } catch (e) {
       ScaffoldMessenger.of(context)

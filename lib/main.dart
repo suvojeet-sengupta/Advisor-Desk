@@ -1,3 +1,4 @@
+import 'package:advisor_desk/core/utils/rate_app_helper.dart';
 import 'package:advisor_desk/data/datasources/notification_service.dart';
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/data/datasources/goal_data_source.dart';
@@ -40,6 +41,7 @@ class SmoothScrollBehavior extends ScrollBehavior {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await InAppReviewHelper.setInstallDate();
   MobileAds.instance.initialize();
   await AppConstants.init();
   

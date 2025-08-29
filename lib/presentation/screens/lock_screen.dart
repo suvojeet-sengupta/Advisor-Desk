@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/utils/authentication_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
@@ -65,32 +64,38 @@ class _LockScreenState extends State<LockScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isDarkMode
-                ? [Colors.black, Colors.grey[900]!]
-                : [Colors.white, Colors.grey[200]!],
+                ? [const Color(0xFF2C3E50), const Color(0xFF000000)]
+                : [const Color(0xFFECE9E6), const Color(0xFFFFFFFF)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: SafeArea(
-            child: Center(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Spacer(),
-                    Icon(
-                      Icons.security,
-                      size: 80,
-                      color: theme.colorScheme.primary,
+                    Image.asset(
+                      'assets/icon/app_icon.png',
+                      height: 100,
+                      width: 100,
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Enter PIN to Unlock',
+                      'Welcome Back',
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Enter your PIN to unlock Advisor Desk',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: isDarkMode ? Colors.white70 : Colors.black54,
                       ),
                     ),
                     const SizedBox(height: 48),
@@ -109,45 +114,54 @@ class _LockScreenState extends State<LockScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 'Unlock with Biometrics',
-                                style: theme.textTheme.bodyLarge,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
                     SizedBox(
-                      width: 200,
+                      width: 250,
                       child: TextField(
                         controller: _pinController,
                         keyboardType: TextInputType.number,
                         maxLength: 4,
                         obscureText: true,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 24, letterSpacing: 16),
+                        style: TextStyle(
+                          fontSize: 24,
+                          letterSpacing: 16,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
                           counterText: "",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
                           filled: true,
-                          fillColor: theme.cardColor.withOpacity(0.5),
+                          fillColor: isDarkMode
+                              ? Colors.white.withOpacity(0.1)
+                              : Colors.black.withOpacity(0.1),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    CustomButton(
-                      text: 'Unlock',
-                      onPressed: _authenticateWithPin,
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: 250,
+                      child: CustomButton(
+                        text: 'Unlock',
+                        onPressed: _authenticateWithPin,
+                      ),
                     ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Text(
-                        'Protected By Advisor Desk',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    const SizedBox(height: 48),
+                    Text(
+                      'Protected By Advisor Desk',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: isDarkMode ? Colors.white54 : Colors.black45,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],

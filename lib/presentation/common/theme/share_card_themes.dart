@@ -36,9 +36,9 @@ final List<ShareCardTheme> shareCardThemes = [
   ),
   const ShareCardTheme(
     backgroundGradient: [Color(0xFFBF360C), Color(0xFFE64A19)],
-    textColor: Colors.black,
-    iconColor: Colors.black,
-    footerTextColor: Colors.black54,
+    textColor: Colors.white,
+    iconColor: Colors.white,
+    footerTextColor: Colors.white70,
   ),
   const ShareCardTheme(
     backgroundGradient: [Color(0xFF263238), Color(0xFF455A64)],

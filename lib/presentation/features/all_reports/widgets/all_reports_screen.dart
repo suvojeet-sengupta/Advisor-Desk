@@ -220,6 +220,8 @@ class AllReportsView extends StatelessWidget {
             _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', Theme.of(context).colorScheme.secondary),
             const SizedBox(height: 8),
             _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', Theme.of(context).colorScheme.primary),
+            const SizedBox(height: 8), // Added SizedBox for spacing
+            _buildInfoRow(context, Icons.account_balance_wallet, 'Net Salary', '₹${formatter.format(summary.netSalary)}', Theme.of(context).colorScheme.primary), // Added Net Salary row
             const SizedBox(height: 16),
           ],
         ),

@@ -212,15 +212,15 @@ class MetricDetailsScreen extends StatelessWidget {
     if (summary.entries.isEmpty) {
       return 'No entries to calculate total login hours.';
     }
-    String calculation = 'Sum of login hours for all daily entries:
-';
+    String calculation = '''Sum of login hours for all daily entries:
+''';
     for (var entry in summary.entries) {
       calculation +=
-          '  ${DateFormat('MMM dd').format(entry.date)}: ${entry.formattedLoginTime} (${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs)
-';
+          '''  ${DateFormat('MMM dd').format(entry.date)}: ${entry.formattedLoginTime} (${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs)
+''';
     }
-    calculation += '
-Total: ${summary.totalLoginHours.toStringAsFixed(2)} Hrs';
+    calculation += '''
+Total: ${summary.totalLoginHours.toStringAsFixed(2)} Hrs''';
     return calculation;
   }
 
@@ -228,17 +228,17 @@ Total: ${summary.totalLoginHours.toStringAsFixed(2)} Hrs';
     if (summary.entries.isEmpty) {
       return 'No entries to calculate average login hours.';
     }
-    return 'Total Login Hours (${summary.totalLoginHours.toStringAsFixed(2)} Hrs) / Number of Login Days (${summary.loginDays} days)
-'
-        '= ${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs';
+    return '''Total Login Hours (${summary.totalLoginHours.toStringAsFixed(2)} Hrs) / Number of Login Days (${summary.loginDays} days)
+'''
+        '''= ${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs''';
   }
 
   String _getAverageCallsCalculation() {
     if (summary.entries.isEmpty) {
       return 'No entries to calculate average calls.';
     }
-    return 'Total Calls (${summary.totalCalls}) / Number of Login Days (${summary.loginDays} days)
-'
-        '= ${summary.averageDailyCalls.toStringAsFixed(2)} Calls';
+    return '''Total Calls (${summary.totalCalls}) / Number of Login Days (${summary.loginDays} days)
+'''
+        '''= ${summary.averageDailyCalls.toStringAsFixed(2)} Calls''';
   }
 }

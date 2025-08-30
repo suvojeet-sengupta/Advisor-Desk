@@ -41,6 +41,7 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_ev
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 
 
+import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
 
 class AppRouter {

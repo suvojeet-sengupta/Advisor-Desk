@@ -170,21 +170,12 @@ class AllReportsView extends StatelessWidget {
   Widget _buildReportCard(BuildContext context, MonthlySummary summary, Profile profile) {
     final formatter = NumberFormat('#,##0.00');
     return InkWell(
-      onTap: () {
+      onTap: () async { // Made onTap async
         final startDate = DateTime(summary.year, summary.month, 1);
         final endDate = DateTime(summary.year, summary.month + 1, 0); // Last day of the month
-        final reportSummary = ReportSummary(
-          startDate: startDate,
-          endDate: endDate,
-          formattedDateRange: summary.formattedMonthYear,
-          totalCalls: summary.totalCalls,
-          totalLoginHours: summary.totalLoginHours,
-          totalSalary: summary.totalSalary,
-          totalCqEntries: summary.totalCqEntries,
-          totalCsatEntries: summary.totalCsatEntries,
-          totalDailyEntries: summary.totalDailyEntries,
-          totalLeaveEntries: summary.totalLeaveEntries,
-        );
+
+        // Fetch ReportSummary for the selected date range
+        final reportSummary = await context.read<PerformanceRepository>().getReportSummary(startDate, endDate);
 
         showDialog(
           context: context,

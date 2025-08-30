@@ -1,5 +1,5 @@
 import 'package:advisor_desk/core/utils/rate_app_helper.dart';
-import 'package:advisor_desk/data/datasources/notification_service.dart';
+
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/data/datasources/goal_data_source.dart';
 import 'package:advisor_desk/data/repositories/goal_repository_impl.dart';
@@ -62,8 +62,7 @@ void main() async {
 
   final leaveRepository = LeaveRepositoryImpl(localDataSource: localDataSource);
 
-  final notificationService = NotificationService(performanceRepository: performanceRepository);
-  await notificationService.init();
+  
 
   final prefs = await SharedPreferences.getInstance();
   final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
@@ -89,7 +88,7 @@ void main() async {
     goalRepository: goalRepository,
     deleteCQEntriesByDateUseCase: deleteCQEntriesByDateUseCase,
     deleteCSATEntriesByDateUseCase: deleteCSATEntriesByDateUseCase,
-    notificationService: notificationService,
+    
     initialRoute: initialRoute,
     profileRepository: profileRepository, // Pass profileRepository to MyApp
     leaveRepository: leaveRepository,
@@ -102,7 +101,7 @@ class MyApp extends StatefulWidget {
   final GoalRepository goalRepository;
   final DeleteCQEntriesByDateUseCase deleteCQEntriesByDateUseCase;
   final DeleteCSATEntriesByDateUseCase deleteCSATEntriesByDateUseCase;
-  final NotificationService notificationService;
+  
   final String initialRoute;
   final ProfileRepository profileRepository; // New
   final LeaveRepository leaveRepository;
@@ -114,7 +113,7 @@ class MyApp extends StatefulWidget {
     required this.goalRepository,
     required this.deleteCQEntriesByDateUseCase,
     required this.deleteCSATEntriesByDateUseCase,
-    required this.notificationService,
+    
     required this.initialRoute,
     required this.profileRepository, // New
     required this.leaveRepository,
@@ -134,9 +133,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initializeLockState();
     checkForUpdate();
-    _requestNotificationPermission();
-    widget.notificationService.scheduleDailyReminders();
-    widget.notificationService.cancelTodaysRemindersIfEntryExists();
+    
   }
 
   Future<void> _initializeLockState() async {
@@ -146,9 +143,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _requestNotificationPermission() async {
-    await Permission.notification.request();
-  }
+  
 
   Future<void> checkForUpdate() async {
     try {
@@ -229,7 +224,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
             RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
             RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
-            RepositoryProvider<NotificationService>.value(value: widget.notificationService),
+            
             RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository), // New
             RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
           ],

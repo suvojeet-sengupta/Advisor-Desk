@@ -139,7 +139,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<void> _initializeLockState() async {
     final isEnabled = await AuthenticationService.isAppLockEnabled();
     if (isEnabled) {
-      isLocked.value = true;
+      final isRequired = await AuthenticationService.isAuthenticationRequired();
+      if (isRequired) {
+        isLocked.value = true;
+      }
     }
   }
 
@@ -196,6 +199,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         _justUnlocked = false;
       } else {
         _initializeLockState();
+      }
+    } else if (state == AppLifecycleState.paused) {
+      if (isLocked.value == false) {
+        AuthenticationService.updateLastAuthenticationTime();
       }
     }
   }

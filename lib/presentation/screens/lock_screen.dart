@@ -35,6 +35,7 @@ class _LockScreenState extends State<LockScreen> {
     final isAuthenticated =
         await AuthenticationService.authenticateWithBiometrics();
     if (isAuthenticated) {
+      await AuthenticationService.updateLastAuthenticationTime();
       widget.onUnlocked();
     }
   }
@@ -45,6 +46,7 @@ class _LockScreenState extends State<LockScreen> {
 
     final isValid = await AuthenticationService.checkPin(pin);
     if (isValid) {
+      await AuthenticationService.updateLastAuthenticationTime();
       widget.onUnlocked();
     } else {
       _pinController.clear();

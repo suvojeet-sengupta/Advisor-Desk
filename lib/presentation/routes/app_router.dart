@@ -39,6 +39,7 @@ import 'package:advisor_desk/domain/usecases/delete_leave_usecase.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bloc.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
+import 'package:advisor_desk/presentation/screens/app_lock_settings_screen.dart';
 
 
 import 'package:advisor_desk/core/constants/app_enums.dart';
@@ -71,6 +72,7 @@ class AppRouter {
   static const String aboutDeveloperRoute = '/about-developer';
   static const String salaryDetailsRoute = '/salary-details';
   static const String pinSetupRoute = '/pin-setup';
+  static const String appLockSettingsRoute = '/app-lock-settings';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -191,6 +193,10 @@ class AppRouter {
       case AppRouter.pinSetupRoute:
         return MaterialPageRoute(
           builder: (_) => const PinSetupScreen(),
+        );
+      case AppRouter.appLockSettingsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AppLockSettingsScreen(),
         );
       
       default:

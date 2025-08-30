@@ -214,6 +214,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Privacy & Security',
             [
               _buildAppLockTile(),
+              if (_isAppLockEnabled)
+                _buildLinkTile(
+                  context,
+                  'App Lock Settings',
+                  AppRouter.appLockSettingsRoute,
+                  Icons.lock_clock,
+                ),
               _buildLinkTile(
                 context,
                 'Privacy Policy',

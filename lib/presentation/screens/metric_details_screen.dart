@@ -228,17 +228,13 @@ Total: ${summary.totalLoginHours.toStringAsFixed(2)} Hrs''';
     if (summary.entries.isEmpty) {
       return 'No entries to calculate average login hours.';
     }
-    return '''Total Login Hours (${summary.totalLoginHours.toStringAsFixed(2)} Hrs) / Number of Login Days (${summary.loginDays} days)
-'''
-        '''= ${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs''';
+    return '${summary.totalLoginHours.toStringAsFixed(2)} Hrs / ${summary.loginDays} days = ${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs';
   }
 
   String _getAverageCallsCalculation() {
     if (summary.entries.isEmpty) {
       return 'No entries to calculate average calls.';
     }
-    return '''Total Calls (${summary.totalCalls}) / Number of Login Days (${summary.loginDays} days)
-'''
-        '''= ${summary.averageDailyCalls.toStringAsFixed(2)} Calls''';
+    return '${summary.totalCalls} Calls / ${summary.loginDays} days = ${summary.averageDailyCalls.toStringAsFixed(2)} Calls';
   }
 }

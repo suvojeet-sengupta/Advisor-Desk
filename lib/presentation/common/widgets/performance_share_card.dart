@@ -26,6 +26,22 @@ class PerformanceShareCard extends StatefulWidget {
 class _PerformanceShareCardState extends State<PerformanceShareCard> {
   String _appVersion = '';
 
+  final List<Shadow> _textShadows = const [
+    Shadow(
+      offset: Offset(1.0, 1.0),
+      blurRadius: 3.0,
+      color: Colors.black54,
+    ),
+  ];
+
+  final List<Shadow> _highlightShadows = const [
+    Shadow(
+      offset: Offset(1.0, 1.0),
+      blurRadius: 5.0,
+      color: Colors.black87,
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -74,6 +90,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: widget.theme.textColor,
+                  shadows: _textShadows,
                 ),
               ),
             ],
@@ -85,6 +102,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
               fontSize: 26,
               fontWeight: FontWeight.bold,
               color: widget.theme.textColor,
+              shadows: _textShadows,
             ),
           ),
           Text(
@@ -92,6 +110,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
             style: TextStyle(
               fontSize: 18,
               color: widget.theme.textColor.withOpacity(0.8),
+              shadows: _textShadows,
             ),
           ),
           if (widget.profile.name != null) ...[
@@ -102,6 +121,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 color: widget.theme.textColor,
+                shadows: _textShadows,
               ),
             ),
           ],
@@ -155,7 +175,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
           const SizedBox(width: 16),
           Text(
             label,
-            style: TextStyle(fontSize: 16, color: widget.theme.textColor),
+            style: TextStyle(fontSize: 16, color: widget.theme.textColor, shadows: _textShadows),
           ),
           const Spacer(),
           Text(
@@ -164,6 +184,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: widget.theme.textColor,
+              shadows: _textShadows,
             ),
           ),
         ],
@@ -184,6 +205,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
               fontSize: 20,
               fontWeight: FontWeight.w600,
               color: widget.theme.textColor,
+              shadows: _textShadows,
             ),
           ),
           const Spacer(),
@@ -192,7 +214,8 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: widget.theme.textColor,
+              color: Colors.yellowAccent, // Highlighted color
+              shadows: _highlightShadows, // Stronger shadow for highlight
             ),
           ),
         ],
@@ -214,6 +237,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
                 color: widget.theme.footerTextColor,
+                shadows: _textShadows,
               ),
             ),
             Text(
@@ -221,6 +245,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
               style: TextStyle(
                 fontSize: 10,
                 color: widget.theme.footerTextColor,
+                shadows: _textShadows,
               ),
             ),
           ],

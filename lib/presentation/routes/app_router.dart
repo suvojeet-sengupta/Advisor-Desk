@@ -41,6 +41,8 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_ev
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 
 
+import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
+
 class AppRouter {
   // Route names
   static const String dashboardRoute = '/';
@@ -52,6 +54,7 @@ class AppRouter {
   static const String onboardingTutorialRoute = '/onboarding-tutorial';
   static const String themeSelectionRoute = '/theme-selection';
   static const String shareThemeSelectorRoute = '/share-theme-selector';
+  static const String metricDetailsRoute = '/metric-details';
   
   static const String settingsRoute = '/settings';
   static const String customizeDashboardRoute = '/customize-dashboard';
@@ -157,6 +160,13 @@ class AppRouter {
             )..add(LoadLoginDays(summary.year, summary.month)),
             child: LoginDaysDetailsScreen(summary: summary),
           ),
+        );
+      case metricDetailsRoute:
+        final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
+        final MetricType metricType = args['metricType'] as MetricType;
+        final MonthlySummary summary = args['summary'] as MonthlySummary;
+        return MaterialPageRoute(
+          builder: (_) => MetricDetailsScreen(metricType: metricType, summary: summary),
         );
       
       case creditsRoute:

@@ -4,6 +4,7 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/daily_entries_section.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
+import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 
@@ -51,36 +52,96 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       value: summary.totalCalls.toString(),
                       icon: Icons.call,
                       iconColor: Theme.of(context).colorScheme.primary,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.metricDetailsRoute,
+                          arguments: {
+                            'metricType': MetricType.totalCalls,
+                            'summary': summary,
+                          },
+                        );
+                      },
                     ),
                     DashboardCard(
                       title: 'Non-billable Calls',
                       value: summary.totalNonBillableCalls.toString(),
                       icon: Icons.phone_disabled,
                       iconColor: Theme.of(context).colorScheme.error,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.metricDetailsRoute,
+                          arguments: {
+                            'metricType': MetricType.totalCalls, // Non-billable calls are part of total calls details
+                            'summary': summary,
+                          },
+                        );
+                      },
                     ),
                     DashboardCard(
                       title: 'Billable Calls',
                       value: summary.billableCalls.toString(),
                       icon: Icons.phone_in_talk,
                       iconColor: Colors.green,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.metricDetailsRoute,
+                          arguments: {
+                            'metricType': MetricType.totalCalls, // Billable calls are part of total calls details
+                            'summary': summary,
+                          },
+                        );
+                      },
                     ),
                     DashboardCard(
                       title: 'Total Login Hours',
                       value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
                       icon: Icons.timer,
                       iconColor: Theme.of(context).colorScheme.secondary,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.metricDetailsRoute,
+                          arguments: {
+                            'metricType': MetricType.totalLoginHours,
+                            'summary': summary,
+                          },
+                        );
+                      },
                     ),
                     DashboardCard(
                       title: 'Avg. Login Hours',
                       value: summary.averageDailyLoginHours.toStringAsFixed(2),
                       icon: Icons.timer,
                       iconColor: Theme.of(context).colorScheme.secondary,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.metricDetailsRoute,
+                          arguments: {
+                            'metricType': MetricType.avgLoginHours,
+                            'summary': summary,
+                          },
+                        );
+                      },
                     ),
                     DashboardCard(
                       title: 'Avg. Calls',
                       value: summary.averageDailyCalls.toStringAsFixed(2),
                       icon: Icons.call,
                       iconColor: Theme.of(context).colorScheme.primary,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.metricDetailsRoute,
+                          arguments: {
+                            'metricType': MetricType.avgCalls,
+                            'summary': summary,
+                          },
+                        );
+                      },
                     ),
                     DashboardCard(
                       title: 'CSAT Score',

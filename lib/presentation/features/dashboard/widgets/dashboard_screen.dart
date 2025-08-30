@@ -468,7 +468,16 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 value: summary.totalCalls.toString(),
                 icon: Icons.call,
                 iconColor: Theme.of(context).colorScheme.secondary,
-                onTap: () => _navigateToMonthlyPerformance(context),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.metricDetailsRoute,
+                    arguments: {
+                      'metricType': MetricType.totalCalls,
+                      'summary': summary,
+                    },
+                  );
+                },
               ),
               if (summary.totalNonBillableCalls > 0)
                 DashboardCard(
@@ -476,28 +485,64 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                   value: summary.totalNonBillableCalls.toString(),
                   icon: Icons.phone_disabled,
                   iconColor: Theme.of(context).colorScheme.error,
-                  onTap: () => _navigateToMonthlyPerformance(context),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.metricDetailsRoute,
+                      arguments: {
+                        'metricType': MetricType.totalCalls, // Non-billable calls are part of total calls details
+                        'summary': summary,
+                      },
+                    );
+                  },
                 ),
               DashboardCard(
                 title: 'Total Login Hours',
                 value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
                 icon: Icons.timer,
                 iconColor: Theme.of(context).colorScheme.tertiary,
-                onTap: () => _navigateToMonthlyPerformance(context),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.metricDetailsRoute,
+                    arguments: {
+                      'metricType': MetricType.totalLoginHours,
+                      'summary': summary,
+                    },
+                  );
+                },
               ),
               DashboardCard(
                 title: 'Avg. Login Hours',
                 value: summary.averageDailyLoginHours.toStringAsFixed(2),
                 icon: Icons.timer,
                 iconColor: Theme.of(context).colorScheme.tertiary,
-                onTap: () => _navigateToMonthlyPerformance(context),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.metricDetailsRoute,
+                    arguments: {
+                      'metricType': MetricType.avgLoginHours,
+                      'summary': summary,
+                    },
+                  );
+                },
               ),
               DashboardCard(
                 title: 'Avg. Calls',
                 value: summary.averageDailyCalls.toStringAsFixed(2),
                 icon: Icons.call,
                 iconColor: Theme.of(context).colorScheme.secondary,
-                onTap: () => _navigateToMonthlyPerformance(context),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.metricDetailsRoute,
+                    arguments: {
+                      'metricType': MetricType.avgCalls,
+                      'summary': summary,
+                    },
+                  );
+                },
               ),
               DashboardCard(
                 title: 'CSAT Score',

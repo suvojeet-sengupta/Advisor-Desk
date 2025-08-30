@@ -34,3 +34,10 @@ enum ReportSection {
   cqDailyBreakdown,
   salaryDetails,
 }
+
+enum MetricType {
+  totalCalls,
+  totalLoginHours,
+  avgLoginHours,
+  avgCalls,
+}

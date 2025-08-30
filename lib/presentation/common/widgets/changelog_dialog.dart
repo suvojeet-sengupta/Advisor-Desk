@@ -22,8 +22,7 @@ class ChangelogDialog extends StatelessWidget {
             _buildListItem('Detailed Metric Screens: You can now view detailed screens for each metric from the dashboard and monthly summary.'),
             const SizedBox(height: 16),
             _buildSectionTitle(context, '🐛 Bug Fixes & Performance'),
-            _buildListItem('Build Error Fix: Resolved a build error in the "All Reports" screen.'),
-            _buildListItem('Compilation Error Fix: Resolved compilation errors in the metric details screen and app router.'),
+            
           ],
         ),
       ),

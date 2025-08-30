@@ -94,7 +94,7 @@ class AllReportsView extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.picture_as_pdf),
-            tooltip: 'Generate Custom Report',
+            tooltip: 'Customize Report Options',
             onPressed: () async {
               final result = await Navigator.pushNamed(context, AppRouter.reportOptionsRoute);
               if (result != null && result is Map<String, dynamic>) {
@@ -158,7 +158,7 @@ class AllReportsView extends StatelessWidget {
               itemCount: state.summaries.length,
               itemBuilder: (context, index) {
                 final summary = state.summaries[index];
-                return _buildReportCard(context, summary);
+                return _buildReportCard(context, summary, profile);
               },
             );
           },
@@ -167,25 +167,71 @@ class AllReportsView extends StatelessWidget {
     );
   }
 
-  Widget _buildReportCard(BuildContext context, MonthlySummary summary) {
+  Widget _buildReportCard(BuildContext context, MonthlySummary summary, Profile profile) {
     final formatter = NumberFormat('#,##0.00');
-    return CustomCard(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            summary.formattedMonthYear,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+    return InkWell(
+      onTap: () {
+        final startDate = DateTime(summary.year, summary.month, 1);
+        final endDate = DateTime(summary.year, summary.month + 1, 0); // Last day of the month
+        final reportSummary = ReportSummary(
+          startDate: startDate,
+          endDate: endDate,
+          formattedDateRange: summary.formattedMonthYear,
+          totalCalls: summary.totalCalls,
+          totalLoginHours: summary.totalLoginHours,
+          totalSalary: summary.totalSalary,
+          totalCqEntries: summary.totalCqEntries,
+          totalCsatEntries: summary.totalCsatEntries,
+          totalDailyEntries: summary.totalDailyEntries,
+          totalLeaveEntries: summary.totalLeaveEntries,
+        );
+
+        showDialog(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Export Report As'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.picture_as_pdf),
+                  title: const Text('PDF'),
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                    _generateAndSharePdf(context, reportSummary, ReportSection.values, profile);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.table_chart),
+                  title: const Text('Excel'),
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                    _generateAndShareExcel(context, reportSummary, ReportSection.values, profile);
+                  },
+                ),
+              ],
+            ),
           ),
-          const Divider(height: 24),
-          _buildInfoRow(context, Icons.call, 'Total Calls', '${summary.totalCalls}', Theme.of(context).colorScheme.secondary),
-          const SizedBox(height: 8),
-          _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', Theme.of(context).colorScheme.secondary),
-          const SizedBox(height: 8),
-          _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', Theme.of(context).colorScheme.primary),
-          const SizedBox(height: 16),
-        ],
+        );
+      },
+      child: CustomCard(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              summary.formattedMonthYear,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+            ),
+            const Divider(height: 24),
+            _buildInfoRow(context, Icons.call, 'Total Calls', '${summary.totalCalls}', Theme.of(context).colorScheme.secondary),
+            const SizedBox(height: 8),
+            _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', Theme.of(context).colorScheme.secondary),
+            const SizedBox(height: 8),
+            _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', Theme.of(context).colorScheme.primary),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }

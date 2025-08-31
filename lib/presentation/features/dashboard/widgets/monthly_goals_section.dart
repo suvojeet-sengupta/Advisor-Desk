@@ -44,10 +44,10 @@ class MonthlyGoalsSection extends StatelessWidget {
         remainingDays = remainingDays.clamp(0, lastDayOfMonth);
 
         final remainingHours = (state.targetHours - summary.totalLoginHours).clamp(0.0, double.infinity);
-        final dailyAvgHours = remainingDays > 0 ? remainingHours / remainingDays : 0.0;
+        final dailyAvgHours = remainingDays > 0 ? remainingHours / remainingDays : remainingHours;
 
         final remainingCalls = (state.targetCalls - summary.totalCalls).clamp(0, double.infinity).toInt();
-        final dailyAvgCalls = remainingDays > 0 ? (remainingCalls / remainingDays).ceil() : 0;
+        final dailyAvgCalls = remainingDays > 0 ? (remainingCalls / remainingDays).ceil() : remainingCalls;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

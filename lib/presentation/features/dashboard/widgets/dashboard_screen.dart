@@ -460,7 +460,13 @@ class _DashboardViewState extends State<DashboardView> {
                 value: '₹${summary.netSalary.toStringAsFixed(2)}',
                 icon: Icons.currency_rupee,
                 iconColor: Theme.of(context).colorScheme.secondary,
-                onTap: () => _navigateToMonthlyPerformance(context),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.salaryDetailsRoute,
+                    arguments: summary,
+                  );
+                },
               ),
               DashboardCard(
                 title: 'Login Days',

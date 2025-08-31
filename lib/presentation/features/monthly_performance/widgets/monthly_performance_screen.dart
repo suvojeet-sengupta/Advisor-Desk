@@ -170,6 +170,13 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       value: '₹${summary.netSalary.toStringAsFixed(2)}',
                       icon: Icons.currency_rupee,
                       iconColor: Theme.of(context).colorScheme.primary,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.salaryDetailsRoute,
+                          arguments: summary,
+                        );
+                      },
                     ),
                     DashboardCard(
                       title: 'Login Days',

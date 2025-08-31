@@ -1,115 +1,133 @@
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:intl/intl.dart';
 
 class SalaryDetailsScreen extends StatelessWidget {
-  final MonthlySummary monthlySummary;
+  final MonthlySummary summary;
 
-  const SalaryDetailsScreen({Key? key, required this.monthlySummary}) : super(key: key);
+  const SalaryDetailsScreen({Key? key, required this.summary}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final breakdown = monthlySummary.salaryBreakdown;
+    final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Salary Details'),
-      body: Padding(
+      appBar: AppBar(
+        title: Text(
+          'Salary Details for ${summary.formattedMonthYear}',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Monthly Salary Breakdown',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ...breakdown.entries.map((entry) {
-              return _buildSalaryDetailRow(
-                context,
-                entry.key,
-                entry.value,
-              );
-            }).toList(),
+            _buildHeader(context, currencyFormat),
+            const SizedBox(height: 24),
+            _buildSectionTitle(context, 'Earnings'),
+            const SizedBox(height: 8),
+            _buildEarningsCard(context, currencyFormat),
+            const SizedBox(height: 24),
+            _buildSectionTitle(context, 'Deductions'),
+            const SizedBox(height: 8),
+            _buildDeductionsCard(context, currencyFormat),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSalaryDetailRow(
-    BuildContext context,
-    String title,
-    double value,
-  ) {
-    final isCallEntry = title.toLowerCase().contains('calls');
-    final isDeduction = title.toLowerCase().contains('deduction');
-    final isNetSalary = title.toLowerCase().contains('net salary');
-    final isGrossSalary = title.toLowerCase().contains('gross salary');
+  Widget _buildHeader(BuildContext context, NumberFormat currencyFormat) {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Theme.of(context).colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            Text(
+              'Net Salary',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              currencyFormat.format(summary.netSalary),
+              style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-    IconData icon;
-    Color iconColor;
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+    );
+  }
 
-    switch (title) {
-      case 'Total Calls':
-        icon = Icons.call;
-        iconColor = Theme.of(context).colorScheme.secondary;
-        break;
-      case 'Non-billable Calls':
-        icon = Icons.phone_disabled;
-        iconColor = Theme.of(context).colorScheme.error;
-        break;
-      case 'Billable Calls':
-        icon = Icons.phone_in_talk;
-        iconColor = Colors.green;
-        break;
-      case 'Base Salary':
-        icon = Icons.money;
-        iconColor = Theme.of(context).colorScheme.secondary;
-        break;
-      case 'Bonus Amount':
-        icon = Icons.card_giftcard;
-        iconColor = monthlySummary.isBonusAchieved ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error;
-        break;
-      case 'CSAT Bonus':
-        icon = Icons.star;
-        iconColor = monthlySummary.isCSATBonusAchieved ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error;
-        break;
-      case 'Gross Salary':
-        icon = Icons.account_balance_wallet;
-        iconColor = Theme.of(context).colorScheme.primary;
-        break;
-      case 'TDS Deduction':
-        icon = Icons.remove_circle;
-        iconColor = Theme.of(context).colorScheme.error;
-        break;
-      case 'Net Salary':
-        icon = Icons.payments;
-        iconColor = Theme.of(context).colorScheme.tertiary;
-        break;
-      default:
-        icon = Icons.monetization_on;
-        iconColor = Theme.of(context).colorScheme.onSurface;
-    }
+  Widget _buildEarningsCard(BuildContext context, NumberFormat currencyFormat) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildSalaryDetailRow(
+              context,
+              'Basic Salary',
+              currencyFormat.format(summary.basicSalary),
+              Icons.account_balance_wallet,
+              Theme.of(context).colorScheme.secondary,
+            ),
+            const Divider(),
+            _buildSalaryDetailRow(
+              context,
+              'Incentive',
+              currencyFormat.format(summary.incentive),
+              Icons.star,
+              Colors.amber,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  Widget _buildDeductionsCard(BuildContext context, NumberFormat currencyFormat) {
+    // Assuming there are no deductions in the summary for now.
+    // If deductions are added in the future, they can be displayed here.
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          'No deductions for this month.',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSalaryDetailRow(BuildContext context, String title, String value, IconData icon, Color iconColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, color: iconColor, size: 24),
+          Icon(icon, color: iconColor),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            child: Text(title, style: Theme.of(context).textTheme.bodyLarge),
           ),
-          Text(
-            isCallEntry
-                ? value.toInt().toString()
-                : '₹${value.toStringAsFixed(2)}',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: (isNetSalary || isGrossSalary) ? FontWeight.bold : FontWeight.normal,
-                ),
-          ),
+          Text(value, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
         ],
       ),
     );

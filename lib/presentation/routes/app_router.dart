@@ -205,7 +205,7 @@ class AppRouter {
       case salaryDetailsRoute:
         final MonthlySummary summary = settings.arguments as MonthlySummary;
         return MaterialPageRoute(
-          builder: (_) => SalaryDetailsScreen(monthlySummary: summary),
+          builder: (_) => SalaryDetailsScreen(summary: summary),
         );
       case AppRouter.pinSetupRoute:
         return MaterialPageRoute(

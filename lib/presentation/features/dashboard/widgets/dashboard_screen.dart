@@ -363,7 +363,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       children: [
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          height: _isFabMenuOpen ? 120 : 0,
+          height: _isFabMenuOpen ? 60 : 0,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -388,7 +388,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         FloatingActionButton(
           onPressed: () {
             setState(() {

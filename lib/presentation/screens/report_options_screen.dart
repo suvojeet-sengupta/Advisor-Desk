@@ -110,7 +110,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
                   }
                   if (_selectedYear != null && _selectedMonth != null) {
                     final startDate = DateTime(_selectedYear!, _selectedMonth!, 1);
-                    final endDate = DateTime(_selectedYear!, _selectedMonth! + 1, 0);
+                    final endDate = DateTime(_selectedYear!, _selectedMonth! + 1, 1).subtract(const Duration(microseconds: 1));
                     Navigator.pop(context, {
                       'startDate': startDate,
                       'endDate': endDate,

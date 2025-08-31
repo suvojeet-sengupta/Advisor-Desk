@@ -12,6 +12,7 @@ import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart';
+import 'package:advisor_desk/domain/entities/monthly_data.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:archive/archive_io.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -38,11 +39,6 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   @override
   Future<DailyEntry?> getEntryForDate(DateTime date) async {
     return await localDataSource.getEntryForDate(date);
-  }
-
-  @override
-  Future<DailyEntry?> getLatestNonBillableCallsEntry() async {
-    return await localDataSource.getLatestNonBillableCallsEntry();
   }
 
   @override
@@ -88,6 +84,7 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     final entries = await localDataSource.getEntriesForMonth(month, year);
     final csatEntries = await localDataSource.getCSATEntriesForMonth(month, year);
     final cqEntries = await localDataSource.getCQEntriesForMonth(month, year);
+    final monthlyData = await localDataSource.getMonthlyData(month, year);
 
     return MonthlySummary(
       month: month,
@@ -96,6 +93,7 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
       csatSummary: CSATSummary(entries: csatEntries, month: month, year: year),
       cqSummary: CQSummary(entries: cqEntries, month: month, year: year),
       loginDays: entries.length,
+      nonBillableCalls: monthlyData?.nonBillableCalls ?? 0,
     );
   }
 
@@ -176,6 +174,16 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   @override
   Future<int> updateCQEntry(CQEntry entry) async {
     return await localDataSource.updateCQEntry(entry);
+  }
+
+  @override
+  Future<void> saveMonthlyData(MonthlyData monthlyData) async {
+    await localDataSource.saveMonthlyData(monthlyData);
+  }
+
+  @override
+  Future<MonthlyData?> getMonthlyData(int month, int year) async {
+    return await localDataSource.getMonthlyData(month, year);
   }
 
   @override

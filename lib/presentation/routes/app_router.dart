@@ -1,4 +1,9 @@
 
+import 'package:advisor_desk/presentation/features/monthly_data/monthly_data_screen.dart';
+import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_data_bloc.dart';
+import 'package:advisor_desk/domain/usecases/get_monthly_data_usecase.dart';
+import 'package:advisor_desk/domain/usecases/save_monthly_data_usecase.dart';
+
 import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
 import 'package:advisor_desk/presentation/features/monthly_performance/widgets/share_theme_selector_screen.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
@@ -13,7 +18,7 @@ import 'package:advisor_desk/presentation/features/onboarding/onboarding_tutoria
 import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_screen.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_entry_screen.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
-import 'package:advisor_desk/presentation/features/add_entry/widgets/add_non_billable_calls_screen.dart';
+
 import 'package:advisor_desk/presentation/features/monthly_performance/widgets/monthly_performance_screen.dart';
 import 'package:advisor_desk/presentation/features/all_reports/widgets/all_reports_screen.dart';
 
@@ -49,9 +54,10 @@ class AppRouter {
   // Route names
   static const String dashboardRoute = '/';
   static const String addEntryRoute = '/add-entry';
-  static const String addNonBillableCallsRoute = '/add-non-billable-calls';
+  
   static const String addCQEntryRoute = '/add-cq-entry';
   static const String monthlyPerformanceRoute = '/monthly-performance';
+  static const String monthlyDataRoute = '/monthly-data';
   static const String allReportsRoute = '/all-reports';
   static const String onboardingTutorialRoute = '/onboarding-tutorial';
   static const String themeSelectionRoute = '/theme-selection';
@@ -86,10 +92,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => AddEntryScreen(entryToEdit: entryToEdit),
         );
-      case addNonBillableCallsRoute:
-        return MaterialPageRoute(
-          builder: (_) => const AddNonBillableCallsScreen(),
-        );
+      
       case addCQEntryRoute:
         final CQEntry? entryToEdit = settings.arguments as CQEntry?;
         return MaterialPageRoute(
@@ -99,6 +102,19 @@ class AppRouter {
         final MonthlySummary summary = settings.arguments as MonthlySummary;
         return MaterialPageRoute(
           builder: (_) => MonthlyPerformanceScreen(summary: summary),
+        );
+      case monthlyDataRoute:
+        final Map<String, int> args = settings.arguments as Map<String, int>;
+        final int month = args['month']!;
+        final int year = args['year']!;
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => MonthlyDataBloc(
+              getMonthlyDataUseCase: GetMonthlyDataUseCase(context.read<PerformanceRepository>()),
+              saveMonthlyDataUseCase: SaveMonthlyDataUseCase(context.read<PerformanceRepository>()),
+            )..add(LoadMonthlyData(month, year)),
+            child: MonthlyDataScreen(month: month, year: year),
+          ),
         );
        case shareThemeSelectorRoute:
         final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;

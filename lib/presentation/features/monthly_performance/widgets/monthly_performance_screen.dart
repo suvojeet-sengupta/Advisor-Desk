@@ -71,10 +71,10 @@ class MonthlyPerformanceScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.pushNamed(
                           context,
-                          AppRouter.metricDetailsRoute,
+                          AppRouter.monthlyDataRoute,
                           arguments: {
-                            'metricType': MetricType.totalCalls, // Non-billable calls are part of total calls details
-                            'summary': summary,
+                            'month': summary.month,
+                            'year': summary.year,
                           },
                         );
                       },

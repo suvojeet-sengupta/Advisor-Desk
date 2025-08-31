@@ -7,6 +7,7 @@ import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart'; // Import CQSummary
+import 'package:advisor_desk/domain/entities/monthly_data.dart';
 import 'dart:io';
 
 abstract class PerformanceRepository {
@@ -14,7 +15,6 @@ abstract class PerformanceRepository {
   Future<List<DailyEntry>> getAllEntries();
   Future<List<DailyEntry>> getEntriesForMonth(int month, int year);
   Future<DailyEntry?> getEntryForDate(DateTime date);
-  Future<DailyEntry?> getLatestNonBillableCallsEntry();
   Future<int> addEntry(DailyEntry entry);
   Future<int> updateEntry(DailyEntry entry);
   Future<int> deleteEntry(int id);
@@ -37,6 +37,10 @@ abstract class PerformanceRepository {
   Future<List<CQEntry>> getCQEntriesForMonth(int month, int year);
   Future<CQEntry?> getCQEntryForDate(DateTime date);
   Future<int> updateCQEntry(CQEntry entry);
+
+  // Monthly Data methods
+  Future<void> saveMonthlyData(MonthlyData monthlyData);
+  Future<MonthlyData?> getMonthlyData(int month, int year);
   
   
   Future<List<int>> generateMonthlyReportPdf(MonthlySummary summary); // Deprecated

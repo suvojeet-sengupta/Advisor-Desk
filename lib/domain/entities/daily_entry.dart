@@ -7,7 +7,6 @@ class DailyEntry extends Equatable {
   final int loginMinutes;
   final int loginSeconds;
   final int callCount;
-  final int nonBillableCalls;
 
   const DailyEntry({
     this.id,
@@ -16,7 +15,6 @@ class DailyEntry extends Equatable {
     required this.loginMinutes,
     required this.loginSeconds,
     required this.callCount,
-    this.nonBillableCalls = 0,
   });
 
   // Total login time in seconds
@@ -42,7 +40,6 @@ class DailyEntry extends Equatable {
     int? loginMinutes,
     int? loginSeconds,
     int? callCount,
-    int? nonBillableCalls,
   }) {
     return DailyEntry(
       id: id ?? this.id,
@@ -51,7 +48,6 @@ class DailyEntry extends Equatable {
       loginMinutes: loginMinutes ?? this.loginMinutes,
       loginSeconds: loginSeconds ?? this.loginSeconds,
       callCount: callCount ?? this.callCount,
-      nonBillableCalls: nonBillableCalls ?? this.nonBillableCalls,
     );
   }
 
@@ -64,7 +60,6 @@ class DailyEntry extends Equatable {
       'login_minutes': loginMinutes,
       'login_seconds': loginSeconds,
       'call_count': callCount,
-      'non_billable_calls': nonBillableCalls,
     };
   }
 
@@ -77,10 +72,9 @@ class DailyEntry extends Equatable {
       loginMinutes: map['login_minutes'],
       loginSeconds: map['login_seconds'],
       callCount: map['call_count'],
-      nonBillableCalls: map['non_billable_calls'] ?? 0,
     );
   }
 
   @override
-  List<Object?> get props => [id, date, loginHours, loginMinutes, loginSeconds, callCount, nonBillableCalls];
+  List<Object?> get props => [id, date, loginHours, loginMinutes, loginSeconds, callCount];
 }

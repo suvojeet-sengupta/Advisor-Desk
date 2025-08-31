@@ -11,6 +11,7 @@ class MonthlySummary extends Equatable {
   final CSATSummary? csatSummary;
   final CQSummary? cqSummary; // Add CQSummary field
   final int loginDays;
+  final int nonBillableCalls;
   
   const MonthlySummary({
     required this.month,
@@ -19,6 +20,7 @@ class MonthlySummary extends Equatable {
     this.csatSummary,
     this.cqSummary, // Make it optional for now, will be populated later
     required this.loginDays,
+    this.nonBillableCalls = 0,
   });
   
   // Total login hours for the month
@@ -35,8 +37,7 @@ class MonthlySummary extends Equatable {
 
   // Total non-billable calls for the month
   int get totalNonBillableCalls {
-    if (entries.isEmpty) return 0;
-    return entries.fold(0, (sum, entry) => sum + entry.nonBillableCalls);
+    return nonBillableCalls;
   }
 
   // Total billable calls for the month
@@ -138,6 +139,6 @@ class MonthlySummary extends Equatable {
   }
   
   @override
-  List<Object?> get props => [month, year, entries, csatSummary, cqSummary];
+  List<Object?> get props => [month, year, entries, csatSummary, cqSummary, nonBillableCalls];
 }
 

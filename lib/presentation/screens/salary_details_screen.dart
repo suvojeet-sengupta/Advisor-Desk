@@ -82,18 +82,26 @@ class SalaryDetailsScreen extends StatelessWidget {
           children: [
             _buildSalaryDetailRow(
               context,
-              'Basic Salary',
-              currencyFormat.format(summary.basicSalary),
+              'Base Salary',
+              currencyFormat.format(summary.salaryBreakdown['Base Salary'] ?? 0.0),
               Icons.account_balance_wallet,
               Theme.of(context).colorScheme.secondary,
             ),
             const Divider(),
             _buildSalaryDetailRow(
               context,
-              'Incentive',
-              currencyFormat.format(summary.incentive),
+              'Bonus Amount',
+              currencyFormat.format(summary.salaryBreakdown['Bonus Amount'] ?? 0.0),
               Icons.star,
               Colors.amber,
+            ),
+            const Divider(),
+            _buildSalaryDetailRow(
+              context,
+              'CSAT Bonus',
+              currencyFormat.format(summary.salaryBreakdown['CSAT Bonus'] ?? 0.0),
+              Icons.emoji_events,
+              Colors.green,
             ),
           ],
         ),
@@ -102,19 +110,39 @@ class SalaryDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildDeductionsCard(BuildContext context, NumberFormat currencyFormat) {
-    // Assuming there are no deductions in the summary for now.
-    // If deductions are added in the future, they can be displayed here.
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          'No deductions for this month.',
-          style: Theme.of(context).textTheme.bodyLarge,
+    final tdsDeduction = summary.salaryBreakdown['TDS Deduction'] ?? 0.0;
+    if (tdsDeduction > 0) {
+      return Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildSalaryDetailRow(
+                context,
+                'TDS Deduction',
+                currencyFormat.format(tdsDeduction),
+                Icons.money_off,
+                Colors.red,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'No deductions for this month.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildSalaryDetailRow(BuildContext context, String title, String value, IconData icon, Color iconColor) {

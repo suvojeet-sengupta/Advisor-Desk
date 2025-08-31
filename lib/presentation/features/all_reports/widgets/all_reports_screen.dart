@@ -172,7 +172,7 @@ class AllReportsView extends StatelessWidget {
     return InkWell(
       onTap: () async { // Made onTap async
         final startDate = DateTime(summary.year, summary.month, 1);
-        final endDate = DateTime(summary.year, summary.month + 1, 0); // Last day of the month
+        final endDate = DateTime(summary.year, summary.month + 1, 1).subtract(const Duration(microseconds: 1)); // End of the last day
 
         // Fetch ReportSummary for the selected date range
         final reportSummary = await context.read<PerformanceRepository>().getReportSummary(startDate, endDate);

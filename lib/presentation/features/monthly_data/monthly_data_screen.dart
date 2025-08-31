@@ -59,8 +59,11 @@ class _MonthlyDataScreenState extends State<MonthlyDataScreen> {
                   children: [
                     CustomFormField(
                       controller: _nonBillableCallsController,
-                      labelText: 'Non-Billable Calls',
+                      label: 'Non-Billable Calls',
+                      hintText: 'Enter non-billable calls',
+                      icon: Icons.phone_disabled,
                       keyboardType: TextInputType.number,
+                      onChanged: (value) {},
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a value';

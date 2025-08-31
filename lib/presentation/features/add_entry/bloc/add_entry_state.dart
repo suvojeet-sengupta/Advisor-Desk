@@ -10,7 +10,6 @@ class AddEntryState extends Equatable {
   final int loginMinutes;
   final int loginSeconds;
   final int callCount;
-  final int nonBillableCalls;
   final DailyEntry? existingEntry;
   final String? errorMessage;
   final bool isDelete; // नया फ्लैग
@@ -22,7 +21,6 @@ class AddEntryState extends Equatable {
     this.loginMinutes = 0,
     this.loginSeconds = 0,
     this.callCount = 0,
-    this.nonBillableCalls = 0,
     this.existingEntry,
     this.errorMessage,
     this.isDelete = false, // डिफ़ॉल्ट वैल्यू
@@ -41,7 +39,6 @@ class AddEntryState extends Equatable {
     int? loginMinutes,
     int? loginSeconds,
     int? callCount,
-    int? nonBillableCalls,
     DailyEntry? existingEntry,
     String? errorMessage,
     bool? isDelete,
@@ -53,7 +50,6 @@ class AddEntryState extends Equatable {
       loginMinutes: loginMinutes ?? this.loginMinutes,
       loginSeconds: loginSeconds ?? this.loginSeconds,
       callCount: callCount ?? this.callCount,
-      nonBillableCalls: nonBillableCalls ?? this.nonBillableCalls,
       existingEntry: existingEntry ?? this.existingEntry,
       errorMessage: errorMessage,
       isDelete: isDelete ?? this.isDelete,
@@ -68,8 +64,6 @@ class AddEntryState extends Equatable {
         loginSeconds >= 0 &&
         loginSeconds < 60 &&
         callCount >= 0 &&
-        nonBillableCalls >= 0 &&
-        callCount >= nonBillableCalls &&
         (loginHours > 0 || loginMinutes > 0 || loginSeconds > 0 || callCount > 0);
   }
 
@@ -83,7 +77,6 @@ class AddEntryState extends Equatable {
       loginMinutes: loginMinutes,
       loginSeconds: loginSeconds,
       callCount: callCount,
-      nonBillableCalls: nonBillableCalls,
     );
   }
 
@@ -95,7 +88,6 @@ class AddEntryState extends Equatable {
         loginMinutes,
         loginSeconds,
         callCount,
-        nonBillableCalls,
         existingEntry,
         errorMessage,
         isDelete,

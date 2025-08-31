@@ -367,19 +367,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           child: SingleChildScrollView(
             child: Column(
               children: [
-                _buildFabMenuItem(
-                  context,
-                  icon: Icons.phone_disabled,
-                  label: 'Non-billable Calls',
-                  onPressed: () {
-                    setState(() {
-                      _isFabMenuOpen = false;
-                      _fabAnimationController.reverse();
-                    });
-                    Navigator.pushNamed(context, AppRouter.addNonBillableCallsRoute);
-                  },
-                ),
-                const SizedBox(height: 16),
+                
                 _buildFabMenuItem(
                   context,
                   icon: Icons.work_outline,

@@ -31,15 +31,9 @@ class ReportSummary extends Equatable {
     return entries.fold(0, (sum, entry) => sum + entry.callCount);
   }
 
-  // Total non-billable calls for the period
-  int get totalNonBillableCalls {
-    if (entries.isEmpty) return 0;
-    return entries.fold(0, (sum, entry) => sum + entry.nonBillableCalls);
-  }
-
   // Total billable calls for the period
   int get billableCalls {
-    return totalCalls - totalNonBillableCalls;
+    return totalCalls;
   }
 
   // Average daily login hours
@@ -104,8 +98,6 @@ class ReportSummary extends Equatable {
   Map<String, double> get salaryBreakdown {
     return {
       'Total Calls': totalCalls.toDouble(),
-      'Non-billable Calls': totalNonBillableCalls.toDouble(),
-      'Billable Calls': billableCalls.toDouble(),
       'Base Salary': baseSalary,
       'Bonus Amount': bonusAmount,
       'CSAT Bonus': csatBonus,

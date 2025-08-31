@@ -190,7 +190,6 @@ class MonthlyGoalsSection extends StatelessWidget {
       loginHours: goalsState.targetHours,
       loginMinutes: 0,
       loginSeconds: 0,
-      nonBillableCalls: currentSummary.totalNonBillableCalls, // Assuming non-billable calls remain the same
     );
 
     return MonthlySummary(

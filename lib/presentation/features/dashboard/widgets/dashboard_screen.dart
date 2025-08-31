@@ -63,36 +63,17 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class DashboardView extends StatefulWidget {
-  const DashboardView({super.key});
-
-  @override
-  State<DashboardView> createState() => _DashboardViewState();
-}
-
-class _DashboardViewState extends State<DashboardView> with TickerProviderStateMixin {
+class _DashboardViewState extends State<DashboardView> {
   final InAppReview _inAppReview = InAppReview.instance;
   final UsageTrackingService _usageTrackingService = UsageTrackingService();
-  bool _isFabMenuOpen = false;
-  late AnimationController _fabAnimationController;
 
   @override
   void initState() {
     super.initState();
-    _fabAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 75),
-    );
     _checkAndRequestReview();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkVersionAndShowChangelog();
     });
-  }
-
-  @override
-  void dispose() {
-    _fabAnimationController.dispose();
-    super.dispose();
   }
 
   Future<void> _checkAndRequestReview() async {
@@ -209,131 +190,128 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          BlocBuilder<DashboardBloc, DashboardState>(
-            builder: (context, dashboardState) {
-              if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
-                return const DashboardShimmer();
-              }
+      body: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, dashboardState) {
+          if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
+            return const DashboardShimmer();
+          }
 
-              if (dashboardState.status == DashboardStatus.error) {
-                return EmptyStateWidget(
-                  message: dashboardState.errorMessage ?? 'An unknown error occurred.',
-                  illustrationPath: 'assets/images/error.svg',
-                  onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-                );
-              }
+          if (dashboardState.status == DashboardStatus.error) {
+            return EmptyStateWidget(
+              message: dashboardState.errorMessage ?? 'An unknown error occurred.',
+              illustrationPath: 'assets/images/error.svg',
+              onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
+            );
+          }
 
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Row(
                       children: [
-                        Text(
-                          dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
-                          style: Theme.of(context).textTheme.headlineSmall,
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed: () {
+                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                            final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
+                            context.read<DashboardBloc>().add(
+                              LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
+                            );
+                          },
                         ),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.chevron_left),
-                              onPressed: () {
-                                final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
-                                context.read<DashboardBloc>().add(
-                                  LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.chevron_right),
-                              onPressed: () {
-                                final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
-                                context.read<DashboardBloc>().add(
-                                  LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
-                                );
-                              },
-                            ),
-                          ],
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed: () {
+                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                            final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
+                            context.read<DashboardBloc>().add(
+                              LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
+                            );
+                          },
                         ),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
-                        ? EmptyStateWidget(
-                            message: 'No entries found for this month.\nTap the + button to add your first entry!',
-                            illustrationPath: 'assets/images/no_data.svg',
-                            onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-                          )
-                        : RefreshIndicator(
-                            onRefresh: () async {
-                              context.read<DashboardBloc>().add(RefreshDashboard());
-                              context.read<GoalsBloc>().add(LoadGoals());
-                            },
-                            color: Theme.of(context).colorScheme.primary,
-                            child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
-                              builder: (context, customizationState) {
-                                return CustomScrollView(
-                                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                                  slivers: [
-                                    SliverToBoxAdapter(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                        child: BlocBuilder<ProfileCubit, ProfileState>(
-                                          builder: (context, state) {
-                                            final profile = state.profile;
-                                            final showName = profile.name != null;
-                                            return Text(
-                                              showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
-                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    const SliverToBoxAdapter(child: IndependenceDayBanner()),
-                                    const SliverToBoxAdapter(child: const SizedBox(height: 16)),
-                                    ...customizationState.visibleSections.map((section) {
-                                      return _buildDashboardSection(
-                                        context,
-                                        section,
-                                        dashboardState.monthlySummary!,
-                                        dashboardState,
-                                      );
-                                    }).toList(),
-                                    const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                  ),
-                ],
-              );
-            },
-          ),
-          if (_isFabMenuOpen)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isFabMenuOpen = false;
-                  _fabAnimationController.reverse();
-                });
-              },
-              child: Container(
-                color: Colors.black.withOpacity(0.5),
+                  ],
+                ),
               ),
-            ),
-        ],
+              Expanded(
+                child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
+                    ? EmptyStateWidget(
+                        message: 'No entries found for this month.\nTap the + button to add your first entry!',
+                        illustrationPath: 'assets/images/no_data.svg',
+                        onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<DashboardBloc>().add(RefreshDashboard());
+                          context.read<GoalsBloc>().add(LoadGoals());
+                        },
+                        color: Theme.of(context).colorScheme.primary,
+                        child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
+                          builder: (context, customizationState) {
+                            return CustomScrollView(
+                              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    child: BlocBuilder<ProfileCubit, ProfileState>(
+                                      builder: (context, state) {
+                                        final profile = state.profile;
+                                        final showName = profile.name != null;
+                                        return Text(
+                                          showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
+                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                const SliverToBoxAdapter(child: IndependenceDayBanner()),
+                                const SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                                ...customizationState.visibleSections.map((section) {
+                                  return _buildDashboardSection(
+                                    context,
+                                    section,
+                                    dashboardState.monthlySummary!,
+                                    dashboardState,
+                                  );
+                                }).toList(),
+                                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+              ),
+            ],
+          );
+        },
       ),
-      floatingActionButton: _buildFabMenu(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.pushNamed(context, AppRouter.addEntryRoute, arguments: null);
+          if (result == true) {
+            context.read<DashboardBloc>().add(RefreshDashboard());
+            context.read<GoalsBloc>().add(LoadGoals());
+          }
+        },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
+      ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
@@ -352,83 +330,6 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
               break;
           }
         },
-      ),
-    );
-  }
-
-  Widget _buildFabMenu(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: _isFabMenuOpen ? 60 : 0,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                
-                _buildFabMenuItem(
-                  context,
-                  icon: Icons.work_outline,
-                  label: 'Daily Entry',
-                  onPressed: () async {
-                    setState(() {
-                      _isFabMenuOpen = false;
-                      _fabAnimationController.reverse();
-                    });
-                    final result = await Navigator.pushNamed(context, AppRouter.addEntryRoute, arguments: null);
-                    if (result == true) {
-                      context.read<DashboardBloc>().add(RefreshDashboard());
-                      context.read<GoalsBloc>().add(LoadGoals());
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _isFabMenuOpen = !_isFabMenuOpen;
-              if (_isFabMenuOpen) {
-                _fabAnimationController.forward();
-              } else {
-                _fabAnimationController.reverse();
-              }
-            });
-          },
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Icon(
-            Icons.add,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFabMenuItem(BuildContext context, {required IconData icon, required String label, required VoidCallback onPressed}) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-            ),
-          ),
-          const SizedBox(width: 12),
-          FloatingActionButton(
-            onPressed: null, // The GestureDetector handles the tap
-            mini: true,
-            child: Icon(icon),
-          ),
-        ],
       ),
     );
   }

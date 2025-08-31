@@ -14,7 +14,7 @@ class SalaryDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Salary Details for ${summary.formattedMonthYear}',
+          'Salary Details',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),

@@ -75,11 +75,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _navigateToMonthlyPerformance(BuildContext context) {
     final dashboardState = context.read<DashboardBloc>().state;
-    if (dashboardState.status == DashboardStatus.loaded && dashboardState.monthlySummary != null) {
+    if (dashboardState.monthlySummary != null) {
       Navigator.pushNamed(
         context,
         AppRouter.monthlyPerformanceRoute,
         arguments: dashboardState.monthlySummary,
+      );
+    } else {
+      // If monthlySummary is not loaded, navigate to MonthlyDataScreen to load it
+      Navigator.pushNamed(
+        context,
+        AppRouter.monthlyDataRoute,
+        arguments: {
+          'month': DateTime.now().month,
+          'year': DateTime.now().year,
+        },
       );
     }
   }

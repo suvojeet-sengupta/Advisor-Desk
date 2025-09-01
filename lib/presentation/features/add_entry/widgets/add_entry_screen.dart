@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
@@ -61,6 +62,7 @@ class AddEntryView extends StatefulWidget {
 }
 
 class _AddEntryViewState extends State<AddEntryView> {
+  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _loginHoursController;
   late final TextEditingController _loginMinutesController;
   late final TextEditingController _loginSecondsController;
@@ -247,7 +249,9 @@ class _AddEntryViewState extends State<AddEntryView> {
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: Form(
+            key: _formKey,
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date Section
@@ -294,6 +298,20 @@ class _AddEntryViewState extends State<AddEntryView> {
                       icon: Icons.timer,
                       controller: _loginHoursController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(2),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Enter hours';
+                        }
+                        final hours = int.tryParse(value);
+                        if (hours == null || hours < 0 || hours > 23) {
+                          return '0-23';
+                        }
+                        return null;
+                      },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
                             LoginHoursChanged(hours: int.tryParse(value) ?? 0),
                           ),
@@ -307,6 +325,20 @@ class _AddEntryViewState extends State<AddEntryView> {
                       icon: Icons.timer,
                       controller: _loginMinutesController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(2),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Enter mins';
+                        }
+                        final mins = int.tryParse(value);
+                        if (mins == null || mins < 0 || mins > 59) {
+                          return '0-59';
+                        }
+                        return null;
+                      },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
                             LoginMinutesChanged(minutes: int.tryParse(value) ?? 0),
                           ),
@@ -320,6 +352,20 @@ class _AddEntryViewState extends State<AddEntryView> {
                       icon: Icons.timer,
                       controller: _loginSecondsController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(2),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Enter secs';
+                        }
+                        final secs = int.tryParse(value);
+                        if (secs == null || secs < 0 || secs > 59) {
+                          return '0-59';
+                        }
+                        return null;
+                      },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
                             LoginSecondsChanged(seconds: int.tryParse(value) ?? 0),
                           ),
@@ -350,8 +396,10 @@ class _AddEntryViewState extends State<AddEntryView> {
                 child: CustomButton(
                   text: state.isUpdate ? 'Update Entry' : 'Add Entry',
                   onPressed: () {
-                          context.read<AddEntryBloc>().add(const SubmitEntry());
-                        },
+                    if (_formKey.currentState!.validate()) {
+                      context.read<AddEntryBloc>().add(const SubmitEntry());
+                    }
+                  },
                   icon: state.isUpdate ? Icons.update : Icons.add,
                 ),
               ),
@@ -368,7 +416,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                   ),
                 ),
               ]
-            ],
+            ),
           ),
         );
       },

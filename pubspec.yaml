@@ -33,6 +33,7 @@ dependencies:
   excel: ^2.1.0
   in_app_update: ^4.2.3 # Add this line for in-app updates
   google_mobile_ads: ^6.0.0
+  http: ^1.5.0
   
   
   image_picker: ^1.2.0

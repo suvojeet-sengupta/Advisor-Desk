@@ -236,7 +236,8 @@ class _AddEntryViewState extends State<AddEntryView> {
             ],
           ),
            bottomNavigationBar: const BannerAdWidget(),
-        ),),
+        ),
+    ),
     );
   }
 
@@ -416,7 +417,8 @@ class _AddEntryViewState extends State<AddEntryView> {
                   ),
                 ),
               ]
-            ),
+            ],
+          ),
           ),
         );
       },
@@ -491,5 +493,3 @@ class _AddEntryViewState extends State<AddEntryView> {
     );
   }
 }
-
-

@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 
 class CustomFormField extends StatelessWidget {
-  final String label;
-  final String hintText;
-  final IconData icon;
+  final String? label;
+  final String? hintText;
+  final IconData? icon;
   final TextEditingController? controller;
   final String? initialValue;
   final TextInputType keyboardType;
-  final Function(String) onChanged;
+  final Function(String)? onChanged;
   final String? suffixText;
-  final String? Function(String?)? validator; // Added validator
+  final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters; // Added inputFormatters
 
   const CustomFormField({
     Key? key,
-    required this.label,
-    required this.hintText,
-    required this.icon,
+    this.label,
+    this.hintText,
+    this.icon,
     this.controller,
     this.initialValue,
     this.keyboardType = TextInputType.text,
-    required this.onChanged,
+    this.onChanged,
     this.suffixText,
-    this.validator, // Added validator
+    this.validator,
+    this.inputFormatters, // Added inputFormatters
   }) : super(key: key);
 
   @override
@@ -30,18 +33,20 @@ class CustomFormField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
+        if (label != null)
+          Text(
+            label!,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        if (label != null) const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           initialValue: initialValue,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters, // Added inputFormatters
           decoration: InputDecoration(
             hintText: hintText,
-            prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
+            prefixIcon: icon != null ? Icon(icon, color: Theme.of(context).colorScheme.primary) : null,
             suffixText: suffixText,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -57,7 +62,7 @@ class CustomFormField extends StatelessWidget {
             ),
           ),
           onChanged: onChanged,
-          validator: validator, // Added validator
+          validator: validator,
         ),
       ],
     );

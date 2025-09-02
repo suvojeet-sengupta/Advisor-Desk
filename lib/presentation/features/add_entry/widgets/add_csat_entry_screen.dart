@@ -71,7 +71,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
               backgroundColor: AppColors.accentGreen,
             ),
           );
-          Navigator.of(context).pop(); // Go back to the previous screen
+          Navigator.of(context).pop(true); // Go back to the previous screen
         } else if (state.status == AddCSATEntryStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

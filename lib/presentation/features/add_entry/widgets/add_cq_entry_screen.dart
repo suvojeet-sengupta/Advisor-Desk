@@ -73,7 +73,7 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
         );
         bloc.add(SubmitCQEntry(entry: entry, isUpdate: formData.entry != null));
     }
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(true);
   }
 
   @override

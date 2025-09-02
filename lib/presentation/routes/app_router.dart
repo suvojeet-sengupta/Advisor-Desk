@@ -1,4 +1,6 @@
 
+import 'package:advisor_desk/presentation/features/add_entry/widgets/add_csat_entry_screen.dart';
+import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_data_event.dart';
 import 'package:advisor_desk/presentation/features/monthly_data/monthly_data_screen.dart';
 import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_data_bloc.dart';
@@ -55,7 +57,7 @@ class AppRouter {
   // Route names
   static const String dashboardRoute = '/';
   static const String addEntryRoute = '/add-entry';
-  
+  static const String addCSATEntryRoute = '/add-csat-entry';
   static const String addCQEntryRoute = '/add-cq-entry';
   static const String monthlyPerformanceRoute = '/monthly-performance';
   static const String monthlyDataRoute = '/monthly-data';
@@ -98,6 +100,11 @@ class AppRouter {
         final CQEntry? entryToEdit = settings.arguments as CQEntry?;
         return MaterialPageRoute(
           builder: (_) => AddCQEntryScreen(entryToEdit: entryToEdit),
+        );
+      case addCSATEntryRoute:
+        final CSATEntry? entryToEdit = settings.arguments as CSATEntry?;
+        return MaterialPageRoute(
+          builder: (_) => AddCSATEntryScreen(entryToEdit: entryToEdit),
         );
       case monthlyPerformanceRoute:
         final MonthlySummary summary = settings.arguments as MonthlySummary;

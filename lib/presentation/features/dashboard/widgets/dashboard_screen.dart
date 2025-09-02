@@ -357,89 +357,19 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   }
 
   Widget _buildFabMenu(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: _isFabMenuOpen ? 180 : 0,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildFabMenuItem(
-                  context,
-                  icon: Icons.assessment,
-                  label: 'CQ Entry',
-                  onPressed: () async {
-                    setState(() {
-                      _isFabMenuOpen = false;
-                      _fabAnimationController.reverse();
-                    });
-                    final result = await Navigator.pushNamed(context, AppRouter.addCQEntryRoute);
-                    if (result == true) {
-                      context.read<DashboardBloc>().add(RefreshDashboard());
-                      context.read<GoalsBloc>().add(LoadGoals());
-                    }
-                  },
-                ),
-                const SizedBox(height: 8),
-                _buildFabMenuItem(
-                  context,
-                  icon: Icons.sentiment_satisfied_alt,
-                  label: 'CSAT Entry',
-                  onPressed: () async {
-                    setState(() {
-                      _isFabMenuOpen = false;
-                      _fabAnimationController.reverse();
-                    });
-                    final result = await Navigator.pushNamed(context, AppRouter.addCSATEntryRoute);
-                    if (result == true) {
-                      context.read<DashboardBloc>().add(RefreshDashboard());
-                      context.read<GoalsBloc>().add(LoadGoals());
-                    }
-                  },
-                ),
-                const SizedBox(height: 8),
-                _buildFabMenuItem(
-                  context,
-                  icon: Icons.work_outline,
-                  label: 'Daily Entry',
-                  onPressed: () async {
-                    setState(() {
-                      _isFabMenuOpen = false;
-                      _fabAnimationController.reverse();
-                    });
-                    final result = await Navigator.pushNamed(context, AppRouter.addEntryRoute, arguments: null);
-                    if (result == true) {
-                      context.read<DashboardBloc>().add(RefreshDashboard());
-                      context.read<GoalsBloc>().add(LoadGoals());
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _isFabMenuOpen = !_isFabMenuOpen;
-              if (_isFabMenuOpen) {
-                _fabAnimationController.forward();
-              } else {
-                _fabAnimationController.reverse();
-              }
-            });
-          },
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Icon(
-            Icons.add,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
-      ],
+    return FloatingActionButton(
+      onPressed: () async {
+        final result = await Navigator.pushNamed(context, AppRouter.addEntryRoute, arguments: null);
+        if (result == true) {
+          context.read<DashboardBloc>().add(RefreshDashboard());
+          context.read<GoalsBloc>().add(LoadGoals());
+        }
+      },
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      child: Icon(
+        Icons.add,
+        color: Theme.of(context).colorScheme.onPrimary,
+      ),
     );
   }
 

@@ -22,7 +22,7 @@ class MetricDetailsScreen extends StatelessWidget {
       case MetricType.totalCalls:
         return 'Total Calls Details';
       case MetricType.totalLoginHours:
-        return 'Total Login Hours Details';
+        return 'Login Hours Details';
       case MetricType.avgLoginHours:
         return 'Average Login Hours Details';
       case MetricType.avgCalls:
@@ -53,17 +53,11 @@ class MetricDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildDetailsContent(BuildContext context) {
-    final theme = Theme.of(context);
     switch (metricType) {
       case MetricType.totalCalls:
         return _buildTotalCallsDetails(context);
       case MetricType.totalLoginHours:
-        return _buildCalculationDetails(
-          context,
-          'Total Login Hours',
-          '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
-          _getTotalLoginHoursCalculation(),
-        );
+        return _buildTotalLoginHoursDetails(context);
       case MetricType.avgLoginHours:
         return _buildCalculationDetails(
           context,
@@ -160,6 +154,69 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildTotalLoginHoursDetails(BuildContext context) {
+    if (summary.entries.isEmpty) {
+      return const CustomCard(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('No daily entries found for this month.'),
+          ),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomCard(
+          child: _buildSummaryRow(
+            context,
+            'Total Login Hours',
+            '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
+            Theme.of(context).colorScheme.tertiary,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Daily Login Entries',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: summary.entries.length,
+          itemBuilder: (context, index) {
+            final entry = summary.entries[index];
+            return CustomCard(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
+                  child: Text(
+                    DateFormat('dd').format(entry.date),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.tertiary,
+                    ),
+                  ),
+                ),
+                title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
+                trailing: Text(
+                  '${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildCalculationDetails(
       BuildContext context, String title, String value, String calculation) {
     return CustomCard(
@@ -206,22 +263,6 @@ class MetricDetailsScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getTotalLoginHoursCalculation() {
-    if (summary.entries.isEmpty) {
-      return 'No entries to calculate total login hours.';
-    }
-    String calculation = '''Sum of login hours for all daily entries:
-''';
-    for (var entry in summary.entries) {
-      calculation +=
-          '''  ${DateFormat('MMM dd').format(entry.date)}: ${entry.formattedLoginTime} (${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs)
-''';
-    }
-    calculation += '''
-Total: ${summary.totalLoginHours.toStringAsFixed(2)} Hrs''';
-    return calculation;
   }
 
   String _getAverageLoginHoursCalculation() {

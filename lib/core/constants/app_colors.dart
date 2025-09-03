@@ -17,6 +17,13 @@ class AppColors {
   static const Color accentGreen = Color(0xFF4CAF50);
   static const Color accentRed = Color(0xFFF44336);
   static const Color accentPurple = Color(0xFF9C27B0);
+
+  // Login screen colors
+  static const Color present = Color(0xFF4CAF50);
+  static const Color absent = Color(0xFFF44336);
+  static const Color weekOff = Color(0xFF2196F3);
+  static const Color personalLeave = Color(0xFFFF9800);
+  static const Color futureDay = Color(0xFF606060);
   
   // Chart colors
   static const Color chartLine = accentBlue;

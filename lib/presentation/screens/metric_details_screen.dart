@@ -30,6 +30,13 @@ class MetricDetailsScreen extends StatelessWidget {
     }
   }
 
+  String _formatDuration(double totalHours) {
+    final int hours = totalHours.truncate();
+    final int minutes = ((totalHours - hours) * 60).truncate();
+    final int seconds = ((((totalHours - hours) * 60) - minutes) * 60).truncate();
+    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,13 +159,6 @@ class MetricDetailsScreen extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatDuration(double totalHours) {
-    final int hours = totalHours.truncate();
-    final int minutes = ((totalHours - hours) * 60).truncate();
-    final int seconds = ((((totalHours - hours) * 60) - minutes) * 60).truncate();
-    return '${hours}'.padLeft(2, '0')}:${'${minutes}'.padLeft(2, '0')}:${'${seconds}'.padLeft(2, '0')}';
   }
 
   Widget _buildTotalLoginHoursDetails(BuildContext context) {

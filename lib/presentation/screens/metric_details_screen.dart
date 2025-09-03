@@ -179,8 +179,7 @@ class MetricDetailsScreen extends StatelessWidget {
           child: _buildSummaryRow(
             context,
             'Total Login Hours',
-            '${summary.totalLoginHours.toStringAsFixed(2)} Hrs (${_formatDuration(summary.totalLoginHours)})
-',
+            '${summary.totalLoginHours.toStringAsFixed(2)} Hrs (${_formatDuration(summary.totalLoginHours)})',
             Theme.of(context).colorScheme.tertiary,
           ),
         ),

@@ -154,6 +154,13 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
+  String _formatDuration(double totalHours) {
+    final int hours = totalHours.truncate();
+    final int minutes = ((totalHours - hours) * 60).truncate();
+    final int seconds = ((((totalHours - hours) * 60) - minutes) * 60).truncate();
+    return '${hours}'.padLeft(2, '0')}:${'${minutes}'.padLeft(2, '0')}:${'${seconds}'.padLeft(2, '0')}';
+  }
+
   Widget _buildTotalLoginHoursDetails(BuildContext context) {
     if (summary.entries.isEmpty) {
       return const CustomCard(
@@ -172,7 +179,8 @@ class MetricDetailsScreen extends StatelessWidget {
           child: _buildSummaryRow(
             context,
             'Total Login Hours',
-            '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
+            '${summary.totalLoginHours.toStringAsFixed(2)} Hrs (${_formatDuration(summary.totalLoginHours)})
+',
             Theme.of(context).colorScheme.tertiary,
           ),
         ),
@@ -202,12 +210,24 @@ class MetricDetailsScreen extends StatelessWidget {
                   ),
                 ),
                 title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
-                trailing: Text(
-                  '${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.tertiary,
-                      ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                    ),
+                    Text(
+                      entry.formattedLoginTime,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -253,12 +273,15 @@ class MetricDetailsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: Theme.of(context).textTheme.titleMedium),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: valueColor,
-                ),
+          Flexible(
+            child: Text(
+              value,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: valueColor,
+                  ),
+              textAlign: TextAlign.end,
+            ),
           ),
         ],
       ),

@@ -45,7 +45,7 @@ android {
     defaultConfig {
         applicationId "com.suvojeet.advisordesk"
         minSdk 21
-        targetSdk 35 // आप चाहें तो इसे भी 35 कर सकते हैं, पर जरूरी नहीं है
+        targetSdk 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

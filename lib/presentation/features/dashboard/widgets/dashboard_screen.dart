@@ -546,7 +546,6 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         return SliverToBoxAdapter(
           child: Column(
             children: [
-              const CustomDivider(),
               MonthlyGoalsSection(summary: summary),
             ],
           ),
@@ -555,7 +554,6 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         return SliverToBoxAdapter(
           child: Column(
             children: [
-              const CustomDivider(),
               SalarySection(summary: summary),
             ],
           ),
@@ -564,7 +562,6 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         return SliverToBoxAdapter(
           child: Column(
             children: [
-              const CustomDivider(),
               DailyEntriesSection(entries: summary.entries),
             ],
           ),

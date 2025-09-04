@@ -298,14 +298,26 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                     ),
                                     const SliverToBoxAdapter(child: IndependenceDayBanner()),
                                     const SliverToBoxAdapter(child: const SizedBox(height: 16)),
-                                    ...customizationState.visibleSections.map((section) {
-                                      return _buildDashboardSection(
-                                        context,
-                                        section,
-                                        dashboardState.monthlySummary!,
-                                        dashboardState,
-                                      );
-                                    }).toList(),
+                                    ...() {
+                                      final sections = customizationState.visibleSections;
+                                      final slivers = <Widget>[];
+                                      for (int i = 0; i < sections.length; i++) {
+                                        final section = sections[i];
+                                        slivers.add(
+                                          _buildDashboardSection(
+                                            context,
+                                            section,
+                                            dashboardState.monthlySummary!,
+                                            dashboardState,
+                                          ),
+                                        );
+
+                                        if (i < sections.length - 1) {
+                                          slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 24)));
+                                        }
+                                      }
+                                      return slivers;
+                                    }(),
                                     const SliverToBoxAdapter(child: SizedBox(height: 100)),
                                   ],
                                 );

@@ -9,8 +9,6 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dar
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_shimmer.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/monthly_goals_section.dart';
-import 'package:advisor_desk/presentation/features/dashboard/widgets/csat_performance_section.dart';
-import 'package:advisor_desk/presentation/features/dashboard/widgets/cq_performance_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
@@ -550,24 +548,6 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             children: [
               const CustomDivider(),
               MonthlyGoalsSection(summary: summary),
-            ],
-          ),
-        );
-      case DashboardSection.csatPerformance:
-        return SliverToBoxAdapter(
-          child: Column(
-            children: [
-              const CustomDivider(),
-              CSATPerformanceSection(csatSummary: dashboardState.csatSummary),
-            ],
-          ),
-        );
-      case DashboardSection.cqPerformance:
-        return SliverToBoxAdapter(
-          child: Column(
-            children: [
-              const CustomDivider(),
-              CQPerformanceSection(cqSummary: dashboardState.cqSummary),
             ],
           ),
         );

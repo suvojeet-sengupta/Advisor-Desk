@@ -8,8 +8,6 @@ class DashboardCustomization extends Equatable {
     this.visibleSections = const [
       DashboardSection.monthlySummary,
       DashboardSection.monthlyGoals,
-      DashboardSection.csatPerformance,
-      DashboardSection.cqPerformance,
       DashboardSection.salaryDetails,
       DashboardSection.dailyEntries,
     ],

@@ -18,8 +18,6 @@ enum AppColor {
 enum DashboardSection {
   monthlySummary,
   monthlyGoals,
-  csatPerformance,
-  cqPerformance,
   salaryDetails,
   dailyEntries,
   

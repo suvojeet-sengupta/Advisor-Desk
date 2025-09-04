@@ -14,10 +14,6 @@ class CustomizeDashboardScreen extends StatelessWidget {
         return 'Monthly Summary Cards';
       case DashboardSection.monthlyGoals:
         return 'Monthly Goals';
-      case DashboardSection.csatPerformance:
-        return 'CSAT Performance';
-      case DashboardSection.cqPerformance:
-        return 'CQ Performance';
       case DashboardSection.salaryDetails:
         return 'Salary Details';
       case DashboardSection.dailyEntries:

@@ -7,7 +7,7 @@ import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
-import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_shimmer.dart';
+import 'package:advisor_desk/presentation/common/widgets/skeleton_loader.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/monthly_goals_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -212,7 +212,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           BlocBuilder<DashboardBloc, DashboardState>(
             builder: (context, dashboardState) {
               if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
-                return const DashboardShimmer();
+                return const DashboardSkeletonLoader();
               }
 
               if (dashboardState.status == DashboardStatus.error) {

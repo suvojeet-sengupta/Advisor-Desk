@@ -16,6 +16,7 @@ class ChangelogDialog extends StatelessWidget {
             _buildListItem('Input Validation: Added checks for time fields to prevent errors.'),
             _buildListItem('Dashboard Auto-Refresh: Your dashboard now updates automatically after adding a new entry.'),
             _buildListItem('Clearer Login Hours: Login hours are now shown in a more readable format.'),
+            _buildListItem('Enhanced Animations: Added skeleton loading, hero animations, and micro-interactions for a more polished and engaging user experience.'),
             const SizedBox(height: 16),
             _buildSectionTitle(context, '✨ Improvements'),
             _buildListItem('Cleaner Dashboard: Enhanced the layout with better spacing and a cleaner look.'),

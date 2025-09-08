@@ -272,8 +272,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       darkTheme = AppTheme.getDarkTheme(darkDynamic);
                     } else {
                       // Use the selected predefined color for both light and dark themes
-                      lightTheme = AppTheme.getTheme(Brightness.light, themeState.color);
-                      darkTheme = AppTheme.getTheme(Brightness.dark, themeState.color);
+                      lightTheme = AppTheme.getTheme(AppThemeMode.light, themeState.color);
+                      darkTheme = AppTheme.getTheme(AppThemeMode.dark, themeState.color);
                     }
 
                     return MaterialApp(

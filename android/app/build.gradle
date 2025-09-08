@@ -52,32 +52,27 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('../key.properties').withReader { reader ->
-                def props = new Properties()
-                props.load(reader)
-                return file("../" + props['storeFile'])
-            }
-            storePassword rootProject.file('key.properties').withReader { reader ->
-                def props = new Properties()
-                props.load(reader)
-                return props['storePassword']
-            }
-            keyAlias rootProject.file('key.properties').withReader { reader ->
-                def props = new Properties()
-                props.load(reader)
-                return props['keyAlias']
-            }
-            keyPassword rootProject.file('key.properties').withReader { reader ->
-                def props = new Properties()
-                props.load(reader)
-                return props['keyPassword']
+            // Only configure signing if key.properties exists
+            def keyPropertiesFile = rootProject.file('key.properties')
+            if (keyPropertiesFile.exists()) {
+                def keyProperties = new Properties()
+                keyPropertiesFile.withReader { reader ->
+                    keyProperties.load(reader)
+                }
+                storeFile file("../" + keyProperties['storeFile'])
+                storePassword keyProperties['storePassword']
+                keyAlias keyProperties['keyAlias']
+                keyPassword keyProperties['keyPassword']
             }
         }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            // Only use signing config if key.properties exists
+            if (rootProject.file('key.properties').exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 

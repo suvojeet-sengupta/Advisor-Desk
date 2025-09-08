@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class AiInsightCard extends StatelessWidget {
   final AiInsight insight;
   final VoidCallback? onActionPressed;
+  final VoidCallback? onTap;
 
   const AiInsightCard({
     Key? key,
     required this.insight,
     this.onActionPressed,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -16,7 +18,6 @@ class AiInsightCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
@@ -32,53 +33,63 @@ class AiInsightCard extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.auto_awesome, // Sparkle icon for AI
-                color: theme.colorScheme.primary,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'AI Co-pilot',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                      ),
+                    Icon(
+                      Icons.auto_awesome, // Sparkle icon for AI
+                      color: theme.colorScheme.primary,
+                      size: 24,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      insight.message,
-                      style: theme.textTheme.bodyMedium,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'AI Co-pilot',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            insight.message,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          if (insight.buttonText != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: onActionPressed,
-                    child: Text(insight.buttonText!),
+                if (insight.buttonText != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: onActionPressed,
+                          child: Text(insight.buttonText!),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+              ],
             ),
-        ],
+          ),
+        ),
       ),
     );
   }

@@ -330,6 +330,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                             if (aiState is AiInsightGenerated) {
                                               return AiInsightCard(
                                                 insight: aiState.insight,
+                                                onTap: () => Navigator.pushNamed(context, AppRouter.aiCopilotRoute),
                                                 onActionPressed: () {
                                                   if (aiState.insight.navigationRoute == 'show_goals_dialog') {
                                                     _showEditGoalsDialog(context, context.read<GoalsBloc>().state.targetHours, context.read<GoalsBloc>().state.targetCalls);

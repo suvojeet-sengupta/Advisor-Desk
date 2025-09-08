@@ -48,6 +48,7 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bl
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 import 'package:advisor_desk/presentation/screens/app_lock_settings_screen.dart';
+import 'package:advisor_desk/presentation/screens/ai_copilot_screen.dart';
 
 
 import 'package:advisor_desk/core/constants/app_enums.dart';
@@ -228,6 +229,13 @@ class AppRouter {
           builder: (_) => Scaffold(
             body: Center(
               child: Text('No route defined for ${settings.name}'),
+            ),
+          ),
+        );
+    }
+  }
+}
+me}'),
             ),
           ),
         );

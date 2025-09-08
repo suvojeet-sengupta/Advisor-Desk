@@ -1,4 +1,3 @@
-
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_csat_entry_screen.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_data_event.dart';
@@ -83,6 +82,7 @@ class AppRouter {
   static const String salaryDetailsRoute = '/salary-details';
   static const String pinSetupRoute = '/pin-setup';
   static const String appLockSettingsRoute = '/app-lock-settings';
+  static const String aiCopilotRoute = '/ai-copilot';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -223,19 +223,16 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const AppLockSettingsScreen(),
         );
+      case AppRouter.aiCopilotRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AiCopilotScreen(),
+        );
       
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
               child: Text('No route defined for ${settings.name}'),
-            ),
-          ),
-        );
-    }
-  }
-}
-me}'),
             ),
           ),
         );

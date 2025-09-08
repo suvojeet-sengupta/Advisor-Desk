@@ -34,13 +34,14 @@ import 'package:advisor_desk/core/utils/authentication_service.dart';
 import 'package:advisor_desk/presentation/screens/lock_screen.dart';
 import 'package:advisor_desk/core/utils/ad_blocker_service.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
+import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/disable_ad_blocker_dialog.dart';
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {
-    return BouncingScrollPhysics();
+    return const BouncingScrollPhysics();
   }
 }
 
@@ -250,9 +251,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
             RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
             RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
-            
-            RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository), // New
+            RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository),
             RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
+            RepositoryProvider<AiInsightService>(create: (context) => AiInsightService()),
+            RepositoryProvider<NlpService>(create: (context) => NlpService()),
           ],
           child: MultiBlocProvider(
             providers: [
@@ -298,9 +300,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
         );
       },
-    );
-  }
-}     },
     );
   }
 }

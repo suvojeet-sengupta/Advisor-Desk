@@ -33,6 +33,7 @@ import 'package:advisor_desk/domain/repositories/leave_repository.dart';
 import 'package:advisor_desk/core/utils/authentication_service.dart';
 import 'package:advisor_desk/presentation/screens/lock_screen.dart';
 import 'package:advisor_desk/core/utils/ad_blocker_service.dart';
+import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/disable_ad_blocker_dialog.dart';
 
 // Custom ScrollBehavior for smoother scrolling
@@ -297,6 +298,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
         );
       },
+    );
+  }
+}     },
     );
   }
 }

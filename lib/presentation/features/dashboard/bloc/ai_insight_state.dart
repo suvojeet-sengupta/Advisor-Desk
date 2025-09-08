@@ -1,3 +1,4 @@
+import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class AiInsightState extends Equatable {
@@ -12,12 +13,12 @@ class AiInsightInitial extends AiInsightState {}
 class AiInsightLoading extends AiInsightState {}
 
 class AiInsightGenerated extends AiInsightState {
-  final String message;
+  final AiInsight insight;
 
-  const AiInsightGenerated(this.message);
+  const AiInsightGenerated(this.insight);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [insight];
 }
 
 class AiInsightError extends AiInsightState {

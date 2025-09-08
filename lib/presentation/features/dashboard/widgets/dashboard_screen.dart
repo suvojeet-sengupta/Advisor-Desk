@@ -658,4 +658,83 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       await prefs.setString('last_version', currentVersion);
     }
   }
+
+  void _showEditGoalsDialog(BuildContext context, int currentHours, int currentCalls) {
+    final theme = Theme.of(context);
+    final hoursController = TextEditingController(text: currentHours.toString());
+    final callsController = TextEditingController(text: currentCalls.toString());
+    final _formKey = GlobalKey<FormState>(); // Add a form key
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Set Monthly Goals'),
+          content: Form(
+            key: _formKey, // Assign the form key
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: hoursController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Target Login Hours (Max 570)',
+                    border: theme.inputDecorationTheme.border,
+                    enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                    fillColor: theme.inputDecorationTheme.fillColor,
+                    filled: theme.inputDecorationTheme.filled,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter target hours';
+                    }
+                    final hours = int.tryParse(value);
+                    if (hours == null) {
+                      return 'Please enter a valid number';
+                    }
+                    if (hours > 570) {
+                      return 'Hours cannot exceed 570';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: callsController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Target Call Count',
+                    border: theme.inputDecorationTheme.border,
+                    enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                    fillColor: theme.inputDecorationTheme.fillColor,
+                    filled: theme.inputDecorationTheme.filled,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) { // Validate the form
+                  final newHours = int.tryParse(hoursController.text) ?? currentHours;
+                  final newCalls = int.tryParse(callsController.text) ?? currentCalls;
+                  context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls));
+                  Navigator.pop(dialogContext);
+                }
+              },
+              child: const Text('Save'),
+            )
+          ],
+        );
+      },
+    );
+  }
 }

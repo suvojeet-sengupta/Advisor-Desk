@@ -1,11 +1,14 @@
+import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:flutter/material.dart';
 
 class AiInsightCard extends StatelessWidget {
-  final String message;
+  final AiInsight insight;
+  final VoidCallback? onActionPressed;
 
   const AiInsightCard({
     Key? key,
-    required this.message,
+    required this.insight,
+    this.onActionPressed,
   }) : super(key: key);
 
   @override
@@ -29,34 +32,52 @@ class AiInsightCard extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.auto_awesome, // Sparkle icon for AI
-            color: theme.colorScheme.primary,
-            size: 24,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.auto_awesome, // Sparkle icon for AI
+                color: theme.colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'AI Co-pilot',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      insight.message,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'AI Co-pilot',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
+          if (insight.buttonText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: onActionPressed,
+                    child: Text(insight.buttonText!),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  message,
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

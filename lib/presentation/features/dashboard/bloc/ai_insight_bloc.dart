@@ -18,16 +18,12 @@ class AiInsightBloc extends Bloc<AiInsightEvent, AiInsightState> {
   ) {
     emit(AiInsightLoading());
     try {
-      final message = _aiInsightService.getInsight(
+      final insight = _aiInsightService.getInsight(
         summary: event.summary,
         goals: event.goals,
         profile: event.profile,
       );
-      if (message.isNotEmpty) {
-        emit(AiInsightGenerated(message));
-      } else {
-        emit(AiInsightInitial()); // No message to show
-      }
+      emit(AiInsightGenerated(insight));
     } catch (e) {
       emit(AiInsightError(e.toString()));
     }

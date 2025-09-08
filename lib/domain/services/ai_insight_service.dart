@@ -1,3 +1,5 @@
+import 'package:advisor_desk/domain/entities/ai_insight.dart';
+import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:intl/intl.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
@@ -5,13 +7,29 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.da
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 
 class AiInsightService {
-  String getInsight({
+  AiInsight getInsight({
     required MonthlySummary summary,
     required GoalsState goals,
     required Profile profile,
   }) {
     final now = DateTime.now();
     final hour = now.hour;
+
+    // Priority 0: Check if goals are set
+    if (goals.targetCalls == 1000 && goals.targetHours == 150) { // Default values
+      return const AiInsight(
+        message: "You haven't set your personal goals for the month yet. Setting goals can help you stay motivated!",
+        buttonText: "Set Goals Now",
+        // This will trigger the dialog on the dashboard
+        navigationRoute: 'show_goals_dialog',
+      );
+    }
+
+    // Priority 1: Goal Analysis Insights
+    final goalInsight = _getGoalAnalysisInsight(summary, goals);
+    if (goalInsight != null) {
+      return goalInsight;
+    }
 
     // Try to find today's and yesterday's entry
     DailyEntry? todayEntry;
@@ -35,28 +53,28 @@ class AiInsightService {
       yesterdayEntry = null;
     }
 
-    // Priority 1: Morning Briefing (if no entry for today yet)
+    // Priority 2: Morning Briefing (if no entry for today yet)
     if (hour >= 5 && hour < 12 && todayEntry == null) {
       return _getMorningBriefing(summary, goals, profile, yesterdayEntry);
     }
 
-    // Priority 2: End-of-Day Summary (if there is an entry for today)
+    // Priority 3: End-of-Day Summary (if there is an entry for today)
     if (hour >= 17 && todayEntry != null) {
       return _getEndOfDaySummary(profile, todayEntry, summary, goals);
     }
     
-    // Priority 3: Weekly Review (on Sunday or Monday)
+    // Priority 4: Weekly Review (on Sunday or Monday)
     if (now.weekday == DateTime.monday || now.weekday == DateTime.sunday) {
-        // For simplicity, we'll just show a generic weekly message.
-        // A real implementation would need to fetch last week's data.
-        return "It's the start of a new week, ${profile.name ?? 'User'}! Let's set some great goals and make it a productive one.";
+        return AiInsight(
+          message: "It's the start of a new week, ${profile.name ?? 'User'}! Let's set some great goals and make it a productive one."
+        );
     }
 
     // Fallback: Generic pacing alert or tip
     return _getGenericPacingAlert(summary, goals, profile);
   }
 
-  String _getMorningBriefing(MonthlySummary summary, GoalsState goals, Profile profile, DailyEntry? yesterdayEntry) {
+  AiInsight _getMorningBriefing(MonthlySummary summary, GoalsState goals, Profile profile, DailyEntry? yesterdayEntry) {
     final name = profile.name != null ? ", ${profile.name}" : "";
     
     final now = DateTime.now();
@@ -73,10 +91,10 @@ class AiInsightService {
     } else {
       briefing += " Let's make today a great start!";
     }
-    return briefing;
+    return AiInsight(message: briefing);
   }
 
-  String _getEndOfDaySummary(Profile profile, DailyEntry todayEntry, MonthlySummary summary, GoalsState goals) {
+  AiInsight _getEndOfDaySummary(Profile profile, DailyEntry todayEntry, MonthlySummary summary, GoalsState goals) {
     final name = profile.name != null ? " ${profile.name}" : "";
     final dailyAvgNeeded = (goals.targetCalls / DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day).ceil();
     final difference = todayEntry.callCount - dailyAvgNeeded;
@@ -90,12 +108,40 @@ class AiInsightService {
     }
     
     summaryText += " Your projected net salary for the month is now ${NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(summary.netSalary)}.";
-    return summaryText;
+    return AiInsight(message: summaryText);
   }
 
-  String _getGenericPacingAlert(MonthlySummary summary, GoalsState goals, Profile profile) {
+  AiInsight _getGenericPacingAlert(MonthlySummary summary, GoalsState goals, Profile profile) {
     final name = profile.name != null ? ", ${profile.name}" : "";
     final progress = (summary.totalCalls / goals.targetCalls * 100).clamp(0, 100);
-    return "Hello${name}! You've completed ${progress.toStringAsFixed(0)}% of your monthly call target. Keep pushing!";
+    return AiInsight(message: "Hello${name}! You've completed ${progress.toStringAsFixed(0)}% of your monthly call target. Keep pushing!");
+  }
+
+  AiInsight? _getGoalAnalysisInsight(MonthlySummary summary, GoalsState goals) {
+    final bool callTargetMet = summary.totalCalls >= goals.targetCalls;
+    final bool hourTargetMet = summary.totalLoginHours >= goals.targetHours;
+
+    if (callTargetMet && !hourTargetMet) {
+      final remainingHours = (goals.targetHours - summary.totalLoginHours).clamp(0, goals.targetHours);
+      return AiInsight(message: "Congratulations! You've hit your call target of ${goals.targetCalls} for the month! Your next milestone is the login hours target. You are currently at ${summary.totalLoginHours.toStringAsFixed(1)} out of ${goals.targetHours} hours.");
+    }
+
+    if (!callTargetMet && hourTargetMet) {
+      final remainingCalls = (goals.targetCalls - summary.totalCalls).clamp(0, goals.targetCalls);
+      return AiInsight(message: "Congratulations! You've achieved your login hours target of ${goals.targetHours} for the month! Your next milestone is the call target. You need $remainingCalls more calls to reach it.");
+    }
+
+    if (callTargetMet && hourTargetMet) {
+      return const AiInsight(message: "Amazing work! You've achieved both your call and login hour targets for the month!");
+    }
+
+    // If user is close to a target
+    final callProgress = summary.totalCalls / goals.targetCalls;
+    if (callProgress >= 0.9 && !callTargetMet) {
+      final remainingCalls = goals.targetCalls - summary.totalCalls;
+      return AiInsight(message: "You're almost there! Just $remainingCalls more calls to hit your monthly target. Keep up the great momentum!");
+    }
+
+    return null; // No specific goal insight
   }
 }

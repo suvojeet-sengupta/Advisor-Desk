@@ -225,8 +225,9 @@ class AppTheme {
     ),
   };
 
-  // AMOLED color schemes with true black background for better battery life on OLED displays
-  static final Map<AppColor, ColorScheme> _amoledColorSchemes = {
+  
+
+  static final Map<AppColor, ColorScheme> _darkColorSchemes = {
     AppColor.orange: ColorScheme(
       brightness: Brightness.dark,
       primary: const Color(0xFFFF7043), // Deep Orange 400
@@ -415,231 +416,10 @@ class AppTheme {
     ),
   };
 
-  static final Map<AppColor, ColorScheme> _darkColorSchemes = {
-    // Dark mode color schemes with dark gray background (#121212)
-    AppColor.orange: ColorScheme(
-      brightness: Brightness.dark,
-      primary: const Color(0xFFFF7043), // Deep Orange 400
-      onPrimary: Colors.white,
-      primaryContainer: const Color(0xFFD84315), // Darker orange for container
-      onPrimaryContainer: const Color(0xFFFBE9E7), // Lighter text on container
-      secondary: const Color(0xFFFF7043),
-      onSecondary: Colors.white,
-      secondaryContainer: const Color(0xFFD84315),
-      onSecondaryContainer: const Color(0xFFFBE9E7),
-      tertiary: const Color(0xFFFF7043),
-      onTertiary: Colors.white,
-      tertiaryContainer: const Color(0xFFD84315),
-      onTertiaryContainer: const Color(0xFFFBE9E7),
-      error: const Color(0xFFCF6679), // Standard error color
-      onError: Colors.black,
-      errorContainer: const Color(0xFFB00020),
-      onErrorContainer: Colors.white,
-      background: const Color(0xFF121212), // Dark background
-      onBackground: Colors.white,
-      surface: const Color(0xFF1E1E1E), // Dark surface
-      onSurface: Colors.white,
-      surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
-      onSurfaceVariant: Colors.white,
-      outline: const Color(0xFFB3B3B3), // Light outline
-      shadow: Colors.black,
-      inverseSurface: Colors.white,
-      onInverseSurface: Colors.black,
-      inversePrimary: const Color(0xFFFF6E40), // Original vibrant orange for inverse
-      surfaceTint: const Color(0xFFFF7043),
-    ),
-    AppColor.teal: ColorScheme(
-      brightness: Brightness.dark,
-      primary: const Color(0xFF80CBC4), // Teal 200
-      onPrimary: Colors.black,
-      primaryContainer: const Color(0xFF004D40), // Darker teal for container
-      onPrimaryContainer: const Color(0xFFE0F2F1), // Lighter text on container
-      secondary: const Color(0xFF80CBC4), // Using same for secondary for consistency
-      onSecondary: Colors.black,
-      secondaryContainer: const Color(0xFF004D40),
-      onSecondaryContainer: const Color(0xFFE0F2F1),
-      tertiary: const Color(0xFF80CBC4),
-      onTertiary: Colors.black,
-      tertiaryContainer: const Color(0xFF004D40),
-      onTertiaryContainer: const Color(0xFFE0F2F1),
-      error: const Color(0xFFCF6679), // Standard error color
-      onError: Colors.black,
-      errorContainer: const Color(0xFFB00020),
-      onErrorContainer: Colors.white,
-      background: const Color(0xFF121212), // Dark background
-      onBackground: Colors.white,
-      surface: const Color(0xFF1E1E1E), // Dark surface
-      onSurface: Colors.white,
-      surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
-      onSurfaceVariant: Colors.white,
-      outline: const Color(0xFFB3B3B3), // Light outline
-      shadow: Colors.black,
-      inverseSurface: Colors.white,
-      onInverseSurface: Colors.black,
-      inversePrimary: const Color(0xFF00897B), // Original vibrant teal for inverse
-      surfaceTint: const Color(0xFF80CBC4),
-    ),
-    AppColor.pink: ColorScheme(
-      brightness: Brightness.dark,
-      primary: const Color(0xFFF48FB1), // Pink 200
-      onPrimary: Colors.black,
-      primaryContainer: const Color(0xFF880E4F), // Darker pink for container
-      onPrimaryContainer: const Color(0xFFFCE4EC), // Lighter text on container
-      secondary: const Color(0xFFF48FB1), // Using same for secondary for consistency
-      onSecondary: Colors.black,
-      secondaryContainer: const Color(0xFF880E4F),
-      onSecondaryContainer: const Color(0xFFFCE4EC),
-      tertiary: const Color(0xFFF48FB1),
-      onTertiary: Colors.black,
-      tertiaryContainer: const Color(0xFF880E4F),
-      onTertiaryContainer: const Color(0xFFFCE4EC),
-      error: const Color(0xFFCF6679), // Standard error color
-      onError: Colors.black,
-      errorContainer: const Color(0xFFB00020),
-      onErrorContainer: Colors.white,
-      background: const Color(0xFF121212), // Dark background
-      onBackground: Colors.white,
-      surface: const Color(0xFF1E1E1E), // Dark surface
-      onSurface: Colors.white,
-      surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
-      onSurfaceVariant: Colors.white,
-      outline: const Color(0xFFB3B3B3), // Light outline
-      shadow: Colors.black,
-      inverseSurface: Colors.white,
-      onInverseSurface: Colors.black,
-      inversePrimary: const Color(0xFFD81B60), // Original vibrant pink for inverse
-      surfaceTint: const Color(0xFFF48FB1),
-    ),
-    AppColor.blue: ColorScheme(
-      brightness: Brightness.dark,
-      primary: const Color(0xFF90CAF9), // Blue 200
-      onPrimary: Colors.black,
-      primaryContainer: const Color(0xFF0D47A1), // Darker blue for container
-      onPrimaryContainer: const Color(0xFFE3F2FD), // Lighter text on container
-      secondary: const Color(0xFF90CAF9), // Using same for secondary for consistency
-      onSecondary: Colors.black,
-      secondaryContainer: const Color(0xFF0D47A1),
-      onSecondaryContainer: const Color(0xFFE3F2FD),
-      tertiary: const Color(0xFF90CAF9),
-      onTertiary: Colors.black,
-      tertiaryContainer: const Color(0xFF0D47A1),
-      onTertiaryContainer: const Color(0xFFE3F2FD),
-      error: const Color(0xFFCF6679), // Standard error color
-      onError: Colors.black,
-      errorContainer: const Color(0xFFB00020),
-      onErrorContainer: Colors.white,
-      background: const Color(0xFF121212), // Dark background
-      onBackground: Colors.white,
-      surface: const Color(0xFF1E1E1E), // Dark surface
-      onSurface: Colors.white,
-      surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
-      onSurfaceVariant: Colors.white,
-      outline: const Color(0xFFB3B3B3), // Light outline
-      shadow: Colors.black,
-      inverseSurface: Colors.white,
-      onInverseSurface: Colors.black,
-      inversePrimary: const Color(0xFF2196F3), // Original vibrant blue for inverse
-      surfaceTint: const Color(0xFF90CAF9),
-    ),
-    AppColor.green: ColorScheme(
-      brightness: Brightness.dark,
-      primary: const Color(0xFFA5D6A7), // Green 200
-      onPrimary: Colors.black,
-      primaryContainer: const Color(0xFF1B5E20), // Darker green for container
-      onPrimaryContainer: const Color(0xFFE8F5E9), // Lighter text on container
-      secondary: const Color(0xFFA5D6A7), // Using same for secondary for consistency
-      onSecondary: Colors.black,
-      secondaryContainer: const Color(0xFF1B5E20),
-      onSecondaryContainer: const Color(0xFFE8F5E9),
-      tertiary: const Color(0xFFA5D6A7),
-      onTertiary: Colors.black,
-      tertiaryContainer: const Color(0xFF1B5E20),
-      onTertiaryContainer: const Color(0xFFE8F5E9),
-      error: const Color(0xFFCF6679), // Standard error color
-      onError: Colors.black,
-      errorContainer: const Color(0xFFB00020),
-      onErrorContainer: Colors.white,
-      background: const Color(0xFF121212), // Dark background
-      onBackground: Colors.white,
-      surface: const Color(0xFF1E1E1E), // Dark surface
-      onSurface: Colors.white,
-      surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
-      onSurfaceVariant: Colors.white,
-      outline: const Color(0xFFB3B3B3), // Light outline
-      shadow: Colors.black,
-      inverseSurface: Colors.white,
-      onInverseSurface: Colors.black,
-      inversePrimary: const Color(0xFF4CAF50), // Original vibrant green for inverse
-      surfaceTint: const Color(0xFFA5D6A7),
-    ),
-    AppColor.purple: ColorScheme(
-      brightness: Brightness.dark,
-      primary: const Color(0xFFCE93D8), // Purple 200
-      onPrimary: Colors.black,
-      primaryContainer: const Color(0xFF4A148C), // Darker purple for container
-      onPrimaryContainer: const Color(0xFFF3E5F5), // Lighter text on container
-      secondary: const Color(0xFFCE93D8), // Using same for secondary for consistency
-      onSecondary: Colors.black,
-      secondaryContainer: const Color(0xFF4A148C),
-      onSecondaryContainer: const Color(0xFFF3E5F5),
-      tertiary: const Color(0xFFCE93D8),
-      onTertiary: Colors.black,
-      tertiaryContainer: const Color(0xFF4A148C),
-      onTertiaryContainer: const Color(0xFFF3E5F5),
-      error: const Color(0xFFCF6679), // Standard error color
-      onError: Colors.black,
-      errorContainer: const Color(0xFFB00020),
-      onErrorContainer: Colors.white,
-      background: const Color(0xFF121212), // Dark background
-      onBackground: Colors.white,
-      surface: const Color(0xFF1E1E1E), // Dark surface
-      onSurface: Colors.white,
-      surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
-      onSurfaceVariant: Colors.white,
-      outline: const Color(0xFFB3B3B3), // Light outline
-      shadow: Colors.black,
-      inverseSurface: Colors.white,
-      onInverseSurface: Colors.black,
-      inversePrimary: const Color(0xFF9C27B0), // Original vibrant purple for inverse
-      surfaceTint: const Color(0xFFCE93D8),
-    ),
-    AppColor.red: ColorScheme(
-      brightness: Brightness.dark,
-      primary: const Color(0xFFE57373), // Red 300
-      onPrimary: Colors.black,
-      primaryContainer: const Color(0xFFD32F2F), // Darker red for container
-      onPrimaryContainer: const Color(0xFFFFCDD2), // Lighter text on container
-      secondary: const Color(0xFFE57373), // Using same for secondary for consistency
-      onSecondary: Colors.black,
-      secondaryContainer: const Color(0xFFD32F2F),
-      onSecondaryContainer: const Color(0xFFFFCDD2),
-      tertiary: const Color(0xFFE57373),
-      onTertiary: Colors.black,
-      tertiaryContainer: const Color(0xFFD32F2F),
-      onTertiaryContainer: const Color(0xFFFFCDD2),
-      error: const Color(0xFFCF6679), // Standard error color
-      onError: Colors.black,
-      errorContainer: const Color(0xFFB00020),
-      onErrorContainer: Colors.white,
-      background: const Color(0xFF121212), // Dark background
-      onBackground: Colors.white,
-      surface: const Color(0xFF1E1E1E), // Dark surface
-      onSurface: Colors.white,
-      surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
-      onSurfaceVariant: Colors.white,
-      outline: const Color(0xFFB3B3B3), // Light outline
-      shadow: Colors.black,
-      inverseSurface: Colors.white,
-      onInverseSurface: Colors.black,
-      inversePrimary: const Color(0xFFF44336), // Original vibrant red for inverse
-      surfaceTint: const Color(0xFFE57373),
-    ),
-  };
-
   static ThemeData getTheme(AppThemeMode themeMode, AppColor color) {
     final brightness = themeMode == AppThemeMode.light
         ? Brightness.light
-        : (themeMode == AppThemeMode.dark || themeMode == AppThemeMode.amoled)
+        : themeMode == AppThemeMode.dark
             ? Brightness.dark
             : WidgetsBinding.instance.platformDispatcher.platformBrightness;
 
@@ -647,11 +427,7 @@ class AppTheme {
     if (brightness == Brightness.light) {
       colorScheme = _lightColorSchemes[color] ?? _lightColorSchemes[AppColor.orange]!;
     } else {
-      if (themeMode == AppThemeMode.amoled && _amoledColorSchemes.containsKey(color)) {
-        colorScheme = _amoledColorSchemes[color] ?? _amoledColorSchemes[AppColor.orange]!;
-      } else {
-        colorScheme = _darkColorSchemes[color] ?? _darkColorSchemes[AppColor.orange]!;
-      }
+      colorScheme = _darkColorSchemes[color] ?? _darkColorSchemes[AppColor.orange]!;
     }
     
     return brightness == Brightness.light 

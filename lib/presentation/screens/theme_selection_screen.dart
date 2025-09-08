@@ -50,17 +50,6 @@ class ThemeSelectionScreen extends StatelessWidget {
                   }
                 },
               ),
-              RadioListTile<AppThemeMode>(
-                title: const Text('AMOLED Dark (True Black)'),
-                subtitle: const Text('Saves battery on OLED/AMOLED displays'),
-                value: AppThemeMode.amoled,
-                groupValue: themeState.themeMode,
-                onChanged: (AppThemeMode? newValue) {
-                  if (newValue != null) {
-                    context.read<ThemeCubit>().setThemeMode(newValue);
-                  }
-                },
-              ),
               const Divider(),
               Padding(
                 padding: const EdgeInsets.all(16.0),

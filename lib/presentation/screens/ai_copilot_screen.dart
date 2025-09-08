@@ -1,5 +1,7 @@
+import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
+import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:advisor_desk/presentation/features/ai_copilot/bloc/ai_copilot_bloc.dart';
 import 'package:advisor_desk/presentation/features/ai_copilot/bloc/ai_copilot_event.dart';
 import 'package:advisor_desk/presentation/features/ai_copilot/bloc/ai_copilot_state.dart';
@@ -17,14 +19,40 @@ class AiCopilotScreen extends StatelessWidget {
       create: (context) => AiCopilotBloc(
         performanceRepository: context.read<PerformanceRepository>(),
         aiInsightService: context.read<AiInsightService>(),
+        nlpService: context.read<NlpService>(),
       )..add(LoadAiCopilotData()),
       child: const AiCopilotView(),
     );
   }
 }
 
-class AiCopilotView extends StatelessWidget {
+class AiCopilotView extends StatefulWidget {
   const AiCopilotView({Key? key}) : super(key: key);
+
+  @override
+  State<AiCopilotView> createState() => _AiCopilotViewState();
+}
+
+class _AiCopilotViewState extends State<AiCopilotView> {
+  final TextEditingController _questionController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _questionController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +61,12 @@ class AiCopilotView extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Dark background for AI feel
       appBar: const CustomAppBar(title: 'AI Co-pilot'),
-      body: BlocBuilder<AiCopilotBloc, AiCopilotState>(
+      body: BlocConsumer<AiCopilotBloc, AiCopilotState>(
+        listener: (context, state) {
+          if (state.insightHistory.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+          }
+        },
         builder: (context, state) {
           if (state.status == AiCopilotStatus.loading || state.status == AiCopilotStatus.initial) {
             return const Center(child: CircularProgressIndicator());
@@ -42,21 +75,33 @@ class AiCopilotView extends StatelessWidget {
             return Center(child: Text(state.errorMessage ?? 'An error occurred'));
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPerformanceScore(context, state.performanceScore),
-                const SizedBox(height: 24),
-                Text(
-                  'Conversation History',
-                  style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+          return Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: _buildPerformanceScore(context, state.performanceScore),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'Conversation',
+                          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    _buildConversationHistory(context, state),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                _buildConversationHistory(context, state),
-              ],
-            ),
+              ),
+              _buildInputArea(context),
+            ],
           );
         },
       ),
@@ -67,12 +112,12 @@ class AiCopilotView extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: CircularPercentIndicator(
-        radius: 80.0,
-        lineWidth: 12.0,
+        radius: 60.0,
+        lineWidth: 10.0,
         percent: score / 100,
         center: Text(
           '$score/100',
-          style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         footer: Padding(
           padding: const EdgeInsets.only(top: 16.0),
@@ -91,15 +136,98 @@ class AiCopilotView extends StatelessWidget {
   }
 
   Widget _buildConversationHistory(BuildContext context, AiCopilotState state) {
-    if (state.insightHistory.isEmpty) {
-      return const Center(
-        child: Text(
-          'No insights yet. Keep using the app!',
-          style: TextStyle(color: Colors.white70),
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final insight = state.insightHistory[index];
+          // Simple way to distinguish user question from AI answer
+          final isUserMessage = insight.buttonText == null && insight.navigationRoute == null && index > 0;
+          return _buildChatItem(context, insight, isUserMessage);
+        },
+        childCount: state.insightHistory.length,
+      ),
+    );
+  }
+
+  Widget _buildChatItem(BuildContext context, AiInsight insight, bool isUserMessage) {
+    final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: isUserMessage ? theme.colorScheme.primary : const Color(0xFF2A2A2A),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              insight.message,
+              style: TextStyle(color: isUserMessage ? theme.colorScheme.onPrimary : Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInputArea(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 10,
+            color: Colors.black.withOpacity(0.3),
+            offset: const Offset(0, -2),
+          )
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _questionController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Ask about your performance...',
+                  hintStyle: const TextStyle(color: Colors.white54),
+                  filled: true,
+                  fillColor: const Color(0xFF2A2A2A),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            BlocBuilder<AiCopilotBloc, AiCopilotState>(
+              builder: (context, state) {
+                return state.isAiTyping
+                    ? const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator()),
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.send, color: Colors.white),
+                        onPressed: () {
+                          if (_questionController.text.isNotEmpty) {
+                            context.read<AiCopilotBloc>().add(AskAiQuestion(_questionController.text));
+                            _questionController.clear();
+                          }
+                        },
+                      );
+              },
+            ),
+          ],
         ),
-      );
-    }
-    // This part will be built out later
-    return const SizedBox.shrink();
+      ),
+    );
   }
 }

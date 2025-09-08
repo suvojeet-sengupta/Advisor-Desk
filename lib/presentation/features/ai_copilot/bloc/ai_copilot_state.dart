@@ -8,12 +8,14 @@ class AiCopilotState extends Equatable {
   final List<AiInsight> insightHistory;
   final int performanceScore;
   final String? errorMessage;
+  final bool isAiTyping;
 
   const AiCopilotState({
     this.status = AiCopilotStatus.initial,
     this.insightHistory = const [],
     this.performanceScore = 0,
     this.errorMessage,
+    this.isAiTyping = false,
   });
 
   AiCopilotState copyWith({
@@ -21,15 +23,17 @@ class AiCopilotState extends Equatable {
     List<AiInsight>? insightHistory,
     int? performanceScore,
     String? errorMessage,
+    bool? isAiTyping,
   }) {
     return AiCopilotState(
       status: status ?? this.status,
       insightHistory: insightHistory ?? this.insightHistory,
       performanceScore: performanceScore ?? this.performanceScore,
       errorMessage: errorMessage ?? this.errorMessage,
+      isAiTyping: isAiTyping ?? this.isAiTyping,
     );
   }
 
   @override
-  List<Object?> get props => [status, insightHistory, performanceScore, errorMessage];
+  List<Object?> get props => [status, insightHistory, performanceScore, errorMessage, isAiTyping];
 }

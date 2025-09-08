@@ -248,7 +248,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: Colors.black, // True black background for AMOLED
       onBackground: Colors.white,
-      surface: Colors.black, // True black surface for AMOLED
+      surface: const Color(0xFF121212), // Dark gray for surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
       onSurfaceVariant: Colors.white,
@@ -279,7 +279,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: Colors.black, // True black background for AMOLED
       onBackground: Colors.white,
-      surface: Colors.black, // True black surface for AMOLED
+      surface: const Color(0xFF121212), // Dark gray for surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
       onSurfaceVariant: Colors.white,
@@ -310,7 +310,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: Colors.black, // True black background for AMOLED
       onBackground: Colors.white,
-      surface: Colors.black, // True black surface for AMOLED
+      surface: const Color(0xFF121212), // Dark gray for surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
       onSurfaceVariant: Colors.white,
@@ -341,7 +341,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: Colors.black, // True black background for AMOLED
       onBackground: Colors.white,
-      surface: Colors.black, // True black surface for AMOLED
+      surface: const Color(0xFF121212), // Dark gray for surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
       onSurfaceVariant: Colors.white,
@@ -372,7 +372,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: Colors.black, // True black background for AMOLED
       onBackground: Colors.white,
-      surface: Colors.black, // True black surface for AMOLED
+      surface: const Color(0xFF121212), // Dark gray for surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
       onSurfaceVariant: Colors.white,
@@ -403,7 +403,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: Colors.black, // True black background for AMOLED
       onBackground: Colors.white,
-      surface: Colors.black, // True black surface for AMOLED
+      surface: const Color(0xFF121212), // Dark gray for surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
       onSurfaceVariant: Colors.white,

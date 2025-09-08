@@ -281,10 +281,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       theme: lightTheme,
                       darkTheme: darkTheme,
                       themeMode: themeState.themeMode == AppThemeMode.system
-                          ? ThemeMode.system
-                          : themeState.themeMode == AppThemeMode.dark
-                              ? ThemeMode.dark
-                              : ThemeMode.light,
+          ? ThemeMode.system
+          : (themeState.themeMode == AppThemeMode.dark || themeState.themeMode == AppThemeMode.amoled)
+              ? ThemeMode.dark
+              : ThemeMode.light,
                       debugShowCheckedModeBanner: false,
                       scrollBehavior: SmoothScrollBehavior(),
                       onGenerateRoute: AppRouter.onGenerateRoute,

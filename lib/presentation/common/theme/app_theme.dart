@@ -225,7 +225,198 @@ class AppTheme {
     ),
   };
 
+  // AMOLED color schemes with true black background for better battery life on OLED displays
+  static final Map<AppColor, ColorScheme> _amoledColorSchemes = {
+    AppColor.orange: ColorScheme(
+      brightness: Brightness.dark,
+      primary: const Color(0xFFFF7043), // Deep Orange 400
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFFD84315), // Darker orange for container
+      onPrimaryContainer: const Color(0xFFFBE9E7), // Lighter text on container
+      secondary: const Color(0xFFFF7043),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFFD84315),
+      onSecondaryContainer: const Color(0xFFFBE9E7),
+      tertiary: const Color(0xFFFF7043),
+      onTertiary: Colors.white,
+      tertiaryContainer: const Color(0xFFD84315),
+      onTertiaryContainer: const Color(0xFFFBE9E7),
+      error: const Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: const Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Colors.black, // True black background for AMOLED
+      onBackground: Colors.white,
+      surface: Colors.black, // True black surface for AMOLED
+      onSurface: Colors.white,
+      surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
+      onSurfaceVariant: Colors.white,
+      outline: const Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: const Color(0xFFFF7043), // Original vibrant orange for inverse
+      surfaceTint: const Color(0xFFFF7043),
+    ),
+    AppColor.teal: ColorScheme(
+      brightness: Brightness.dark,
+      primary: const Color(0xFF26A69A), // Teal 400
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFF00796B), // Darker teal for container
+      onPrimaryContainer: const Color(0xFFE0F2F1), // Lighter text on container
+      secondary: const Color(0xFF26A69A),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFF00796B),
+      onSecondaryContainer: const Color(0xFFE0F2F1),
+      tertiary: const Color(0xFF26A69A),
+      onTertiary: Colors.white,
+      tertiaryContainer: const Color(0xFF00796B),
+      onTertiaryContainer: const Color(0xFFE0F2F1),
+      error: const Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: const Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Colors.black, // True black background for AMOLED
+      onBackground: Colors.white,
+      surface: Colors.black, // True black surface for AMOLED
+      onSurface: Colors.white,
+      surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
+      onSurfaceVariant: Colors.white,
+      outline: const Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: const Color(0xFF26A69A), // Original vibrant teal for inverse
+      surfaceTint: const Color(0xFF26A69A),
+    ),
+    AppColor.pink: ColorScheme(
+      brightness: Brightness.dark,
+      primary: const Color(0xFFEC407A), // Pink 400
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFFC2185B), // Darker pink for container
+      onPrimaryContainer: const Color(0xFFFCE4EC), // Lighter text on container
+      secondary: const Color(0xFFEC407A),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFFC2185B),
+      onSecondaryContainer: const Color(0xFFFCE4EC),
+      tertiary: const Color(0xFFEC407A),
+      onTertiary: Colors.white,
+      tertiaryContainer: const Color(0xFFC2185B),
+      onTertiaryContainer: const Color(0xFFFCE4EC),
+      error: const Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: const Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Colors.black, // True black background for AMOLED
+      onBackground: Colors.white,
+      surface: Colors.black, // True black surface for AMOLED
+      onSurface: Colors.white,
+      surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
+      onSurfaceVariant: Colors.white,
+      outline: const Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: const Color(0xFFEC407A), // Original vibrant pink for inverse
+      surfaceTint: const Color(0xFFEC407A),
+    ),
+    AppColor.blue: ColorScheme(
+      brightness: Brightness.dark,
+      primary: const Color(0xFF42A5F5), // Blue 400
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFF1976D2), // Darker blue for container
+      onPrimaryContainer: const Color(0xFFE3F2FD), // Lighter text on container
+      secondary: const Color(0xFF42A5F5),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFF1976D2),
+      onSecondaryContainer: const Color(0xFFE3F2FD),
+      tertiary: const Color(0xFF42A5F5),
+      onTertiary: Colors.white,
+      tertiaryContainer: const Color(0xFF1976D2),
+      onTertiaryContainer: const Color(0xFFE3F2FD),
+      error: const Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: const Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Colors.black, // True black background for AMOLED
+      onBackground: Colors.white,
+      surface: Colors.black, // True black surface for AMOLED
+      onSurface: Colors.white,
+      surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
+      onSurfaceVariant: Colors.white,
+      outline: const Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: const Color(0xFF42A5F5), // Original vibrant blue for inverse
+      surfaceTint: const Color(0xFF42A5F5),
+    ),
+    AppColor.purple: ColorScheme(
+      brightness: Brightness.dark,
+      primary: const Color(0xFFAB47BC), // Purple 400
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFF7B1FA2), // Darker purple for container
+      onPrimaryContainer: const Color(0xFFF3E5F5), // Lighter text on container
+      secondary: const Color(0xFFAB47BC),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFF7B1FA2),
+      onSecondaryContainer: const Color(0xFFF3E5F5),
+      tertiary: const Color(0xFFAB47BC),
+      onTertiary: Colors.white,
+      tertiaryContainer: const Color(0xFF7B1FA2),
+      onTertiaryContainer: const Color(0xFFF3E5F5),
+      error: const Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: const Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Colors.black, // True black background for AMOLED
+      onBackground: Colors.white,
+      surface: Colors.black, // True black surface for AMOLED
+      onSurface: Colors.white,
+      surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
+      onSurfaceVariant: Colors.white,
+      outline: const Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: const Color(0xFFAB47BC), // Original vibrant purple for inverse
+      surfaceTint: const Color(0xFFAB47BC),
+    ),
+    AppColor.red: ColorScheme(
+      brightness: Brightness.dark,
+      primary: const Color(0xFFE57373), // Red 300
+      onPrimary: Colors.black,
+      primaryContainer: const Color(0xFFD32F2F), // Darker red for container
+      onPrimaryContainer: const Color(0xFFFFCDD2), // Lighter text on container
+      secondary: const Color(0xFFE57373), // Using same for secondary for consistency
+      onSecondary: Colors.black,
+      secondaryContainer: const Color(0xFFD32F2F),
+      onSecondaryContainer: const Color(0xFFFFCDD2),
+      tertiary: const Color(0xFFE57373),
+      onTertiary: Colors.black,
+      tertiaryContainer: const Color(0xFFD32F2F),
+      onTertiaryContainer: const Color(0xFFFFCDD2),
+      error: const Color(0xFFCF6679), // Standard error color
+      onError: Colors.black,
+      errorContainer: const Color(0xFFB00020),
+      onErrorContainer: Colors.white,
+      background: Colors.black, // True black background for AMOLED
+      onBackground: Colors.white,
+      surface: Colors.black, // True black surface for AMOLED
+      onSurface: Colors.white,
+      surfaceVariant: const Color(0xFF121212), // Dark gray for surface variant
+      onSurfaceVariant: Colors.white,
+      outline: const Color(0xFFB3B3B3), // Light outline
+      shadow: Colors.black,
+      inverseSurface: Colors.white,
+      onInverseSurface: Colors.black,
+      inversePrimary: const Color(0xFFE57373), // Original vibrant red for inverse
+      surfaceTint: const Color(0xFFE57373),
+    ),
+  };
+
   static final Map<AppColor, ColorScheme> _darkColorSchemes = {
+    // Dark mode color schemes with dark gray background (#121212)
     AppColor.orange: ColorScheme(
       brightness: Brightness.dark,
       primary: const Color(0xFFFF7043), // Deep Orange 400
@@ -445,10 +636,23 @@ class AppTheme {
     ),
   };
 
-  static ThemeData getTheme(Brightness brightness, AppColor color) {
-    final colorScheme = brightness == Brightness.light
-        ? _lightColorSchemes[color]!
-        : _darkColorSchemes[color]!;
+  static ThemeData getTheme(AppThemeMode themeMode, AppColor color) {
+    final brightness = themeMode == AppThemeMode.light
+        ? Brightness.light
+        : (themeMode == AppThemeMode.dark || themeMode == AppThemeMode.amoled)
+            ? Brightness.dark
+            : WidgetsBinding.instance.platformDispatcher.platformBrightness;
+
+    ColorScheme colorScheme;
+    if (brightness == Brightness.light) {
+      colorScheme = _lightColorSchemes[color] ?? _lightColorSchemes[AppColor.orange]!;
+    } else {
+      if (themeMode == AppThemeMode.amoled && _amoledColorSchemes.containsKey(color)) {
+        colorScheme = _amoledColorSchemes[color] ?? _amoledColorSchemes[AppColor.orange]!;
+      } else {
+        colorScheme = _darkColorSchemes[color] ?? _darkColorSchemes[AppColor.orange]!;
+      }
+    }
     
     return brightness == Brightness.light 
         ? getLightTheme(colorScheme) 

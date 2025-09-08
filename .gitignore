@@ -42,4 +42,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-my_release_key.jks.base64
+my_release_key.jks.base64\nGEMINI.md

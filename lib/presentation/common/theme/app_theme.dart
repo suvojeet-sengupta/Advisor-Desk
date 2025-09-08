@@ -437,7 +437,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: const Color(0xFF121212), // Dark background
       onBackground: Colors.white,
-      surface: const Color(0xFF121212), // Dark surface
+      surface: const Color(0xFF1E1E1E), // Dark surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
       onSurfaceVariant: Colors.white,
@@ -468,7 +468,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: const Color(0xFF121212), // Dark background
       onBackground: Colors.white,
-      surface: const Color(0xFF121212), // Dark surface
+      surface: const Color(0xFF1E1E1E), // Dark surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
       onSurfaceVariant: Colors.white,
@@ -499,7 +499,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: const Color(0xFF121212), // Dark background
       onBackground: Colors.white,
-      surface: const Color(0xFF121212), // Dark surface
+      surface: const Color(0xFF1E1E1E), // Dark surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
       onSurfaceVariant: Colors.white,
@@ -530,7 +530,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: const Color(0xFF121212), // Dark background
       onBackground: Colors.white,
-      surface: const Color(0xFF121212), // Dark surface
+      surface: const Color(0xFF1E1E1E), // Dark surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
       onSurfaceVariant: Colors.white,
@@ -561,7 +561,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: const Color(0xFF121212), // Dark background
       onBackground: Colors.white,
-      surface: const Color(0xFF121212), // Dark surface
+      surface: const Color(0xFF1E1E1E), // Dark surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
       onSurfaceVariant: Colors.white,
@@ -592,7 +592,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: const Color(0xFF121212), // Dark background
       onBackground: Colors.white,
-      surface: const Color(0xFF121212), // Dark surface
+      surface: const Color(0xFF1E1E1E), // Dark surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
       onSurfaceVariant: Colors.white,
@@ -623,7 +623,7 @@ class AppTheme {
       onErrorContainer: Colors.white,
       background: const Color(0xFF121212), // Dark background
       onBackground: Colors.white,
-      surface: const Color(0xFF121212), // Dark surface
+      surface: const Color(0xFF1E1E1E), // Dark surface
       onSurface: Colors.white,
       surfaceVariant: const Color(0xFF424242), // Slightly lighter surface variant
       onSurfaceVariant: Colors.white,

@@ -7,6 +7,7 @@ import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/presentation/common/widgets/skeleton_loader.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/monthly_goals_section.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,13 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 
+// AI Copilot Imports
+import 'package:advisor_desk/domain/services/ai_insight_service.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_bloc.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_event.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_state.dart';
+import 'package:advisor_desk/presentation/features/dashboard/widgets/ai_insight_card.dart';
+
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
@@ -54,7 +62,11 @@ class DashboardScreen extends StatelessWidget {
             goalRepository: context.read<GoalRepository>(),
           )..add(LoadGoals()),
         ),
-        
+        BlocProvider(
+          create: (context) => AiInsightBloc(
+            aiInsightService: AiInsightService(),
+          ),
+        ),
       ],
       child: const DashboardView(),
     );
@@ -207,141 +219,186 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          BlocBuilder<DashboardBloc, DashboardState>(
-            builder: (context, dashboardState) {
-              if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
-                return const DashboardSkeletonLoader();
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<DashboardBloc, DashboardState>(
+            listener: (context, dashboardState) {
+              if (dashboardState.status == DashboardStatus.loaded && dashboardState.monthlySummary != null) {
+                final goalsState = context.read<GoalsBloc>().state;
+                final profileState = context.read<ProfileCubit>().state;
+                if (!goalsState.isLoading) {
+                  context.read<AiInsightBloc>().add(GenerateInsight(
+                        summary: dashboardState.monthlySummary!,
+                        goals: goalsState,
+                        profile: profileState.profile,
+                      ));
+                }
               }
-
-              if (dashboardState.status == DashboardStatus.error) {
-                return EmptyStateWidget(
-                  message: dashboardState.errorMessage ?? 'An unknown error occurred.',
-                  illustrationPath: 'assets/images/error.svg',
-                  onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-                );
+            },
+          ),
+          BlocListener<GoalsBloc, GoalsState>(
+            listener: (context, goalsState) {
+              final dashboardState = context.read<DashboardBloc>().state;
+              final profileState = context.read<ProfileCubit>().state;
+              if (dashboardState.status == DashboardStatus.loaded &&
+                  dashboardState.monthlySummary != null &&
+                  !goalsState.isLoading) {
+                context.read<AiInsightBloc>().add(GenerateInsight(
+                      summary: dashboardState.monthlySummary!,
+                      goals: goalsState,
+                      profile: profileState.profile,
+                    ));
               }
+            },
+          ),
+        ],
+        child: Stack(
+          children: [
+            BlocBuilder<DashboardBloc, DashboardState>(
+              builder: (context, dashboardState) {
+                if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
+                  return const DashboardSkeletonLoader();
+                }
 
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.chevron_left),
-                              onPressed: () {
-                                final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
-                                context.read<DashboardBloc>().add(
-                                  LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.chevron_right),
-                              onPressed: () {
-                                final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
-                                context.read<DashboardBloc>().add(
-                                  LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                if (dashboardState.status == DashboardStatus.error) {
+                  return EmptyStateWidget(
+                    message: dashboardState.errorMessage ?? 'An unknown error occurred.',
+                    illustrationPath: 'assets/images/error.svg',
+                    onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.chevron_left),
+                                onPressed: () {
+                                  final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                  final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
+                                  context.read<DashboardBloc>().add(
+                                    LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.chevron_right),
+                                onPressed: () {
+                                  final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                  final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
+                                  context.read<DashboardBloc>().add(
+                                    LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
-                        ? EmptyStateWidget(
-                            message: 'No entries found for this month.\nTap the + button to add your first entry!',
-                            illustrationPath: 'assets/images/no_data.svg',
-                            onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-                          )
-                        : RefreshIndicator(
-                            onRefresh: () async {
-                              context.read<DashboardBloc>().add(RefreshDashboard());
-                              context.read<GoalsBloc>().add(LoadGoals());
-                            },
-                            color: Theme.of(context).colorScheme.primary,
-                            child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
-                              builder: (context, customizationState) {
-                                return CustomScrollView(
-                                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                                  slivers: [
-                                    SliverToBoxAdapter(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                        child: BlocBuilder<ProfileCubit, ProfileState>(
-                                          builder: (context, state) {
-                                            final profile = state.profile;
-                                            final showName = profile.name != null;
-                                            return Text(
-                                              showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
-                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                            );
+                    Expanded(
+                      child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
+                          ? EmptyStateWidget(
+                              message: 'No entries found for this month.\nTap the + button to add your first entry!',
+                              illustrationPath: 'assets/images/no_data.svg',
+                              onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
+                            )
+                          : RefreshIndicator(
+                              onRefresh: () async {
+                                context.read<DashboardBloc>().add(RefreshDashboard());
+                                context.read<GoalsBloc>().add(LoadGoals());
+                              },
+                              color: Theme.of(context).colorScheme.primary,
+                              child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
+                                builder: (context, customizationState) {
+                                  return CustomScrollView(
+                                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                                    slivers: [
+                                      SliverToBoxAdapter(
+                                        child: BlocBuilder<AiInsightBloc, AiInsightState>(
+                                          builder: (context, aiState) {
+                                            if (aiState is AiInsightGenerated) {
+                                              return AiInsightCard(message: aiState.message);
+                                            }
+                                            // You can return a loader or an empty box
+                                            return const SizedBox.shrink();
                                           },
                                         ),
                                       ),
-                                    ),
-                                    const SliverToBoxAdapter(child: IndependenceDayBanner()),
-                                    const SliverToBoxAdapter(child: const SizedBox(height: 16)),
-                                    ...() {
-                                      final sections = customizationState.visibleSections;
-                                      final slivers = <Widget>[];
-                                      for (int i = 0; i < sections.length; i++) {
-                                        final section = sections[i];
-                                        slivers.add(
-                                          _buildDashboardSection(
-                                            context,
-                                            section,
-                                            dashboardState.monthlySummary!,
-                                            dashboardState,
+                                      SliverToBoxAdapter(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                          child: BlocBuilder<ProfileCubit, ProfileState>(
+                                            builder: (context, state) {
+                                              final profile = state.profile;
+                                              final showName = profile.name != null;
+                                              return Text(
+                                                showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
+                                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                              );
+                                            },
                                           ),
-                                        );
+                                        ),
+                                      ),
+                                      const SliverToBoxAdapter(child: IndependenceDayBanner()),
+                                      const SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                                      ...() {
+                                        final sections = customizationState.visibleSections;
+                                        final slivers = <Widget>[];
+                                        for (int i = 0; i < sections.length; i++) {
+                                          final section = sections[i];
+                                          slivers.add(
+                                            _buildDashboardSection(
+                                              context,
+                                              section,
+                                              dashboardState.monthlySummary!,
+                                              dashboardState,
+                                            ),
+                                          );
 
-                                        if (i < sections.length - 1) {
-                                          slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 24)));
+                                          if (i < sections.length - 1) {
+                                            slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 24)));
+                                          }
                                         }
-                                      }
-                                      return slivers;
-                                    }(),
-                                    const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                                  ],
-                                );
-                              },
+                                        return slivers;
+                                      }(),
+                                      const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                  ),
-                ],
-              );
-            },
-          ),
-          if (_isFabMenuOpen)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isFabMenuOpen = false;
-                  _fabAnimationController.reverse();
-                });
+                    ),
+                  ],
+                );
               },
-              child: Container(
-                color: Colors.black.withOpacity(0.5),
-              ),
             ),
-        ],
+            if (_isFabMenuOpen)
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isFabMenuOpen = false;
+                    _fabAnimationController.reverse();
+                  });
+                },
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ),
+          ],
+        ),
       ),
       floatingActionButton: _buildFabMenu(context),
       bottomNavigationBar: CustomBottomNavigationBar(

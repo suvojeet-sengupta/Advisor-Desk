@@ -328,16 +328,28 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                         child: BlocBuilder<AiInsightBloc, AiInsightState>(
                                           builder: (context, aiState) {
                                             if (aiState is AiInsightGenerated) {
-                                              return AiInsightCard(message: aiState.message);
+                                              return AiInsightCard(
+                                                insight: aiState.insight,
+                                                onActionPressed: () {
+                                                  if (aiState.insight.navigationRoute == 'show_goals_dialog') {
+                                                    _showEditGoalsDialog(context, context.read<GoalsBloc>().state.targetHours, context.read<GoalsBloc>().state.targetCalls);
+                                                  } else if (aiState.insight.navigationRoute != null) {
+                                                    Navigator.pushNamed(
+                                                      context,
+                                                      aiState.insight.navigationRoute!,
+                                                      arguments: aiState.insight.navigationArguments,
+                                                    );
+                                                  }
+                                                },
+                                              );
                                             }
-                                            // You can return a loader or an empty box
                                             return const SizedBox.shrink();
                                           },
                                         ),
                                       ),
                                       SliverToBoxAdapter(
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                                           child: BlocBuilder<ProfileCubit, ProfileState>(
                                             builder: (context, state) {
                                               final profile = state.profile;
@@ -641,29 +653,11 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     }
   }
 
-  Future<void> _checkVersionAndShowChangelog() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
-    final prefs = await SharedPreferences.getInstance();
-    final lastVersion = prefs.getString('last_version');
-
-    if (lastVersion != currentVersion) {
-      // It's a new version, so show the changelog.
-      // We are targeting users updating from 1.0.12+28, but this will show for any new version.
-      // This is a good thing, as we can update the changelog for every new version.
-      showDialog(
-        context: context,
-        builder: (context) => const ChangelogDialog(),
-      );
-      await prefs.setString('last_version', currentVersion);
-    }
-  }
-
   void _showEditGoalsDialog(BuildContext context, int currentHours, int currentCalls) {
     final theme = Theme.of(context);
     final hoursController = TextEditingController(text: currentHours.toString());
     final callsController = TextEditingController(text: currentCalls.toString());
-    final _formKey = GlobalKey<FormState>(); // Add a form key
+    final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -671,7 +665,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         return AlertDialog(
           title: const Text('Set Monthly Goals'),
           content: Form(
-            key: _formKey, // Assign the form key
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -712,6 +706,15 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                     fillColor: theme.inputDecorationTheme.fillColor,
                     filled: theme.inputDecorationTheme.filled,
                   ),
+                   validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter target calls';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
               ],
             ),
@@ -723,7 +726,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             ),
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) { // Validate the form
+                if (formKey.currentState!.validate()) {
                   final newHours = int.tryParse(hoursController.text) ?? currentHours;
                   final newCalls = int.tryParse(callsController.text) ?? currentCalls;
                   context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls));
@@ -736,5 +739,23 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         );
       },
     );
+  }
+
+  Future<void> _checkVersionAndShowChangelog() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+    final prefs = await SharedPreferences.getInstance();
+    final lastVersion = prefs.getString('last_version');
+
+    if (lastVersion != currentVersion) {
+      // It's a new version, so show the changelog.
+      // We are targeting users updating from 1.0.12+28, but this will show for any new version.
+      // This is a good thing, as we can update the changelog for every new version.
+      showDialog(
+        context: context,
+        builder: (context) => const ChangelogDialog(),
+      );
+      await prefs.setString('last_version', currentVersion);
+    }
   }
 }

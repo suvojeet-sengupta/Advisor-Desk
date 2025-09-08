@@ -749,15 +749,15 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: AppColors.primaryBackground,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primaryDark,
-        foregroundColor: AppColors.textPrimary,
+      scaffoldBackgroundColor: colorScheme.background,
+      appBarTheme: AppBarTheme(
+        backgroundColor: colorScheme.background,
+        foregroundColor: colorScheme.onBackground,
         elevation: 0,
         centerTitle: true,
       ),
       cardTheme: CardThemeData(
-        color: AppColors.cardBackground,
+        color: colorScheme.surface,
         elevation: 1,
         shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
@@ -782,46 +782,46 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.secondaryBackground,
+        fillColor: colorScheme.surfaceVariant,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: colorScheme.primary, width: 1),
         ),
-        hintStyle: const TextStyle(color: AppColors.textHint),
+        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withOpacity(0.7)),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: AppColors.primaryDark,
+        backgroundColor: colorScheme.background,
         selectedItemColor: colorScheme.primary,
-        unselectedItemColor: AppColors.textSecondary,
+        unselectedItemColor: colorScheme.onBackground.withOpacity(0.7),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         showUnselectedLabels: true,
       ),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.divider,
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outline,
         thickness: 0.5,
       ),
-      textTheme: const TextTheme(
-        headlineSmall: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-        titleMedium: TextStyle(color: AppColors.textPrimary),
-        bodyMedium: TextStyle(color: AppColors.textPrimary),
-        bodySmall: TextStyle(color: AppColors.textSecondary),
+      textTheme: TextTheme(
+        headlineSmall: TextStyle(color: colorScheme.onBackground, fontWeight: FontWeight.w600),
+        titleLarge: TextStyle(color: colorScheme.onBackground, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(color: colorScheme.onBackground),
+        bodyMedium: TextStyle(color: colorScheme.onBackground),
+        bodySmall: TextStyle(color: colorScheme.onBackground.withOpacity(0.7)),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.secondaryBackground,
+        backgroundColor: colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28),
         ),

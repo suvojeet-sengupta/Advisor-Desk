@@ -65,7 +65,7 @@ class _AiCopilotAnalyzerScreenState extends State<AiCopilotAnalyzerScreen> {
                 return _buildInsightCard(context, insight: state.insight.message);
               }
               if (state is AiInsightError) {
-                return _buildInsightCard(context, insight: 'Error: ${state.message}', isError: true);
+                return _buildInsightCard(context, insight: 'Error: ${state.errorMessage}', isError: true);
               }
               return _buildInsightCard(context, insight: 'No insights available.');
             },

@@ -214,4 +214,3 @@ class AiInsightService {
     return AiInsight(message: insights.join('\n\n'));
   }
 }
-}

@@ -48,6 +48,7 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_ev
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 import 'package:advisor_desk/presentation/screens/app_lock_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/ai_copilot_screen.dart';
+import 'package:advisor_desk/presentation/screens/ai_copilot_analyzer_screen.dart';
 
 
 import 'package:advisor_desk/core/constants/app_enums.dart';
@@ -83,6 +84,7 @@ class AppRouter {
   static const String pinSetupRoute = '/pin-setup';
   static const String appLockSettingsRoute = '/app-lock-settings';
   static const String aiCopilotRoute = '/ai-copilot';
+  static const String aiCopilotAnalyzerRoute = '/ai-copilot-analyzer';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -226,6 +228,10 @@ class AppRouter {
       case AppRouter.aiCopilotRoute:
         return MaterialPageRoute(
           builder: (_) => const AiCopilotScreen(),
+        );
+      case AppRouter.aiCopilotAnalyzerRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AiCopilotAnalyzerScreen(),
         );
       
       default:

@@ -1,3 +1,5 @@
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
 import 'package:equatable/equatable.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
@@ -23,4 +25,23 @@ class GenerateInsight extends AiInsightEvent {
 
   @override
   List<Object> get props => [summary, goals, profile];
+}
+
+class GenerateAnalyzerInsight extends AiInsightEvent {
+  final MonthlySummary summary;
+  final CSATSummary csatSummary;
+  final CQSummary cqSummary;
+  final GoalsState goals;
+  final Profile profile;
+
+  const GenerateAnalyzerInsight({
+    required this.summary,
+    required this.csatSummary,
+    required this.cqSummary,
+    required this.goals,
+    required this.profile,
+  });
+
+  @override
+  List<Object> get props => [summary, csatSummary, cqSummary, goals, profile];
 }

@@ -48,6 +48,8 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_ev
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 import 'package:advisor_desk/presentation/screens/app_lock_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/ai_copilot_screen.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_bloc.dart';
+import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/presentation/screens/ai_copilot_analyzer_screen.dart';
 
@@ -239,12 +241,17 @@ class AppRouter {
         final Profile profile = args['profile'] as Profile;
 
         return MaterialPageRoute(
-          builder: (_) => AiCopilotAnalyzerScreen(
-            monthlySummary: monthlySummary,
-            csatSummary: csatSummary,
-            cqSummary: cqSummary,
-            goalsState: goalsState,
-            profile: profile,
+          builder: (_) => BlocProvider(
+            create: (context) => AiInsightBloc(
+              aiInsightService: AiInsightService(),
+            ),
+            child: AiCopilotAnalyzerScreen(
+              monthlySummary: monthlySummary,
+              csatSummary: csatSummary,
+              cqSummary: cqSummary,
+              goalsState: goalsState,
+              profile: profile,
+            ),
           ),
         );
       

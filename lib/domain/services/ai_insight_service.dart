@@ -1,3 +1,5 @@
+import 'package:advisor_desk/domain/entities/csat_summary.dart';
+import 'package:advisor_desk/domain/entities/cq_summary.dart';
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:intl/intl.dart';
@@ -144,4 +146,72 @@ class AiInsightService {
 
     return null; // No specific goal insight
   }
+
+  AiInsight getAnalyzerInsight({
+    required MonthlySummary summary,
+    required CSATSummary csatSummary,
+    required CQSummary cqSummary,
+    required GoalsState goals,
+    required Profile profile,
+  }) {
+    final name = profile.name ?? 'Advisor';
+    final month = summary.monthName;
+
+    final insights = <String>[];
+
+    // Overall Summary
+    insights.add(
+        'Here is a summary of your performance for $month, $name.');
+
+    // Call Performance
+    final callProgress = (summary.totalCalls / goals.targetCalls * 100).toStringAsFixed(0);
+    insights.add(
+        'You have completed $callProgress% of your monthly call target (${summary.totalCalls}/${goals.targetCalls}).');
+    if (summary.totalCalls > goals.targetCalls) {
+      insights.add('Excellent work on exceeding your call target!');
+    } else {
+      final remainingCalls = goals.targetCalls - summary.totalCalls;
+      final remainingDays = DateTime(summary.year, summary.month + 1, 0).day - DateTime.now().day;
+      if (remainingDays > 0) {
+        final callsPerDay = (remainingCalls / remainingDays).ceil();
+        insights.add(
+            'To meet your goal, you need to average about $callsPerDay calls per day for the rest of the month.');
+      }
+    }
+
+    // Login Hour Performance
+    final hourProgress = (summary.totalLoginHours / goals.targetHours * 100).toStringAsFixed(0);
+    insights.add(
+        'You have completed $hourProgress% of your monthly login hour target (${summary.totalLoginHours.toStringAsFixed(2)}/${goals.targetHours}).');
+    if (summary.totalLoginHours > goals.targetHours) {
+      insights.add('Great job on exceeding your login hour target!');
+    }
+
+    // CSAT Performance
+    insights.add(
+        'Your CSAT score for the month is ${csatSummary.monthlyCSATPercentage.toStringAsFixed(2)}%.');
+    if (csatSummary.needsImprovement) {
+      insights.add(
+          'Your CSAT score is below the target. Consider focusing on improving customer satisfaction.');
+    } else {
+      insights.add('You are doing a great job in maintaining a good CSAT score.');
+    }
+
+    // CQ Performance
+    insights.add(
+        'Your average CQ score for the month is ${cqSummary.monthlyAverageCQ.toStringAsFixed(2)}%.');
+    if (cqSummary.needsImprovement) {
+      insights.add(
+          'Your CQ score is below the target. It would be beneficial to review the call quality guidelines.');
+    } else {
+      insights.add('Excellent work on meeting call quality standards!');
+    }
+
+    // Salary
+    final netSalary = NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(summary.netSalary);
+    insights.add('Your projected net salary for the month is $netSalary.');
+
+    return AiInsight(message: insights.join('\n\n'));
+  }
+}
 }

@@ -4,14 +4,19 @@ import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:intl/intl.dart';
 
+import 'package:advisor_desk/domain/repositories/performance_repository.dart';
+
 class NlpService {
-  // A simple NLP service using keyword matching.
-  // A real-world app might use a more advanced NLP library or API.
+  final PerformanceRepository _performanceRepository;
+
+  NlpService({required PerformanceRepository performanceRepository})
+      : _performanceRepository = performanceRepository;
   Future<AiInsight> processQuestion({
     required String question,
-    required MonthlySummary summary,
   }) async {
     final lowerCaseQuestion = question.toLowerCase();
+    final targetDate = _parseTargetDate(lowerCaseQuestion);
+    final summary = await _performanceRepository.getMonthlySummary(targetDate.month, targetDate.year);
 
     if (lowerCaseQuestion.contains('bonus')) {
       return _handleBonusQuestion(summary);
@@ -29,7 +34,56 @@ class NlpService {
       return _handleCqScoreQuestion(summary);
     }
 
+    if (lowerCaseQuestion.contains('total calls') || lowerCaseQuestion.contains('calls')) {
+      return _handleTotalCallsQuestion(summary);
+    }
+
+    if (lowerCaseQuestion.contains('total login hours') || lowerCaseQuestion.contains('login hours')) {
+      return _handleTotalLoginHoursQuestion(summary);
+    }
+
     return const AiInsight(message: "I'm sorry, I don't have the answer to that yet. I'm still learning!");
+  }
+
+  AiInsight _handleTotalCallsQuestion(MonthlySummary summary) {
+    return AiInsight(message: "Your total calls for ${summary.formattedMonthYear} were ${summary.totalCalls}.");
+  }
+
+  AiInsight _handleTotalLoginHoursQuestion(MonthlySummary summary) {
+    return AiInsight(message: "Your total login hours for ${summary.formattedMonthYear} were ${summary.totalLoginHours.toStringAsFixed(1)}.");
+  }
+
+  DateTime _parseTargetDate(String question) {
+    final now = DateTime.now();
+    if (question.contains('last month')) {
+      return DateTime(now.year, now.month - 1, 1);
+    } else if (question.contains('january')) {
+      return DateTime(now.year, 1, 1);
+    } else if (question.contains('february')) {
+      return DateTime(now.year, 2, 1);
+    } else if (question.contains('march')) {
+      return DateTime(now.year, 3, 1);
+    } else if (question.contains('april')) {
+      return DateTime(now.year, 4, 1);
+    } else if (question.contains('may')) {
+      return DateTime(now.year, 5, 1);
+    } else if (question.contains('june')) {
+      return DateTime(now.year, 6, 1);
+    } else if (question.contains('july')) {
+      return DateTime(now.year, 7, 1);
+    } else if (question.contains('august')) {
+      return DateTime(now.year, 8, 1);
+    } else if (question.contains('september')) {
+      return DateTime(now.year, 9, 1);
+    } else if (question.contains('october')) {
+      return DateTime(now.year, 10, 1);
+    } else if (question.contains('november')) {
+      return DateTime(now.year, 11, 1);
+    } else if (question.contains('december')) {
+      return DateTime(now.year, 12, 1);
+    }
+    // Default to current month if no specific month is mentioned
+    return now;
   }
 
   AiInsight _handleCqScoreQuestion(MonthlySummary summary) {

@@ -65,9 +65,7 @@ class AiCopilotBloc extends Bloc<AiCopilotEvent, AiCopilotState> {
     emit(state.copyWith(insightHistory: newHistory, isAiTyping: true));
 
     try {
-      final now = DateTime.now();
-      final summary = await _performanceRepository.getMonthlySummary(now.month, now.year);
-      final aiAnswer = await _nlpService.processQuestion(question: event.question, summary: summary);
+      final aiAnswer = await _nlpService.processQuestion(question: event.question);
 
       // Introduce a 2-second delay for typing animation
       await Future.delayed(const Duration(seconds: 2));

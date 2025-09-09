@@ -20,7 +20,7 @@ class AiCopilotScreen extends StatelessWidget {
       create: (context) => AiCopilotBloc(
         performanceRepository: context.read<PerformanceRepository>(),
         aiInsightService: context.read<AiInsightService>(),
-        nlpService: context.read<NlpService>(),
+        nlpService: NlpService(performanceRepository: context.read<PerformanceRepository>()),
       )..add(LoadAiCopilotData()),
       child: const AiCopilotView(),
     );

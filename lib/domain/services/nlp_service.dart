@@ -25,7 +25,20 @@ class NlpService {
       return _handleCsatScoreQuestion(summary);
     }
 
+    if (lowerCaseQuestion.contains('cq')) {
+      return _handleCqScoreQuestion(summary);
+    }
+
     return const AiInsight(message: "I'm sorry, I don't have the answer to that yet. I'm still learning!");
+  }
+
+  AiInsight _handleCqScoreQuestion(MonthlySummary summary) {
+    if (summary.cqSummary == null || summary.cqSummary!.monthlyAverageCQ == 0) {
+      return const AiInsight(message: "I couldn't find your CQ score for this month. Make sure you have recorded your CQ data.");
+    }
+
+    final score = summary.cqSummary!.monthlyAverageCQ.toStringAsFixed(2);
+    return AiInsight(message: "Your average CQ score for this month is $score%.");
   }
 
   AiInsight _handleCsatScoreQuestion(MonthlySummary summary) {

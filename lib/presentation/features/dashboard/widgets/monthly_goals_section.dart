@@ -258,71 +258,104 @@ class MonthlyGoalsSection extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Set Monthly Goals'),
-          content: Form(
-            key: _formKey, // Assign the form key
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: hoursController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Target Login Hours (Max 570)',
-                    border: theme.inputDecorationTheme.border,
-                    enabledBorder: theme.inputDecorationTheme.enabledBorder,
-                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                    fillColor: theme.inputDecorationTheme.fillColor,
-                    filled: theme.inputDecorationTheme.filled,
+        return BlocProvider.value(
+          value: BlocProvider.of<GoalsBloc>(context),
+          child: AlertDialog(
+            title: const Text('Set Monthly Goals'),
+            content: Form(
+              key: _formKey, // Assign the form key
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: hoursController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Target Login Hours (Max 570)',
+                      border: theme.inputDecorationTheme.border,
+                      enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                      focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                      fillColor: theme.inputDecorationTheme.fillColor,
+                      filled: theme.inputDecorationTheme.filled,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter target hours';
+                      }
+                      final hours = int.tryParse(value);
+                      if (hours == null) {
+                        return 'Please enter a valid number';
+                      }
+                      if (hours > 570) {
+                        return 'Hours cannot exceed 570';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter target hours';
-                    }
-                    final hours = int.tryParse(value);
-                    if (hours == null) {
-                      return 'Please enter a valid number';
-                    }
-                    if (hours > 570) {
-                      return 'Hours cannot exceed 570';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: callsController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Target Call Count',
-                    border: theme.inputDecorationTheme.border,
-                    enabledBorder: theme.inputDecorationTheme.enabledBorder,
-                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                    fillColor: theme.inputDecorationTheme.fillColor,
-                    filled: theme.inputDecorationTheme.filled,
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: callsController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Target Call Count',
+                      border: theme.inputDecorationTheme.border,
+                      enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                      focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                      fillColor: theme.inputDecorationTheme.fillColor,
+                      filled: theme.inputDecorationTheme.filled,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter target calls';
+                      }
+                      if (int.tryParse(value) == null) {
+                        return 'Please enter a valid number';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  BlocConsumer<GoalsBloc, GoalsState>(
+                    listener: (context, state) {
+                      if (state.suggestedHours != null && state.suggestedCalls != null) {
+                        hoursController.text = state.suggestedHours.toString();
+                        callsController.text = state.suggestedCalls.toString();
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state.suggestionsLoading) {
+                        return const CircularProgressIndicator();
+                      }
+                      return TextButton.icon(
+                        onPressed: () {
+                          context.read<GoalsBloc>().add(GetGoalSuggestions());
+                        },
+                        icon: const Icon(Icons.auto_awesome),
+                        label: const Text('Get AI Suggestions'),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) { // Validate the form
+                    final newHours = int.tryParse(hoursController.text) ?? currentHours;
+                    final newCalls = int.tryParse(callsController.text) ?? currentCalls;
+                    context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls));
+                    Navigator.pop(dialogContext);
+                  }
+                },
+                child: const Text('Save'),
+              )
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) { // Validate the form
-                  final newHours = int.tryParse(hoursController.text) ?? currentHours;
-                  final newCalls = int.tryParse(callsController.text) ?? currentCalls;
-                  context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls));
-                  Navigator.pop(dialogContext);
-                }
-              },
-              child: const Text('Save'),
-            )
-          ],
         );
       },
     );

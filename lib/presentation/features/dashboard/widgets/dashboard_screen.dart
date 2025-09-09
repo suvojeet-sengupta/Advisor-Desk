@@ -1,3 +1,4 @@
+import 'package:advisor_desk/domain/usecases/get_goal_suggestions_usecase.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/salary_section.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/summary_section.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_divider.dart';
@@ -60,6 +61,9 @@ class DashboardScreen extends StatelessWidget {
         BlocProvider(
           create: (context) => GoalsBloc(
             goalRepository: context.read<GoalRepository>(),
+            getGoalSuggestionsUseCase: GetGoalSuggestionsUseCase(
+              context.read<PerformanceRepository>(),
+            ),
           )..add(LoadGoals()),
         ),
         BlocProvider(

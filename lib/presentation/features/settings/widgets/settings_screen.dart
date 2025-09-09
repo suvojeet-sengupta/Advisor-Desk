@@ -27,12 +27,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _appVersion = 'Loading...';
   static const platform = MethodChannel('com.suvojeet.advisordesk/app_info');
   bool _isAppLockEnabled = false;
+  bool _isLoading = false;
+  String? _lastBackupDate;
 
   @override
   void initState() {
     super.initState();
     _getAppVersion();
     _loadAppLockState();
+    _loadLastBackupDate();
+  }
+
+  Future<void> _loadLastBackupDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lastBackupDate = prefs.getString('lastBackupDate');
+    });
   }
 
   Future<void> _loadAppLockState() async {
@@ -56,21 +66,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _backupDatabase() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       final repository = context.read<PerformanceRepository>();
       final tempBackupPath = await repository.backupDatabase();
       final tempBackupFile = File(tempBackupPath);
 
-      // Read the file as bytes
       final fileBytes = await tempBackupFile.readAsBytes();
 
       final String? outputFile = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Your Backup',
         fileName: 'advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip',
-        bytes: fileBytes, // Pass the bytes here
+        bytes: fileBytes,
       );
 
       if (outputFile != null) {
+        final prefs = await SharedPreferences.getInstance();
+        final now = DateTime.now();
+        final formattedDate = "${now.day}/${now.month}/${now.year} ${now.hour}:${now.minute}";
+        await prefs.setString('lastBackupDate', formattedDate);
+        setState(() {
+          _lastBackupDate = formattedDate;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Backup saved to $outputFile')),
         );
@@ -79,11 +98,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SnackBar(content: Text('Backup cancelled.')),
         );
       }
-      await tempBackupFile.delete(); // Always delete the temporary file
+      await tempBackupFile.delete();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Backup failed: $e')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -109,18 +132,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               TextButton(
                 onPressed: () async {
+                  Navigator.pop(context); // Close the confirmation dialog first
+                  setState(() {
+                    _isLoading = true;
+                  });
                   try {
                     final repository = context.read<PerformanceRepository>();
                     await repository.restoreDatabase(backupFilePath);
-                    Navigator.pop(context); // Close the dialog
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Database restored successfully. Please restart the app.')),
                     );
                   } catch (e) {
-                    Navigator.pop(context); // Close the dialog
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Restore failed: $e')),
                     );
+                  } finally {
+                    setState(() {
+                      _isLoading = false;
+                    });
                   }
                 },
                 child: const Text('Restore'),
@@ -140,61 +169,76 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Settings'),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
+      body: Stack(
         children: [
-          _buildSectionCard(
-            context,
-            'App Information',
-            [
-              _buildInfoTile('Version', _appVersion, Icons.info_outline),
-              _buildLinkTile(
+          ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              _buildSectionCard(
                 context,
-                'Credits',
-                AppRouter.creditsRoute,
-                Icons.people,
+                'App Information',
+                [
+                  _buildInfoTile('Version', _appVersion, Icons.info_outline),
+                  _buildLinkTile(
+                    context,
+                    'Credits',
+                    AppRouter.creditsRoute,
+                    Icons.people,
+                  ),
+                  _buildLinkTile(
+                    context,
+                    'GitHub Repository',
+                    'https://github.com/suvojit213/Advisor-Desk',
+                    Icons.code,
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.email, color: Theme.of(context).colorScheme.secondary),
+                    title: Text(
+                      'suvojitsengupta21@gmail.com',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    ),
+                    onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ],
               ),
-              _buildLinkTile(
+              const SizedBox(height: 16),
+              _buildSectionCard(
                 context,
-                'GitHub Repository',
-                'https://github.com/suvojit213/Advisor-Desk',
-                Icons.code,
+                'Data Management',
+                [
+                  _buildDataManagementTile(
+                    context,
+                    'Backup Data',
+                    _lastBackupDate != null ? 'Last backup: $_lastBackupDate' : 'Save your data to a file',
+                    Icons.backup,
+                    _backupDatabase,
+                  ),
+                  _buildDataManagementTile(
+                    context,
+                    'Restore Data',
+                    'Restore your data from a file',
+                    Icons.restore,
+                    _restoreDatabase,
+                  ),
+                ],
               ),
-              ListTile(
-                leading: Icon(Icons.email, color: Theme.of(context).colorScheme.secondary),
-                title: Text(
-                  'suvojitsengupta21@gmail.com',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                ),
-                onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
-                dense: true,
-                contentPadding: EdgeInsets.zero,
+        ],
+      ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildSectionCard(
-            context,
-            'Data Management',
-            [
-              _buildDataManagementTile(
-                context,
-                'Backup Data',
-                'Save your data to a file',
-                Icons.backup,
-                _backupDatabase,
-              ),
-              _buildDataManagementTile(
-                context,
-                'Restore Data',
-                'Restore your data from a file',
-                Icons.restore,
-                _restoreDatabase,
-              ),
-            ],
-          ),
+            ),
+        ],
+      ),
+    );
+  }
           const SizedBox(height: 16),
           _buildSectionCard(
             context,

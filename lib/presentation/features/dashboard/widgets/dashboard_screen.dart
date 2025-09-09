@@ -330,7 +330,28 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                             if (aiState is AiInsightGenerated) {
                                               return AiInsightCard(
                                                 insight: aiState.insight,
-                                                onTap: () => Navigator.pushNamed(context, AppRouter.aiCopilotAnalyzerRoute),
+                                                onTap: () {
+                                                  final dashboardState = context.read<DashboardBloc>().state;
+                                                  final goalsState = context.read<GoalsBloc>().state;
+                                                  final profile = context.read<ProfileCubit>().state.profile;
+
+                                                  if (dashboardState.status == DashboardStatus.loaded &&
+                                                      dashboardState.monthlySummary != null &&
+                                                      dashboardState.csatSummary != null &&
+                                                      dashboardState.cqSummary != null) {
+                                                    Navigator.pushNamed(
+                                                      context,
+                                                      AppRouter.aiCopilotAnalyzerRoute,
+                                                      arguments: {
+                                                        'monthlySummary': dashboardState.monthlySummary!,
+                                                        'csatSummary': dashboardState.csatSummary!,
+                                                        'cqSummary': dashboardState.cqSummary!,
+                                                        'goalsState': goalsState,
+                                                        'profile': profile,
+                                                      },
+                                                    );
+                                                  }
+                                                },
                                                 onActionPressed: () {
                                                   if (aiState.insight.navigationRoute == 'show_goals_dialog') {
                                                     _showEditGoalsDialog(context, context.read<GoalsBloc>().state.targetHours, context.read<GoalsBloc>().state.targetCalls);

@@ -48,6 +48,7 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_ev
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 import 'package:advisor_desk/presentation/screens/app_lock_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/ai_copilot_screen.dart';
+import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/presentation/screens/ai_copilot_analyzer_screen.dart';
 
 
@@ -230,8 +231,21 @@ class AppRouter {
           builder: (_) => const AiCopilotScreen(),
         );
       case AppRouter.aiCopilotAnalyzerRoute:
+        final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
+        final MonthlySummary monthlySummary = args['monthlySummary'] as MonthlySummary;
+        final CSATSummary csatSummary = args['csatSummary'] as CSATSummary;
+        final CQSummary cqSummary = args['cqSummary'] as CQSummary;
+        final GoalsState goalsState = args['goalsState'] as GoalsState;
+        final Profile profile = args['profile'] as Profile;
+
         return MaterialPageRoute(
-          builder: (_) => const AiCopilotAnalyzerScreen(),
+          builder: (_) => AiCopilotAnalyzerScreen(
+            monthlySummary: monthlySummary,
+            csatSummary: csatSummary,
+            cqSummary: cqSummary,
+            goalsState: goalsState,
+            profile: profile,
+          ),
         );
       
       default:

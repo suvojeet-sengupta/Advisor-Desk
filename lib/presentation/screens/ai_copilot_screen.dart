@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:advisor_desk/presentation/common/widgets/typing_indicator.dart';
 
 class AiCopilotScreen extends StatelessWidget {
   const AiCopilotScreen({Key? key}) : super(key: key);
@@ -155,7 +156,15 @@ class _AiCopilotViewState extends State<AiCopilotView> {
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Row(
         mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (!isUserMessage) ...[
+            CircleAvatar(
+              backgroundColor: theme.colorScheme.secondary,
+              child: Icon(Icons.psychology_outlined, color: theme.colorScheme.onSecondary),
+            ),
+            const SizedBox(width: 8),
+          ],
           Container(
             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
             padding: const EdgeInsets.all(12.0),
@@ -168,6 +177,13 @@ class _AiCopilotViewState extends State<AiCopilotView> {
               style: TextStyle(color: isUserMessage ? theme.colorScheme.onPrimary : Colors.white),
             ),
           ),
+          if (isUserMessage) ...[
+            const SizedBox(width: 8),
+            CircleAvatar(
+              backgroundColor: theme.colorScheme.primary,
+              child: Icon(Icons.person, color: theme.colorScheme.onPrimary),
+            ),
+          ],
         ],
       ),
     );
@@ -210,9 +226,9 @@ class _AiCopilotViewState extends State<AiCopilotView> {
             BlocBuilder<AiCopilotBloc, AiCopilotState>(
               builder: (context, state) {
                 return state.isAiTyping
-                    ? const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator()),
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TypingIndicator(),
                       )
                     : IconButton(
                         icon: const Icon(Icons.send, color: Colors.white),

@@ -226,8 +226,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ],
               ),
-        ],
-      ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
+                'Salary Settings',
+                [
+                  _buildLinkTile(
+                    context,
+                    'Customize Salary Parameters',
+                    AppRouter.salarySettingsRoute,
+                    Icons.payments,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
+                'Privacy & Security',
+                [
+                  _buildAppLockTile(),
+                  if (_isAppLockEnabled)
+                    _buildLinkTile(
+                      context,
+                      'App Lock Settings',
+                      AppRouter.appLockSettingsRoute,
+                      Icons.lock_clock,
+                    ),
+                  _buildLinkTile(
+                    context,
+                    'Privacy Policy',
+                    'https://suvojit213.github.io/Privacy_policy_Advisor_Desk/',
+                    Icons.privacy_tip_outlined,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
+                'About Developer',
+                [
+                  _buildLinkTile(
+                    context,
+                    'About Developer',
+                    AppRouter.aboutDeveloperRoute,
+                    Icons.person,
+                  ),
+                ],
+              ),
+            ],
+          ),
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.5),
@@ -235,57 +282,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: CircularProgressIndicator(),
               ),
             ),
-        ],
-      ),
-    );
-  }
-          const SizedBox(height: 16),
-          _buildSectionCard(
-            context,
-            'Salary Settings',
-            [
-              _buildLinkTile(
-                context,
-                'Customize Salary Parameters',
-                AppRouter.salarySettingsRoute,
-                Icons.payments,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildSectionCard(
-            context,
-            'Privacy & Security',
-            [
-              _buildAppLockTile(),
-              if (_isAppLockEnabled)
-                _buildLinkTile(
-                  context,
-                  'App Lock Settings',
-                  AppRouter.appLockSettingsRoute,
-                  Icons.lock_clock,
-                ),
-              _buildLinkTile(
-                context,
-                'Privacy Policy',
-                'https://suvojit213.github.io/Privacy_policy_Advisor_Desk/',
-                Icons.privacy_tip_outlined,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildSectionCard(
-            context,
-            'About Developer',
-            [
-              _buildLinkTile(
-                context,
-                'About Developer',
-                AppRouter.aboutDeveloperRoute,
-                Icons.person,
-              ),
-            ],
-          ),
         ],
       ),
     );

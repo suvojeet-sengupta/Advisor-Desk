@@ -21,7 +21,20 @@ class NlpService {
       return _handleWorstCsatDays(summary);
     }
 
+    if (lowerCaseQuestion.contains('csat')) {
+      return _handleCsatScoreQuestion(summary);
+    }
+
     return const AiInsight(message: "I'm sorry, I don't have the answer to that yet. I'm still learning!");
+  }
+
+  AiInsight _handleCsatScoreQuestion(MonthlySummary summary) {
+    if (summary.csatSummary == null || summary.csatSummary!.monthlyCSATPercentage == 0) {
+      return const AiInsight(message: "I couldn't find your CSAT score for this month. Make sure you have recorded your CSAT data.");
+    }
+
+    final score = summary.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2);
+    return AiInsight(message: "Your average CSAT score for this month is $score%.");
   }
 
   AiInsight _handleBonusQuestion(MonthlySummary summary) {

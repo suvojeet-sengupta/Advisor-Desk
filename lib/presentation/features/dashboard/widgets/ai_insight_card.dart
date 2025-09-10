@@ -64,7 +64,6 @@ class AiInsightCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
                       Icons.auto_awesome, // Sparkle icon for AI
@@ -72,37 +71,26 @@ class AiInsightCard extends StatelessWidget {
                       size: 24,
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Advisor Desk AI',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                icon: const Icon(Icons.info_outline),
-                                onPressed: () => _showAiInsightInfoDialog(context),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            insight.message,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ],
+                    Text(
+                      'Advisor Desk AI',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.info_outline),
+                      onPressed: () => _showAiInsightInfoDialog(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
                   ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  insight.message,
+                  style: theme.textTheme.bodyMedium,
                 ),
                 if (insight.buttonText != null)
                   Padding(

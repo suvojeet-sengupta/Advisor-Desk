@@ -39,7 +39,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 
-// AI Copilot Imports
+// Advisor Desk AI Imports
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_bloc.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_event.dart';

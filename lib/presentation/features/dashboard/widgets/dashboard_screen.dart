@@ -217,10 +217,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
               return const SizedBox.shrink();
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.settings_applications),
-            onPressed: () => Navigator.pushNamed(context, AppRouter.customizeDashboardRoute),
-          ),
+          
         ],
       ),
       body: MultiBlocListener(

@@ -242,6 +242,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               _buildSectionCard(
                 context,
+                'Appearance',
+                [
+                  _buildLinkTile(
+                    context,
+                    'Customize Dashboard',
+                    AppRouter.customizeDashboardRoute,
+                    Icons.dashboard_customize,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
                 'Privacy & Security',
                 [
                   _buildAppLockTile(),

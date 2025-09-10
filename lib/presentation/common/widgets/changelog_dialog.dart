@@ -12,7 +12,7 @@ class ChangelogDialog extends StatelessWidget {
         children: [
           Icon(Icons.new_releases, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          const Text("What's New in v1.3.0"),
+          const Text("What's New in v1.3.1"),
         ],
       ),
       content: SingleChildScrollView(

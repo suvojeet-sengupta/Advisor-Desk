@@ -8,14 +8,15 @@ import 'package:workmanager/workmanager.dart';
 // Function to get the actual data
 Future<Map<String, String>> getWidgetData() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalDataSource.init();
+  // It's crucial to initialize the LocalDataSource for background execution
+  await LocalDataSource.init(); 
   final repository = PerformanceRepositoryImpl(localDataSource: LocalDataSource());
   final now = DateTime.now();
 
   try {
     final summary = await repository.getMonthlySummary(now.month, now.year);
 
-    // Find today's entry
+    // Find today's entry from the summary
     DailyEntry? todayEntry;
     try {
       todayEntry = summary.entries.firstWhere(
@@ -25,17 +26,22 @@ Future<Map<String, String>> getWidgetData() async {
             entry.date.day == now.day,
       );
     } catch (e) {
+      // No entry found for today
       todayEntry = null;
     }
 
     final entries = todayEntry?.callCount.toString() ?? '0';
-    final csat = summary.csatSummary.averagePercentage.toStringAsFixed(2);
+    
+    // Correctly calculate CSAT percentage
+    final csatSummary = summary.csatSummary;
+    final csat = csatSummary != null ? csatSummary.monthlyCSATPercentage.toStringAsFixed(2) : '0.00';
 
     return {
       'today_entries': entries,
       'today_csat': '$csat%',
     };
   } catch (e) {
+    // Return default values in case of any error
     return {
       'today_entries': '--',
       'today_csat': '--',

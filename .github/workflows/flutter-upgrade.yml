@@ -2,8 +2,7 @@ name: Automatic Flutter Upgrade
 
 on:
   workflow_dispatch: # Allows manual triggering
-  schedule:
-    - cron: '0 0 * * 1' # Runs every Monday at midnight UTC
+  
 
 jobs:
   upgrade-flutter:

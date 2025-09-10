@@ -13,6 +13,26 @@ class AiInsightCard extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
 
+  void _showAiInsightInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('About Advisor Desk AI Insight'),
+          content: const Text(
+            'Advisor Desk AI is your personal performance assistant. It analyzes your daily performance, goals, and other metrics to provide you with personalized insights and suggestions. The goal is to help you improve your performance, achieve your targets, and make your work life easier.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -56,12 +76,23 @@ class AiInsightCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Advisor Desk AI',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                'Advisor Desk AI',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(Icons.info_outline),
+                                onPressed: () => _showAiInsightInfoDialog(context),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 4),
                           Text(

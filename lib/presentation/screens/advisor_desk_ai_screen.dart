@@ -2,39 +2,39 @@ import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
-import 'package:advisor_desk/presentation/features/ai_copilot/bloc/ai_copilot_bloc.dart';
-import 'package:advisor_desk/presentation/features/ai_copilot/bloc/ai_copilot_event.dart';
-import 'package:advisor_desk/presentation/features/ai_copilot/bloc/ai_copilot_state.dart';
+import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_bloc.dart';
+import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_event.dart';
+import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:advisor_desk/presentation/common/widgets/typing_indicator.dart';
 
-class AiCopilotScreen extends StatelessWidget {
-  const AiCopilotScreen({Key? key}) : super(key: key);
+class AdvisorDeskAIScreen extends StatelessWidget {
+  const AdvisorDeskAIScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AiCopilotBloc(
+      create: (context) => AdvisorDeskAIBloc(
         performanceRepository: context.read<PerformanceRepository>(),
         aiInsightService: context.read<AiInsightService>(),
         nlpService: NlpService(performanceRepository: context.read<PerformanceRepository>()),
-      )..add(LoadAiCopilotData()),
-      child: const AiCopilotView(),
+      )..add(LoadAdvisorDeskAIData()),
+      child: const AdvisorDeskAIView(),
     );
   }
 }
 
-class AiCopilotView extends StatefulWidget {
-  const AiCopilotView({Key? key}) : super(key: key);
+class AdvisorDeskAIView extends StatefulWidget {
+  const AdvisorDeskAIView({Key? key}) : super(key: key);
 
   @override
-  State<AiCopilotView> createState() => _AiCopilotViewState();
+  State<AdvisorDeskAIView> createState() => _AdvisorDeskAIViewState();
 }
 
-class _AiCopilotViewState extends State<AiCopilotView> {
+class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
   final TextEditingController _questionController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -61,18 +61,18 @@ class _AiCopilotViewState extends State<AiCopilotView> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Dark background for AI feel
-      appBar: const CustomAppBar(title: 'AI Co-pilot'),
-      body: BlocConsumer<AiCopilotBloc, AiCopilotState>(
+      appBar: const CustomAppBar(title: 'Advisor Desk AI'),
+      body: BlocConsumer<AdvisorDeskAIBloc, AdvisorDeskAIState>(
         listener: (context, state) {
           if (state.insightHistory.isNotEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
           }
         },
         builder: (context, state) {
-          if (state.status == AiCopilotStatus.loading || state.status == AiCopilotStatus.initial) {
+          if (state.status == AdvisorDeskAIStatus.loading || state.status == AdvisorDeskAIStatus.initial) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (state.status == AiCopilotStatus.error) {
+          if (state.status == AdvisorDeskAIStatus.error) {
             return Center(child: Text(state.errorMessage ?? 'An error occurred'));
           }
 
@@ -136,7 +136,7 @@ class _AiCopilotViewState extends State<AiCopilotView> {
     );
   }
 
-  Widget _buildConversationHistory(BuildContext context, AiCopilotState state) {
+  Widget _buildConversationHistory(BuildContext context, AdvisorDeskAIState state) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
@@ -223,7 +223,7 @@ class _AiCopilotViewState extends State<AiCopilotView> {
               ),
             ),
             const SizedBox(width: 8),
-            BlocBuilder<AiCopilotBloc, AiCopilotState>(
+            BlocBuilder<AdvisorDeskAIBloc, AdvisorDeskAIState>(
               builder: (context, state) {
                 return state.isAiTyping
                     ? Padding(
@@ -234,7 +234,7 @@ class _AiCopilotViewState extends State<AiCopilotView> {
                         icon: const Icon(Icons.send, color: Colors.white),
                         onPressed: () {
                           if (_questionController.text.isNotEmpty) {
-                            context.read<AiCopilotBloc>().add(AskAiQuestion(_questionController.text));
+                            context.read<AdvisorDeskAIBloc>().add(AskAdvisorDeskAIQuestion(_questionController.text));
                             _questionController.clear();
                           }
                         },

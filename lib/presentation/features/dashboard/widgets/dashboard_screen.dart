@@ -342,7 +342,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                                       dashboardState.cqSummary != null) {
                                                     Navigator.pushNamed(
                                                       context,
-                                                      AppRouter.aiCopilotAnalyzerRoute,
+                                                      AppRouter.advisorDeskAIAnalyzerRoute,
                                                       arguments: {
                                                         'monthlySummary': dashboardState.monthlySummary!,
                                                         'csatSummary': dashboardState.csatSummary!,

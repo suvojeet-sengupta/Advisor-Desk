@@ -47,11 +47,11 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bl
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
 import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
 import 'package:advisor_desk/presentation/screens/app_lock_settings_screen.dart';
-import 'package:advisor_desk/presentation/screens/ai_copilot_screen.dart';
+import 'package:advisor_desk/presentation/screens/advisor_desk_ai_screen.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_bloc.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
-import 'package:advisor_desk/presentation/screens/ai_copilot_analyzer_screen.dart';
+import 'package:advisor_desk/presentation/screens/advisor_desk_ai_analyzer_screen.dart';
 
 
 import 'package:advisor_desk/core/constants/app_enums.dart';
@@ -86,8 +86,8 @@ class AppRouter {
   static const String salaryDetailsRoute = '/salary-details';
   static const String pinSetupRoute = '/pin-setup';
   static const String appLockSettingsRoute = '/app-lock-settings';
-  static const String aiCopilotRoute = '/ai-copilot';
-  static const String aiCopilotAnalyzerRoute = '/ai-copilot-analyzer';
+  static const String advisorDeskAIRoute = '/advisor-desk-ai';
+  static const String advisorDeskAIAnalyzerRoute = '/advisor-desk-ai-analyzer';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -228,11 +228,11 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const AppLockSettingsScreen(),
         );
-      case AppRouter.aiCopilotRoute:
+      case AppRouter.advisorDeskAIRoute:
         return MaterialPageRoute(
-          builder: (_) => const AiCopilotScreen(),
+          builder: (_) => const AdvisorDeskAIScreen(),
         );
-      case AppRouter.aiCopilotAnalyzerRoute:
+      case AppRouter.advisorDeskAIAnalyzerRoute:
         final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
         final MonthlySummary monthlySummary = args['monthlySummary'] as MonthlySummary;
         final CSATSummary csatSummary = args['csatSummary'] as CSATSummary;
@@ -245,7 +245,7 @@ class AppRouter {
             create: (context) => AiInsightBloc(
               aiInsightService: AiInsightService(),
             ),
-            child: AiCopilotAnalyzerScreen(
+            child: AdvisorDeskAIAnalyzerScreen(
               monthlySummary: monthlySummary,
               csatSummary: csatSummary,
               cqSummary: cqSummary,

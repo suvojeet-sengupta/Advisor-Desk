@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 
-class AiCopilotAnalyzerScreen extends StatefulWidget {
+class AdvisorDeskAIAnalyzerScreen extends StatefulWidget {
   final MonthlySummary monthlySummary;
   final CSATSummary csatSummary;
   final CQSummary cqSummary;
   final GoalsState goalsState;
   final Profile profile;
 
-  const AiCopilotAnalyzerScreen({
+  const AdvisorDeskAIAnalyzerScreen({
     Key? key,
     required this.monthlySummary,
     required this.csatSummary,
@@ -28,10 +28,10 @@ class AiCopilotAnalyzerScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AiCopilotAnalyzerScreen> createState() => _AiCopilotAnalyzerScreenState();
+  State<AdvisorDeskAIAnalyzerScreen> createState() => _AdvisorDeskAIAnalyzerScreenState();
 }
 
-class _AiCopilotAnalyzerScreenState extends State<AiCopilotAnalyzerScreen>
+class _AdvisorDeskAIAnalyzerScreenState extends State<AdvisorDeskAIAnalyzerScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -76,7 +76,7 @@ class _AiCopilotAnalyzerScreenState extends State<AiCopilotAnalyzerScreen>
           children: [
             Icon(Icons.auto_awesome, color: theme.colorScheme.primary),
             const SizedBox(width: 8),
-            const Text('AI Copilot Analyzer'),
+            const Text('Advisor Desk AI Analyzer'),
           ],
         ),
         backgroundColor: Colors.transparent,
@@ -106,10 +106,10 @@ class _AiCopilotAnalyzerScreenState extends State<AiCopilotAnalyzerScreen>
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.pushNamed(context, AppRouter.aiCopilotRoute);
+                Navigator.pushNamed(context, AppRouter.advisorDeskAIRoute);
               },
               icon: const Icon(Icons.chat_bubble_outline),
-              label: const Text('Go to AI Copilot Chat'),
+              label: const Text('Go to Advisor Desk AI Chat'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(

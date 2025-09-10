@@ -7,6 +7,7 @@ import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
+import 'package:advisor_desk/core/utils/widget_updater_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
@@ -300,6 +301,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
         );
       },
+    );
+  }
+}
+    },
     );
   }
 }

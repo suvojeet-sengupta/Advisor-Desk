@@ -1,0 +1,31 @@
+name: Automatic Flutter Upgrade
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  schedule:
+    - cron: '0 0 * * 1' # Runs every Monday at midnight UTC
+
+jobs:
+  upgrade-flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Upgrade Flutter dependencies
+        run: flutter upgrade
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(deps): auto-upgrade flutter packages"
+          branch: main
+          commit_options: '--no-verify'
+          file_pattern: 'pubspec.lock' # Only commit the lock file
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"

@@ -41,19 +41,19 @@ class MetricDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: _getTitle()),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              summary.formattedMonthYear,
-              style: Theme.of(context).textTheme.headlineSmall,
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                summary.formattedMonthYear,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
             ),
-            const SizedBox(height: 16),
-            _buildDetailsContent(context),
-          ],
-        ),
+          ),
+          _buildDetailsContent(context),
+        ],
       ),
       bottomNavigationBar: const DetailsScreenBannerAd(),
     );
@@ -84,78 +84,95 @@ class MetricDetailsScreen extends StatelessWidget {
 
   Widget _buildTotalCallsDetails(BuildContext context) {
     if (summary.entries.isEmpty) {
-      return const CustomCard(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text('No daily entries found for this month.'),
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: const CustomCard(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('No daily entries found for this month.'),
+              ),
+            ),
           ),
         ),
       );
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomCard(
-          child: Column(
-            children: [
-              _buildSummaryRow(
-                context,
-                'Total Calls',
-                summary.totalCalls.toString(),
-                Theme.of(context).colorScheme.primary,
-              ),
-              _buildSummaryRow(
-                context,
-                'Total Billable Calls',
-                summary.billableCalls.toString(),
-                Theme.of(context).colorScheme.tertiary,
-              ),
-              _buildSummaryRow(
-                context,
-                'Total Non-Billable Calls',
-                summary.totalNonBillableCalls.toString(),
-                Theme.of(context).colorScheme.error,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'Daily Call Entries',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 12),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: summary.entries.length,
-          itemBuilder: (context, index) {
-            final entry = summary.entries[index];
-            return CustomCard(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                  child: Text(
-                    DateFormat('dd').format(entry.date),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomCard(
+                  child: Column(
+                    children: [
+                      _buildSummaryRow(
+                        context,
+                        'Total Calls',
+                        summary.totalCalls.toString(),
+                        Theme.of(context).colorScheme.primary,
+                      ),
+                      _buildSummaryRow(
+                        context,
+                        'Total Billable Calls',
+                        summary.billableCalls.toString(),
+                        Theme.of(context).colorScheme.tertiary,
+                      ),
+                      _buildSummaryRow(
+                        context,
+                        'Total Non-Billable Calls',
+                        summary.totalNonBillableCalls.toString(),
+                        Theme.of(context).colorScheme.error,
+                      ),
+                    ],
                   ),
                 ),
-                title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
-                trailing: Text(
-                  '${entry.callCount} Calls',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                const SizedBox(height: 24),
+                Text(
+                  'Daily Call Entries',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-              ),
-            );
-          },
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final entry = summary.entries[index];
+                return CustomCard(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      child: Text(
+                        DateFormat('dd').format(entry.date),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
+                    trailing: Text(
+                      '${entry.callCount} Calls',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    ),
+                  ),
+                );
+              },
+              childCount: summary.entries.length,
+            ),
+          ),
         ),
       ],
     );
@@ -163,74 +180,91 @@ class MetricDetailsScreen extends StatelessWidget {
 
   Widget _buildTotalLoginHoursDetails(BuildContext context) {
     if (summary.entries.isEmpty) {
-      return const CustomCard(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text('No daily entries found for this month.'),
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: const CustomCard(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('No daily entries found for this month.'),
+              ),
+            ),
           ),
         ),
       );
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomCard(
-          child: _buildSummaryRow(
-            context,
-            'Total Login Hours',
-            '${summary.totalLoginHours.toStringAsFixed(2)} Hrs (${_formatDuration(summary.totalLoginHours)})',
-            Theme.of(context).colorScheme.tertiary,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'Daily Login Entries',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 12),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: summary.entries.length,
-          itemBuilder: (context, index) {
-            final entry = summary.entries[index];
-            return CustomCard(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
-                  child: Text(
-                    DateFormat('dd').format(entry.date),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomCard(
+                  child: _buildSummaryRow(
+                    context,
+                    'Total Login Hours',
+                    '${summary.totalLoginHours.toStringAsFixed(2)} Hrs (${_formatDuration(summary.totalLoginHours)})',
+                    Theme.of(context).colorScheme.tertiary,
                   ),
                 ),
-                title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.tertiary,
-                          ),
-                    ),
-                    Text(
-                      entry.formattedLoginTime,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                          ),
-                    ),
-                  ],
+                const SizedBox(height: 24),
+                Text(
+                  'Daily Login Entries',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-              ),
-            );
-          },
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final entry = summary.entries[index];
+                return CustomCard(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
+                      child: Text(
+                        DateFormat('dd').format(entry.date),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                      ),
+                    ),
+                    title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
+                        ),
+                        Text(
+                          entry.formattedLoginTime,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              childCount: summary.entries.length,
+            ),
+          ),
         ),
       ],
     );
@@ -238,29 +272,34 @@ class MetricDetailsScreen extends StatelessWidget {
 
   Widget _buildCalculationDetails(
       BuildContext context, String title, String value, String calculation) {
-    return CustomCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSummaryRow(
-            context,
-            title,
-            value,
-            Theme.of(context).colorScheme.primary,
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: CustomCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSummaryRow(
+                context,
+                title,
+                value,
+                Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Calculation:',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                calculation,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Calculation:',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            calculation,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ],
+        ),
       ),
     );
   }

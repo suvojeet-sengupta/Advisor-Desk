@@ -27,23 +27,41 @@ class LoginDaysDetailsScreen extends StatelessWidget {
             return Center(child: Text(state.message));
           }
           if (state is LoginDaysLoaded) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    summary.formattedMonthYear,
-                    style: Theme.of(context).textTheme.headlineSmall,
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          summary.formattedMonthYear,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildStats(context, state),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  _buildStats(context, state),
-                  const SizedBox(height: 24),
-                  _buildCalendar(context, state),
-                  const SizedBox(height: 24),
-                  _buildLegend(context),
-                ],
-              ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  sliver: _buildCalendar(context, state),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 24),
+                        _buildLegend(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             );
           }
           return const SizedBox.shrink();
@@ -87,91 +105,91 @@ class LoginDaysDetailsScreen extends StatelessWidget {
     final loginDates = state.loginEntries.map((e) => e.date).toSet();
     final leaveEntries = {for (var e in state.leaveEntries) e.date: e};
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      itemCount: daysInMonth + (firstDayWeekday - 1),
-      itemBuilder: (context, index) {
-        if (index < firstDayWeekday - 1) {
-          return Container(); // Empty container for offset
-        }
-        final day = index - (firstDayWeekday - 1) + 1;
-        final date = DateTime(year, month, day);
-        final isLoginDay = loginDates.any((d) => d.year == date.year && d.month == date.month && d.day == date.day);
-        final leaveEntry = leaveEntries[date];
-        final isFutureDay = date.isAfter(DateTime.now());
-
-        Color bgColor;
-        Color textColor;
-        Widget? icon;
-
-        if (isFutureDay) {
-          bgColor = theme.disabledColor.withOpacity(0.1);
-          textColor = theme.disabledColor;
-        } else if (isLoginDay) {
-          bgColor = Colors.green.withOpacity(0.2);
-          textColor = Colors.green;
-        } else if (leaveEntry != null) {
-          if (leaveEntry.type == LeaveType.weekOff) {
-            bgColor = Colors.blue.withOpacity(0.2);
-            textColor = Colors.blue;
-            icon = Icon(Icons.weekend, size: 16, color: Colors.blue);
-          } else {
-            bgColor = Colors.orange.withOpacity(0.2);
-            textColor = Colors.orange;
-            icon = Icon(Icons.person, size: 16, color: Colors.orange);
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          if (index < firstDayWeekday - 1) {
+            return Container(); // Empty container for offset
           }
-        } else { // Absent day
-          bgColor = Colors.red.withOpacity(0.2);
-          textColor = Colors.red;
-        }
+          final day = index - (firstDayWeekday - 1) + 1;
+          final date = DateTime(year, month, day);
+          final isLoginDay = loginDates.any((d) => d.year == date.year && d.month == date.month && d.day == date.day);
+          final leaveEntry = leaveEntries[date];
+          final isFutureDay = date.isAfter(DateTime.now());
 
-        return GestureDetector(
-          onTap: () => _showMarkDayDialog(context, date, isLoginDay, leaveEntry),
-          child: Container(
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      DateFormat('EEE').format(date).toUpperCase(),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: textColor,
-                        fontWeight: FontWeight.w600,
+          Color bgColor;
+          Color textColor;
+          Widget? icon;
+
+          if (isFutureDay) {
+            bgColor = theme.disabledColor.withOpacity(0.1);
+            textColor = theme.disabledColor;
+          } else if (isLoginDay) {
+            bgColor = Colors.green.withOpacity(0.2);
+            textColor = Colors.green;
+          } else if (leaveEntry != null) {
+            if (leaveEntry.type == LeaveType.weekOff) {
+              bgColor = Colors.blue.withOpacity(0.2);
+              textColor = Colors.blue;
+              icon = Icon(Icons.weekend, size: 16, color: Colors.blue);
+            } else {
+              bgColor = Colors.orange.withOpacity(0.2);
+              textColor = Colors.orange;
+              icon = Icon(Icons.person, size: 16, color: Colors.orange);
+            }
+          } else { // Absent day
+            bgColor = Colors.red.withOpacity(0.2);
+            textColor = Colors.red;
+          }
+
+          return GestureDetector(
+            onTap: () => _showMarkDayDialog(context, date, isLoginDay, leaveEntry),
+            child: Container(
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        DateFormat('EEE').format(date).toUpperCase(),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '$day',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
+                      const SizedBox(height: 2),
+                      Text(
+                        '$day',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                if (icon != null)
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: icon,
+                    ],
                   ),
-              ],
+                  if (icon != null)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: icon,
+                    ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+        childCount: daysInMonth + (firstDayWeekday - 1),
+      ),
     );
   }
 

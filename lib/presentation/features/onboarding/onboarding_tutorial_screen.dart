@@ -50,6 +50,11 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
       'image': Icons.bar_chart,
     },
     {
+      'title': 'Meet Your AI Assistant',
+      'description': 'Use Advisor Desk AI to get smart insights and analyze your performance data with the power of AI.',
+      'image': Icons.auto_awesome,
+    },
+    {
       'title': 'Choose Your Look',
       'description': 'Customize the app\'s appearance by choosing your favorite color theme from the settings.',
       'image': Icons.color_lens,

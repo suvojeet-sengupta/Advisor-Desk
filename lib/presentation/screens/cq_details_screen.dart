@@ -132,127 +132,141 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: const CustomAppBar(title: 'CQ Performance Details'),
-      body: SingleChildScrollView(
+      body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _currentCqSummary.formattedMonthYear,
-              style: theme.textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
-            if (_currentCqSummary.entries.isEmpty)
-              const CustomCard(
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('No CQ entries for this month.'),
-                  ),
-                ),
-              )
-            else
-              Column(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomCard(
-                    child: Column(
+                  Text(
+                    _currentCqSummary.formattedMonthYear,
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 16),
+                  if (!_currentCqSummary.entries.isEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSummaryRow(
-                          context,
-                          'Average CQ Score',
-                          '${_currentCqSummary.monthlyAverageCQ.toStringAsFixed(2)}%',
-                          _getQualityColor(_currentCqSummary.monthlyAverageCQ, context),
+                        CustomCard(
+                          child: Column(
+                            children: [
+                              _buildSummaryRow(
+                                context,
+                                'Average CQ Score',
+                                '${_currentCqSummary.monthlyAverageCQ.toStringAsFixed(2)}%',
+                                _getQualityColor(_currentCqSummary.monthlyAverageCQ, context),
+                              ),
+                              _buildSummaryRow(
+                                context,
+                                'Total Audits',
+                                '${_currentCqSummary.totalAudits}',
+                                theme.colorScheme.onSurface,
+                              ),
+                              _buildSummaryRow(
+                                context,
+                                'Quality Rating',
+                                _currentCqSummary.qualityRating,
+                                _getQualityColor(_currentCqSummary.monthlyAverageCQ, context),
+                              ),
+                            ],
+                          ),
                         ),
-                        _buildSummaryRow(
-                          context,
-                          'Total Audits',
-                          '${_currentCqSummary.totalAudits}',
-                          theme.colorScheme.onSurface,
+                        const SizedBox(height: 24),
+                        Text(
+                          'Daily CQ Entries',
+                          style: theme.textTheme.titleLarge,
                         ),
-                        _buildSummaryRow(
-                          context,
-                          'Quality Rating',
-                          _currentCqSummary.qualityRating,
-                          _getQualityColor(_currentCqSummary.monthlyAverageCQ, context),
-                        ),
+                        const SizedBox(height: 12),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Daily CQ Entries',
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _currentCqSummary.entries.length,
-                    itemBuilder: (context, index) {
-                      final entry = _currentCqSummary.entries[index];
-                      return Slidable(
-                        key: index == 0 ? _firstCqEntryKey : ValueKey(entry.id),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) async {
-                                final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddCQEntryScreen(entryToEdit: entry),
-                                  ),
-                                );
-                                if (result == true) {
-                                  _refreshData();
-                                }
-                              },
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Edit',
-                            ),
-                            SlidableAction(
-                              onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
-                              backgroundColor: Theme.of(context).colorScheme.error,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
+                ],
+              ),
+            ),
+          ),
+          _currentCqSummary.entries.isEmpty
+              ? SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: const CustomCard(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text('No CQ entries for this month.'),
                         ),
-                        child: CustomCard(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: _getQualityColor(entry.percentage, context).withOpacity(0.2),
-                              child: Text(
-                                DateFormat('dd').format(entry.auditDate),
-                                style: TextStyle(
+                      ),
+                    ),
+                  ),
+                )
+              : SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final entry = _currentCqSummary.entries[index];
+                        return Slidable(
+                          key: index == 0 ? _firstCqEntryKey : ValueKey(entry.id),
+                          endActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddCQEntryScreen(entryToEdit: entry),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    _refreshData();
+                                  }
+                                },
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                icon: Icons.edit,
+                                label: 'Edit',
+                              ),
+                              SlidableAction(
+                                onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
+                                backgroundColor: Theme.of(context).colorScheme.error,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
+                          ),
+                          child: CustomCard(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: _getQualityColor(entry.percentage, context).withOpacity(0.2),
+                                child: Text(
+                                  DateFormat('dd').format(entry.auditDate),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: _getQualityColor(entry.percentage, context),
+                                  ),
+                                ),
+                              ),
+                              title: Text('Audit Date: ${DateFormat('MMM dd, yyyy').format(entry.auditDate)}'),
+                              trailing: Text(
+                                '${entry.percentage.toStringAsFixed(2)}%',
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: _getQualityColor(entry.percentage, context),
                                 ),
                               ),
                             ),
-                            title: Text('Audit Date: ${DateFormat('MMM dd, yyyy').format(entry.auditDate)}'),
-                            trailing: Text(
-                              '${entry.percentage.toStringAsFixed(2)}%',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: _getQualityColor(entry.percentage, context),
-                              ),
-                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                      childCount: _currentCqSummary.entries.length,
+                    ),
                   ),
-                ],
-              ),
-          ],
-        ),
+                ),
+        ],
       ),
       bottomNavigationBar: const DetailsScreenBannerAd(),
     );

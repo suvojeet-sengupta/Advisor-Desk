@@ -131,136 +131,146 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: const CustomAppBar(title: 'CSAT Performance Details'),
-      body: SingleChildScrollView(
+      body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _currentCsatSummary.formattedMonthYear,
-              style: theme.textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
-            CustomCard(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSummaryRow(
-                    context,
-                    'Monthly CSAT',
-                    '${_currentCsatSummary.monthlyCSATPercentage.toStringAsFixed(2)}%',
-                    _currentCsatSummary.needsImprovement ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                  Text(
+                    _currentCsatSummary.formattedMonthYear,
+                    style: theme.textTheme.headlineSmall,
                   ),
-                  _buildSummaryRow(
-                    context,
-                    'Total Survey Hits',
-                    '${_currentCsatSummary.totalSurveyHits}',
-                    theme.colorScheme.onSurface,
-                  ),
-                  _buildSummaryRow(
-                    context,
-                    'Total T2',
-                    '${_currentCsatSummary.totalT2Count}',
-                    theme.colorScheme.tertiary,
-                  ),
-                  _buildSummaryRow(
-                    context,
-                    'Total B2',
-                    '${_currentCsatSummary.totalB2Count}',
-                    theme.colorScheme.error,
-                  ),
-                  _buildSummaryRow(
-                    context,
-                    'Total N',
-                    '${_currentCsatSummary.totalNCount}',
-                    theme.colorScheme.onSurfaceVariant,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Daily CSAT Entries',
-              style: theme.textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
-            if (_currentCsatSummary.entries.isEmpty)
-              const CustomCard(
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('No CSAT entries for this month.'),
-                  ),
-                ),
-              )
-            else
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _currentCsatSummary.entries.length,
-                itemBuilder: (context, index) {
-                  final entry = _currentCsatSummary.entries[index];
-                  final dailyCsat = entry.csatPercentage;
-                  return Slidable(
-                    key: index == 0 ? _firstCsatEntryKey : ValueKey(entry.id),
-                    endActionPane: ActionPane(
-                      motion: const ScrollMotion(),
+                  const SizedBox(height: 16),
+                  CustomCard(
+                    child: Column(
                       children: [
-                        SlidableAction(
-                          onPressed: (context) async {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddCSATEntryScreen(entryToEdit: entry),
-                              ),
-                            );
-                            if (result == true) {
-                              _refreshData();
-                            }
-                          },
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          icon: Icons.edit,
-                          label: 'Edit',
+                        _buildSummaryRow(
+                          context,
+                          'Monthly CSAT',
+                          '${_currentCsatSummary.monthlyCSATPercentage.toStringAsFixed(2)}%',
+                          _currentCsatSummary.needsImprovement ? theme.colorScheme.error : theme.colorScheme.tertiary,
                         ),
-                        SlidableAction(
-                          onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
-                          backgroundColor: Theme.of(context).colorScheme.error,
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
-                          label: 'Delete',
+                        _buildSummaryRow(
+                          context,
+                          'Total Survey Hits',
+                          '${_currentCsatSummary.totalSurveyHits}',
+                          theme.colorScheme.onSurface,
+                        ),
+                        _buildSummaryRow(
+                          context,
+                          'Total T2',
+                          '${_currentCsatSummary.totalT2Count}',
+                          theme.colorScheme.tertiary,
+                        ),
+                        _buildSummaryRow(
+                          context,
+                          'Total B2',
+                          '${_currentCsatSummary.totalB2Count}',
+                          theme.colorScheme.error,
+                        ),
+                        _buildSummaryRow(
+                          context,
+                          'Total N',
+                          '${_currentCsatSummary.totalNCount}',
+                          theme.colorScheme.onSurfaceVariant,
                         ),
                       ],
                     ),
-                    child: CustomCard(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: (dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary).withOpacity(0.2),
-                          child: Text(
-                            DateFormat('dd').format(entry.date),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Daily CSAT Entries',
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: _currentCsatSummary.entries.isEmpty
+              ? SliverToBoxAdapter(
+                  child: const CustomCard(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('No CSAT entries for this month.'),
+                      ),
+                    ),
+                  ),
+                )
+              : SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final entry = _currentCsatSummary.entries[index];
+                      final dailyCsat = entry.csatPercentage;
+                      return Slidable(
+                        key: index == 0 ? _firstCsatEntryKey : ValueKey(entry.id),
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddCSATEntryScreen(entryToEdit: entry),
+                                  ),
+                                );
+                                if (result == true) {
+                                  _refreshData();
+                                }
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: 'Edit',
+                            ),
+                            SlidableAction(
+                              onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
+                              backgroundColor: Theme.of(context).colorScheme.error,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                            ),
+                          ],
+                        ),
+                        child: CustomCard(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: (dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary).withOpacity(0.2),
+                              child: Text(
+                                DateFormat('dd').format(entry.date),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                            title: Text('T2: ${entry.t2Count}, B2: ${entry.b2Count}, N: ${entry.nCount}'),
+                            subtitle: Text(DateFormat('MMM dd, yyyy').format(entry.date)),
+                            trailing: Text(
+                              '${dailyCsat.toStringAsFixed(2)}%',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                              ),
                             ),
                           ),
                         ),
-                        title: Text('T2: ${entry.t2Count}, B2: ${entry.b2Count}, N: ${entry.nCount}'),
-                        subtitle: Text(DateFormat('MMM dd, yyyy').format(entry.date)),
-                        trailing: Text(
-                          '${dailyCsat.toStringAsFixed(2)}%',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-          ],
-        ),
+                      );
+                    },
+                    childCount: _currentCsatSummary.entries.length,
+                  ),
+                ),
+          ),
+        ],
       ),
       bottomNavigationBar: const DetailsScreenBannerAd(),
     );

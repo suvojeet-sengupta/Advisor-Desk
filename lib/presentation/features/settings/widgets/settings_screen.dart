@@ -15,6 +15,7 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -179,6 +180,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'App Information',
                 [
                   _buildInfoTile('Version', _appVersion, Icons.info_outline),
+                  ListTile(
+                    leading: Icon(Icons.new_releases_outlined, color: Theme.of(context).colorScheme.primary),
+                    title: const Text("What's New"),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    contentPadding: EdgeInsets.zero,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ChangelogDialog(),
+                      );
+                    },
+                  ),
                   _buildLinkTile(
                     context,
                     'Credits',

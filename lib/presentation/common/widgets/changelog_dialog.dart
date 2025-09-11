@@ -28,6 +28,8 @@ class ChangelogDialog extends StatelessWidget {
             
             const SizedBox(height: 20),
             _buildSectionTitle(context, '✨ Improvements'),
+            _buildListItem(context, 'Smoother Scrolling', 'Optimized performance on details pages (like Total Calls, Login Hours, CSAT, and CQ) for a faster and more responsive scrolling experience.'),
+            _buildListItem(context, 'Enhanced Onboarding', 'Added a new page to the app tutorial to better introduce the Advisor Desk AI feature.'),
             _buildListItem(context, 'Smarter AI Chat', 'The AI can now answer questions about your CSAT and CQ scores and has a better understanding of your historical data.'),
             _buildListItem(context, 'Improved UI/UX', 'The AI chat and analyzer screens have been redesigned for a cleaner, more intuitive experience. The dashboard layout has also been improved.'),
             _buildListItem(context, 'Better Backup & Restore', 'The backup and restore process is now more user-friendly.'),

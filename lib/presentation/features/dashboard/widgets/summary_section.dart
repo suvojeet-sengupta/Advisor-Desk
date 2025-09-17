@@ -3,9 +3,14 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 
+/// A widget that displays a summary of the user's monthly performance.
+///
+/// This widget is used on the dashboard to show key metrics for the selected month.
 class SummarySection extends StatelessWidget {
+  /// The monthly summary data.
   final MonthlySummary summary;
 
+  /// Creates a summary section.
   const SummarySection({Key? key, required this.summary}) : super(key: key);
 
   @override
@@ -69,6 +74,7 @@ class SummarySection extends StatelessWidget {
     );
   }
 
+  /// Builds a row for displaying a summary detail.
   Widget _buildSummaryRow(
     BuildContext context,
     String title,

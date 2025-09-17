@@ -4,10 +4,17 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'add_csat_entry_event.dart';
 import 'add_csat_entry_state.dart';
 
+/// A BLoC that manages the state for adding or editing a Customer Satisfaction (CSAT) entry.
+///
+/// It handles user input for the date and survey counts, and interacts with
+/// the [PerformanceRepository] to save or delete entries.
 class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
+  /// The performance repository for data operations.
   final PerformanceRepository repository;
+  /// The ad service for showing ads.
   final AdService adService;
 
+  /// Creates a new instance of [AddCSATEntryBloc].
   AddCSATEntryBloc({required this.repository, required this.adService}) : super(AddCSATEntryState.initial()) {
     on<InitializeCSATEntry>(_onInitializeCSATEntry);
     on<CSATDateChanged>(_onDateChanged);
@@ -19,6 +26,10 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     
   }
 
+  /// Handles the initialization of the CSAT entry form.
+  ///
+  /// If an existing [entry] is provided, it populates the form with its data.
+  /// Otherwise, it initializes the form with the current date.
   Future<void> _onInitializeCSATEntry(
     InitializeCSATEntry event,
     Emitter<AddCSATEntryState> emit,
@@ -44,6 +55,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     ));
   }
 
+  /// Handles changes to the date.
   void _onDateChanged(
     CSATDateChanged event,
     Emitter<AddCSATEntryState> emit,
@@ -51,6 +63,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     emit(state.copyWith(date: event.date));
   }
 
+  /// Handles changes to the T2 count.
   void _onT2CountChanged(
     T2CountChanged event,
     Emitter<AddCSATEntryState> emit,
@@ -58,6 +71,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     emit(state.copyWith(t2Count: event.count));
   }
 
+  /// Handles changes to the B2 count.
   void _onB2CountChanged(
     B2CountChanged event,
     Emitter<AddCSATEntryState> emit,
@@ -65,6 +79,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     emit(state.copyWith(b2Count: event.count));
   }
 
+  /// Handles changes to the N count.
   void _onNCountChanged(
     NCountChanged event,
     Emitter<AddCSATEntryState> emit,
@@ -72,6 +87,9 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     emit(state.copyWith(nCount: event.count));
   }
 
+  /// Handles the submission of a CSAT entry.
+  ///
+  /// It saves the entry to the repository and shows an ad.
   Future<void> _onSubmitEntry(
     SubmitCSATEntry event,
     Emitter<AddCSATEntryState> emit,
@@ -104,8 +122,7 @@ class AddCSATEntryBloc extends Bloc<AddCSATEntryEvent, AddCSATEntryState> {
     }
   }
 
-  
-
+  /// Handles the deletion of a CSAT entry.
   Future<void> _onDeleteEntry(
     DeleteCSATEntry event,
     Emitter<AddCSATEntryState> emit,

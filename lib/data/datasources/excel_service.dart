@@ -6,7 +6,18 @@ import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 
+/// A service for generating Excel reports.
+///
+/// This class takes a [ReportSummary] and other data to create a formatted
+/// Excel file summarizing performance, salary, and other metrics.
 class ExcelService {
+  /// Generates an Excel report from the given [summary] data.
+  ///
+  /// The [summary] contains all the calculated data for the report.
+  /// The [sectionsToInclude] list determines which parts of the report are generated.
+  /// The [profile] information is used to add advisor and company details to the report.
+  ///
+  /// Returns a [File] object representing the generated Excel file.
   Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     final excel = Excel.createExcel();
     final sheet = excel['Report'];
@@ -249,6 +260,9 @@ class ExcelService {
     return file;
   }
 
+  /// Returns a quality rating string based on the given [percentage].
+  ///
+  /// The [percentage] is the CQ score.
   String _getQualityRating(double percentage) {
     if (percentage >= 95) return 'Excellent';
     if (percentage >= 85) return 'Good';

@@ -6,11 +6,16 @@ import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_event.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_state.dart';
 
+/// A BLoC that manages the state for the Advisor Desk AI feature.
+///
+/// It handles loading performance data, generating insights, and processing
+/// user questions through the [NlpService].
 class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
   final PerformanceRepository _performanceRepository;
   final AiInsightService _aiInsightService;
   final NlpService _nlpService;
 
+  /// Creates a new instance of [AdvisorDeskAIBloc].
   AdvisorDeskAIBloc({
     required PerformanceRepository performanceRepository,
     required AiInsightService aiInsightService,
@@ -23,6 +28,10 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     on<AskAdvisorDeskAIQuestion>(_onAskAdvisorDeskAIQuestion);
   }
 
+  /// Handles the loading of data for the Advisor Desk AI.
+  ///
+  /// This method fetches the user's performance data and generates an initial
+  /// insight.
   Future<void> _onLoadAdvisorDeskAIData(
     LoadAdvisorDeskAIData event,
     Emitter<AdvisorDeskAIState> emit,
@@ -54,6 +63,10 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     }
   }
 
+  /// Handles a user's question to the Advisor Desk AI.
+  ///
+  /// This method adds the user's question to the chat history, processes the
+  /// question using the [NlpService], and then adds the AI's answer to the history.
   Future<void> _onAskAdvisorDeskAIQuestion(
     AskAdvisorDeskAIQuestion event,
     Emitter<AdvisorDeskAIState> emit,

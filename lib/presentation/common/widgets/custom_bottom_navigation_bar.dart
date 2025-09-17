@@ -3,11 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 
-
+/// A custom bottom navigation bar with a modern, rounded design.
+///
+/// This widget provides the main navigation for the application, with icons
+/// that change based on the selected tab.
 class CustomBottomNavigationBar extends StatelessWidget {
+  /// The index of the currently active tab.
   final int currentIndex;
+  /// A callback function that is called when a tab is tapped.
   final Function(int) onTap;
 
+  /// Creates a custom bottom navigation bar.
   const CustomBottomNavigationBar({
     Key? key,
     required this.currentIndex,
@@ -84,6 +90,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 
+  /// Builds a [BottomNavigationBarItem] with an inactive and active icon.
   BottomNavigationBarItem _buildNavItem({
     required IconData icon,
     required IconData activeIcon,

@@ -1,7 +1,11 @@
-
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A helper class for managing in-app reviews.
+///
+/// This class provides functionality to prompt the user for a review at an
+/// appropriate time, based on factors like installation date, time since the
+/// last prompt, and user engagement (action count).
 class InAppReviewHelper {
   InAppReviewHelper._();
 
@@ -11,7 +15,9 @@ class InAppReviewHelper {
 
   static final InAppReview _inAppReview = InAppReview.instance;
 
-  // Call this method from main.dart on first launch
+  /// Sets the installation date of the app in [SharedPreferences].
+  ///
+  /// This should be called once when the app is first launched.
   static Future<void> setInstallDate() async {
     final prefs = await SharedPreferences.getInstance();
     final installDate = prefs.getString(_installDateKey);
@@ -20,7 +26,11 @@ class InAppReviewHelper {
     }
   }
 
-  // Call this method after a significant positive event
+  /// Increments the action counter and, if conditions are met, requests a review.
+  ///
+  /// This method should be called after a significant positive event in the app,
+  /// such as completing a key task. It checks if enough time has passed and
+  /// enough actions have been performed before showing the review prompt.
   static Future<void> incrementActionCountAndRequestReview() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -35,6 +45,12 @@ class InAppReviewHelper {
     }
   }
 
+  /// Determines whether the in-app review prompt should be shown.
+  ///
+  /// The [actionCount] is the number of significant actions the user has performed.
+  ///
+  /// Returns `true` if all conditions (e.g., days since install, days since
+  /// last prompt, action count) are met.
   static Future<bool> _shouldShowReviewPrompt(int actionCount) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -66,6 +82,12 @@ class InAppReviewHelper {
     return true;
   }
 
+  /// Shows the in-app review prompt to the user.
+  ///
+  /// The [prefs] are the shared preferences instance.
+  ///
+  /// If the review prompt is shown, it updates the last prompt date and resets
+  /// the action counter.
   static Future<void> _showReviewPrompt(SharedPreferences prefs) async {
     final isAvailable = await _inAppReview.isAvailable();
     if (isAvailable) {

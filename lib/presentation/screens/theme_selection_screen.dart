@@ -2,23 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 
+/// A screen that allows the user to customize the application's theme.
+///
+/// Users can select the overall theme mode (Light, Dark, or System Default)
+/// and choose a primary accent color for the app. The state is managed by
+/// the [ThemeCubit].
 class ThemeSelectionScreen extends StatelessWidget {
-  const ThemeSelectionScreen({Key? key}) : super(key: key);
+  /// Creates a [ThemeSelectionScreen].
+  const ThemeSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Theme'),
-      ),
+      appBar: const CustomAppBar(title: 'Select Theme'),
       body: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
           return ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                child: Text('Theme Mode', style: Theme.of(context).textTheme.titleLarge),
+                child:
+                    Text('Theme Mode', style: Theme.of(context).textTheme.titleLarge),
               ),
               RadioListTile<AppThemeMode>(
                 title: const Text('Light'),
@@ -53,7 +59,8 @@ class ThemeSelectionScreen extends StatelessWidget {
               const Divider(),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text('Accent Color', style: Theme.of(context).textTheme.titleLarge),
+                child: Text('Accent Color',
+                    style: Theme.of(context).textTheme.titleLarge),
               ),
               for (final color in AppColor.values)
                 RadioListTile<AppColor>(
@@ -88,8 +95,9 @@ class ThemeSelectionScreen extends StatelessWidget {
     );
   }
 
-  
-
+  /// Returns a concrete [Color] for a given [AppColor] enum value.
+  ///
+  /// Used to display a preview of the accent color in the list.
   Color _getColorForEnum(AppColor color) {
     switch (color) {
       case AppColor.materialYou:

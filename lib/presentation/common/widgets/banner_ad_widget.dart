@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+/// A widget that displays a banner ad using the Google Mobile Ads SDK.
+///
+/// This widget handles loading and displaying a banner ad. It shows nothing
+/// until the ad is successfully loaded.
 class BannerAdWidget extends StatefulWidget {
+  /// Creates a new instance of [BannerAdWidget].
   const BannerAdWidget({Key? key}) : super(key: key);
 
   @override
@@ -20,6 +25,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
     _loadAd();
   }
 
+  /// Loads the banner ad.
   void _loadAd() {
     _bannerAd = BannerAd(
       adUnitId: adUnitId,

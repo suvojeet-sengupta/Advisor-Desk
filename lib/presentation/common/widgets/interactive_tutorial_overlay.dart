@@ -1,13 +1,22 @@
-
 import 'package:flutter/material.dart';
 
+/// Represents a single step in an interactive tutorial.
+///
+/// This class defines the target widget to be highlighted, the text to be
+/// displayed, and other properties for a single step in the tutorial.
 class TutorialStep {
+  /// A [GlobalKey] that identifies the widget to be highlighted.
   final GlobalKey targetKey;
+  /// The tutorial text to be displayed for this step.
   final String text;
-  final AlignmentGeometry textAlignment; // How to align the text relative to the target
-  final EdgeInsetsGeometry textPadding; // Padding for the text
-  final bool showSwipeHint; // Whether to show a swipe animation hint
+  /// The alignment of the tutorial text relative to the highlighted widget.
+  final AlignmentGeometry textAlignment;
+  /// The padding around the tutorial text.
+  final EdgeInsetsGeometry textPadding;
+  /// Whether to show a swipe animation hint.
+  final bool showSwipeHint;
 
+  /// Creates a tutorial step.
   TutorialStep({
     required this.targetKey,
     required this.text,
@@ -17,10 +26,17 @@ class TutorialStep {
   });
 }
 
+/// An overlay widget that displays an interactive tutorial.
+///
+/// This widget takes a list of [TutorialStep]s and displays them one by one,
+/// highlighting the target widget for each step.
 class InteractiveTutorialOverlay extends StatefulWidget {
+  /// The list of steps in the tutorial.
   final List<TutorialStep> steps;
+  /// A callback function that is called when the tutorial is finished.
   final VoidCallback onFinish;
 
+  /// Creates an interactive tutorial overlay.
   const InteractiveTutorialOverlay({
     Key? key,
     required this.steps,

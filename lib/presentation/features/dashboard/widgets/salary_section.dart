@@ -3,9 +3,15 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 
+/// A widget that displays a summary of the user's salary details.
+///
+/// This widget is used on the dashboard to show a breakdown of the user's
+/// salary components for the selected month.
 class SalarySection extends StatelessWidget {
+  /// The monthly summary data.
   final MonthlySummary summary;
 
+  /// Creates a salary section.
   const SalarySection({Key? key, required this.summary}) : super(key: key);
 
   @override
@@ -45,6 +51,7 @@ class SalarySection extends StatelessWidget {
     );
   }
 
+  /// Builds a row for displaying a salary detail.
   Widget _buildSalaryRow(
     BuildContext context,
     String title,

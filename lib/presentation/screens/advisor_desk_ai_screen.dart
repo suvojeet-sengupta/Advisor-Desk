@@ -11,8 +11,14 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:advisor_desk/presentation/common/widgets/typing_indicator.dart';
 
+/// The main screen for the Advisor Desk AI feature.
+///
+/// This screen provides a conversational interface for users to ask questions
+/// about their performance data. It sets up the [AdvisorDeskAIBloc] to manage
+/// the state of the conversation.
 class AdvisorDeskAIScreen extends StatelessWidget {
-  const AdvisorDeskAIScreen({Key? key}) : super(key: key);
+  /// Creates an [AdvisorDeskAIScreen].
+  const AdvisorDeskAIScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +26,21 @@ class AdvisorDeskAIScreen extends StatelessWidget {
       create: (context) => AdvisorDeskAIBloc(
         performanceRepository: context.read<PerformanceRepository>(),
         aiInsightService: context.read<AiInsightService>(),
-        nlpService: NlpService(performanceRepository: context.read<PerformanceRepository>()),
+        nlpService:
+            NlpService(performanceRepository: context.read<PerformanceRepository>()),
       )..add(LoadAdvisorDeskAIData()),
       child: const AdvisorDeskAIView(),
     );
   }
 }
 
+/// The main view for the Advisor Desk AI screen.
+///
+/// This widget is responsible for building the user interface, including the
+/// performance score, the conversation history, and the text input area.
 class AdvisorDeskAIView extends StatefulWidget {
-  const AdvisorDeskAIView({Key? key}) : super(key: key);
+  /// Creates an [AdvisorDeskAIView].
+  const AdvisorDeskAIView({super.key});
 
   @override
   State<AdvisorDeskAIView> createState() => _AdvisorDeskAIViewState();
@@ -45,6 +57,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
     super.dispose();
   }
 
+  /// Scrolls the conversation view to the bottom.
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -65,15 +78,18 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
       body: BlocConsumer<AdvisorDeskAIBloc, AdvisorDeskAIState>(
         listener: (context, state) {
           if (state.insightHistory.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) => _scrollToBottom());
           }
         },
         builder: (context, state) {
-          if (state.status == AdvisorDeskAIStatus.loading || state.status == AdvisorDeskAIStatus.initial) {
+          if (state.status == AdvisorDeskAIStatus.loading ||
+              state.status == AdvisorDeskAIStatus.initial) {
             return const Center(child: CircularProgressIndicator());
           }
           if (state.status == AdvisorDeskAIStatus.error) {
-            return Center(child: Text(state.errorMessage ?? 'An error occurred'));
+            return Center(
+                child: Text(state.errorMessage ?? 'An error occurred'));
           }
 
           return Column(
@@ -85,7 +101,8 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: _buildPerformanceScore(context, state.performanceScore),
+                        child: _buildPerformanceScore(
+                            context, state.performanceScore),
                       ),
                     ),
                     SliverToBoxAdapter(
@@ -93,7 +110,8 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
                           'Conversation',
-                          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+                          style: theme.textTheme.titleLarge
+                              ?.copyWith(color: Colors.white),
                         ),
                       ),
                     ),
@@ -109,6 +127,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
     );
   }
 
+  /// Builds the circular performance score indicator.
   Widget _buildPerformanceScore(BuildContext context, int score) {
     final theme = Theme.of(context);
     return Center(
@@ -118,7 +137,8 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
         percent: score / 100,
         center: Text(
           '$score/100',
-          style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall
+              ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         footer: Padding(
           padding: const EdgeInsets.only(top: 16.0),
@@ -136,13 +156,16 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
     );
   }
 
-  Widget _buildConversationHistory(BuildContext context, AdvisorDeskAIState state) {
+  /// Builds the list of conversation messages.
+  Widget _buildConversationHistory(
+      BuildContext context, AdvisorDeskAIState state) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final insight = state.insightHistory[index];
-          // Simple way to distinguish user question from AI answer
-          final isUserMessage = insight.buttonText == null && insight.navigationRoute == null && index > 0;
+          // A simple way to distinguish user questions from AI answers.
+          final isUserMessage =
+              insight.buttonText == null && insight.navigationRoute == null && index > 0;
           return _buildChatItem(context, insight, isUserMessage);
         },
         childCount: state.insightHistory.length,
@@ -150,31 +173,41 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
     );
   }
 
-  Widget _buildChatItem(BuildContext context, AiInsight insight, bool isUserMessage) {
+  /// Builds a single chat message item.
+  Widget _buildChatItem(
+      BuildContext context, AiInsight insight, bool isUserMessage) {
     final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Row(
-        mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUserMessage) ...[
             CircleAvatar(
               backgroundColor: theme.colorScheme.secondary,
-              child: Icon(Icons.psychology_outlined, color: theme.colorScheme.onSecondary),
+              child: Icon(Icons.psychology_outlined,
+                  color: theme.colorScheme.onSecondary),
             ),
             const SizedBox(width: 8),
           ],
           Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+            constraints:
+                BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
-              color: isUserMessage ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant, // Lighter background for AI
+              color: isUserMessage
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
               insight.message,
-              style: TextStyle(color: isUserMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant), // Darker text for AI
+              style: TextStyle(
+                  color: isUserMessage
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurfaceVariant),
             ),
           ),
           if (isUserMessage) ...[
@@ -189,6 +222,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
     );
   }
 
+  /// Builds the text input area at the bottom of the screen.
   Widget _buildInputArea(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8.0),
@@ -218,7 +252,8 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 ),
               ),
             ),
@@ -226,15 +261,17 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
             BlocBuilder<AdvisorDeskAIBloc, AdvisorDeskAIState>(
               builder: (context, state) {
                 return state.isAiTyping
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
+                    ? const Padding(
+                        padding: EdgeInsets.all(8.0),
                         child: TypingIndicator(),
                       )
                     : IconButton(
                         icon: const Icon(Icons.send, color: Colors.white),
                         onPressed: () {
                           if (_questionController.text.isNotEmpty) {
-                            context.read<AdvisorDeskAIBloc>().add(AskAdvisorDeskAIQuestion(_questionController.text));
+                            context.read<AdvisorDeskAIBloc>().add(
+                                AskAdvisorDeskAIQuestion(
+                                    _questionController.text));
                             _questionController.clear();
                           }
                         },

@@ -23,8 +23,14 @@ import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/core/utils/rate_app_helper.dart';
 
+/// A screen that displays a list of all monthly reports.
+///
+/// This screen allows the user to view and export their monthly performance
+/// summaries as PDF or Excel files.
 class AllReportsScreen extends StatelessWidget {
+  /// The user's profile information.
   final Profile profile;
+  /// Creates an [AllReportsScreen].
   const AllReportsScreen({Key? key, required this.profile}) : super(key: key);
 
   @override
@@ -38,10 +44,14 @@ class AllReportsScreen extends StatelessWidget {
   }
 }
 
+/// The view for the [AllReportsScreen].
 class AllReportsView extends StatelessWidget {
+  /// The user's profile information.
   final Profile profile;
+  /// Creates an [AllReportsView].
   const AllReportsView({Key? key, required this.profile}) : super(key: key);
 
+  /// Generates and shares a PDF report.
   Future<void> _generateAndSharePdf(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -66,6 +76,7 @@ class AllReportsView extends StatelessWidget {
     }
   }
 
+  /// Generates and shares an Excel report.
   Future<void> _generateAndShareExcel(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -82,7 +93,7 @@ class AllReportsView extends StatelessWidget {
     } catch (e) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text("Error creating Excel report: \$e")));
+        ..showSnackBar(SnackBar(content: Text("Error creating Excel report: $e")));
     }
   }
 
@@ -137,7 +148,7 @@ class AllReportsView extends StatelessWidget {
       ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
-          // Left to Right Swipe (पिछली स्क्रीन पर जाने के लिए)
+          // Left to Right Swipe (to go to the previous screen)
           if ((details.primaryVelocity ?? 0) > 200) {
             Navigator.pop(context);
           }
@@ -167,6 +178,7 @@ class AllReportsView extends StatelessWidget {
     );
   }
 
+  /// Builds a card for a single monthly report.
   Widget _buildReportCard(BuildContext context, MonthlySummary summary, Profile profile) {
     final formatter = NumberFormat('#,##0.00');
     return InkWell(
@@ -229,6 +241,7 @@ class AllReportsView extends StatelessWidget {
     );
   }
 
+  /// Builds a row for displaying a piece of information.
   Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value, Color iconColor) {
     return Row(
       children: [

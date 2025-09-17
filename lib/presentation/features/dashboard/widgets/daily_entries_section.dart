@@ -5,9 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:intl/intl.dart';
 
+/// A widget that displays a list of daily performance entries.
+///
+/// This widget is used on the dashboard to show a summary of the user's
+/// daily entries for the selected month.
 class DailyEntriesSection extends StatelessWidget {
+  /// The list of daily entries to display.
   final List<DailyEntry> entries;
 
+  /// Creates a daily entries section.
   const DailyEntriesSection({
     Key? key,
     required this.entries,
@@ -29,7 +35,7 @@ class DailyEntriesSection extends StatelessWidget {
             const CustomCard(
               child: Center(
                 child: Text(
-                  'Is mahine ke liye koi entry nahi hai.',
+                  'No entries for this month.',
                   style: TextStyle(color: Colors.grey), // Use a theme-aware color if possible
                 ),
               ),
@@ -49,6 +55,7 @@ class DailyEntriesSection extends StatelessWidget {
     );
   }
 
+  /// Builds a single item for the daily entries list.
   Widget _buildEntryItem(BuildContext context, DailyEntry entry) {
     return CustomCard(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -76,13 +83,13 @@ class DailyEntriesSection extends StatelessWidget {
         trailing: IconButton(
           icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.secondary),
           onPressed: () {
-            // Edit ke liye AddEntryScreen par navigate karein
+            // Navigate to AddEntryScreen for editing
             Navigator.pushNamed(
               context,
               AppRouter.addEntryRoute,
-              arguments: entry, // Entry object ko arguments ke roop mein pass karein
+              arguments: entry, // Pass the entry object as arguments
             ).then((_) {
-              // Dashboard ko refresh karein (optional, agar BLoC se handle nahi ho raha)
+              // Refresh the dashboard (optional, if not handled by BLoC)
             });
           },
         ),

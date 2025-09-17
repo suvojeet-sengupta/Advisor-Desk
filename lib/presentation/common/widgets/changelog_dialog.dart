@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// A dialog that displays the application's changelog.
+///
+/// This widget is used to inform users about new features, improvements, and
+/// bug fixes in the latest version of the app.
 class ChangelogDialog extends StatelessWidget {
+  /// Creates a new instance of [ChangelogDialog].
   const ChangelogDialog({Key? key}) : super(key: key);
 
   @override
@@ -51,6 +56,7 @@ class ChangelogDialog extends StatelessWidget {
     );
   }
 
+  /// Builds a section title for the changelog.
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -61,6 +67,7 @@ class ChangelogDialog extends StatelessWidget {
     );
   }
 
+  /// Builds a list item for the changelog.
   Widget _buildListItem(BuildContext context, String title, String subtitle) {
     final theme = Theme.of(context);
     return Padding(

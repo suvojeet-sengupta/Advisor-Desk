@@ -8,13 +8,20 @@ import 'package:advisor_desk/domain/usecases/delete_entry_usecase.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_state.dart';
 
+/// A BLoC that manages the state for adding or editing a daily performance entry.
+///
+/// It handles user input for the date, login time, and call count, and interacts
+/// with the [PerformanceRepository] to save or delete entries.
 class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
+  /// The performance repository for data operations.
   final PerformanceRepository repository;
+  /// The ad service for showing ads.
   final AdService adService;
   late final AddEntryUseCase _addEntryUseCase;
   late final UpdateEntryUseCase _updateEntryUseCase;
   late final DeleteEntryUseCase _deleteEntryUseCase;
 
+  /// Creates a new instance of [AddEntryBloc].
   AddEntryBloc({required this.repository, required this.adService}) : super(AddEntryState.initial()) {
     _addEntryUseCase = AddEntryUseCase(repository);
     _updateEntryUseCase = UpdateEntryUseCase(repository);
@@ -31,11 +38,16 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     
   }
 
+  /// Handles the initialization of the daily entry form.
+  ///
+  /// If an existing [entry] is provided, it populates the form with its data.
+  /// Otherwise, it checks for an existing entry for the given date and populates
+  /// the form if one is found. If no entry exists, it initializes a new form.
   Future<void> _onInitializeAddEntry(
     InitializeAddEntry event,
     Emitter<AddEntryState> emit,
   ) async {
-    // अगर entry सीधे pass की gayi है (edit mode), to उसे use karein
+    // If an entry is passed directly (edit mode), use it.
     if (event.entry != null) {
       emit(state.copyWith(
         status: AddEntryStatus.loaded,
@@ -49,14 +61,14 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
       return;
     }
 
-    // नई एंट्री के लिए, आज की या चुनी हुई तारीख लें
+    // For a new entry, take today's or the selected date.
     final date = event.date ?? DateTime.now();
     
     try {
       final existingEntry = await repository.getEntryForDate(date);
 
       if (existingEntry != null) {
-        // Agar entry hai, to use edit mode mein kholen
+        // If an entry exists, open it in edit mode.
         emit(state.copyWith(
           status: AddEntryStatus.loaded,
           date: date,
@@ -67,12 +79,12 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
           existingEntry: existingEntry,
         ));
       } else {
-        // **सबसे महत्वपूर्ण बदलाव यहाँ है**
-        // अगर एंट्री नहीं है, तो एक बिल्कुल नई स्टेट बनाएँ ताकि पुरानी जानकारी हट जाए.
+        // **Most important change is here**
+        // If no entry exists, create a completely new state to clear old information.
         emit(AddEntryState(
           status: AddEntryStatus.loaded,
           date: date,
-          // बाकी सभी फ़ील्ड्स अपने आप डिफ़ॉल्ट (0 या null) पर सेट हो जाएंगे
+          // The rest of the fields will be set to their defaults (0 or null).
         ));
       }
     } catch (e) {
@@ -84,6 +96,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     }
   }
 
+  /// Handles changes to the date.
   void _onDateChanged(
     DateChanged event,
     Emitter<AddEntryState> emit,
@@ -92,7 +105,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     add(InitializeAddEntry(date: event.date));
   }
 
-  // ... बाकी के सभी फंक्शन्स वैसे ही रहेंगे ...
+  /// Handles changes to the login hours.
   void _onLoginHoursChanged(
     LoginHoursChanged event,
     Emitter<AddEntryState> emit,
@@ -100,6 +113,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     emit(state.copyWith(loginHours: event.hours));
   }
 
+  /// Handles changes to the login minutes.
   void _onLoginMinutesChanged(
     LoginMinutesChanged event,
     Emitter<AddEntryState> emit,
@@ -107,6 +121,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     emit(state.copyWith(loginMinutes: event.minutes));
   }
 
+  /// Handles changes to the login seconds.
   void _onLoginSecondsChanged(
     LoginSecondsChanged event,
     Emitter<AddEntryState> emit,
@@ -114,6 +129,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     emit(state.copyWith(loginSeconds: event.seconds));
   }
 
+  /// Handles changes to the call count.
   void _onCallCountChanged(
     CallCountChanged event,
     Emitter<AddEntryState> emit,
@@ -121,6 +137,9 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     emit(state.copyWith(callCount: event.callCount));
   }
 
+  /// Handles the submission of a daily entry.
+  ///
+  /// It validates the input, saves the entry to the repository, and shows an ad.
   Future<void> _onSubmitEntry(
     SubmitEntry event,
     Emitter<AddEntryState> emit,
@@ -162,8 +181,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     }
   }
 
-  
-
+  /// Handles the deletion of a daily entry.
   Future<void> _onDeleteEntry(
     DeleteEntry event,
     Emitter<AddEntryState> emit,

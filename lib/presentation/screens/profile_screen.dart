@@ -6,14 +6,18 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
-import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
-import 'package:advisor_desk/data/datasources/profile_data_source.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+/// A screen where users can view and edit their profile information.
+///
+/// This screen can be presented in two modes: normal view/edit mode, and a
+/// mandatory fill mode (e.g., on first app launch) controlled by [isMandatoryFill].
 class ProfileScreen extends StatelessWidget {
+  /// A flag to determine if the user must fill out the profile before proceeding.
   final bool isMandatoryFill;
-  const ProfileScreen({Key? key, this.isMandatoryFill = false}) : super(key: key);
+
+  /// Creates a [ProfileScreen].
+  const ProfileScreen({super.key, this.isMandatoryFill = false});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +25,16 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+/// The main stateful view for the profile screen.
 class ProfileView extends StatefulWidget {
+  /// A flag to determine if the user must fill out the profile before proceeding.
   final bool isMandatoryFill;
-  const ProfileView({Key? key, this.isMandatoryFill = false}) : super(key: key);
+
+  /// Creates a [ProfileView].
+  const ProfileView({super.key, this.isMandatoryFill = false});
 
   @override
-  _ProfileViewState createState() => _ProfileViewState();
+  State<ProfileView> createState() => _ProfileViewState();
 }
 
 class _ProfileViewState extends State<ProfileView> {
@@ -39,8 +47,10 @@ class _ProfileViewState extends State<ProfileView> {
     super.initState();
     final profileCubit = context.read<ProfileCubit>();
     _nameController = TextEditingController(text: profileCubit.state.profile.name);
-    _companyController = TextEditingController(text: profileCubit.state.profile.companyName);
+    _companyController =
+        TextEditingController(text: profileCubit.state.profile.companyName);
 
+    // If it's a mandatory fill, force the screen into editing mode.
     if (widget.isMandatoryFill) {
       profileCubit.setEditing(true);
     }
@@ -53,6 +63,7 @@ class _ProfileViewState extends State<ProfileView> {
     super.dispose();
   }
 
+  /// Opens the image gallery to allow the user to pick a new profile picture.
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -64,12 +75,14 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
+        // Keep text controllers in sync with the state.
         _nameController.text = state.profile.name ?? '';
         _companyController.text = state.profile.companyName ?? '';
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: CustomAppBar(title: state.isEditing ? 'Edit Profile' : 'Profile'),
+          appBar: CustomAppBar(
+              title: state.isEditing ? 'Edit Profile' : 'Profile'),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -87,7 +100,9 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, Profile profile, bool isEditing) {
+  /// Builds the header section with the profile picture avatar.
+  Widget _buildProfileHeader(
+      BuildContext context, Profile profile, bool isEditing) {
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
@@ -110,12 +125,14 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
+  /// Builds the read-only view of the profile information.
   Widget _buildInfoView(BuildContext context, Profile profile) {
     return Column(
       children: [
         Card(
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -123,13 +140,15 @@ class _ProfileViewState extends State<ProfileView> {
                 ListTile(
                   leading: const Icon(Icons.person_outline),
                   title: const Text('Name'),
-                  subtitle: Text(profile.name ?? 'Not Set', style: Theme.of(context).textTheme.titleLarge),
+                  subtitle: Text(profile.name ?? 'Not Set',
+                      style: Theme.of(context).textTheme.titleLarge),
                 ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.business_center_outlined),
                   title: const Text('Company'),
-                  subtitle: Text(profile.companyName ?? 'Not Set', style: Theme.of(context).textTheme.titleLarge),
+                  subtitle: Text(profile.companyName ?? 'Not Set',
+                      style: Theme.of(context).textTheme.titleLarge),
                 ),
               ],
             ),
@@ -146,12 +165,14 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
+  /// Builds the view for editing the profile information.
   Widget _buildEditView(BuildContext context, Profile profile) {
     return Column(
       children: [
         Card(
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -186,7 +207,8 @@ class _ProfileViewState extends State<ProfileView> {
 
             if (name.isEmpty || companyName.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Name and Company Name cannot be empty.')),
+                const SnackBar(
+                    content: Text('Name and Company Name cannot be empty.')),
               );
               return; // Prevent saving if fields are empty
             }

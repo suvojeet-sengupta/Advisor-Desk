@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// A customizable button with a subtle press animation.
+///
+/// This widget provides a scale and elevation animation when pressed, giving
+/// tactile feedback to the user.
 class AnimatedButton extends StatefulWidget {
+  /// The callback that is called when the button is tapped.
   final VoidCallback? onPressed;
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// The button's background color.
   final Color? backgroundColor;
+  /// The button's foreground color (for text and icons).
   final Color? foregroundColor;
+  /// The padding around the button's child.
   final EdgeInsetsGeometry? padding;
+  /// The border radius of the button.
   final BorderRadius? borderRadius;
+  /// The elevation of the button.
   final double elevation;
+  /// Whether to enable haptic feedback on press.
   final bool enableHaptic;
 
+  /// Creates an animated button.
   const AnimatedButton({
     Key? key,
     required this.onPressed,
@@ -137,13 +150,22 @@ class _AnimatedButtonState extends State<AnimatedButton>
   }
 }
 
+/// A customizable icon button with a press animation.
+///
+/// This widget provides a scale and rotation animation when pressed.
 class AnimatedIconButton extends StatefulWidget {
+  /// The callback that is called when the button is tapped.
   final VoidCallback? onPressed;
+  /// The icon to display.
   final IconData icon;
+  /// The color of the icon and its background.
   final Color? color;
+  /// The size of the icon.
   final double size;
+  /// Whether to enable haptic feedback on press.
   final bool enableHaptic;
 
+  /// Creates an animated icon button.
   const AnimatedIconButton({
     Key? key,
     required this.onPressed,
@@ -236,12 +258,18 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
   }
 }
 
+/// A customizable switch with a smooth animation.
 class AnimatedSwitch extends StatefulWidget {
+  /// Whether this switch is on or off.
   final bool value;
+  /// Called when the user toggles the switch on or off.
   final ValueChanged<bool>? onChanged;
+  /// The color to use when the switch is on.
   final Color? activeColor;
+  /// The color to use when the switch is off.
   final Color? inactiveColor;
 
+  /// Creates an animated switch.
   const AnimatedSwitch({
     Key? key,
     required this.value,
@@ -346,11 +374,16 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
   }
 }
 
+/// A customizable checkbox with a smooth animation.
 class AnimatedCheckbox extends StatefulWidget {
+  /// Whether this checkbox is checked.
   final bool value;
+  /// Called when the user checks or unchecks the checkbox.
   final ValueChanged<bool>? onChanged;
+  /// The color to use when the checkbox is checked.
   final Color? activeColor;
 
+  /// Creates an animated checkbox.
   const AnimatedCheckbox({
     Key? key,
     required this.value,

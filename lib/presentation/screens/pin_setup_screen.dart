@@ -3,17 +3,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 
+/// A screen for users to set or change their 4-digit application PIN.
+///
+/// This screen provides a secure way for users to create a PIN, which is then
+/// used to lock and unlock the application. It includes validation to ensure
+/// the PIN is 4 digits and that the confirmation PIN matches.
 class PinSetupScreen extends StatefulWidget {
-  const PinSetupScreen({Key? key}) : super(key: key);
+  /// Creates a [PinSetupScreen].
+  const PinSetupScreen({super.key});
 
   @override
-  _PinSetupScreenState createState() => _PinSetupScreenState();
+  State<PinSetupScreen> createState() => _PinSetupScreenState();
 }
 
 class _PinSetupScreenState extends State<PinSetupScreen> {
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    _confirmPinController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,14 +92,18 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     );
   }
 
+  /// Validates the form and saves the new PIN to SharedPreferences.
   Future<void> _savePin() async {
     if (_formKey.currentState!.validate()) {
       final prefs = await SharedPreferences.getInstance();
+      // In a real app, this should be stored securely (e.g., using flutter_secure_storage).
       await prefs.setString('app_pin', _pinController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PIN saved successfully!')),
-      );
-      Navigator.pop(context, true); // Return true on success
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PIN saved successfully!')),
+        );
+        Navigator.pop(context, true); // Return true on success
+      }
     }
   }
 }

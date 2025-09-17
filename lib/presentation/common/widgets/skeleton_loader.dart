@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 
+/// A widget that displays a shimmering skeleton loader.
+///
+/// This widget is used to indicate that content is loading. It can be
+/// customized with different widths, heights, and shapes.
 class SkeletonLoader extends StatefulWidget {
+  /// The width of the skeleton loader.
   final double width;
+  /// The height of the skeleton loader.
   final double height;
+  /// The border radius of the skeleton loader.
   final BorderRadius borderRadius;
+  /// The margin around the skeleton loader.
   final EdgeInsetsGeometry margin;
+  /// Whether the skeleton loader should be a circle.
   final bool isCircle;
 
+  /// Creates a skeleton loader.
   const SkeletonLoader({
     Key? key,
     this.width = double.infinity,
@@ -87,7 +97,9 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
   }
 }
 
+/// A skeleton loader in the shape of a card.
 class SkeletonCard extends StatelessWidget {
+  /// Creates a skeleton card.
   const SkeletonCard({Key? key}) : super(key: key);
 
   @override
@@ -144,7 +156,9 @@ class SkeletonCard extends StatelessWidget {
   }
 }
 
+/// A skeleton loader for the dashboard screen.
 class DashboardSkeletonLoader extends StatelessWidget {
+  /// Creates a dashboard skeleton loader.
   const DashboardSkeletonLoader({Key? key}) : super(key: key);
 
   @override

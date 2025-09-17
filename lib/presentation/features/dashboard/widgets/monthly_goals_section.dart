@@ -8,8 +8,14 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dar
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 
+/// A widget that displays the user's progress towards their monthly goals.
+///
+/// This widget shows circular progress indicators for login hours and calls,
+/// as well as detailed information about the remaining targets.
 class MonthlyGoalsSection extends StatelessWidget {
+  /// The monthly summary data.
   final MonthlySummary summary;
+  /// Creates a [MonthlyGoalsSection].
   const MonthlyGoalsSection({Key? key, required this.summary}) : super(key: key);
 
   @override
@@ -131,6 +137,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
+  /// Builds a circular progress indicator for a goal.
   Widget _buildProgressIndicator(BuildContext context, {
     required double percent,
     required String title,
@@ -165,6 +172,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
+  /// Builds a row for displaying a goal detail.
   Widget _buildGoalDetails(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
     return Row(
@@ -181,6 +189,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
+  /// Calculates a projected summary based on the user's goals.
   MonthlySummary _calculateProjectedSummary(GoalsState goalsState, MonthlySummary currentSummary) {
     // Create a dummy list of entries that represents the goal achieved.
     // We can create a single entry with the total values.
@@ -202,6 +211,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
+  /// Builds the salary projection section.
   Widget _buildSalaryProjection(BuildContext context, MonthlySummary currentSummary, MonthlySummary projectedSummary) {
     final theme = Theme.of(context);
     return Column(
@@ -234,6 +244,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
+  /// Builds a row for displaying a salary detail.
   Widget _buildSalaryRow(BuildContext context, String label, String value, IconData icon, Color color) {
     final theme = Theme.of(context);
     return Row(
@@ -249,6 +260,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
+  /// Shows a dialog for editing the user's monthly goals.
   void _showEditGoalsDialog(BuildContext context, int currentHours, int currentCalls) {
     final theme = Theme.of(context);
     final hoursController = TextEditingController(text: currentHours.toString());

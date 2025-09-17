@@ -1,5 +1,4 @@
 import 'package:advisor_desk/core/utils/rate_app_helper.dart';
-
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/data/datasources/goal_data_source.dart';
 import 'package:advisor_desk/data/repositories/goal_repository_impl.dart';
@@ -7,7 +6,6 @@ import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
-import 'package:advisor_desk/core/utils/widget_updater_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
@@ -20,10 +18,9 @@ import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart';
-import 'package:in_app_update/in_app_update.dart'; // For in-app updates
+import 'package:in_app_update/in_app_update.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import the new service
+import 'package:advisor_desk/data/datasources/usage_tracking_service.dart';
 import 'package:advisor_desk/data/datasources/profile_data_source.dart';
 import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
@@ -38,7 +35,7 @@ import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/disable_ad_blocker_dialog.dart';
 
-// Custom ScrollBehavior for smoother scrolling
+/// A custom [ScrollBehavior] for smoother, bouncing scroll physics across the app.
 class SmoothScrollBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {
@@ -46,83 +43,89 @@ class SmoothScrollBehavior extends ScrollBehavior {
   }
 }
 
+/// The main entry point of the application.
+///
+/// Initializes all necessary services, repositories, and settings before
+/// running the app. It determines the initial route based on user state
+/// (e.g., first launch, profile completion).
 void main() async {
+  // Ensure Flutter engine is initialized.
   WidgetsFlutterBinding.ensureInitialized();
+  // Initialize helpers and services.
   await InAppReviewHelper.setInstallDate();
   MobileAds.instance.initialize();
   await AppConstants.init();
-  
-  // Increment app launch count
+
+  // Track app launches.
   final usageTrackingService = UsageTrackingService();
   await usageTrackingService.incrementLaunchCount();
-  
+
+  // Initialize data sources and repositories.
   final adService = AdService()..loadAd();
   final localDataSource = await LocalDataSource.init();
   final goalDataSource = GoalDataSource();
-  
-  final performanceRepository = PerformanceRepositoryImpl(localDataSource: localDataSource);
+  final performanceRepository =
+      PerformanceRepositoryImpl(localDataSource: localDataSource);
   final goalRepository = GoalRepositoryImpl(goalDataSource);
-  final deleteCQEntriesByDateUseCase = DeleteCQEntriesByDateUseCase(performanceRepository);
-  final deleteCSATEntriesByDateUseCase = DeleteCSATEntriesByDateUseCase(performanceRepository);
-
+  final deleteCQEntriesByDateUseCase =
+      DeleteCQEntriesByDateUseCase(performanceRepository);
+  final deleteCSATEntriesByDateUseCase =
+      DeleteCSATEntriesByDateUseCase(performanceRepository);
   final leaveRepository = LeaveRepositoryImpl(localDataSource: localDataSource);
-
-  
-
-  final prefs = await SharedPreferences.getInstance();
-  final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
-
-  // Instantiate Profile related services
   final profileDataSource = ProfileDataSource();
   final profileRepository = ProfileRepositoryImpl(profileDataSource);
-  // Load profile to determine if it's filled
-  final initialProfile = await profileRepository.getProfile();
-  final bool isProfileFilled = initialProfile.name != null && initialProfile.companyName != null; // Assuming both are required
 
-  String initialRoute = AppRouter.dashboardRoute;
+  // Determine the initial route based on user progress.
+  final prefs = await SharedPreferences.getInstance();
+  final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
+  final initialProfile = await profileRepository.getProfile();
+  final isProfileFilled =
+      initialProfile.name != null && initialProfile.companyName != null;
+
+  String initialRoute;
   if (!hasShownOnboarding) {
     initialRoute = AppRouter.onboardingTutorialRoute;
     await prefs.setBool('hasShownOnboarding', true);
-  } else if (!isProfileFilled) { // If onboarding is done but profile not filled
+  } else if (!isProfileFilled) {
     initialRoute = AppRouter.profileRoute;
+  } else {
+    initialRoute = AppRouter.dashboardRoute;
   }
-  
+
   runApp(MyApp(
     adService: adService,
     performanceRepository: performanceRepository,
     goalRepository: goalRepository,
     deleteCQEntriesByDateUseCase: deleteCQEntriesByDateUseCase,
     deleteCSATEntriesByDateUseCase: deleteCSATEntriesByDateUseCase,
-    
     initialRoute: initialRoute,
-    profileRepository: profileRepository, // Pass profileRepository to MyApp
+    profileRepository: profileRepository,
     leaveRepository: leaveRepository,
   ));
 }
 
+/// The root widget of the application.
 class MyApp extends StatefulWidget {
   final AdService adService;
   final PerformanceRepository performanceRepository;
   final GoalRepository goalRepository;
   final DeleteCQEntriesByDateUseCase deleteCQEntriesByDateUseCase;
   final DeleteCSATEntriesByDateUseCase deleteCSATEntriesByDateUseCase;
-  
   final String initialRoute;
-  final ProfileRepository profileRepository; // New
+  final ProfileRepository profileRepository;
   final LeaveRepository leaveRepository;
 
   const MyApp({
-    Key? key,
+    super.key,
     required this.adService,
     required this.performanceRepository,
     required this.goalRepository,
     required this.deleteCQEntriesByDateUseCase,
     required this.deleteCSATEntriesByDateUseCase,
-    
     required this.initialRoute,
-    required this.profileRepository, // New
+    required this.profileRepository,
     required this.leaveRepository,
-  }) : super(key: key);
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -141,11 +144,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkAdBlocker(context));
   }
 
+  /// Checks if an ad blocker is active and shows a dialog if it is.
+  /// This check is performed once per day.
   Future<void> _checkAdBlocker(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final lastCheckString = prefs.getString('lastAdBlockerCheck');
     final today = DateTime.now();
-    final todayDate = DateTime(today.year, today.month, today.day).toIso8601String();
+    final todayDate =
+        DateTime(today.year, today.month, today.day).toIso8601String();
 
     if (lastCheckString != todayDate) {
       final adBlockerService = AdBlockerService();
@@ -157,6 +163,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
+  /// Initializes the app lock state on startup.
   Future<void> _initializeLockState() async {
     final isEnabled = await AuthenticationService.isAppLockEnabled();
     if (isEnabled) {
@@ -167,31 +174,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
-  
-
+  /// Checks for and initiates an in-app update if one is available.
   Future<void> checkForUpdate() async {
     try {
       AppUpdateInfo appUpdateInfo = await InAppUpdate.checkForUpdate();
-
-      if (appUpdateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+      if (appUpdateInfo.updateAvailability ==
+          UpdateAvailability.updateAvailable) {
         if (appUpdateInfo.flexibleUpdateAllowed) {
-          // Start a flexible update
           await InAppUpdate.startFlexibleUpdate();
-          // Listen for the update to be downloaded
           InAppUpdate.installUpdateListener.listen((status) {
             if (status == InstallStatus.downloaded) {
-              // When the update is downloaded, complete it
               InAppUpdate.completeFlexibleUpdate();
             }
           });
         } else if (appUpdateInfo.immediateUpdateAllowed) {
-          // Perform an immediate update if flexible is not allowed
           await InAppUpdate.performImmediateUpdate();
         }
       }
     } catch (e) {
-      print('Failed to check for update: $e');
-      // Handle error, e.g., show a message to the user
+      // Silently fail, as this is not a critical function.
     }
   }
 
@@ -206,22 +207,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // Check for app updates on resume
+      // On resume, check for downloaded updates and re-evaluate lock state.
       InAppUpdate.checkForUpdate().then((info) {
         if (info.installStatus == InstallStatus.downloaded) {
           InAppUpdate.completeFlexibleUpdate();
         }
       }).catchError((e) {
-        print('Failed to check for update on resume: $e');
+        // Silently fail.
       });
 
-      // Check for app lock on resume
       if (_justUnlocked) {
         _justUnlocked = false;
       } else {
         _initializeLockState();
       }
     } else if (state == AppLifecycleState.paused) {
+      // When pausing, update the last authenticated time if the app is not locked.
       if (isLocked.value == false) {
         AuthenticationService.updateLastAuthenticationTime();
       }
@@ -230,6 +231,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    // The ValueListenableBuilder switches between the LockScreen and the main app.
     return ValueListenableBuilder<bool>(
       valueListenable: isLocked,
       builder: (context, locked, _) {
@@ -244,40 +246,55 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           );
         }
 
-        // Main App UI
+        // The main app UI, wrapped in providers.
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider<AdService>.value(value: widget.adService),
-            RepositoryProvider<PerformanceRepository>.value(value: widget.performanceRepository),
+            RepositoryProvider<PerformanceRepository>.value(
+                value: widget.performanceRepository),
             RepositoryProvider<GoalRepository>.value(value: widget.goalRepository),
-            RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(value: widget.deleteCQEntriesByDateUseCase),
-            RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(value: widget.deleteCSATEntriesByDateUseCase),
-            RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository),
-            RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
-            RepositoryProvider<AiInsightService>(create: (context) => AiInsightService()),
-            RepositoryProvider<NlpService>(create: (context) => NlpService(performanceRepository: context.read<PerformanceRepository>())),
+            RepositoryProvider<DeleteCQEntriesByDateUseCase>.value(
+                value: widget.deleteCQEntriesByDateUseCase),
+            RepositoryProvider<DeleteCSATEntriesByDateUseCase>.value(
+                value: widget.deleteCSATEntriesByDateUseCase),
+            RepositoryProvider<ProfileRepository>.value(
+                value: widget.profileRepository),
+            RepositoryProvider<LeaveRepository>.value(
+                value: widget.leaveRepository),
+            RepositoryProvider<AiInsightService>(
+                create: (context) => AiInsightService()),
+            RepositoryProvider<NlpService>(
+                create: (context) => NlpService(
+                    performanceRepository: context.read<PerformanceRepository>())),
           ],
           child: MultiBlocProvider(
             providers: [
               BlocProvider(create: (context) => ThemeCubit()),
               BlocProvider(create: (context) => DashboardCustomizationCubit()),
-              BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>())), // New
+              BlocProvider(
+                  create: (context) =>
+                      ProfileCubit(context.read<ProfileRepository>())),
             ],
             child: BlocBuilder<ThemeCubit, ThemeState>(
               builder: (context, themeState) {
                 return DynamicColorBuilder(
-                  builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+                  builder:
+                      (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
                     ThemeData lightTheme;
                     ThemeData darkTheme;
 
-                    if (themeState.color == AppColor.materialYou && lightDynamic != null && darkDynamic != null) {
-                      // Use dynamic colors for both light and dark themes
+                    if (themeState.color == AppColor.materialYou &&
+                        lightDynamic != null &&
+                        darkDynamic != null) {
+                      // Use dynamic colors from the system for Material You.
                       lightTheme = AppTheme.getLightTheme(lightDynamic);
                       darkTheme = AppTheme.getDarkTheme(darkDynamic);
                     } else {
-                      // Use the selected predefined color for both light and dark themes
-                      lightTheme = AppTheme.getTheme(AppThemeMode.light, themeState.color);
-                      darkTheme = AppTheme.getTheme(AppThemeMode.dark, themeState.color);
+                      // Use the selected predefined color.
+                      lightTheme =
+                          AppTheme.getTheme(AppThemeMode.light, themeState.color);
+                      darkTheme =
+                          AppTheme.getTheme(AppThemeMode.dark, themeState.color);
                     }
 
                     return MaterialApp(
@@ -285,10 +302,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       theme: lightTheme,
                       darkTheme: darkTheme,
                       themeMode: themeState.themeMode == AppThemeMode.system
-          ? ThemeMode.system
-          : themeState.themeMode == AppThemeMode.dark
-              ? ThemeMode.dark
-              : ThemeMode.light,
+                          ? ThemeMode.system
+                          : themeState.themeMode == AppThemeMode.dark
+                              ? ThemeMode.dark
+                              : ThemeMode.light,
                       debugShowCheckedModeBanner: false,
                       scrollBehavior: SmoothScrollBehavior(),
                       onGenerateRoute: AppRouter.onGenerateRoute,

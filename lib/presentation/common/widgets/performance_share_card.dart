@@ -7,11 +7,19 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+/// A widget that displays a shareable card with a summary of monthly performance.
+///
+/// This widget is designed to be captured as an image and shared on social media
+/// or other platforms.
 class PerformanceShareCard extends StatefulWidget {
+  /// The monthly summary data to display.
   final MonthlySummary summary;
+  /// The user's profile information.
   final Profile profile;
+  /// The theme to use for the card.
   final ShareCardTheme theme;
 
+  /// Creates a performance share card.
   const PerformanceShareCard({
     Key? key,
     required this.summary,
@@ -48,6 +56,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
     _initPackageInfo();
   }
 
+  /// Initializes the package info to get the app version.
   Future<void> _initPackageInfo() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
     setState(() {
@@ -166,6 +175,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
     );
   }
 
+  /// Builds a row for displaying a piece of information.
   Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -192,6 +202,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
     );
   }
 
+  /// Builds the row for displaying the salary.
   Widget _buildSalaryRow(BuildContext context, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -223,6 +234,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
     );
   }
 
+  /// Builds the footer of the card with the app name and QR code.
   Widget _buildFooter() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

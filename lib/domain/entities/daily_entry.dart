@@ -1,13 +1,25 @@
 import 'package:equatable/equatable.dart';
 
+/// Represents a single daily performance entry.
+///
+/// This class encapsulates the details of a user's performance on a specific day,
+/// including login time and the number of calls made. It also provides helper
+/// methods for time calculations and formatting.
 class DailyEntry extends Equatable {
+  /// The unique identifier for the entry. Can be null if the entry is not yet saved.
   final int? id;
+  /// The date of the performance entry.
   final DateTime date;
+  /// The hours part of the total login time.
   final int loginHours;
+  /// The minutes part of the total login time.
   final int loginMinutes;
+  /// The seconds part of the total login time.
   final int loginSeconds;
+  /// The total number of calls made on this day.
   final int callCount;
 
+  /// Creates a new instance of [DailyEntry].
   const DailyEntry({
     this.id,
     required this.date,
@@ -17,22 +29,22 @@ class DailyEntry extends Equatable {
     required this.callCount,
   });
 
-  // Total login time in seconds
+  /// The total login time in seconds.
   int get totalLoginTimeInSeconds {
     return (loginHours * 3600) + (loginMinutes * 60) + loginSeconds;
   }
 
-  // Total login time in hours (as double for calculations)
+  /// The total login time in hours, as a double for calculations.
   double get totalLoginTimeInHours {
     return loginHours + (loginMinutes / 60) + (loginSeconds / 3600);
   }
 
-  // Format login time as HH:MM:SS
+  /// The formatted login time in HH:MM:SS format.
   String get formattedLoginTime {
     return '${'${loginHours}'.padLeft(2, '0')}:${'${loginMinutes}'.padLeft(2, '0')}:${'${loginSeconds}'.padLeft(2, '0')}';
   }
 
-  // Copy with method for creating a new instance with some updated values
+  /// Creates a copy of this [DailyEntry] but with the given fields replaced with new values.
   DailyEntry copyWith({
     int? id,
     DateTime? date,
@@ -51,7 +63,7 @@ class DailyEntry extends Equatable {
     );
   }
 
-  // Convert to Map for database operations
+  /// Converts this [DailyEntry] object into a map for database operations.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -63,7 +75,7 @@ class DailyEntry extends Equatable {
     };
   }
 
-  // Create from Map for database operations
+  /// Creates a [DailyEntry] object from a map retrieved from the database.
   factory DailyEntry.fromMap(Map<String, dynamic> map) {
     return DailyEntry(
       id: map['id'],

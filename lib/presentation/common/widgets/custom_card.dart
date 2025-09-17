@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 
+/// A custom card widget with a consistent style.
+///
+/// This widget provides a standardized card for the application, with
+/// options for padding, margin, and an onTap callback.
 class CustomCard extends StatelessWidget {
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// The padding around the card's child.
   final EdgeInsetsGeometry? padding;
+  /// The margin around the card.
   final EdgeInsetsGeometry? margin;
+  /// The callback that is called when the card is tapped.
   final VoidCallback? onTap;
 
+  /// Creates a custom card.
   const CustomCard({
     Key? key,
     required this.child,

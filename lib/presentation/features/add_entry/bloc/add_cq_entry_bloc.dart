@@ -4,10 +4,17 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'add_cq_entry_event.dart';
 import 'add_cq_entry_state.dart';
 
+/// A BLoC that manages the state for adding or editing a Call Quality (CQ) entry.
+///
+/// It handles user input for the audit date and percentage, and interacts with
+/// the [PerformanceRepository] to save or delete entries.
 class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
+  /// The performance repository for data operations.
   final PerformanceRepository repository;
+  /// The ad service for showing ads.
   final AdService adService;
 
+  /// Creates a new instance of [AddCQEntryBloc].
   AddCQEntryBloc({required this.repository, required this.adService}) : super(AddCQEntryState.initial()) {
     on<InitializeCQEntry>(_onInitializeCQEntry);
     on<CQDateChanged>(_onDateChanged);
@@ -17,6 +24,10 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     
   }
 
+  /// Handles the initialization of the CQ entry form.
+  ///
+  /// If an existing [entry] is provided, it populates the form with its data.
+  /// Otherwise, it initializes the form with the current date.
   Future<void> _onInitializeCQEntry(
     InitializeCQEntry event,
     Emitter<AddCQEntryState> emit,
@@ -38,6 +49,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     ));
   }
 
+  /// Handles changes to the audit date.
   void _onDateChanged(
     CQDateChanged event,
     Emitter<AddCQEntryState> emit,
@@ -45,6 +57,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     emit(state.copyWith(auditDate: event.auditDate));
   }
 
+  /// Handles changes to the percentage.
   void _onPercentageChanged(
     CQPercentageChanged event,
     Emitter<AddCQEntryState> emit,
@@ -52,6 +65,9 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     emit(state.copyWith(percentage: event.percentage));
   }
 
+  /// Handles the submission of a CQ entry.
+  ///
+  /// It validates the input, saves the entry to the repository, and shows an ad.
   Future<void> _onSubmitEntry(
     SubmitCQEntry event,
     Emitter<AddCQEntryState> emit,
@@ -92,8 +108,7 @@ class AddCQEntryBloc extends Bloc<AddCQEntryEvent, AddCQEntryState> {
     }
   }
 
-  
-
+  /// Handles the deletion of a CQ entry.
   Future<void> _onDeleteEntry(
     DeleteCQEntry event,
     Emitter<AddCQEntryState> emit,

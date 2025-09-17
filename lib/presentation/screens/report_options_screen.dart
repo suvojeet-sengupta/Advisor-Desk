@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
-import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 
+/// A screen where users can configure options for generating a custom report.
+///
+/// This screen allows users to select a specific month and year, and choose
+/// which sections to include in the final report. The selected options are
+/// then passed back to the previous screen for report generation.
 class ReportOptionsScreen extends StatefulWidget {
+  /// The use case for fetching all available monthly summaries.
   final GetAllMonthlySummariesUseCase getAllMonthlySummariesUseCase;
 
+  /// Creates a [ReportOptionsScreen].
   const ReportOptionsScreen(
-      {Key? key, required this.getAllMonthlySummariesUseCase})
-      : super(key: key);
+      {super.key, required this.getAllMonthlySummariesUseCase});
 
   @override
   State<ReportOptionsScreen> createState() => _ReportOptionsScreenState();
@@ -22,7 +26,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
   List<ReportSection> _selectedSections = ReportSection.values.toList();
 
   List<int> _years = [];
-  List<int> _months = [];
+  Map<int, List<int>> _yearMonthMap = {};
   int? _selectedYear;
   int? _selectedMonth;
 
@@ -32,26 +36,32 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
     _fetchAvailableDates();
   }
 
+  /// Fetches the available years and months from the database to populate the dropdowns.
   Future<void> _fetchAvailableDates() async {
     final summaries = await widget.getAllMonthlySummariesUseCase.execute();
     final Map<int, Set<int>> yearMonthMap = {};
     for (final summary in summaries) {
-      if (!yearMonthMap.containsKey(summary.year)) {
-        yearMonthMap[summary.year] = {};
-      }
-      yearMonthMap[summary.year]!.add(summary.month);
+      yearMonthMap.putIfAbsent(summary.year, () => {}).add(summary.month);
     }
 
     setState(() {
-      _years = yearMonthMap.keys.toList()..sort((a, b) => b.compareTo(a));
+      _yearMonthMap = yearMonthMap.map((key, value) =>
+          MapEntry(key, value.toList()..sort((a, b) => b.compareTo(a))));
+      _years = _yearMonthMap.keys.toList()..sort((a, b) => b.compareTo(a));
       if (_years.isNotEmpty) {
         _selectedYear = _years.first;
-        _months = yearMonthMap[_selectedYear]!.toList()..sort((a, b) => b.compareTo(a));
-        if (_months.isNotEmpty) {
-          _selectedMonth = _months.first;
-        }
+        _updateMonthsForSelectedYear();
       }
     });
+  }
+
+  /// Updates the list of available months when a new year is selected.
+  void _updateMonthsForSelectedYear() {
+    if (_selectedYear != null) {
+      setState(() {
+        _selectedMonth = _yearMonthMap[_selectedYear]?.first;
+      });
+    }
   }
 
   @override
@@ -109,8 +119,10 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
                     return;
                   }
                   if (_selectedYear != null && _selectedMonth != null) {
-                    final startDate = DateTime(_selectedYear!, _selectedMonth!, 1);
-                    final endDate = DateTime(_selectedYear!, _selectedMonth! + 1, 1).subtract(const Duration(microseconds: 1));
+                    final startDate =
+                        DateTime(_selectedYear!, _selectedMonth!, 1);
+                    final endDate =
+                        DateTime(_selectedYear!, _selectedMonth! + 1, 0);
                     Navigator.pop(context, {
                       'startDate': startDate,
                       'endDate': endDate,
@@ -127,6 +139,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
     );
   }
 
+  /// Builds the dropdown for selecting the report year.
   Widget _buildYearDropdown() {
     return DropdownButtonFormField<int>(
       value: _selectedYear,
@@ -137,12 +150,12 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
         );
       }).toList(),
       onChanged: (int? newValue) {
-        setState(() {
-          _selectedYear = newValue;
-          // Update months based on selected year
-          // This logic needs to be re-implemented based on how you get the months for a year
-          _selectedMonth = null;
-        });
+        if (newValue != null) {
+          setState(() {
+            _selectedYear = newValue;
+            _updateMonthsForSelectedYear();
+          });
+        }
       },
       decoration: const InputDecoration(
         labelText: 'Year',
@@ -151,10 +164,12 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
     );
   }
 
+  /// Builds the dropdown for selecting the report month.
   Widget _buildMonthDropdown() {
+    final months = _yearMonthMap[_selectedYear] ?? [];
     return DropdownButtonFormField<int>(
       value: _selectedMonth,
-      items: _months.map((month) {
+      items: months.map((month) {
         return DropdownMenuItem<int>(
           value: month,
           child: Text(DateFormat.MMMM().format(DateTime(0, month))),
@@ -172,6 +187,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
     );
   }
 
+  /// Builds a title for a section.
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -185,6 +201,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
     );
   }
 
+  /// Returns a user-friendly title for a given [ReportSection].
   String _getSectionTitleText(ReportSection section) {
     switch (section) {
       case ReportSection.monthlySummary:

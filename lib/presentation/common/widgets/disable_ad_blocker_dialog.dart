@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// Shows a dialog prompting the user to disable their ad blocker.
+///
+/// The [context] is the [BuildContext] from which to show the dialog.
 void showDisableAdBlockerDialog(BuildContext context) {
   showDialog(
     context: context,

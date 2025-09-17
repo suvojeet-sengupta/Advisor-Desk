@@ -4,13 +4,24 @@ import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/csat_summary.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart';
 
+/// Represents a comprehensive summary of performance for a specific date range.
+///
+/// This class is similar to [MonthlySummary] but is designed for custom date
+/// ranges. It aggregates performance data and calculates various metrics,
+/// including salary details, for the given period.
 class ReportSummary extends Equatable {
+  /// The start date of the report period.
   final DateTime startDate;
+  /// The end date of the report period.
   final DateTime endDate;
+  /// The list of daily performance entries for the period.
   final List<DailyEntry> entries;
+  /// The CSAT summary for the period.
   final CSATSummary? csatSummary;
+  /// The CQ summary for the period.
   final CQSummary? cqSummary;
 
+  /// Creates a new instance of [ReportSummary].
   const ReportSummary({
     required this.startDate,
     required this.endDate,
@@ -19,57 +30,57 @@ class ReportSummary extends Equatable {
     this.cqSummary,
   });
 
-  // Total login hours for the period
+  /// The total login hours for the period.
   double get totalLoginHours {
     if (entries.isEmpty) return 0;
     return entries.fold(0.0, (sum, entry) => sum + entry.totalLoginTimeInHours);
   }
 
-  // Total calls for the period
+  /// The total number of calls made in the period.
   int get totalCalls {
     if (entries.isEmpty) return 0;
     return entries.fold(0, (sum, entry) => sum + entry.callCount);
   }
 
-  // Total billable calls for the period
+  /// The total number of billable calls for the period.
   int get billableCalls {
     return totalCalls;
   }
 
-  // Average daily login hours
+  /// The average number of login hours per day.
   double get averageDailyLoginHours {
     if (entries.isEmpty) return 0;
     return totalLoginHours / entries.length;
   }
 
-  // Average daily calls
+  /// The average number of calls made per day.
   double get averageDailyCalls {
     if (entries.isEmpty) return 0;
     return totalCalls / entries.length;
   }
 
-  // Check if bonus targets are achieved
+  /// Determines if the bonus targets for calls and hours have been achieved.
   bool get isBonusAchieved {
     return totalCalls >= AppConstants.bonusCallTarget &&
            totalLoginHours >= AppConstants.bonusHourTarget;
   }
 
-  // Calculate base salary (₹4.30 per call)
+  /// The base salary, calculated from the number of billable calls.
   double get baseSalary {
     return billableCalls * AppConstants.baseRatePerCall;
   }
 
-  // Calculate bonus amount (₹2000 if targets are met)
+  /// The bonus amount. Returns the full bonus if targets are met, otherwise 0.
   double get bonusAmount {
     return isBonusAchieved ? AppConstants.bonusAmount : 0;
   }
 
-  // Calculate total salary
+  /// The total salary before any bonuses or deductions.
   double get totalSalary {
     return baseSalary + bonusAmount;
   }
 
-  // Calculate CSAT bonus
+  /// The CSAT bonus amount.
   double get csatBonus {
     if (isCSATBonusAchieved) {
       return totalSalary * AppConstants.csatBonusRate;
@@ -77,24 +88,24 @@ class ReportSummary extends Equatable {
     return 0.0;
   }
 
-  // Check if CSAT bonus targets are achieved
+  /// Determines if the CSAT bonus targets have been achieved.
   bool get isCSATBonusAchieved {
     return csatSummary != null &&
            csatSummary!.monthlyCSATPercentage >= AppConstants.csatBonusPercentage &&
            totalCalls >= AppConstants.csatBonusCallTarget;
   }
 
-  // Calculate TDS deduction
+  /// The Tax Deducted at Source (TDS) amount.
   double get tdsDeduction {
     return (totalSalary + csatBonus) * AppConstants.tdsRate;
   }
 
-  // Calculate net salary
+  /// The final net salary after all bonuses and deductions.
   double get netSalary {
     return totalSalary + csatBonus - tdsDeduction;
   }
 
-  // Detailed salary breakdown
+  /// A detailed breakdown of the salary components.
   Map<String, double> get salaryBreakdown {
     return {
       'Total Calls': totalCalls.toDouble(),
@@ -107,7 +118,7 @@ class ReportSummary extends Equatable {
     };
   }
 
-  // Format as Date Range (e.g., "Jan 01 - Jan 31, 2025")
+  /// A formatted string representing the date range of the report.
   String get formattedDateRange {
     final start = '${startDate.day} ${_getMonthAbbreviation(startDate.month)}';
     final end = '${endDate.day} ${_getMonthAbbreviation(endDate.month)}, ${endDate.year}';

@@ -8,9 +8,16 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 
+/// A screen for adding or editing Coaching Quality (CQ) entries.
+///
+/// This screen allows users to log multiple CQ audits at once. If an existing
+/// [entry] is provided, it opens in edit mode for that single entry. Otherwise,
+/// it prompts the user to select the number of audits they want to add.
 class CqEntryManagementScreen extends StatefulWidget {
+  /// An optional existing entry to be edited. If null, the screen is in "add" mode.
   final CqEntry? entry;
 
+  /// Creates a [CqEntryManagementScreen].
   const CqEntryManagementScreen({super.key, this.entry});
 
   @override
@@ -25,12 +32,14 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
   @override
   void initState() {
     super.initState();
+    // If editing an existing entry, initialize the form with its data.
     if (widget.entry != null) {
       _numberOfAudits = 1;
       _formEntries.add(_CqEntryFormData(entry: widget.entry));
     }
   }
 
+  /// Updates the number of forms to be displayed.
   void _onNumberOfAuditsChanged(int? value) {
     if (value != null) {
       setState(() {
@@ -43,13 +52,21 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
     }
   }
 
+  /// Validates all forms and dispatches events to add the entries.
   void _addEntries() {
     final addEntryBloc = context.read<AddEntryBloc>();
+    bool allFormsValid = true;
     for (final formData in _formEntries) {
-      if (formData.formKey.currentState!.validate()) {
+      if (!formData.formKey.currentState!.validate()) {
+        allFormsValid = false;
+      }
+    }
+
+    if (allFormsValid) {
+      for (final formData in _formEntries) {
         final entry = CqEntry(
           id: formData.entry?.id,
-          date: formData.selectedDate,
+          auditDate: formData.selectedDate,
           cifId: formData.cifIdController.text,
           callerId: formData.callerIdController.text,
           totalScore: int.parse(formData.totalScoreController.text),
@@ -57,8 +74,8 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
         );
         addEntryBloc.add(AddCqEntryEvent(entry));
       }
+      Navigator.of(context).pop(true); // Pop with a result to indicate success
     }
-    Navigator.of(context).pop();
   }
 
   @override
@@ -69,26 +86,28 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: _numberOfAudits == null ? _buildAuditNumberSelector() : _buildForms(),
+        child:
+            _numberOfAudits == null ? _buildAuditNumberSelector() : _buildForms(),
       ),
     );
   }
 
+  /// Builds the dropdown to select the number of audits to log.
   Widget _buildAuditNumberSelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'How many audits did you do today?',
+          'How many audits do you want to log?',
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<int>(
           value: _numberOfAudits,
-          items: List.generate(5, (index) => index + 1)
+          items: List.generate(10, (index) => index + 1)
               .map((value) => DropdownMenuItem(
                     value: value,
-                    child: Text(value.toString()),
+                    child: Text('$value ${value == 1 ? 'Audit' : 'Audits'}'),
                   ))
               .toList(),
           onChanged: _onNumberOfAuditsChanged,
@@ -101,6 +120,7 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
     );
   }
 
+  /// Builds the list of CQ entry forms.
   Widget _buildForms() {
     return Column(
       children: [
@@ -115,8 +135,9 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
             },
           ),
         ),
+        const SizedBox(height: 16),
         CustomButton(
-          text: 'Add Entries',
+          text: widget.entry != null ? 'Save Changes' : 'Add Entries',
           onPressed: _addEntries,
         ),
       ],
@@ -132,6 +153,7 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
   }
 }
 
+/// A helper class to manage the state and controllers for a single CQ entry form.
 class _CqEntryFormData {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final CqEntry? entry;
@@ -141,13 +163,16 @@ class _CqEntryFormData {
   late final TextEditingController outOfController;
   DateTime selectedDate;
 
-  _CqEntryFormData({this.entry}) : selectedDate = entry?.date ?? DateTime.now() {
+  _CqEntryFormData({this.entry})
+      : selectedDate = entry?.auditDate ?? DateTime.now() {
     cifIdController = TextEditingController(text: entry?.cifId);
     callerIdController = TextEditingController(text: entry?.callerId);
-    totalScoreController = TextEditingController(text: entry?.totalScore.toString());
+    totalScoreController =
+        TextEditingController(text: entry?.totalScore.toString());
     outOfController = TextEditingController(text: entry?.outOf.toString());
   }
 
+  /// Disposes all the text editing controllers.
   void dispose() {
     cifIdController.dispose();
     callerIdController.dispose();
@@ -156,6 +181,7 @@ class _CqEntryFormData {
   }
 }
 
+/// A stateful widget that represents the form for a single CQ entry.
 class _CqEntryForm extends StatefulWidget {
   final _CqEntryFormData formData;
   final int formIndex;
@@ -163,16 +189,17 @@ class _CqEntryForm extends StatefulWidget {
   const _CqEntryForm({required this.formData, required this.formIndex});
 
   @override
-  __CqEntryFormState createState() => __CqEntryFormState();
+  State<_CqEntryForm> createState() => __CqEntryFormState();
 }
 
 class __CqEntryFormState extends State<_CqEntryForm> {
+  /// Shows a date picker to select the audit date.
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: widget.formData.selectedDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null && picked != widget.formData.selectedDate) {
       setState(() {
@@ -192,7 +219,8 @@ class __CqEntryFormState extends State<_CqEntryForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Entry ${widget.formIndex}', style: Theme.of(context).textTheme.titleMedium),
+              Text('Audit #${widget.formIndex}',
+                  style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 16),
               Row(
                 children: [

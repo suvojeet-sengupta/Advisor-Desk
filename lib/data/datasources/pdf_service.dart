@@ -8,7 +8,19 @@ import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:intl/intl.dart';
 
+/// A service for generating PDF reports.
+///
+/// This class uses the `pdf` package to create a detailed performance report
+/// and leverages `compute` to run the generation in a separate isolate,
+/// preventing UI jank.
 class PdfService {
+  /// Generates a PDF report from the given [summary] data.
+  ///
+  /// The [summary] contains all the calculated data for the report.
+  /// The [sectionsToInclude] list determines which parts of the report are generated.
+  /// The [profile] information is used to add advisor and company details to the report.
+  ///
+  /// Returns a [Future] that completes with a `List<int>` representing the PDF file bytes.
   Future<List<int>> generateReportPdf(ReportSummary summary,
       List<ReportSection> sectionsToInclude, Profile profile) async {
     // Load fonts and SVG in the main isolate
@@ -28,7 +40,12 @@ class PdfService {
   }
 }
 
-// This function runs in a separate isolate
+/// A top-level function that runs in a separate isolate to generate the PDF.
+///
+/// This function takes a map of [params] containing all the necessary data
+/// and assets to create the PDF document.
+///
+/// Returns a [Future] that completes with a `List<int>` of the generated PDF.
 Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   final ReportSummary summary = params['summary'];
   final List<ReportSection> sectionsToInclude = params['sectionsToInclude'];
@@ -342,6 +359,9 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   return pdf.save();
 }
 
+/// Returns a quality rating string based on the given [percentage].
+///
+/// The [percentage] is the CQ score.
 String _getQualityRating(double percentage) {
   if (percentage >= 95) return 'Excellent';
   if (percentage >= 85) return 'Good';

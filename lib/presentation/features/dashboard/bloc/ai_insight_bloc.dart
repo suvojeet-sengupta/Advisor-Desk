@@ -3,9 +3,13 @@ import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'ai_insight_event.dart';
 import 'ai_insight_state.dart';
 
+/// A BLoC that manages the state for AI-generated insights.
+///
+/// It uses an [AiInsightService] to generate insights based on user performance data.
 class AiInsightBloc extends Bloc<AiInsightEvent, AiInsightState> {
   final AiInsightService _aiInsightService;
 
+  /// Creates a new instance of [AiInsightBloc].
   AiInsightBloc({required AiInsightService aiInsightService})
       : _aiInsightService = aiInsightService,
         super(AiInsightInitial()) {
@@ -13,6 +17,7 @@ class AiInsightBloc extends Bloc<AiInsightEvent, AiInsightState> {
     on<GenerateAnalyzerInsight>(_onGenerateAnalyzerInsight);
   }
 
+  /// Handles the generation of a dashboard insight.
   void _onGenerateInsight(
     GenerateInsight event,
     Emitter<AiInsightState> emit,
@@ -30,6 +35,7 @@ class AiInsightBloc extends Bloc<AiInsightEvent, AiInsightState> {
     }
   }
 
+  /// Handles the generation of a more detailed analyzer insight.
   void _onGenerateAnalyzerInsight(
     GenerateAnalyzerInsight event,
     Emitter<AiInsightState> emit,

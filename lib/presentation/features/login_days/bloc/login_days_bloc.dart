@@ -8,12 +8,21 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/leave_entry.dart';
 
+/// A BLoC that manages the state for the "Login Days" feature.
+///
+/// It handles loading the login and leave data for a given month, and allows
+/// the user to mark days as leave or delete leave entries.
 class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
+  /// The performance repository for data operations.
   final PerformanceRepository performanceRepository;
+  /// The use case for getting leave entries.
   final GetLeaveEntriesUseCase getLeaveEntriesUseCase;
+  /// The use case for marking a day as leave.
   final MarkLeaveUseCase markLeaveUseCase;
+  /// The use case for deleting a leave entry.
   final DeleteLeaveUseCase deleteLeaveUseCase;
 
+  /// Creates a new instance of [LoginDaysBloc].
   LoginDaysBloc({
     required this.performanceRepository,
     required this.getLeaveEntriesUseCase,
@@ -25,6 +34,7 @@ class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
     on<DeleteLeave>(_onDeleteLeave);
   }
 
+  /// Handles the loading of login and leave data for a specific month.
   Future<void> _onLoadLoginDays(LoadLoginDays event, Emitter<LoginDaysState> emit) async {
     emit(LoginDaysLoading());
     try {
@@ -37,6 +47,7 @@ class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
     }
   }
 
+  /// Handles marking a day as leave.
   Future<void> _onMarkDayAsLeave(MarkDayAsLeave event, Emitter<LoginDaysState> emit) async {
     try {
       await markLeaveUseCase(event.entry);
@@ -50,6 +61,7 @@ class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
     }
   }
 
+  /// Handles deleting a leave entry.
   Future<void> _onDeleteLeave(DeleteLeave event, Emitter<LoginDaysState> emit) async {
     try {
       await deleteLeaveUseCase(event.date);
@@ -63,6 +75,7 @@ class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
     }
   }
 
+  /// Emits a [LoginDaysLoaded] state with the calculated data.
   void _emitLoadedState(Emitter<LoginDaysState> emit, List<DailyEntry> loginEntries, List<LeaveEntry> leaveEntries, int year, int month) {
     final now = DateTime.now();
     int daysToConsider;

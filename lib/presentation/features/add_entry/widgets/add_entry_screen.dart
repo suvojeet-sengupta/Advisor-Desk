@@ -21,9 +21,16 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_state.dart';
 
+/// A screen for adding or editing a daily performance entry, as well as
+/// providing access to add CSAT and CQ entries via a tab bar.
+///
+/// This screen uses a [MultiBlocProvider] to provide the necessary BLoCs for
+/// each entry type.
 class AddEntryScreen extends StatelessWidget {
+  /// The entry to be edited. If null, a new entry is created.
   final DailyEntry? entryToEdit;
 
+  /// Creates an [AddEntryScreen].
   const AddEntryScreen({Key? key, this.entryToEdit}) : super(key: key);
 
   @override
@@ -54,7 +61,9 @@ class AddEntryScreen extends StatelessWidget {
   }
 }
 
+/// The view for the [AddEntryScreen].
 class AddEntryView extends StatefulWidget {
+  /// Creates an [AddEntryView].
   const AddEntryView({Key? key}) : super(key: key);
 
   @override
@@ -241,6 +250,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     );
   }
 
+  /// Builds the UI for the "Daily Entry" tab.
   Widget _buildDailyEntryTab(BuildContext context) {
     return BlocBuilder<AddEntryBloc, AddEntryState>(
       builder: (context, state) {
@@ -425,6 +435,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     );
   }
 
+  /// Builds a section title.
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -435,6 +446,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     );
   }
   
+  /// Shows a date picker dialog.
   Future<void> _selectDate(BuildContext context) async {
     final bloc = context.read<AddEntryBloc>();
     final currentDate = bloc.state.date;
@@ -461,6 +473,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     }
   }
 
+  /// Shows a confirmation dialog before deleting an entry.
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,

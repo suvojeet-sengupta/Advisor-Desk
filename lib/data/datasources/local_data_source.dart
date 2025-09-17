@@ -7,6 +7,11 @@ import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/domain/entities/leave_entry.dart';
 import 'package:advisor_desk/domain/entities/monthly_data.dart';
 
+/// A data source for managing the local SQLite database.
+///
+/// This class provides a singleton instance for accessing the database and includes
+/// methods for creating, reading, updating, and deleting (CRUD) various types of
+/// data, such as daily performance entries, CSAT scores, CQ scores, and leave entries.
 class LocalDataSource {
   static Database? _database;
 
@@ -16,13 +21,19 @@ class LocalDataSource {
   // Singleton instance
   static LocalDataSource? _instance;
 
-  // Factory constructor to return the singleton instance
+  /// Factory constructor to return the singleton instance of [LocalDataSource].
   factory LocalDataSource() {
     _instance ??= LocalDataSource._();
     return _instance!;
   }
 
-  // Initialize the database
+  /// Initializes the database.
+  ///
+  /// This method sets up the database connection, creates the necessary tables
+  /// if they don't exist, and handles database upgrades. It should be called
+  /// once at app startup.
+  ///
+  /// Returns a [Future] that completes with the initialized [LocalDataSource] instance.
   static Future<LocalDataSource> init() async {
     if (_database != null) {
       return LocalDataSource();
@@ -157,7 +168,8 @@ class LocalDataSource {
     return LocalDataSource();
   }
 
-  // Get the database instance
+  /// Returns the singleton instance of the [Database].
+  /// If the database is not initialized, it will be initialized first.
   Future<Database> get database async {
     if (_database == null) {
       await init();
@@ -165,13 +177,13 @@ class LocalDataSource {
     return _database!;
   }
 
-  // Get database path
+  /// Returns the path of the database file.
   Future<String> getDatabasePath() async {
     final databasesPath = await getDatabasesPath();
     return join(databasesPath, AppConstants.databaseName);
   }
 
-  // Close the database
+  /// Closes the database connection.
   Future<void> closeDatabase() async {
     if (_database != null) {
       await _database!.close();
@@ -181,7 +193,10 @@ class LocalDataSource {
 
   // CRUD operations for daily entries
 
-  // Create a new entry
+  /// Inserts a new daily entry into the database.
+  ///
+  /// The [entry] is the [DailyEntry] object to be inserted.
+  /// Returns the ID of the newly inserted entry.
   Future<int> insertEntry(DailyEntry entry) async {
     final db = await database;
     return await db.insert(
@@ -191,7 +206,9 @@ class LocalDataSource {
     );
   }
 
-  // Batch insert daily entries
+  /// Inserts a list of daily entries in a batch transaction.
+  ///
+  /// The [entries] is a list of [DailyEntry] objects to be inserted.
   Future<void> insertDailyEntries(List<DailyEntry> entries) async {
     final db = await database;
     await db.transaction((txn) async {
@@ -205,7 +222,7 @@ class LocalDataSource {
     });
   }
 
-  // Read all entries
+  /// Retrieves all daily entries from the database, ordered by date descending.
   Future<List<DailyEntry>> getAllEntries() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -218,7 +235,7 @@ class LocalDataSource {
     });
   }
 
-  // Read entries for a specific month
+  /// Retrieves all daily entries for a specific [month] and [year].
   Future<List<DailyEntry>> getEntriesForMonth(int month, int year) async {
     final db = await database;
 
@@ -241,7 +258,9 @@ class LocalDataSource {
     });
   }
 
-  // Read entries for a specific date range
+  /// Retrieves all daily entries within a given date range.
+  ///
+  /// The [startDate] and [endDate] define the range.
   Future<List<DailyEntry>> getEntriesForDateRange(DateTime startDate, DateTime endDate) async {
     final db = await database;
 
@@ -260,7 +279,7 @@ class LocalDataSource {
     });
   }
 
-  // Read entry for a specific date
+  /// Retrieves the daily entry for a specific [date].
   Future<DailyEntry?> getEntryForDate(DateTime date) async {
     final db = await database;
 
@@ -284,7 +303,10 @@ class LocalDataSource {
     return DailyEntry.fromMap(maps.first);
   }
 
-  // Update an existing entry
+  /// Updates an existing daily entry.
+  ///
+  /// The [entry] is the [DailyEntry] object to be updated.
+  /// Returns the number of rows affected.
   Future<int> updateEntry(DailyEntry entry) async {
     final db = await database;
     return await db.update(
@@ -295,7 +317,7 @@ class LocalDataSource {
     );
   }
 
-  // Delete an entry
+  /// Deletes a daily entry by its [id].
   Future<int> deleteEntry(int id) async {
     final db = await database;
     return await db.delete(
@@ -307,6 +329,9 @@ class LocalDataSource {
 
   // Monthly Data CRUD operations
 
+  /// Saves monthly data, such as non-billable calls.
+  ///
+  /// The [monthlyData] is the [MonthlyData] object to be saved.
   Future<void> saveMonthlyData(MonthlyData monthlyData) async {
     final db = await database;
     await db.insert(
@@ -316,6 +341,7 @@ class LocalDataSource {
     );
   }
 
+  /// Retrieves monthly data for a specific [month] and [year].
   Future<MonthlyData?> getMonthlyData(int month, int year) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -333,7 +359,10 @@ class LocalDataSource {
 
   // CSAT CRUD operations
 
-  // Create a new CSAT entry
+  /// Inserts a new CSAT entry into the database.
+  ///
+  /// The [entry] is the [CSATEntry] object to be inserted.
+  /// Returns the ID of the newly inserted entry.
   Future<int> insertCSATEntry(CSATEntry entry) async {
     final db = await database;
     return await db.insert(
@@ -343,7 +372,9 @@ class LocalDataSource {
     );
   }
 
-  // Batch insert CSAT entries
+  /// Inserts a list of CSAT entries in a batch transaction.
+  ///
+  /// The [entries] is a list of [CSATEntry] objects to be inserted.
   Future<void> insertCSATEntries(List<CSATEntry> entries) async {
     final db = await database;
     await db.transaction((txn) async {
@@ -357,7 +388,9 @@ class LocalDataSource {
     });
   }
 
-  // Read CSAT entries for a specific date range
+  /// Retrieves all CSAT entries within a given date range.
+  ///
+  /// The [startDate] and [endDate] define the range.
   Future<List<CSATEntry>> getCSATEntriesForDateRange(DateTime startDate, DateTime endDate) async {
     final db = await database;
 
@@ -376,7 +409,7 @@ class LocalDataSource {
     });
   }
 
-  // Read CSAT entries for a specific month
+  /// Retrieves all CSAT entries for a specific [month] and [year].
   Future<List<CSATEntry>> getCSATEntriesForMonth(int month, int year) async {
     final db = await database;
 
@@ -398,7 +431,7 @@ class LocalDataSource {
     });
   }
 
-  // Delete a CSAT entry
+  /// Deletes a CSAT entry by its [id].
   Future<int> deleteCSATEntry(int id) async {
     final db = await database;
     return await db.delete(
@@ -408,7 +441,7 @@ class LocalDataSource {
     );
   }
 
-  // Delete CSAT entries for a specific date
+  /// Deletes all CSAT entries for a specific [date].
   Future<int> deleteCSATEntriesByDate(DateTime date) async {
     final db = await database;
     final normalizedDate = DateTime(date.year, date.month, date.day);
@@ -426,7 +459,10 @@ class LocalDataSource {
 
   // CQ CRUD operations
 
-  // Create a new CQ entry
+  /// Inserts a new CQ entry into the database.
+  ///
+  /// The [entry] is the [CQEntry] object to be inserted.
+  /// Returns the ID of the newly inserted entry.
   Future<int> insertCQEntry(CQEntry entry) async {
     final db = await database;
     return await db.insert(
@@ -436,7 +472,9 @@ class LocalDataSource {
     );
   }
 
-  // Batch insert CQ entries
+  /// Inserts a list of CQ entries in a batch transaction.
+  ///
+  /// The [entries] is a list of [CQEntry] objects to be inserted.
   Future<void> insertCQEntries(List<CQEntry> entries) async {
     final db = await database;
     await db.transaction((txn) async {
@@ -450,7 +488,7 @@ class LocalDataSource {
     });
   }
 
-  // Read all CQ entries
+  /// Retrieves all CQ entries from the database, ordered by audit date descending.
   Future<List<CQEntry>> getAllCQEntries() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -463,7 +501,9 @@ class LocalDataSource {
     });
   }
 
-  // Read CQ entries for a specific date range
+  /// Retrieves all CQ entries within a given date range.
+  ///
+  /// The [startDate] and [endDate] define the range.
   Future<List<CQEntry>> getCQEntriesForDateRange(DateTime startDate, DateTime endDate) async {
     final db = await database;
 
@@ -482,7 +522,7 @@ class LocalDataSource {
     });
   }
 
-  // Read CQ entries for a specific month
+  /// Retrieves all CQ entries for a specific [month] and [year].
   Future<List<CQEntry>> getCQEntriesForMonth(int month, int year) async {
     final db = await database;
 
@@ -504,7 +544,7 @@ class LocalDataSource {
     });
   }
 
-  // Read CQ entry for a specific date
+  /// Retrieves the CQ entry for a specific [date].
   Future<CQEntry?> getCQEntryForDate(DateTime date) async {
     final db = await database;
 
@@ -528,7 +568,10 @@ class LocalDataSource {
     return CQEntry.fromMap(maps.first);
   }
 
-  // Update an existing CQ entry
+  /// Updates an existing CQ entry.
+  ///
+  /// The [entry] is the [CQEntry] object to be updated.
+  /// Returns the number of rows affected.
   Future<int> updateCQEntry(CQEntry entry) async {
     final db = await database;
     return await db.update(
@@ -539,7 +582,7 @@ class LocalDataSource {
     );
   }
 
-  // Delete a CQ entry
+  /// Deletes a CQ entry by its [id].
   Future<int> deleteCQEntry(int id) async {
     final db = await database;
     return await db.delete(
@@ -549,7 +592,7 @@ class LocalDataSource {
     );
   }
 
-  // Delete CQ entries for a specific date
+  /// Deletes all CQ entries for a specific [date].
   Future<int> deleteCQEntriesByDate(DateTime date) async {
     final db = await database;
     final normalizedDate = DateTime(date.year, date.month, date.day);
@@ -565,7 +608,10 @@ class LocalDataSource {
     );
   }
 
-  // Get all unique month-year combinations from daily, CSAT, and CQ entries
+  /// Retrieves a list of unique month-year combinations from all entry types.
+  ///
+  /// This is useful for populating a list of available months for reporting.
+  /// The list is sorted in descending order (most recent first).
   Future<List<Map<String, int>>> getUniqueMonthYearCombinations() async {
     final db = await database;
     final Set<String> uniqueCombinations = {};
@@ -621,6 +667,9 @@ class LocalDataSource {
 
   // Leave Entry CRUD operations
 
+  /// Saves a leave entry to the database.
+  ///
+  /// The [entry] is the [LeaveEntry] object to be saved.
   Future<void> saveLeaveEntry(LeaveEntry entry) async {
     final db = await database;
     await db.insert(
@@ -630,6 +679,7 @@ class LocalDataSource {
     );
   }
 
+  /// Retrieves all leave entries for a specific [year] and [month].
   Future<List<LeaveEntry>> getLeaveEntriesForMonth(int year, int month) async {
     final db = await database;
     final startDate = DateTime(year, month, 1);
@@ -644,6 +694,7 @@ class LocalDataSource {
     });
   }
 
+  /// Deletes a leave entry for a specific [date].
   Future<void> deleteLeaveEntry(DateTime date) async {
     final db = await database;
     final normalizedDate = DateTime(date.year, date.month, date.day);

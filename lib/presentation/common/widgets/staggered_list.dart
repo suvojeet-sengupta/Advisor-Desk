@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
+/// A [ListView] that applies a staggered animation to its children.
+///
+/// This widget uses the `flutter_staggered_animations` package to animate
+/// the list items as they appear.
 class StaggeredListView extends StatelessWidget {
+  /// The number of items in the list.
   final int itemCount;
+  /// A builder function that returns a widget for each item.
   final Widget Function(BuildContext, int) itemBuilder;
+  /// The vertical offset for the slide animation.
   final double? verticalOffset;
+  /// The horizontal offset for the slide animation.
   final double? horizontalOffset;
+  /// The duration of the animation.
   final Duration? duration;
+  /// The physics of the scroll view.
   final ScrollPhysics? physics;
+  /// The padding around the list.
   final EdgeInsetsGeometry? padding;
 
+  /// Creates a staggered list view.
   const StaggeredListView({
     Key? key,
     required this.itemCount,
@@ -46,18 +58,33 @@ class StaggeredListView extends StatelessWidget {
   }
 }
 
+/// A [GridView] that applies a staggered animation to its children.
+///
+/// This widget uses the `flutter_staggered_animations` package to animate
+/// the grid items as they appear.
 class StaggeredGridView extends StatelessWidget {
+  /// The number of items in the grid.
   final int itemCount;
+  /// A builder function that returns a widget for each item.
   final Widget Function(BuildContext, int) itemBuilder;
+  /// The number of columns in the grid.
   final int crossAxisCount;
+  /// The vertical offset for the slide animation.
   final double? verticalOffset;
+  /// The horizontal offset for the slide animation.
   final double? horizontalOffset;
+  /// The duration of the animation.
   final Duration? duration;
+  /// The spacing between items in the main axis.
   final double mainAxisSpacing;
+  /// The spacing between items in the cross axis.
   final double crossAxisSpacing;
+  /// The aspect ratio of the children.
   final double childAspectRatio;
+  /// The padding around the grid.
   final EdgeInsetsGeometry? padding;
 
+  /// Creates a staggered grid view.
   const StaggeredGridView({
     Key? key,
     required this.itemCount,
@@ -102,11 +129,18 @@ class StaggeredGridView extends StatelessWidget {
   }
 }
 
+/// A widget that applies a fade, slide, and scale animation to its child.
+///
+/// This widget is used to animate a single list item.
 class AnimatedListItem extends StatefulWidget {
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// The index of the item in the list, used for delaying the animation.
   final int index;
+  /// The delay before the animation starts.
   final Duration? delay;
 
+  /// Creates an animated list item.
   const AnimatedListItem({
     Key? key,
     required this.child,
@@ -194,13 +228,20 @@ class _AnimatedListItemState extends State<AnimatedListItem>
   }
 }
 
+/// A [Column] that applies a staggered animation to its children.
 class StaggeredColumn extends StatelessWidget {
+  /// The widgets below this widget in the tree.
   final List<Widget> children;
+  /// How the children should be placed along the cross axis.
   final CrossAxisAlignment crossAxisAlignment;
+  /// How the children should be placed along the main axis.
   final MainAxisAlignment mainAxisAlignment;
+  /// The duration of the animation for each child.
   final Duration? animationDuration;
+  /// The delay between the start of each child's animation.
   final Duration? delayBetweenItems;
 
+  /// Creates a staggered column.
   const StaggeredColumn({
     Key? key,
     required this.children,

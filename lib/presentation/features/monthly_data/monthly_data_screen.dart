@@ -8,10 +8,17 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 
+/// A screen for editing additional monthly data.
+///
+/// This screen provides a form for the user to input data like non-billable
+/// calls for a specific month.
 class MonthlyDataScreen extends StatefulWidget {
+  /// The month to edit data for.
   final int month;
+  /// The year to edit data for.
   final int year;
 
+  /// Creates a [MonthlyDataScreen].
   const MonthlyDataScreen({super.key, required this.month, required this.year});
 
   @override

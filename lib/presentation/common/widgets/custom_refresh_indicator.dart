@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+/// A custom refresh indicator that can display a Lottie animation.
 class CustomRefreshIndicator extends StatefulWidget {
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// A function that's called when the user pulls down far enough to trigger a refresh.
   final Future<void> Function() onRefresh;
+  /// The background color of the refresh indicator.
   final Color? backgroundColor;
+  /// The path to a Lottie animation file to display during refresh.
   final String? lottieAsset;
 
+  /// Creates a custom refresh indicator.
   const CustomRefreshIndicator({
     Key? key,
     required this.child,
@@ -145,12 +151,18 @@ class _CustomRefreshIndicatorState extends State<CustomRefreshIndicator>
   }
 }
 
+/// A refresh indicator with a liquid-style wave animation.
 class LiquidPullToRefresh extends StatefulWidget {
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// A function that's called when the user pulls down far enough to trigger a refresh.
   final Future<void> Function() onRefresh;
+  /// The color of the wave.
   final Color? color;
+  /// The background color of the refresh indicator.
   final Color? backgroundColor;
 
+  /// Creates a liquid pull-to-refresh indicator.
   const LiquidPullToRefresh({
     Key? key,
     required this.child,
@@ -256,11 +268,16 @@ class _LiquidPullToRefreshState extends State<LiquidPullToRefresh>
   }
 }
 
+/// A custom painter that draws a wave.
 class WavePainter extends CustomPainter {
+  /// The color of the wave.
   final Color color;
+  /// The progress of the wave animation.
   final double progress;
+  /// The phase of the wave.
   final double wavePhase;
 
+  /// Creates a wave painter.
   WavePainter({
     required this.color,
     required this.progress,
@@ -291,6 +308,7 @@ class WavePainter extends CustomPainter {
     canvas.drawPath(path, paint);
   }
 
+  /// A simple sine function approximation.
   double sin(double radians) {
     // Simple sine approximation
     final normalized = radians % (2 * 3.14159);

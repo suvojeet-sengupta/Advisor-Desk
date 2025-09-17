@@ -8,7 +8,22 @@ import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 
+/// A service that generates AI-powered insights based on user performance data.
+///
+/// This class analyzes monthly summaries, goals, and other data to provide
+/// timely and relevant suggestions, briefings, and alerts to the user.
 class AiInsightService {
+  /// Generates a primary insight for the dashboard.
+  ///
+  /// This method uses a priority system to determine the most relevant insight
+  /// to show, considering factors like time of day, goal status, and recent performance.
+  ///
+  /// The [summary] is the monthly performance summary.
+  /// The [goals] are the user's current goals.
+  /// The [profile] is the user's profile information.
+  ///
+  /// Returns an [AiInsight] object containing the generated message and any
+  /// associated actions.
   AiInsight getInsight({
     required MonthlySummary summary,
     required GoalsState goals,
@@ -76,6 +91,7 @@ class AiInsightService {
     return _getGenericPacingAlert(summary, goals, profile);
   }
 
+  /// Generates a morning briefing with a daily target.
   AiInsight _getMorningBriefing(MonthlySummary summary, GoalsState goals, Profile profile, DailyEntry? yesterdayEntry) {
     final name = profile.name != null ? ", ${profile.name}" : "";
     
@@ -96,6 +112,7 @@ class AiInsightService {
     return AiInsight(message: briefing);
   }
 
+  /// Generates an end-of-day summary of the user's performance.
   AiInsight _getEndOfDaySummary(Profile profile, DailyEntry todayEntry, MonthlySummary summary, GoalsState goals) {
     final name = profile.name != null ? " ${profile.name}" : "";
     final dailyAvgNeeded = (goals.targetCalls / DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day).ceil();
@@ -113,12 +130,14 @@ class AiInsightService {
     return AiInsight(message: summaryText);
   }
 
+  /// Generates a generic alert about the user's progress towards their goals.
   AiInsight _getGenericPacingAlert(MonthlySummary summary, GoalsState goals, Profile profile) {
     final name = profile.name != null ? ", ${profile.name}" : "";
     final progress = (summary.totalCalls / goals.targetCalls * 100).clamp(0, 100);
     return AiInsight(message: "Hello${name}! You've completed ${progress.toStringAsFixed(0)}% of your monthly call target. Keep pushing!");
   }
 
+  /// Analyzes the user's progress towards their goals and provides a specific insight.
   AiInsight? _getGoalAnalysisInsight(MonthlySummary summary, GoalsState goals) {
     final bool callTargetMet = summary.totalCalls >= goals.targetCalls;
     final bool hourTargetMet = summary.totalLoginHours >= goals.targetHours;
@@ -147,6 +166,10 @@ class AiInsightService {
     return null; // No specific goal insight
   }
 
+  /// Generates a detailed analysis of the user's performance for the month.
+  ///
+  /// This method provides a more in-depth analysis of call performance, login hours,
+  /// CSAT, CQ, and salary.
   AiInsight getAnalyzerInsight({
     required MonthlySummary summary,
     required CSATSummary csatSummary,

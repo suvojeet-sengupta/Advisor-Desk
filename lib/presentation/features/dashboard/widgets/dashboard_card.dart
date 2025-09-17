@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
+/// A card widget for displaying a single metric on the dashboard.
+///
+/// This widget shows a title, a value, and an icon, and can be tapped.
 class DashboardCard extends StatelessWidget {
+  /// The title of the metric.
   final String title;
+  /// The value of the metric.
   final String value;
+  /// The icon to display for the metric.
   final IconData icon;
+  /// The color of the icon.
   final Color iconColor;
+  /// A callback function that is called when the card is tapped.
   final VoidCallback? onTap;
 
+  /// Creates a dashboard card.
   const DashboardCard({
     Key? key,
     required this.title,

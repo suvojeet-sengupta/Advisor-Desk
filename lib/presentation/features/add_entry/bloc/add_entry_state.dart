@@ -1,19 +1,34 @@
 import 'package:equatable/equatable.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 
+/// The status of the add/edit daily entry operation.
 enum AddEntryStatus { initial, loading, loaded, success, failure }
 
+/// The state for the Add/Edit Daily Entry feature.
+///
+/// This class holds all the data related to the state of the form,
+/// including the current status, input values, and any error messages.
 class AddEntryState extends Equatable {
+  /// The current status of the operation.
   final AddEntryStatus status;
+  /// The date of the daily entry.
   final DateTime date;
+  /// The login hours of the daily entry.
   final int loginHours;
+  /// The login minutes of the daily entry.
   final int loginMinutes;
+  /// The login seconds of the daily entry.
   final int loginSeconds;
+  /// The call count of the daily entry.
   final int callCount;
+  /// The existing daily entry, if one is being edited.
   final DailyEntry? existingEntry;
+  /// An error message, if any.
   final String? errorMessage;
-  final bool isDelete; // नया फ्लैग
+  /// Whether the entry has been deleted.
+  final bool isDelete;
 
+  /// Creates a new instance of [AddEntryState].
   const AddEntryState({
     this.status = AddEntryStatus.initial,
     required this.date,
@@ -23,15 +38,17 @@ class AddEntryState extends Equatable {
     this.callCount = 0,
     this.existingEntry,
     this.errorMessage,
-    this.isDelete = false, // डिफ़ॉल्ट वैल्यू
+    this.isDelete = false,
   });
 
+  /// Creates an initial state with the current date.
   factory AddEntryState.initial() {
     return AddEntryState(
       date: DateTime.now(),
     );
   }
 
+  /// Creates a copy of this state but with the given fields replaced with new values.
   AddEntryState copyWith({
     AddEntryStatus? status,
     DateTime? date,
@@ -56,6 +73,7 @@ class AddEntryState extends Equatable {
     );
   }
 
+  /// Whether the input values are valid.
   bool get isValid {
     return loginHours >= 0 &&
         loginHours < 24 &&
@@ -67,8 +85,10 @@ class AddEntryState extends Equatable {
         (loginHours > 0 || loginMinutes > 0 || loginSeconds > 0 || callCount > 0);
   }
 
+  /// Whether the form is in update mode.
   bool get isUpdate => existingEntry != null;
 
+  /// Creates a [DailyEntry] from the current state.
   DailyEntry toEntry() {
     return DailyEntry(
       id: existingEntry?.id,

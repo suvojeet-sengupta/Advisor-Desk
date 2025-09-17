@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
@@ -10,10 +9,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
+/// A screen that allows the user to select a theme for their shareable
+/// performance card and then share it.
 class ShareThemeSelectorScreen extends StatefulWidget {
+  /// The monthly summary data to display on the card.
   final MonthlySummary summary;
+  /// The user's profile information to display on the card.
   final Profile profile;
 
+  /// Creates a [ShareThemeSelectorScreen].
   const ShareThemeSelectorScreen({
     Key? key,
     required this.summary,
@@ -34,12 +38,14 @@ class _ShareThemeSelectorScreenState extends State<ShareThemeSelectorScreen> {
     _selectedTheme = shareCardThemes.first;
   }
 
+  /// Called when a new theme is selected.
   void _onThemeSelected(ShareCardTheme theme) {
     setState(() {
       _selectedTheme = theme;
     });
   }
 
+  /// Captures the performance card as an image and shares it.
   Future<void> _sharePerformanceCard() async {
     try {
       final Uint8List? image = await _screenshotController.capture();

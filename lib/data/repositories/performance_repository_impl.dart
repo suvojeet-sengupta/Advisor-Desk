@@ -17,11 +17,20 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:archive/archive_io.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+/// The implementation of the [PerformanceRepository] interface.
+///
+/// This class is responsible for all performance-related data operations,
+/// including fetching and saving daily entries, generating reports, and
+/// handling database backup and restore.
 class PerformanceRepositoryImpl implements PerformanceRepository {
+  /// The local data source for database operations.
   final LocalDataSource localDataSource;
   final PdfService _pdfService = PdfService();
   final ExcelService _excelService = ExcelService();
 
+  /// Creates a new instance of [PerformanceRepositoryImpl].
+  ///
+  /// The [localDataSource] is the [LocalDataSource] to be used for database operations.
   PerformanceRepositoryImpl({
     required this.localDataSource,
   });
@@ -187,12 +196,14 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
+  @deprecated
   Future<List<int>> generateMonthlyReportPdf(MonthlySummary summary) async {
     // This method is now deprecated. Use generateReportPdf instead.
     throw UnimplementedError('generateMonthlyReportPdf is deprecated. Use generateReportPdf instead.');
   }
 
   @override
+  @deprecated
   Future<File> generateMonthlyReportExcel(MonthlySummary summary) async {
     // This method is now deprecated. Use generateReportExcel instead.
     throw UnimplementedError('generateMonthlyReportExcel is deprecated. Use generateReportExcel instead.');

@@ -1,12 +1,17 @@
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A screen for configuring the app lock timeout settings.
+///
+/// This screen allows the user to choose how long the app can be in the
+/// background before it requires authentication upon being reopened.
+/// The selected setting is persisted using [SharedPreferences].
 class AppLockSettingsScreen extends StatefulWidget {
-  const AppLockSettingsScreen({Key? key}) : super(key: key);
+  /// Creates an [AppLockSettingsScreen].
+  const AppLockSettingsScreen({super.key});
 
   @override
-  _AppLockSettingsScreenState createState() => _AppLockSettingsScreenState();
+  State<AppLockSettingsScreen> createState() => _AppLockSettingsScreenState();
 }
 
 class _AppLockSettingsScreenState extends State<AppLockSettingsScreen> {
@@ -18,13 +23,16 @@ class _AppLockSettingsScreenState extends State<AppLockSettingsScreen> {
     _loadSettings();
   }
 
+  /// Loads the saved timeout setting from SharedPreferences.
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedOption = prefs.getString('authentication_timeout') ?? 'Immediately';
+      _selectedOption =
+          prefs.getString('authentication_timeout') ?? 'Immediately';
     });
   }
 
+  /// Saves the selected timeout setting to SharedPreferences.
   Future<void> _saveSetting(String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('authentication_timeout', value);

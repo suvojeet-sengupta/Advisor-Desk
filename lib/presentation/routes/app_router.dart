@@ -5,7 +5,6 @@ import 'package:advisor_desk/presentation/features/monthly_data/monthly_data_scr
 import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_data_bloc.dart';
 import 'package:advisor_desk/domain/usecases/get_monthly_data_usecase.dart';
 import 'package:advisor_desk/domain/usecases/save_monthly_data_usecase.dart';
-
 import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
 import 'package:advisor_desk/presentation/features/monthly_performance/widgets/share_theme_selector_screen.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
@@ -20,17 +19,13 @@ import 'package:advisor_desk/presentation/features/onboarding/onboarding_tutoria
 import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_screen.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_entry_screen.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
-
 import 'package:advisor_desk/presentation/features/monthly_performance/widgets/monthly_performance_screen.dart';
 import 'package:advisor_desk/presentation/features/all_reports/widgets/all_reports_screen.dart';
-
 import 'package:advisor_desk/presentation/features/settings/widgets/settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dart';
 import 'package:advisor_desk/presentation/screens/cq_details_screen.dart';
 import 'package:advisor_desk/presentation/screens/csat_details_screen.dart';
 import 'package:advisor_desk/presentation/screens/login_days_details_screen.dart';
-
-
 import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 import 'package:advisor_desk/presentation/screens/credits_screen.dart';
@@ -52,13 +47,17 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_blo
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/presentation/screens/advisor_desk_ai_analyzer_screen.dart';
-
-
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
 
+/// Manages the routing logic for the entire application.
+///
+/// This class defines all the route names as static constants and provides
+/// a central method `onGenerateRoute` to handle the creation of screens
+/// based on the route settings. It also handles passing arguments to screens
+/// and setting up `BlocProvider`s where necessary.
 class AppRouter {
-  // Route names
+  /// Route names used in the application.
   static const String dashboardRoute = '/';
   static const String addEntryRoute = '/add-entry';
   static const String addCSATEntryRoute = '/add-csat-entry';
@@ -70,7 +69,6 @@ class AppRouter {
   static const String themeSelectionRoute = '/theme-selection';
   static const String shareThemeSelectorRoute = '/share-theme-selector';
   static const String metricDetailsRoute = '/metric-details';
-  
   static const String settingsRoute = '/settings';
   static const String customizeDashboardRoute = '/customize-dashboard';
   static const String salarySettingsRoute = '/salary-settings';
@@ -79,8 +77,6 @@ class AppRouter {
   static const String csatDetailsRoute = '/csat-details';
   static const String loginDaysDetailsRoute = '/login-days-details';
   static const String profileRoute = '/profile';
-  
-  
   static const String creditsRoute = '/credits';
   static const String aboutDeveloperRoute = '/about-developer';
   static const String salaryDetailsRoute = '/salary-details';
@@ -89,7 +85,10 @@ class AppRouter {
   static const String advisorDeskAIRoute = '/advisor-desk-ai';
   static const String advisorDeskAIAnalyzerRoute = '/advisor-desk-ai-analyzer';
 
-  // Route generator
+  /// Generates routes based on the provided [RouteSettings].
+  ///
+  /// This function is called by the [MaterialApp.onGenerateRoute] and is
+  /// responsible for returning a [Route] based on the route name and arguments.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case dashboardRoute:
@@ -101,7 +100,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => AddEntryScreen(entryToEdit: entryToEdit),
         );
-      
+
       case addCQEntryRoute:
         final CQEntry? entryToEdit = settings.arguments as CQEntry?;
         return MaterialPageRoute(
@@ -124,18 +123,22 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (context) => BlocProvider(
             create: (context) => MonthlyDataBloc(
-              getMonthlyDataUseCase: GetMonthlyDataUseCase(context.read<PerformanceRepository>()),
-              saveMonthlyDataUseCase: SaveMonthlyDataUseCase(context.read<PerformanceRepository>()),
+              getMonthlyDataUseCase:
+                  GetMonthlyDataUseCase(context.read<PerformanceRepository>()),
+              saveMonthlyDataUseCase:
+                  SaveMonthlyDataUseCase(context.read<PerformanceRepository>()),
             )..add(LoadMonthlyData(month, year)),
             child: MonthlyDataScreen(month: month, year: year),
           ),
         );
-       case shareThemeSelectorRoute:
-        final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
+      case shareThemeSelectorRoute:
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
         final MonthlySummary summary = args['summary'] as MonthlySummary;
         final Profile profile = args['profile'] as Profile;
         return MaterialPageRoute(
-          builder: (_) => ShareThemeSelectorScreen(summary: summary, profile: profile),
+          builder: (_) =>
+              ShareThemeSelectorScreen(summary: summary, profile: profile),
         );
       case allReportsRoute:
         final Profile profile = settings.arguments as Profile;
@@ -150,7 +153,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const ThemeSelectionScreen(),
         );
-      
+
       case settingsRoute:
         return MaterialPageRoute(
           builder: (_) => const SettingsScreen(),
@@ -187,21 +190,25 @@ class AppRouter {
           builder: (context) => BlocProvider(
             create: (context) => LoginDaysBloc(
               performanceRepository: context.read<PerformanceRepository>(),
-              getLeaveEntriesUseCase: GetLeaveEntriesUseCase(context.read<LeaveRepository>()),
+              getLeaveEntriesUseCase:
+                  GetLeaveEntriesUseCase(context.read<LeaveRepository>()),
               markLeaveUseCase: MarkLeaveUseCase(context.read<LeaveRepository>()),
-              deleteLeaveUseCase: DeleteLeaveUseCase(context.read<LeaveRepository>()),
+              deleteLeaveUseCase:
+                  DeleteLeaveUseCase(context.read<LeaveRepository>()),
             )..add(LoadLoginDays(summary.year, summary.month)),
             child: LoginDaysDetailsScreen(summary: summary),
           ),
         );
       case metricDetailsRoute:
-        final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
         final MetricType metricType = args['metricType'] as MetricType;
         final MonthlySummary summary = args['summary'] as MonthlySummary;
         return MaterialPageRoute(
-          builder: (_) => MetricDetailsScreen(metricType: metricType, summary: summary),
+          builder: (_) =>
+              MetricDetailsScreen(metricType: metricType, summary: summary),
         );
-      
+
       case creditsRoute:
         return MaterialPageRoute(
           builder: (_) => const CreditsScreen(),
@@ -233,8 +240,10 @@ class AppRouter {
           builder: (_) => const AdvisorDeskAIScreen(),
         );
       case AppRouter.advisorDeskAIAnalyzerRoute:
-        final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
-        final MonthlySummary monthlySummary = args['monthlySummary'] as MonthlySummary;
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
+        final MonthlySummary monthlySummary =
+            args['monthlySummary'] as MonthlySummary;
         final CSATSummary csatSummary = args['csatSummary'] as CSATSummary;
         final CQSummary cqSummary = args['cqSummary'] as CQSummary;
         final GoalsState goalsState = args['goalsState'] as GoalsState;
@@ -254,7 +263,7 @@ class AppRouter {
             ),
           ),
         );
-      
+
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

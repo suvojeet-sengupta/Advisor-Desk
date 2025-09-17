@@ -5,10 +5,16 @@ import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_dat
 import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_data_state.dart';
 import 'package:advisor_desk/domain/entities/monthly_data.dart';
 
+/// A BLoC that manages the state for additional monthly data.
+///
+/// It handles loading and saving data like non-billable calls.
 class MonthlyDataBloc extends Bloc<MonthlyDataEvent, MonthlyDataState> {
+  /// The use case for getting monthly data.
   final GetMonthlyDataUseCase getMonthlyDataUseCase;
+  /// The use case for saving monthly data.
   final SaveMonthlyDataUseCase saveMonthlyDataUseCase;
 
+  /// Creates a new instance of [MonthlyDataBloc].
   MonthlyDataBloc({
     required this.getMonthlyDataUseCase,
     required this.saveMonthlyDataUseCase,
@@ -17,6 +23,7 @@ class MonthlyDataBloc extends Bloc<MonthlyDataEvent, MonthlyDataState> {
     on<UpdateNonBillableCalls>(_onUpdateNonBillableCalls);
   }
 
+  /// Handles the loading of monthly data.
   Future<void> _onLoadMonthlyData(
     LoadMonthlyData event,
     Emitter<MonthlyDataState> emit,
@@ -34,6 +41,7 @@ class MonthlyDataBloc extends Bloc<MonthlyDataEvent, MonthlyDataState> {
     }
   }
 
+  /// Handles updating the number of non-billable calls.
   Future<void> _onUpdateNonBillableCalls(
     UpdateNonBillableCalls event,
     Emitter<MonthlyDataState> emit,

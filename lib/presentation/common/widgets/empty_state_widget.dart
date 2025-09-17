@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+/// A widget to display when there is no data to show.
+///
+/// This widget can display a message, an icon or illustration, and an optional
+/// retry button.
 class EmptyStateWidget extends StatelessWidget {
+  /// The message to display.
   final String message;
+  /// The icon to display. This is used if [illustrationPath] is null.
   final IconData icon;
+  /// A callback function to be called when the retry button is pressed.
+  /// If null, the button is not shown.
   final VoidCallback? onRetry;
+  /// The path to an SVG illustration to display.
   final String? illustrationPath;
 
+  /// Creates an empty state widget.
   const EmptyStateWidget({
     Key? key,
     required this.message,

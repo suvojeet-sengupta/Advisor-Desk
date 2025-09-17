@@ -9,10 +9,17 @@ import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bl
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_state.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
 
+/// A screen that displays a detailed calendar view of login and leave activity for a specific month.
+///
+/// This screen provides a visual representation of the user's attendance,
+/// color-coding each day as present, absent, week off, or personal leave.
+/// It allows users to interactively mark their days off.
 class LoginDaysDetailsScreen extends StatelessWidget {
+  /// The summary data for the month to be displayed.
   final MonthlySummary summary;
 
-  const LoginDaysDetailsScreen({Key? key, required this.summary}) : super(key: key);
+  /// Creates a [LoginDaysDetailsScreen].
+  const LoginDaysDetailsScreen({super.key, required this.summary});
 
   @override
   Widget build(BuildContext context) {
@@ -71,29 +78,39 @@ class LoginDaysDetailsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds the statistics section showing counts for different day types.
   Widget _buildStats(BuildContext context, LoginDaysLoaded state) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _buildStatItem(context, 'Present', state.presentCount.toString(), Colors.green),
-        _buildStatItem(context, 'Absent', state.absentCount.toString(), Colors.red),
-        _buildStatItem(context, 'Week Off', state.weekOffCount.toString(), Colors.blue),
-        _buildStatItem(context, 'Personal', state.personalLeaveCount.toString(), Colors.orange),
+        _buildStatItem(
+            context, 'Present', state.presentCount.toString(), Colors.green),
+        _buildStatItem(
+            context, 'Absent', state.absentCount.toString(), Colors.red),
+        _buildStatItem(
+            context, 'Week Off', state.weekOffCount.toString(), Colors.blue),
+        _buildStatItem(context, 'Personal',
+            state.personalLeaveCount.toString(), Colors.orange),
       ],
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value, Color color) {
+  /// Builds a single item for the statistics section.
+  Widget _buildStatItem(
+      BuildContext context, String label, String value, Color color) {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Text(value, style: theme.textTheme.headlineSmall?.copyWith(color: color, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: theme.textTheme.headlineSmall
+                ?.copyWith(color: color, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
         Text(label, style: theme.textTheme.bodyMedium),
       ],
     );
   }
 
+  /// Builds the main calendar grid for the month.
   Widget _buildCalendar(BuildContext context, LoginDaysLoaded state) {
     final theme = Theme.of(context);
     final month = summary.month;
@@ -118,7 +135,8 @@ class LoginDaysDetailsScreen extends StatelessWidget {
           }
           final day = index - (firstDayWeekday - 1) + 1;
           final date = DateTime(year, month, day);
-          final isLoginDay = loginDates.any((d) => d.year == date.year && d.month == date.month && d.day == date.day);
+          final isLoginDay = loginDates
+              .any((d) => d.year == date.year && d.month == date.month && d.day == date.day);
           final leaveEntry = leaveEntries[date];
           final isFutureDay = date.isAfter(DateTime.now());
 
@@ -142,13 +160,15 @@ class LoginDaysDetailsScreen extends StatelessWidget {
               textColor = Colors.orange;
               icon = Icon(Icons.person, size: 16, color: Colors.orange);
             }
-          } else { // Absent day
+          } else {
+            // Absent day
             bgColor = Colors.red.withOpacity(0.2);
             textColor = Colors.red;
           }
 
           return GestureDetector(
-            onTap: () => _showMarkDayDialog(context, date, isLoginDay, leaveEntry),
+            onTap: () =>
+                _showMarkDayDialog(context, date, isLoginDay, leaveEntry),
             child: Container(
               decoration: BoxDecoration(
                 color: bgColor,
@@ -193,37 +213,41 @@ class LoginDaysDetailsScreen extends StatelessWidget {
     );
   }
 
-  void _showMarkDayDialog(BuildContext context, DateTime date, bool isLoginDay, LeaveEntry? leaveEntry) {
+  /// Shows a dialog to mark a day as a leave day or as absent.
+  void _showMarkDayDialog(
+      BuildContext context, DateTime date, bool isLoginDay, LeaveEntry? leaveEntry) {
+    // Cannot mark a day that has a login entry.
     if (isLoginDay) {
-      // Cannot mark a login day as leave
       return;
     }
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text('Mark Day Off'),
+          title: Text('Mark ${DateFormat.yMMMd().format(date)}'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 title: const Text('Week Off'),
                 onTap: () {
-                  context.read<LoginDaysBloc>().add(MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.weekOff)));
+                  context.read<LoginDaysBloc>().add(
+                      MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.weekOff)));
                   Navigator.pop(dialogContext);
                 },
               ),
               ListTile(
                 title: const Text('Personal Leave'),
                 onTap: () {
-                  // You can add a text field here to get a reason
-                  context.read<LoginDaysBloc>().add(MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.personal)));
+                  context.read<LoginDaysBloc>().add(
+                      MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.personal)));
                   Navigator.pop(dialogContext);
                 },
               ),
               if (leaveEntry != null)
                 ListTile(
+                  leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
                   title: const Text('Mark as Absent'),
                   onTap: () {
                     context.read<LoginDaysBloc>().add(DeleteLeave(date));
@@ -237,6 +261,7 @@ class LoginDaysDetailsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds the legend at the bottom of the screen to explain color coding.
   Widget _buildLegend(BuildContext context) {
     return Wrap(
       spacing: 16,
@@ -251,6 +276,7 @@ class LoginDaysDetailsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds a single item for the legend.
   Widget _buildLegendItem(BuildContext context, Color color, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,

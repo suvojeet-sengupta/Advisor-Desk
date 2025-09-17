@@ -9,23 +9,29 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
-import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
-import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart'; // Import InteractiveTutorialOverlay
+import 'package:advisor_desk/core/utils/tutorial_helper.dart';
+import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart';
 
-
+/// A screen that displays detailed Coaching Quality (CQ) performance for a specific month.
+///
+/// This screen shows a summary of the monthly CQ performance, including average
+/// score and total audits, as well as a list of individual CQ entries.
+/// Users can edit or delete entries by swiping on them.
 class CqDetailsScreen extends StatefulWidget {
+  /// The summary data for the CQ performance of a specific month.
   final CQSummary cqSummary;
 
-  const CqDetailsScreen({Key? key, required this.cqSummary}) : super(key: key);
+  /// Creates a [CqDetailsScreen].
+  const CqDetailsScreen({super.key, required this.cqSummary});
 
   @override
-  _CqDetailsScreenState createState() => _CqDetailsScreenState();
+  State<CqDetailsScreen> createState() => _CqDetailsScreenState();
 }
 
 class _CqDetailsScreenState extends State<CqDetailsScreen> {
   late CQSummary _currentCqSummary;
-  final GlobalKey _firstCqEntryKey = GlobalKey(); // Declare GlobalKey
-  late OverlayEntry overlayEntry; // Declare here
+  final GlobalKey _firstCqEntryKey = GlobalKey();
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -36,33 +42,37 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     });
   }
 
+  /// Shows an interactive tutorial if it hasn't been seen before.
   void _showCqTutorial() async {
     final hasSeen = await TutorialHelper.hasSeenCqTutorial();
-    if (!hasSeen && _currentCqSummary.entries.isNotEmpty) { // Only show if there are entries
+    if (!hasSeen && _currentCqSummary.entries.isNotEmpty) {
       final List<TutorialStep> steps = [
         TutorialStep(
           targetKey: _firstCqEntryKey,
-          text: 'Swipe left on an entry to reveal options like Edit and Delete.',
+          text:
+              'Swipe left on an entry to reveal options like Edit and Delete.',
           textAlignment: Alignment.bottomCenter,
-          textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Adjust padding to avoid overlapping
+          textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
           showSwipeHint: true,
         ),
       ];
 
-      overlayEntry = OverlayEntry(
+      _overlayEntry = OverlayEntry(
         builder: (context) => InteractiveTutorialOverlay(
           steps: steps,
           onFinish: () {
-            overlayEntry.remove();
+            _overlayEntry?.remove();
+            _overlayEntry = null;
             TutorialHelper.setCqTutorialSeen();
           },
         ),
       );
 
-      Overlay.of(context).insert(overlayEntry);
+      Overlay.of(context).insert(_overlayEntry!);
     }
   }
 
+  /// Refreshes the CQ data from the repository.
   Future<void> _refreshData() async {
     final repository = context.read<PerformanceRepository>();
     final updatedSummary = await repository.getCQSummary(
@@ -74,15 +84,17 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     });
   }
 
+  /// Shows a confirmation dialog before deleting a CQ entry.
   void _showDeleteConfirmationDialog(BuildContext context, CQEntry entry) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
           shape: Theme.of(context).dialogTheme.shape,
           title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this CQ entry? This action cannot be undone.'),
+          content: const Text(
+              'Are you sure you want to delete this CQ entry? This action cannot be undone.'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -106,24 +118,29 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     );
   }
 
+  /// Deletes a CQ entry from the repository.
   Future<void> _deleteEntry(CQEntry entry) async {
     try {
       final repository = context.read<PerformanceRepository>();
       await repository.deleteCQEntry(entry.id!);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('CQ entry deleted successfully!'),
-          backgroundColor: Theme.of(context).colorScheme.tertiary,
-        ),
-      );
-      _refreshData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('CQ entry deleted successfully!'),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+          ),
+        );
+        _refreshData();
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to delete CQ entry: $e'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete CQ entry: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -146,7 +163,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                     style: theme.textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  if (!_currentCqSummary.entries.isEmpty)
+                  if (_currentCqSummary.entries.isNotEmpty)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -157,7 +174,9 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                                 context,
                                 'Average CQ Score',
                                 '${_currentCqSummary.monthlyAverageCQ.toStringAsFixed(2)}%',
-                                _getQualityColor(_currentCqSummary.monthlyAverageCQ, context),
+                                _getQualityColor(
+                                    _currentCqSummary.monthlyAverageCQ,
+                                    context),
                               ),
                               _buildSummaryRow(
                                 context,
@@ -169,7 +188,9 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                                 context,
                                 'Quality Rating',
                                 _currentCqSummary.qualityRating,
-                                _getQualityColor(_currentCqSummary.monthlyAverageCQ, context),
+                                _getQualityColor(
+                                    _currentCqSummary.monthlyAverageCQ,
+                                    context),
                               ),
                             ],
                           ),
@@ -207,7 +228,9 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                       (context, index) {
                         final entry = _currentCqSummary.entries[index];
                         return Slidable(
-                          key: index == 0 ? _firstCqEntryKey : ValueKey(entry.id),
+                          key: index == 0
+                              ? _firstCqEntryKey
+                              : ValueKey(entry.id),
                           endActionPane: ActionPane(
                             motion: const ScrollMotion(),
                             children: [
@@ -215,8 +238,9 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                                 onPressed: (context) async {
                                   final result = await Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddCQEntryScreen(entryToEdit: entry),
+                                    MaterialPageRoute<bool>(
+                                      builder: (context) =>
+                                          AddCQEntryScreen(entryToEdit: entry),
                                     ),
                                   );
                                   if (result == true) {
@@ -229,8 +253,11 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                                 label: 'Edit',
                               ),
                               SlidableAction(
-                                onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
-                                backgroundColor: Theme.of(context).colorScheme.error,
+                                onPressed: (context) =>
+                                    _showDeleteConfirmationDialog(
+                                        context, entry),
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.error,
                                 foregroundColor: Colors.white,
                                 icon: Icons.delete,
                                 label: 'Delete',
@@ -241,21 +268,26 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
                             margin: const EdgeInsets.only(bottom: 12),
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: _getQualityColor(entry.percentage, context).withOpacity(0.2),
+                                backgroundColor: _getQualityColor(
+                                        entry.percentage, context)
+                                    .withOpacity(0.2),
                                 child: Text(
                                   DateFormat('dd').format(entry.auditDate),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: _getQualityColor(entry.percentage, context),
+                                    color: _getQualityColor(
+                                        entry.percentage, context),
                                   ),
                                 ),
                               ),
-                              title: Text('Audit Date: ${DateFormat('MMM dd, yyyy').format(entry.auditDate)}'),
+                              title: Text(
+                                  'Audit Date: ${DateFormat('MMM dd, yyyy').format(entry.auditDate)}'),
                               trailing: Text(
                                 '${entry.percentage.toStringAsFixed(2)}%',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: _getQualityColor(entry.percentage, context),
+                                  color: _getQualityColor(
+                                      entry.percentage, context),
                                 ),
                               ),
                             ),
@@ -272,7 +304,9 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     );
   }
 
-  Widget _buildSummaryRow(BuildContext context, String label, String value, Color valueColor) {
+  /// Builds a row for the summary card.
+  Widget _buildSummaryRow(
+      BuildContext context, String label, String value, Color valueColor) {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -292,6 +326,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     );
   }
 
+  /// Returns a color based on the quality percentage.
   Color _getQualityColor(double percentage, BuildContext context) {
     if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
     if (percentage >= 75) return Theme.of(context).colorScheme.primary;

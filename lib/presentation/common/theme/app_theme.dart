@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 
+/// A class that provides the application's theme data.
+///
+/// This class defines the color schemes and theme configurations for both
+/// light and dark modes, supporting various color palettes.
 class AppTheme {
   AppTheme._();
 
@@ -225,8 +229,6 @@ class AppTheme {
     ),
   };
 
-  
-
   static final Map<AppColor, ColorScheme> _darkColorSchemes = {
     AppColor.orange: ColorScheme(
       brightness: Brightness.dark,
@@ -416,6 +418,7 @@ class AppTheme {
     ),
   };
 
+  /// Returns the appropriate [ThemeData] based on the selected [themeMode] and [color].
   static ThemeData getTheme(AppThemeMode themeMode, AppColor color) {
     final brightness = themeMode == AppThemeMode.light
         ? Brightness.light
@@ -435,6 +438,7 @@ class AppTheme {
         : getDarkTheme(colorScheme);
   }
 
+  /// Returns the light theme configuration for the given [colorScheme].
   static ThemeData getLightTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
@@ -520,6 +524,7 @@ class AppTheme {
     );
   }
 
+  /// Returns the dark theme configuration for the given [colorScheme].
   static ThemeData getDarkTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,

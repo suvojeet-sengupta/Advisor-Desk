@@ -6,11 +6,22 @@ import 'package:intl/intl.dart';
 
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 
+/// A service that processes natural language questions about user performance.
+///
+/// This class uses simple keyword matching to understand user questions and
+/// fetches the relevant data from the [PerformanceRepository] to provide an answer.
 class NlpService {
   final PerformanceRepository _performanceRepository;
 
+  /// Creates a new instance of [NlpService].
+  ///
+  /// The [performanceRepository] is required to fetch performance data.
   NlpService({required PerformanceRepository performanceRepository})
       : _performanceRepository = performanceRepository;
+
+  /// Processes a user's question and returns an [AiInsight] with the answer.
+  ///
+  /// The [question] is the user's natural language query.
   Future<AiInsight> processQuestion({
     required String question,
   }) async {
@@ -45,14 +56,17 @@ class NlpService {
     return const AiInsight(message: "I'm sorry, I don't have the answer to that yet. I'm still learning!");
   }
 
+  /// Handles questions about total calls.
   AiInsight _handleTotalCallsQuestion(MonthlySummary summary) {
     return AiInsight(message: "Your total calls for ${summary.formattedMonthYear} were ${summary.totalCalls}.");
   }
 
+  /// Handles questions about total login hours.
   AiInsight _handleTotalLoginHoursQuestion(MonthlySummary summary) {
     return AiInsight(message: "Your total login hours for ${summary.formattedMonthYear} were ${summary.totalLoginHours.toStringAsFixed(1)}.");
   }
 
+  /// Parses the target date from a question.
   DateTime _parseTargetDate(String question) {
     final now = DateTime.now();
     if (question.contains('last month')) {
@@ -86,6 +100,7 @@ class NlpService {
     return now;
   }
 
+  /// Handles questions about CQ score.
   AiInsight _handleCqScoreQuestion(MonthlySummary summary) {
     if (summary.cqSummary == null || summary.cqSummary!.monthlyAverageCQ == 0) {
       return const AiInsight(message: "I couldn't find your CQ score for this month. Make sure you have recorded your CQ data.");
@@ -95,6 +110,7 @@ class NlpService {
     return AiInsight(message: "Your average CQ score for this month is $score%.");
   }
 
+  /// Handles questions about CSAT score.
   AiInsight _handleCsatScoreQuestion(MonthlySummary summary) {
     if (summary.csatSummary == null || summary.csatSummary!.monthlyCSATPercentage == 0) {
       return const AiInsight(message: "I couldn't find your CSAT score for this month. Make sure you have recorded your CSAT data.");
@@ -104,6 +120,7 @@ class NlpService {
     return AiInsight(message: "Your average CSAT score for this month is $score%.");
   }
 
+  /// Handles questions about bonus achievement.
   AiInsight _handleBonusQuestion(MonthlySummary summary) {
     final callsNeeded = (AppConstants.bonusCallTarget - summary.totalCalls).clamp(0, AppConstants.bonusCallTarget);
     final hoursNeeded = (AppConstants.bonusHourTarget - summary.totalLoginHours).clamp(0.0, AppConstants.bonusHourTarget.toDouble());
@@ -118,6 +135,7 @@ class NlpService {
     return AiInsight(message: response);
   }
 
+  /// Handles questions about the worst CSAT days.
   AiInsight _handleWorstCsatDays(MonthlySummary summary) {
     if (summary.csatSummary == null || summary.csatSummary!.entries.isEmpty) {
       return const AiInsight(message: "There are no CSAT entries for this month to analyze.");

@@ -3,20 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
-import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
+/// A screen that displays detailed information about a specific performance metric.
+///
+/// This screen is versatile and can show details for different metrics like
+/// total calls, total login hours, average calls, and average login hours,
+/// based on the [metricType] provided.
 class MetricDetailsScreen extends StatelessWidget {
+  /// The type of metric to display details for.
   final MetricType metricType;
+
+  /// The monthly summary data containing the metric information.
   final MonthlySummary summary;
 
+  /// Creates a [MetricDetailsScreen].
   const MetricDetailsScreen({
-    Key? key,
+    super.key,
     required this.metricType,
     required this.summary,
-  }) : super(key: key);
+  });
 
+  /// Returns the appropriate screen title based on the [MetricType].
   String _getTitle() {
     switch (metricType) {
       case MetricType.totalCalls:
@@ -30,6 +39,7 @@ class MetricDetailsScreen extends StatelessWidget {
     }
   }
 
+  /// Formats a duration given in decimal hours into an HH:MM:SS string.
   String _formatDuration(double totalHours) {
     final int hours = totalHours.truncate();
     final int minutes = ((totalHours - hours) * 60).truncate();
@@ -59,6 +69,7 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds the main content of the screen based on the [MetricType].
   Widget _buildDetailsContent(BuildContext context) {
     switch (metricType) {
       case MetricType.totalCalls:
@@ -82,12 +93,13 @@ class MetricDetailsScreen extends StatelessWidget {
     }
   }
 
+  /// Builds the details view for the "Total Calls" metric.
   Widget _buildTotalCallsDetails(BuildContext context) {
     if (summary.entries.isEmpty) {
-      return SliverToBoxAdapter(
+      return const SliverToBoxAdapter(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: const CustomCard(
+          padding: EdgeInsets.all(16.0),
+          child: CustomCard(
             child: Center(
               child: Padding(
                 padding: EdgeInsets.all(16.0),
@@ -150,7 +162,8 @@ class MetricDetailsScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primary.withOpacity(0.2),
                       child: Text(
                         DateFormat('dd').format(entry.date),
                         style: TextStyle(
@@ -159,7 +172,8 @@ class MetricDetailsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
+                    title: Text(
+                        'Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
                     trailing: Text(
                       '${entry.callCount} Calls',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -178,12 +192,13 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds the details view for the "Total Login Hours" metric.
   Widget _buildTotalLoginHoursDetails(BuildContext context) {
     if (summary.entries.isEmpty) {
-      return SliverToBoxAdapter(
+      return const SliverToBoxAdapter(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: const CustomCard(
+          padding: EdgeInsets.all(16.0),
+          child: CustomCard(
             child: Center(
               child: Padding(
                 padding: EdgeInsets.all(16.0),
@@ -230,7 +245,10 @@ class MetricDetailsScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
+                      backgroundColor: Theme.of(context)
+                          .colorScheme
+                          .tertiary
+                          .withOpacity(0.2),
                       child: Text(
                         DateFormat('dd').format(entry.date),
                         style: TextStyle(
@@ -239,23 +257,29 @@ class MetricDetailsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    title: Text('Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
+                    title: Text(
+                        'Date: ${DateFormat('MMM dd, yyyy').format(entry.date)}'),
                     trailing: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
                           '${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.tertiary,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.tertiary,
+                                  ),
                         ),
                         Text(
                           entry.formattedLoginTime,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                  ),
                         ),
                       ],
                     ),
@@ -270,6 +294,7 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds a view that shows a calculation breakdown.
   Widget _buildCalculationDetails(
       BuildContext context, String title, String value, String calculation) {
     return SliverToBoxAdapter(
@@ -304,7 +329,9 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryRow(BuildContext context, String label, String value, Color valueColor) {
+  /// Builds a simple row with a label and a value for summary cards.
+  Widget _buildSummaryRow(
+      BuildContext context, String label, String value, Color valueColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -326,17 +353,19 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
+  /// Returns a string explaining the average login hours calculation.
   String _getAverageLoginHoursCalculation() {
     if (summary.entries.isEmpty) {
       return 'No entries to calculate average login hours.';
     }
-    return 'Total Login Hours: ${summary.totalLoginHours.toStringAsFixed(2)} Hrs\nTotal Login Days: ${summary.loginDays} days\nAverage Login Hours: ${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs\n\nEquation:\n${summary.totalLoginHours.toStringAsFixed(2)} Hrs / ${summary.loginDays} days = ${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs';
+    return 'Total Login Hours: ${summary.totalLoginHours.toStringAsFixed(2)} Hrs\nTotal Login Days: ${summary.loginDays} days\n\nEquation:\n${summary.totalLoginHours.toStringAsFixed(2)} Hrs / ${summary.loginDays} days = ${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs';
   }
 
+  /// Returns a string explaining the average calls calculation.
   String _getAverageCallsCalculation() {
     if (summary.entries.isEmpty) {
       return 'No entries to calculate average calls.';
     }
-    return 'Total Calls: ${summary.totalCalls} Calls\nTotal Login Days: ${summary.loginDays} days\nAverage Calls: ${summary.averageDailyCalls.toStringAsFixed(2)} Calls\n\nEquation:\n${summary.totalCalls} Calls / ${summary.loginDays} days = ${summary.averageDailyCalls.toStringAsFixed(2)} Calls';
+    return 'Total Calls: ${summary.totalCalls} Calls\nTotal Login Days: ${summary.loginDays} days\n\nEquation:\n${summary.totalCalls} Calls / ${summary.loginDays} days = ${summary.averageDailyCalls.toStringAsFixed(2)} Calls';
   }
 }

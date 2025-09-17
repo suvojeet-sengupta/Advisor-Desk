@@ -1,11 +1,19 @@
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:flutter/material.dart';
 
+/// A card that displays an AI-generated insight.
+///
+/// This widget is used on the dashboard to show personalized suggestions and
+/// analysis to the user.
 class AiInsightCard extends StatelessWidget {
+  /// The insight to be displayed.
   final AiInsight insight;
+  /// A callback function that is called when the action button is pressed.
   final VoidCallback? onActionPressed;
+  /// A callback function that is called when the card is tapped.
   final VoidCallback? onTap;
 
+  /// Creates an AI insight card.
   const AiInsightCard({
     Key? key,
     required this.insight,
@@ -13,6 +21,7 @@ class AiInsightCard extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
 
+  /// Shows an information dialog about the Advisor Desk AI.
   void _showAiInsightInfoDialog(BuildContext context) {
     showDialog(
       context: context,

@@ -13,9 +13,15 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_e
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_state.dart';
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 
+/// A screen for adding or editing a Call Quality (CQ) entry.
+///
+/// This screen provides a form for the user to input CQ data. It uses the
+/// [AddCQEntryBloc] to manage the state of the form.
 class AddCQEntryScreen extends StatelessWidget {
+  /// The entry to be edited. If null, a new entry is created.
   final CQEntry? entryToEdit;
 
+  /// Creates an [AddCQEntryScreen].
   const AddCQEntryScreen({super.key, this.entryToEdit});
 
   @override
@@ -30,8 +36,11 @@ class AddCQEntryScreen extends StatelessWidget {
   }
 }
 
+/// The view for the [AddCQEntryScreen].
 class AddCQEntryView extends StatefulWidget {
+  /// The entry to be edited.
   final CQEntry? entryToEdit;
+  /// Creates an [AddCQEntryView].
   const AddCQEntryView({super.key, this.entryToEdit});
 
   @override
@@ -149,24 +158,34 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
   }
 }
 
+/// A helper class to hold the form data for a single CQ entry.
 class _CQEntryFormData {
+  /// The existing entry, if any.
   final CQEntry? entry;
+  /// The controller for the percentage text field.
   late final TextEditingController percentageController;
+  /// The selected date for the entry.
   DateTime selectedDate;
 
+  /// Creates a [_CQEntryFormData].
   _CQEntryFormData({this.entry}) : selectedDate = entry?.auditDate ?? DateTime.now() {
     percentageController = TextEditingController(text: entry?.percentage.toString());
   }
 
+  /// Disposes the controller.
   void dispose() {
     percentageController.dispose();
   }
 }
 
+/// A form for a single CQ entry.
 class _CQEntryForm extends StatefulWidget {
+  /// The form data for this form.
   final _CQEntryFormData formData;
+  /// The index of this form in the list.
   final int formIndex;
 
+  /// Creates a [_CQEntryForm].
   const _CQEntryForm({required this.formData, required this.formIndex});
 
   @override

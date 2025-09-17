@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+/// A widget that displays a shimmer loading effect for the dashboard.
+///
+/// This widget is shown while the dashboard data is being fetched.
 class DashboardShimmer extends StatelessWidget {
+  /// Creates a dashboard shimmer.
   const DashboardShimmer({Key? key}) : super(key: key);
 
   @override
@@ -48,6 +52,7 @@ class DashboardShimmer extends StatelessWidget {
     );
   }
 
+  /// Builds a shimmering box.
   Widget _buildShimmerBox({required double height, double? width}) {
     return Container(
       height: height,
@@ -59,6 +64,7 @@ class DashboardShimmer extends StatelessWidget {
     );
   }
 
+  /// Builds a shimmering card.
   Widget _buildShimmerCard({required double height}) {
     return Container(
       height: height,

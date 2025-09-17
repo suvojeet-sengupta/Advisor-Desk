@@ -2,18 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 
+/// A custom text form field widget with a consistent style.
+///
+/// This widget provides a standardized text form field for the application,
+/// with options for a label, hint text, icon, and more.
 class CustomFormField extends StatelessWidget {
+  /// The label to display above the form field.
   final String? label;
+  /// The hint text to display inside the form field.
   final String? hintText;
+  /// An icon to display before the text in the form field.
   final IconData? icon;
+  /// The controller for the text form field.
   final TextEditingController? controller;
+  /// The initial value of the text form field.
   final String? initialValue;
+  /// The type of keyboard to use for editing the text.
   final TextInputType keyboardType;
+  /// A callback that is called when the value of the text form field changes.
   final Function(String)? onChanged;
+  /// Text to display at the end of the input field.
   final String? suffixText;
+  /// An optional method that validates an input.
   final String? Function(String?)? validator;
-  final List<TextInputFormatter>? inputFormatters; // Added inputFormatters
+  /// Optional input formatters to constrain the input.
+  final List<TextInputFormatter>? inputFormatters;
 
+  /// Creates a custom text form field.
   const CustomFormField({
     Key? key,
     this.label,
@@ -25,7 +40,7 @@ class CustomFormField extends StatelessWidget {
     this.onChanged,
     this.suffixText,
     this.validator,
-    this.inputFormatters, // Added inputFormatters
+    this.inputFormatters,
   }) : super(key: key);
 
   @override
@@ -43,7 +58,7 @@ class CustomFormField extends StatelessWidget {
           controller: controller,
           initialValue: initialValue,
           keyboardType: keyboardType,
-          inputFormatters: inputFormatters, // Added inputFormatters
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: icon != null ? Icon(icon, color: Theme.of(context).colorScheme.primary) : null,

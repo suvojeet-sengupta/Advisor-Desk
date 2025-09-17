@@ -17,8 +17,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 
+/// A screen that provides various settings for the application.
+///
+/// This includes app information, data management (backup/restore),
+/// salary settings, appearance customization, privacy settings, and
+/// information about the developer.
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  /// Creates a [SettingsScreen].
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -39,6 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadLastBackupDate();
   }
 
+  /// Loads the last backup date from shared preferences.
   Future<void> _loadLastBackupDate() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -46,6 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  /// Loads the app lock state from shared preferences.
   Future<void> _loadAppLockState() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -53,6 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  /// Fetches the app version using a platform channel.
   Future<void> _getAppVersion() async {
     try {
       final String version = await platform.invokeMethod('getAppVersion');
@@ -66,6 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Backs up the application's database to a zip file.
   Future<void> _backupDatabase() async {
     setState(() {
       _isLoading = true;
@@ -79,14 +89,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       final String? outputFile = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Your Backup',
-        fileName: 'advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip',
+        fileName:
+            'advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip',
         bytes: fileBytes,
       );
 
       if (outputFile != null) {
         final prefs = await SharedPreferences.getInstance();
         final now = DateTime.now();
-        final formattedDate = "${now.day}/${now.month}/${now.year} ${now.hour}:${now.minute}";
+        final formattedDate =
+            "${now.day}/${now.month}/${now.year} ${now.hour}:${now.minute}";
         await prefs.setString('lastBackupDate', formattedDate);
         setState(() {
           _lastBackupDate = formattedDate;
@@ -111,6 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Restores the application's database from a backup file.
   Future<void> _restoreDatabase() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -121,11 +134,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (result != null && result.files.single.path != null) {
         final backupFilePath = result.files.single.path!;
 
-        showDialog(
+        showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Restore Database'),
-            content: const Text('Are you sure you want to restore the database? This will overwrite all current data.'),
+            content: const Text(
+                'Are you sure you want to restore the database? This will overwrite all current data.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -141,7 +155,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final repository = context.read<PerformanceRepository>();
                     await repository.restoreDatabase(backupFilePath);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Database restored successfully. Please restart the app.')),
+                      const SnackBar(
+                          content: Text(
+                              'Database restored successfully. Please restart the app.')),
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -181,12 +197,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 [
                   _buildInfoTile('Version', _appVersion, Icons.info_outline),
                   ListTile(
-                    leading: Icon(Icons.new_releases_outlined, color: Theme.of(context).colorScheme.primary),
+                    leading: Icon(Icons.new_releases_outlined,
+                        color: Theme.of(context).colorScheme.primary),
                     title: const Text("What's New"),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     contentPadding: EdgeInsets.zero,
                     onTap: () {
-                      showDialog(
+                      showDialog<void>(
                         context: context,
                         builder: (context) => const ChangelogDialog(),
                       );
@@ -205,14 +222,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Icons.code,
                   ),
                   ListTile(
-                    leading: Icon(Icons.email, color: Theme.of(context).colorScheme.secondary),
+                    leading: Icon(Icons.email,
+                        color: Theme.of(context).colorScheme.secondary),
                     title: Text(
                       'suvojitsengupta21@gmail.com',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
-                    onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
+                    onTap: () =>
+                        _launchURL('mailto:suvojitsengupta21@gmail.com'),
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -226,7 +245,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildDataManagementTile(
                     context,
                     'Backup Data',
-                    _lastBackupDate != null ? 'Last backup: $_lastBackupDate' : 'Save your data to a file',
+                    _lastBackupDate != null
+                        ? 'Last backup: $_lastBackupDate'
+                        : 'Save your data to a file',
                     Icons.backup,
                     _backupDatabase,
                   ),
@@ -313,7 +334,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSectionCard(BuildContext context, String title, List<Widget> children) {
+  /// Builds a card widget for a section of settings.
+  Widget _buildSectionCard(
+      BuildContext context, String title, List<Widget> children) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -336,6 +359,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  /// Builds a list tile for displaying information.
   Widget _buildInfoTile(String title, String subtitle, IconData icon) {
     return ListTile(
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
@@ -345,14 +369,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildLinkTile(BuildContext context, String title, String target, IconData icon) {
+  /// Builds a list tile that navigates to a route or launches a URL.
+  Widget _buildLinkTile(
+      BuildContext context, String title, String target, IconData icon) {
     return ListTile(
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       contentPadding: EdgeInsets.zero,
       onTap: () async {
-        if (target.startsWith('/')) { // Check if it's an internal route
+        if (target.startsWith('/')) {
+          // Check if it's an internal route
           Navigator.pushNamed(context, target);
         } else {
           final Uri uri = Uri.parse(target);
@@ -366,6 +393,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  /// Builds a switch tile for enabling or disabling the app lock.
   Widget _buildAppLockTile() {
     return SwitchListTile(
       title: const Text('App Lock'),
@@ -374,7 +402,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onChanged: (bool newValue) async {
         if (newValue) {
           // If enabling, navigate to PIN setup and wait for a result
-          final pinWasSet = await Navigator.pushNamed(context, AppRouter.pinSetupRoute);
+          final pinWasSet =
+              await Navigator.pushNamed(context, AppRouter.pinSetupRoute);
           if (pinWasSet == true) {
             // Only enable if PIN was successfully set
             final prefs = await SharedPreferences.getInstance();
@@ -399,11 +428,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         }
       },
-      secondary: Icon(Icons.fingerprint, color: Theme.of(context).colorScheme.primary),
+      secondary:
+          Icon(Icons.fingerprint, color: Theme.of(context).colorScheme.primary),
       contentPadding: EdgeInsets.zero,
     );
   }
 
+  /// Launches the given URL.
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri)) {
@@ -411,7 +442,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Widget _buildDataManagementTile(BuildContext context, String title, String subtitle, IconData icon, VoidCallback onTap) {
+  /// Builds a list tile for data management actions.
+  Widget _buildDataManagementTile(BuildContext context, String title,
+      String subtitle, IconData icon, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),

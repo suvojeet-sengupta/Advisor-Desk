@@ -5,7 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:workmanager/workmanager.dart';
 
-// Function to get the actual data
+/// Fetches the data to be displayed on the home screen widget.
+///
+/// This function retrieves the monthly summary, finds today's entry, and
+/// calculates the necessary values for the widget, such as today's call count
+/// and CSAT percentage.
+///
+/// Returns a `Map<String, String>` containing the widget data.
 Future<Map<String, String>> getWidgetData() async {
   WidgetsFlutterBinding.ensureInitialized();
   // It's crucial to initialize the LocalDataSource for background execution
@@ -49,6 +55,10 @@ Future<Map<String, String>> getWidgetData() async {
   }
 }
 
+/// The callback function that is executed in the background by [Workmanager].
+///
+/// This function fetches the widget data using [getWidgetData] and then updates
+/// the home screen widget with the new data.
 @pragma('vm:entry-point')
 void backgroundCallback() {
   Workmanager().executeTask((task, inputData) async {
@@ -65,9 +75,18 @@ void backgroundCallback() {
   });
 }
 
+/// A service for managing the home screen widget updates.
+///
+/// This class uses the [Workmanager] package to schedule periodic background
+/// tasks that update the widget's content.
 class WidgetUpdaterService {
+  /// A unique name for the background task.
   static const String uniqueName = "com.suvojeet.advisordesk.widgetUpdater";
 
+  /// Initializes the [Workmanager] service.
+  ///
+  /// This must be called before any other methods in this class. It sets up
+  /// the background callback handler.
   static Future<void> initialize() async {
     await Workmanager().initialize(
       backgroundCallback,
@@ -75,6 +94,9 @@ class WidgetUpdaterService {
     );
   }
 
+  /// Registers a periodic task to update the home screen widget.
+  ///
+  /// The task is scheduled to run approximately every 15 minutes.
   static void registerPeriodicTask() {
     Workmanager().registerPeriodicTask(
       uniqueName,
@@ -83,6 +105,7 @@ class WidgetUpdaterService {
     );
   }
 
+  /// Cancels the periodic widget update task.
   static void cancelTask() {
     Workmanager().cancelByUniqueName(uniqueName);
   }

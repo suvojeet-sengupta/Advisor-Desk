@@ -1,12 +1,20 @@
-
 import 'package:flutter/material.dart';
 
+/// Represents the theme for a shareable performance card.
+///
+/// This class defines the visual properties of a share card, including its
+/// background gradient and text colors.
 class ShareCardTheme {
+  /// The background gradient colors.
   final List<Color> backgroundGradient;
+  /// The color of the main text.
   final Color textColor;
+  /// The color of icons on the card.
   final Color iconColor;
+  /// The color of the footer text.
   final Color footerTextColor;
 
+  /// Creates a new instance of [ShareCardTheme].
   const ShareCardTheme({
     required this.backgroundGradient,
     required this.textColor,
@@ -15,6 +23,7 @@ class ShareCardTheme {
   });
 }
 
+/// A list of predefined themes for the shareable performance card.
 final List<ShareCardTheme> shareCardThemes = [
   const ShareCardTheme(
     backgroundGradient: [Color(0xFF004D40), Color(0xFF00796B)],

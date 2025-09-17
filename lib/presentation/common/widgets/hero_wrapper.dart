@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 
+/// A wrapper for the [Hero] widget that handles the `Material` ancestor requirement.
+///
+/// This widget simplifies the use of [Hero] animations by providing the necessary
+/// `Material` widget with a transparent background.
 class HeroWrapper extends StatelessWidget {
+  /// The tag for the [Hero] widget.
   final String tag;
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// The border radius to apply to the `ClipRRect` if provided.
   final BorderRadius? borderRadius;
 
+  /// Creates a hero wrapper.
   const HeroWrapper({
     Key? key,
     required this.tag,
@@ -30,15 +38,24 @@ class HeroWrapper extends StatelessWidget {
   }
 }
 
+/// A card that animates on press and can be used with [Hero] animations.
 class AnimatedDetailCard extends StatefulWidget {
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// The callback that is called when the card is tapped.
   final VoidCallback? onTap;
+  /// The tag for the [Hero] animation. If null, no hero animation is used.
   final String? heroTag;
+  /// The margin around the card.
   final EdgeInsetsGeometry? margin;
+  /// The padding around the card's child.
   final EdgeInsetsGeometry? padding;
+  /// The border radius of the card.
   final BorderRadius? borderRadius;
+  /// The box shadow to apply to the card.
   final List<BoxShadow>? boxShadow;
 
+  /// Creates an animated detail card.
   const AnimatedDetailCard({
     Key? key,
     required this.child,
@@ -145,15 +162,26 @@ class _AnimatedDetailCardState extends State<AnimatedDetailCard>
   }
 }
 
+/// A wrapper for the [OpenContainer] animation from the `animations` package.
+///
+/// This widget simplifies the creation of a container transform animation.
 class OpenContainerWrapper extends StatelessWidget {
+  /// The widget to display when the container is closed.
   final Widget closedWidget;
+  /// The widget to display when the container is open.
   final Widget openWidget;
+  /// The border radius of the closed container.
   final BorderRadius? closedBorderRadius;
+  /// The color of the closed container.
   final Color? closedColor;
+  /// The color of the open container.
   final Color? openColor;
+  /// The elevation of the closed container.
   final double closedElevation;
+  /// The elevation of the open container.
   final double openElevation;
 
+  /// Creates an open container wrapper.
   const OpenContainerWrapper({
     Key? key,
     required this.closedWidget,
@@ -194,11 +222,16 @@ class OpenContainerWrapper extends StatelessWidget {
   }
 }
 
+/// A wrapper for the [SharedAxisTransition] animation.
 class SharedAxisTransitionWrapper extends StatelessWidget {
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// The type of transition to use.
   final SharedAxisTransitionType transitionType;
+  /// Whether the transition should be reversed.
   final bool reverse;
 
+  /// Creates a shared axis transition wrapper.
   const SharedAxisTransitionWrapper({
     Key? key,
     required this.child,
@@ -229,10 +262,14 @@ class SharedAxisTransitionWrapper extends StatelessWidget {
   }
 }
 
+/// A wrapper for the [FadeThroughTransition] animation.
 class FadeThroughTransitionWrapper extends StatelessWidget {
+  /// The widget below this widget in the tree.
   final Widget child;
+  /// The duration of the transition.
   final Duration duration;
 
+  /// Creates a fade through transition wrapper.
   const FadeThroughTransitionWrapper({
     Key? key,
     required this.child,
@@ -260,15 +297,24 @@ class FadeThroughTransitionWrapper extends StatelessWidget {
   }
 }
 
+/// A list tile that can be used with a [Hero] animation.
 class AnimatedListTile extends StatelessWidget {
+  /// A widget to display before the title.
   final Widget? leading;
+  /// The primary content of the list tile.
   final Widget? title;
+  /// Additional content displayed below the title.
   final Widget? subtitle;
+  /// A widget to display after the title.
   final Widget? trailing;
+  /// The callback that is called when the list tile is tapped.
   final VoidCallback? onTap;
+  /// The tag for the [Hero] animation. If null, no hero animation is used.
   final String? heroTag;
+  /// The padding for the list tile's content.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// Creates an animated list tile.
   const AnimatedListTile({
     Key? key,
     this.leading,

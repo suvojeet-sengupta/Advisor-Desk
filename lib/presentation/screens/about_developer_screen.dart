@@ -3,8 +3,14 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// A screen that displays information about the developer and the motivation behind the app.
+///
+/// This screen provides a personal touch, sharing the story of the developer
+/// and the problem that Advisor Desk aims to solve. It also includes links
+/// for users to get in touch with the developer.
 class AboutDeveloperScreen extends StatelessWidget {
-  const AboutDeveloperScreen({Key? key}) : super(key: key);
+  /// Creates an [AboutDeveloperScreen].
+  const AboutDeveloperScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +48,7 @@ class AboutDeveloperScreen extends StatelessWidget {
     );
   }
 
+  /// Builds a section with a title and content.
   Widget _buildSection(BuildContext context, String title, String content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,6 +70,7 @@ class AboutDeveloperScreen extends StatelessWidget {
     );
   }
 
+  /// Builds the "Get in Touch" section with contact information and links.
   Widget _buildGetInTouch(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +97,10 @@ class AboutDeveloperScreen extends StatelessWidget {
             'assets/images/github_logo.svg',
             height: 24,
             width: 24,
-            color: Theme.of(context).colorScheme.primary,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.primary,
+              BlendMode.srcIn,
+            ),
           ),
         ),
         _buildLinkTile(
@@ -100,7 +111,10 @@ class AboutDeveloperScreen extends StatelessWidget {
             'assets/images/instagram_logo.svg',
             height: 24,
             width: 24,
-            color: Theme.of(context).colorScheme.primary,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.primary,
+              BlendMode.srcIn,
+            ),
           ),
         ),
         _buildLinkTile(
@@ -113,7 +127,9 @@ class AboutDeveloperScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLinkTile(BuildContext context, String title, String url, Widget icon) {
+  /// Builds a tappable list tile that launches a URL.
+  Widget _buildLinkTile(
+      BuildContext context, String title, String url, Widget icon) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 8.0),
@@ -127,6 +143,7 @@ class AboutDeveloperScreen extends StatelessWidget {
     );
   }
 
+  /// Launches the given URL.
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri)) {

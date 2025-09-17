@@ -8,9 +8,12 @@ import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 
+/// A screen that displays a detailed breakdown of the user's performance for a specific month.
 class MonthlyPerformanceScreen extends StatelessWidget {
+  /// The monthly summary data to display.
   final MonthlySummary summary;
 
+  /// Creates a [MonthlyPerformanceScreen].
   const MonthlyPerformanceScreen({
     Key? key,
     required this.summary,
@@ -22,11 +25,11 @@ class MonthlyPerformanceScreen extends StatelessWidget {
       appBar: CustomAppBar(title: summary.formattedMonthYear),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
-          // Right to Left Swipe (अगली स्क्रीन पर जाने के लिए)
+          // Right to Left Swipe (to go to the next screen)
           if ((details.primaryVelocity ?? 0) < -200) {
             Navigator.pushReplacementNamed(context, AppRouter.allReportsRoute);
           }
-          // Left to Right Swipe (पिछली स्क्रीन पर जाने के लिए)
+          // Left to Right Swipe (to go to the previous screen)
           else if ((details.primaryVelocity ?? 0) > 200) {
             Navigator.pop(context);
           }
@@ -214,6 +217,7 @@ class MonthlyPerformanceScreen extends StatelessWidget {
     );
   }
 
+  /// Builds a section title.
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -224,6 +228,7 @@ class MonthlyPerformanceScreen extends StatelessWidget {
     );
   }
 
+  /// Builds the salary breakdown section.
   Widget _buildSalaryBreakdown(BuildContext context, Map<String, double> breakdown) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -255,4 +260,3 @@ class MonthlyPerformanceScreen extends StatelessWidget {
     );
   }
 }
-

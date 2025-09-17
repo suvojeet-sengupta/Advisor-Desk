@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// A widget that displays a typing indicator animation.
+///
+/// This widget is commonly used in chat interfaces to indicate that the other
+/// party is typing.
 class TypingIndicator extends StatefulWidget {
+  /// Creates a typing indicator.
   const TypingIndicator({Key? key}) : super(key: key);
 
   @override
@@ -55,6 +60,7 @@ class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProv
     );
   }
 
+  /// Builds a single dot for the typing indicator.
   Widget _buildDot(Animation<double> animation) {
     return AnimatedBuilder(
       animation: animation,

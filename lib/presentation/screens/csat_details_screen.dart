@@ -9,22 +9,30 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_csat_entry_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
-import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
-import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart'; // Import InteractiveTutorialOverlay
+import 'package:advisor_desk/core/utils/tutorial_helper.dart';
+import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart';
 
+/// A screen that displays detailed Customer Satisfaction (CSAT) performance for a specific month.
+///
+/// This screen provides a breakdown of the monthly CSAT performance, including
+/// the overall percentage, total surveys, and counts for different satisfaction
+/// levels (T2, B2, N). It also lists daily entries, which can be edited or
+/// deleted via a swipe gesture.
 class CsatDetailsScreen extends StatefulWidget {
+  /// The summary data for the CSAT performance of a specific month.
   final CSATSummary csatSummary;
 
-  const CsatDetailsScreen({Key? key, required this.csatSummary}) : super(key: key);
+  /// Creates a [CsatDetailsScreen].
+  const CsatDetailsScreen({super.key, required this.csatSummary});
 
   @override
-  _CsatDetailsScreenState createState() => _CsatDetailsScreenState();
+  State<CsatDetailsScreen> createState() => _CsatDetailsScreenState();
 }
 
 class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
   late CSATSummary _currentCsatSummary;
-  final GlobalKey _firstCsatEntryKey = GlobalKey(); // Declare GlobalKey
-  late OverlayEntry overlayEntry; // Declare here
+  final GlobalKey _firstCsatEntryKey = GlobalKey();
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -35,33 +43,37 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
     });
   }
 
+  /// Shows an interactive tutorial if it hasn't been seen before.
   void _showCsatTutorial() async {
     final hasSeen = await TutorialHelper.hasSeenCsatTutorial();
-    if (!hasSeen && _currentCsatSummary.entries.isNotEmpty) { // Only show if there are entries
+    if (!hasSeen && _currentCsatSummary.entries.isNotEmpty) {
       final List<TutorialStep> steps = [
         TutorialStep(
           targetKey: _firstCsatEntryKey,
-          text: 'Swipe left on an entry to reveal options like Edit and Delete.',
+          text:
+              'Swipe left on an entry to reveal options like Edit and Delete.',
           textAlignment: Alignment.bottomCenter,
-          textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Adjust padding to avoid overlapping
+          textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
           showSwipeHint: true,
         ),
       ];
 
-      overlayEntry = OverlayEntry(
+      _overlayEntry = OverlayEntry(
         builder: (context) => InteractiveTutorialOverlay(
           steps: steps,
           onFinish: () {
-            overlayEntry.remove();
+            _overlayEntry?.remove();
+            _overlayEntry = null;
             TutorialHelper.setCsatTutorialSeen();
           },
         ),
       );
 
-      Overlay.of(context).insert(overlayEntry);
+      Overlay.of(context).insert(_overlayEntry!);
     }
   }
 
+  /// Refreshes the CSAT data from the repository.
   Future<void> _refreshData() async {
     final repository = context.read<PerformanceRepository>();
     final updatedSummary = await repository.getCSATSummary(
@@ -73,15 +85,17 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
     });
   }
 
+  /// Shows a confirmation dialog before deleting a CSAT entry.
   void _showDeleteConfirmationDialog(BuildContext context, CSATEntry entry) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
           shape: Theme.of(context).dialogTheme.shape,
           title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this CSAT entry? This action cannot be undone.'),
+          content: const Text(
+              'Are you sure you want to delete this CSAT entry? This action cannot be undone.'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -105,24 +119,30 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
     );
   }
 
+  /// Deletes a CSAT entry from the repository.
   Future<void> _deleteEntry(CSATEntry entry) async {
     try {
       final repository = context.read<PerformanceRepository>();
-      await repository.deleteCSATEntry(entry.id!); // id is guaranteed to be non-null for existing entries
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('CSAT entry deleted successfully!'),
-          backgroundColor: Theme.of(context).colorScheme.tertiary,
-        ),
-      );
-      _refreshData(); // Refresh the list after deletion
+      await repository.deleteCSATEntry(
+          entry.id!); // id is guaranteed to be non-null for existing entries
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('CSAT entry deleted successfully!'),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+          ),
+        );
+        _refreshData(); // Refresh the list after deletion
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to delete CSAT entry: $e'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete CSAT entry: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -152,7 +172,9 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
                           context,
                           'Monthly CSAT',
                           '${_currentCsatSummary.monthlyCSATPercentage.toStringAsFixed(2)}%',
-                          _currentCsatSummary.needsImprovement ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                          _currentCsatSummary.needsImprovement
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.tertiary,
                         ),
                         _buildSummaryRow(
                           context,
@@ -194,81 +216,95 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: _currentCsatSummary.entries.isEmpty
-              ? SliverToBoxAdapter(
-                  child: const CustomCard(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text('No CSAT entries for this month.'),
+                ? SliverToBoxAdapter(
+                    child: const CustomCard(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text('No CSAT entries for this month.'),
+                        ),
                       ),
                     ),
-                  ),
-                )
-              : SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final entry = _currentCsatSummary.entries[index];
-                      final dailyCsat = entry.csatPercentage;
-                      return Slidable(
-                        key: index == 0 ? _firstCsatEntryKey : ValueKey(entry.id),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) async {
-                                final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddCSATEntryScreen(entryToEdit: entry),
+                  )
+                : SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final entry = _currentCsatSummary.entries[index];
+                        final dailyCsat = entry.csatPercentage;
+                        return Slidable(
+                          key: index == 0
+                              ? _firstCsatEntryKey
+                              : ValueKey(entry.id),
+                          endActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute<bool>(
+                                      builder: (context) =>
+                                          AddCSATEntryScreen(entryToEdit: entry),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    _refreshData();
+                                  }
+                                },
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                icon: Icons.edit,
+                                label: 'Edit',
+                              ),
+                              SlidableAction(
+                                onPressed: (context) =>
+                                    _showDeleteConfirmationDialog(context, entry),
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.error,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
+                          ),
+                          child: CustomCard(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: (dailyCsat < 60
+                                        ? theme.colorScheme.error
+                                        : theme.colorScheme.tertiary)
+                                    .withOpacity(0.2),
+                                child: Text(
+                                  DateFormat('dd').format(entry.date),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: dailyCsat < 60
+                                        ? theme.colorScheme.error
+                                        : theme.colorScheme.tertiary,
                                   ),
-                                );
-                                if (result == true) {
-                                  _refreshData();
-                                }
-                              },
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Edit',
-                            ),
-                            SlidableAction(
-                              onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
-                              backgroundColor: Theme.of(context).colorScheme.error,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
-                        child: CustomCard(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: (dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary).withOpacity(0.2),
-                              child: Text(
-                                DateFormat('dd').format(entry.date),
-                                style: TextStyle(
+                                ),
+                              ),
+                              title: Text(
+                                  'T2: ${entry.t2Count}, B2: ${entry.b2Count}, N: ${entry.nCount}'),
+                              subtitle: Text(
+                                  DateFormat('MMM dd, yyyy').format(entry.date)),
+                              trailing: Text(
+                                '${dailyCsat.toStringAsFixed(2)}%',
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                                  color: dailyCsat < 60
+                                      ? theme.colorScheme.error
+                                      : theme.colorScheme.tertiary,
                                 ),
                               ),
                             ),
-                            title: Text('T2: ${entry.t2Count}, B2: ${entry.b2Count}, N: ${entry.nCount}'),
-                            subtitle: Text(DateFormat('MMM dd, yyyy').format(entry.date)),
-                            trailing: Text(
-                              '${dailyCsat.toStringAsFixed(2)}%',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
-                              ),
-                            ),
                           ),
-                        ),
-                      );
-                    },
-                    childCount: _currentCsatSummary.entries.length,
+                        );
+                      },
+                      childCount: _currentCsatSummary.entries.length,
+                    ),
                   ),
-                ),
           ),
         ],
       ),
@@ -276,7 +312,9 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
     );
   }
 
-  Widget _buildSummaryRow(BuildContext context, String label, String value, Color valueColor) {
+  /// Builds a row for the summary card.
+  Widget _buildSummaryRow(
+      BuildContext context, String label, String value, Color valueColor) {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

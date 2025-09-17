@@ -8,7 +8,11 @@ import 'package:advisor_desk/presentation/common/widgets/staggered_list.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_refresh_indicator.dart';
 import 'package:advisor_desk/presentation/common/widgets/hero_wrapper.dart';
 
-// Example 1: Replace shimmer loading with skeleton loader
+/// This file provides a collection of examples demonstrating how to use the
+/// custom animation widgets available in the application. It is intended as a
+/// guide for developers and is not used directly in the application's UI.
+
+/// An example of how to use the [DashboardSkeletonLoader] widget.
 class ExampleSkeletonUsage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -18,7 +22,7 @@ class ExampleSkeletonUsage extends StatelessWidget {
   }
 }
 
-// Example 2: Using animated buttons
+/// An example of how to use the various animated button widgets.
 class ExampleAnimatedButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -61,7 +65,7 @@ class ExampleAnimatedButtons extends StatelessWidget {
   }
 }
 
-// Example 3: Using staggered list animations
+/// An example of how to use the [StaggeredListView] widget.
 class ExampleStaggeredList extends StatelessWidget {
   final List<String> items = List.generate(20, (index) => 'Item $index');
   
@@ -83,7 +87,7 @@ class ExampleStaggeredList extends StatelessWidget {
   }
 }
 
-// Example 4: Using custom refresh indicator
+/// An example of how to use the [CustomRefreshIndicator] widget.
 class ExampleCustomRefresh extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -106,7 +110,7 @@ class ExampleCustomRefresh extends StatelessWidget {
   }
 }
 
-// Example 5: Using Hero animations
+/// An example of how to use [Hero] animations with the [HeroWrapper] widget.
 class ExampleHeroAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -141,10 +145,14 @@ class ExampleHeroAnimation extends StatelessWidget {
   }
 }
 
+/// A detail screen for demonstrating [Hero] animations.
 class DetailScreen extends StatelessWidget {
+  /// The tag for the [Hero] widget.
   final String heroTag;
+  /// The index of the item.
   final int index;
   
+  /// Creates a detail screen.
   const DetailScreen({
     required this.heroTag,
     required this.index,
@@ -182,7 +190,7 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-// Example 6: Using OpenContainer for smooth transitions
+/// An example of how to use the [OpenContainerWrapper] for smooth transitions.
 class ExampleOpenContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -222,7 +230,7 @@ class ExampleOpenContainer extends StatelessWidget {
   }
 }
 
-// Example 7: Staggered column for form animations
+/// An example of how to use [StaggeredColumn] for form animations.
 class ExampleStaggeredForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

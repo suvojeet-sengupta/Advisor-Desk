@@ -1,10 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
 
+/// A banner that is displayed on Indian Independence Day (August 15th).
+///
+/// This widget checks the current date and, if it is August 15th, displays
+/// a themed banner with an animation.
 class IndependenceDayBanner extends StatefulWidget {
+  /// Creates an Independence Day banner.
   const IndependenceDayBanner({super.key});
 
   @override
@@ -40,6 +43,7 @@ class _IndependenceDayBannerState extends State<IndependenceDayBanner>
     }
   }
 
+  /// Checks if the current date is August 15th.
   void _checkDate() {
     final now = DateTime.now();
     final formattedDate = DateFormat('d MMMM').format(now);

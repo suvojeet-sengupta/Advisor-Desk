@@ -1,3 +1,6 @@
+// This is a backup file and should not be used.
+// The active file is dashboard_screen.dart.
+
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
@@ -77,8 +80,8 @@ class DashboardView extends StatelessWidget {
       ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
-          // Right to Left Swipe (अगली स्क्रीन पर जाने के लिए)
-          if ((details.primaryVelocity ?? 0) < -200) { // स्वाइप की गति को थोड़ा बढ़ा दिया है
+          // Right to Left Swipe (to go to the next screen)
+          if ((details.primaryVelocity ?? 0) < -200) { // Increased swipe velocity threshold
             _navigateToMonthlyPerformance(context);
           }
         },

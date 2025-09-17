@@ -14,9 +14,15 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry
 
 import 'package:advisor_desk/data/datasources/ad_service.dart'; // Import AdService
 
+/// A screen for adding or editing a Customer Satisfaction (CSAT) entry.
+///
+/// This screen provides a form for the user to input CSAT data. It uses the
+/// [AddCSATEntryBloc] to manage the state of the form.
 class AddCSATEntryScreen extends StatelessWidget {
+  /// The entry to be edited. If null, a new entry is created.
   final CSATEntry? entryToEdit;
 
+  /// Creates an [AddCSATEntryScreen].
   const AddCSATEntryScreen({Key? key, this.entryToEdit}) : super(key: key);
 
   @override
@@ -31,7 +37,9 @@ class AddCSATEntryScreen extends StatelessWidget {
   }
 }
 
+/// The view for the [AddCSATEntryScreen].
 class AddCSATEntryView extends StatefulWidget {
+  /// Creates an [AddCSATEntryView].
   const AddCSATEntryView({Key? key}) : super(key: key);
 
   @override
@@ -252,6 +260,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
     );
   }
 
+  /// Builds a section title.
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -262,6 +271,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
     );
   }
 
+  /// Builds a row for the preview section.
   Widget _buildPreviewRow(String label, String value, {bool isHighlight = false, Color? color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -286,16 +296,19 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
     );
   }
 
+  /// Calculates the score for a given count.
   double _calculateScore(int count, AddCSATEntryState state) {
     final total = state.t2Count + state.b2Count + state.nCount;
     if (total == 0) return 0.0;
     return (100 / total) * count;
   }
 
+  /// Calculates the CSAT percentage.
   double _calculateCSAT(AddCSATEntryState state) {
     return _calculateScore(state.t2Count, state) - _calculateScore(state.b2Count, state);
   }
 
+  /// Shows a date picker dialog.
   Future<void> _selectDate(BuildContext context, DateTime initialDate) async {
     final selectedDate = await showDatePicker(
       context: context,
@@ -318,6 +331,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
     }
   }
 
+  /// Shows a confirmation dialog before deleting an entry.
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -350,6 +364,3 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
     );
   }
 }
-
-
-

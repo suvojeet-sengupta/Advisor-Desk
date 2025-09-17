@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/utils/authentication_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
 
+/// A screen that locks the application and requires user authentication to proceed.
+///
+/// This screen is displayed when the app is launched or resumed after a
+/// configured timeout period. It supports both PIN and biometric authentication.
 class LockScreen extends StatefulWidget {
+  /// A callback function that is executed upon successful authentication.
   final VoidCallback onUnlocked;
 
-  const LockScreen({Key? key, required this.onUnlocked}) : super(key: key);
+  /// Creates a [LockScreen].
+  const LockScreen({super.key, required this.onUnlocked});
 
   @override
-  _LockScreenState createState() => _LockScreenState();
+  State<LockScreen> createState() => _LockScreenState();
 }
 
 class _LockScreenState extends State<LockScreen> {
@@ -21,34 +27,54 @@ class _LockScreenState extends State<LockScreen> {
     _checkBiometrics();
   }
 
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
+  }
+
+  /// Checks if biometric authentication is available on the device.
+  ///
+  /// If biometrics are available, it immediately triggers the biometric
+  /// authentication flow.
   Future<void> _checkBiometrics() async {
     final isAvailable = await AuthenticationService.isBiometricAvailable();
-    setState(() {
-      _isBiometricAvailable = isAvailable;
-    });
-    if (isAvailable) {
-      _authenticateWithBiometrics();
+    if (mounted) {
+      setState(() {
+        _isBiometricAvailable = isAvailable;
+      });
+      if (isAvailable) {
+        _authenticateWithBiometrics();
+      }
     }
   }
 
+  /// Attempts to authenticate the user using biometrics.
+  ///
+  /// On success, it updates the last authentication time and calls the
+  /// [onUnlocked] callback.
   Future<void> _authenticateWithBiometrics() async {
     final isAuthenticated =
         await AuthenticationService.authenticateWithBiometrics();
-    if (isAuthenticated) {
+    if (isAuthenticated && mounted) {
       await AuthenticationService.updateLastAuthenticationTime();
       widget.onUnlocked();
     }
   }
 
+  /// Attempts to authenticate the user using the entered PIN.
+  ///
+  /// On success, it updates the last authentication time and calls the
+  /// [onUnlocked] callback. On failure, it shows a snackbar message.
   Future<void> _authenticateWithPin() async {
     final pin = _pinController.text;
     if (pin.isEmpty) return;
 
     final isValid = await AuthenticationService.checkPin(pin);
-    if (isValid) {
+    if (isValid && mounted) {
       await AuthenticationService.updateLastAuthenticationTime();
       widget.onUnlocked();
-    } else {
+    } else if (mounted) {
       _pinController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid PIN. Please try again.')),
@@ -117,7 +143,8 @@ class _LockScreenState extends State<LockScreen> {
                               Text(
                                 'Unlock with Biometrics',
                                 style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                                  color:
+                                      isDarkMode ? Colors.white70 : Colors.black54,
                                 ),
                               ),
                             ],

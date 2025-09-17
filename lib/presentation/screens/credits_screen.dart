@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 
+/// A screen that displays credits and acknowledgements.
+///
+/// This screen is used to give thanks to individuals and communities who
+/// contributed to the development and testing of the application.
 class CreditsScreen extends StatelessWidget {
-  const CreditsScreen({Key? key}) : super(key: key);
+  /// Creates a [CreditsScreen].
+  const CreditsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +47,9 @@ class CreditsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCreditsSection(BuildContext context, String title, List<String> names) {
+  /// Builds a section with a title and a list of names.
+  Widget _buildCreditsSection(
+      BuildContext context, String title, List<String> names) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -66,8 +73,16 @@ class CreditsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds a styled tile for a single contributor's name.
   Widget _buildContributorTile(BuildContext context, String name, int index) {
-    final colors = [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary, Colors.green, Colors.red, Colors.purple, Colors.blue];
+    final colors = [
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.secondary,
+      Colors.green,
+      Colors.red,
+      Colors.purple,
+      Colors.blue
+    ];
     return Container(
       margin: const EdgeInsets.only(bottom: 12.0),
       padding: const EdgeInsets.all(16.0),
@@ -88,14 +103,17 @@ class CreditsScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Text(
             name,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+            style:
+                Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCommunitySection(BuildContext context, String title, String content) {
+  /// Builds a section with a title and a block of text content.
+  Widget _buildCommunitySection(
+      BuildContext context, String title, String content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

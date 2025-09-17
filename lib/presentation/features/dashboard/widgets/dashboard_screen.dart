@@ -46,7 +46,12 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_eve
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_state.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/ai_insight_card.dart';
 
+/// The main dashboard screen of the application.
+///
+/// This screen provides an overview of the user's performance for the selected
+/// month, including key metrics, goals, and daily entries.
 class DashboardScreen extends StatelessWidget {
+  /// Creates a [DashboardScreen].
   const DashboardScreen({super.key});
 
   @override
@@ -77,7 +82,9 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
+/// The view for the [DashboardScreen].
 class DashboardView extends StatefulWidget {
+  /// Creates a [DashboardView].
   const DashboardView({super.key});
 
   @override
@@ -109,6 +116,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     super.dispose();
   }
 
+  /// Checks if an in-app review should be requested and, if so, requests it.
   Future<void> _checkAndRequestReview() async {
     final launchCount = await _usageTrackingService.incrementLaunchCount();
     final lastReviewRequestDate = await _usageTrackingService.getLastReviewRequestDate();
@@ -123,6 +131,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     }
   }
 
+  /// Navigates to the monthly performance screen.
   void _navigateToMonthlyPerformance(BuildContext context) {
     final dashboardState = context.read<DashboardBloc>().state;
     if (dashboardState.status == DashboardStatus.loaded && dashboardState.monthlySummary != null) {
@@ -134,6 +143,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     }
   }
 
+  /// Returns a color based on the quality score.
   Color _getQualityColor(double percentage, BuildContext context) {
     if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
     if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
@@ -141,6 +151,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     return Theme.of(context).colorScheme.error;
   }
 
+  /// Returns a greeting based on the time of day.
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
@@ -458,6 +469,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     );
   }
 
+  /// Builds the floating action button menu.
   Widget _buildFabMenu(BuildContext context) {
     return FloatingActionButton(
       onPressed: () async {
@@ -475,6 +487,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     );
   }
 
+  /// Builds a single item for the floating action button menu.
   Widget _buildFabMenuItem(BuildContext context, {required IconData icon, required String label, required VoidCallback onPressed}) {
     return GestureDetector(
       onTap: onPressed,
@@ -498,6 +511,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     );
   }
 
+  /// Builds a section of the dashboard based on the [DashboardSection] type.
   Widget _buildDashboardSection(
     BuildContext context,
     DashboardSection section,
@@ -676,6 +690,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     }
   }
 
+  /// Shows a dialog for editing the user's monthly goals.
   void _showEditGoalsDialog(BuildContext context, int currentHours, int currentCalls) {
     final theme = Theme.of(context);
     final hoursController = TextEditingController(text: currentHours.toString());
@@ -764,6 +779,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     );
   }
 
+  /// Checks the app version and shows the changelog if it's a new version.
   Future<void> _checkVersionAndShowChangelog() async {
     final packageInfo = await PackageInfo.fromPlatform();
     final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';

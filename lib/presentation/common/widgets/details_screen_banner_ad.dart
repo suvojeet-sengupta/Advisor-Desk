@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+/// A widget that displays a banner ad, specifically for details screens.
+///
+/// This widget handles loading and displaying a banner ad. It shows nothing
+/// until the ad is successfully loaded.
 class DetailsScreenBannerAd extends StatefulWidget {
+  /// Creates a new instance of [DetailsScreenBannerAd].
   const DetailsScreenBannerAd({Key? key}) : super(key: key);
 
   @override
@@ -20,6 +25,7 @@ class _DetailsScreenBannerAdState extends State<DetailsScreenBannerAd> {
     _loadAd();
   }
 
+  /// Loads the banner ad.
   void _loadAd() {
     _bannerAd = BannerAd(
       adUnitId: adUnitId,

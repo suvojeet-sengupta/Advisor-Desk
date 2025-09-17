@@ -3,10 +3,14 @@ import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
-import 'package:advisor_desk/core/constants/app_colors.dart';
 
+/// A screen where users can configure the parameters for salary calculation.
+///
+/// This screen provides a form to modify various constants such as base pay rates,
+/// bonus targets, and TDS rates. The settings are persisted using [AppConstants].
 class SalarySettingsScreen extends StatefulWidget {
-  const SalarySettingsScreen({Key? key}) : super(key: key);
+  /// Creates a [SalarySettingsScreen].
+  const SalarySettingsScreen({super.key});
 
   @override
   State<SalarySettingsScreen> createState() => _SalarySettingsScreenState();
@@ -25,14 +29,23 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _baseRatePerCallController = TextEditingController(text: AppConstants.baseRatePerCall.toString());
-    _bonusAmountController = TextEditingController(text: AppConstants.bonusAmount.toString());
-    _bonusCallTargetController = TextEditingController(text: AppConstants.bonusCallTarget.toString());
-    _bonusHourTargetController = TextEditingController(text: AppConstants.bonusHourTarget.toString());
-    _csatBonusPercentageController = TextEditingController(text: AppConstants.csatBonusPercentage.toString());
-    _csatBonusCallTargetController = TextEditingController(text: AppConstants.csatBonusCallTarget.toString());
-    _csatBonusRateController = TextEditingController(text: AppConstants.csatBonusRate.toString());
-    _tdsRateController = TextEditingController(text: AppConstants.tdsRate.toString());
+    // Initialize controllers with current values from AppConstants.
+    _baseRatePerCallController =
+        TextEditingController(text: AppConstants.baseRatePerCall.toString());
+    _bonusAmountController =
+        TextEditingController(text: AppConstants.bonusAmount.toString());
+    _bonusCallTargetController =
+        TextEditingController(text: AppConstants.bonusCallTarget.toString());
+    _bonusHourTargetController =
+        TextEditingController(text: AppConstants.bonusHourTarget.toString());
+    _csatBonusPercentageController = TextEditingController(
+        text: AppConstants.csatBonusPercentage.toString());
+    _csatBonusCallTargetController = TextEditingController(
+        text: AppConstants.csatBonusCallTarget.toString());
+    _csatBonusRateController =
+        TextEditingController(text: AppConstants.csatBonusRate.toString());
+    _tdsRateController =
+        TextEditingController(text: AppConstants.tdsRate.toString());
   }
 
   @override
@@ -48,6 +61,7 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
     super.dispose();
   }
 
+  /// Parses the values from the text controllers and saves them using [AppConstants].
   void _saveSettings() async {
     try {
       await AppConstants.saveSettings(
@@ -62,14 +76,18 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Salary settings saved successfully!'), backgroundColor: Colors.green),
+          const SnackBar(
+              content: Text('Salary settings saved successfully!'),
+              backgroundColor: Colors.green),
         );
         Navigator.pop(context, true); // Signal success and pop
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save settings: \$e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('Failed to save settings: $e'),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -162,7 +180,6 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
                 text: 'Save Salary Settings',
                 onPressed: _saveSettings,
                 icon: Icons.save,
-                isPrimary: true, // Ensure it uses the primary color
               ),
             ),
           ],

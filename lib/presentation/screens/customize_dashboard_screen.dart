@@ -5,9 +5,15 @@ import 'package:advisor_desk/core/models/dashboard_models.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart';
 
+/// A screen that allows users to customize the layout of their dashboard.
+///
+/// Users can reorder dashboard sections and toggle their visibility.
+/// The state of the customization is managed by the [DashboardCustomizationCubit].
 class CustomizeDashboardScreen extends StatelessWidget {
-  const CustomizeDashboardScreen({Key? key}) : super(key: key);
+  /// Creates a [CustomizeDashboardScreen].
+  const CustomizeDashboardScreen({super.key});
 
+  /// Returns a user-friendly title for a given [DashboardSection].
   String _getSectionTitle(DashboardSection section) {
     switch (section) {
       case DashboardSection.monthlySummary:
@@ -18,7 +24,6 @@ class CustomizeDashboardScreen extends StatelessWidget {
         return 'Salary Details';
       case DashboardSection.dailyEntries:
         return 'Daily Entries';
-      
     }
   }
 
@@ -29,11 +34,10 @@ class CustomizeDashboardScreen extends StatelessWidget {
       body: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
         builder: (context, customizationState) {
           final visibleSections = customizationState.visibleSections;
-          final hiddenSections = DashboardSection.values
-              .where((section) => !visibleSections.contains(section))
-              .toList();
-
-          final reorderableList = [...visibleSections, ...hiddenSections];
+          // Combine visible and hidden sections for the reorderable list.
+          final allSections = DashboardSection.values.toList();
+          final reorderableList = List<DashboardSection>.from(visibleSections)
+            ..addAll(allSections.where((s) => !visibleSections.contains(s)));
 
           return Column(
             children: [
@@ -48,43 +52,21 @@ class CustomizeDashboardScreen extends StatelessWidget {
                     return Card(
                       key: ValueKey(section),
                       margin: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: CheckboxListTile(
+                      child: SwitchListTile(
                         title: Text(_getSectionTitle(section)),
                         value: isVisible,
                         onChanged: (bool? newValue) {
-                          final newVisibleSections =
-                              List<DashboardSection>.from(visibleSections);
-                          if (newValue == true) {
-                            if (!newVisibleSections.contains(section)) {
-                              newVisibleSections.add(section);
-                            }
-                          } else {
-                            newVisibleSections.remove(section);
-                          }
                           context
                               .read<DashboardCustomizationCubit>()
-                              .updateVisibleSections(newVisibleSections);
+                              .toggleSectionVisibility(section);
                         },
                       ),
                     );
                   },
                   onReorder: (int oldIndex, int newIndex) {
-                    if (newIndex > oldIndex) {
-                      newIndex -= 1;
-                    }
-
-                    final reorderedList =
-                        List<DashboardSection>.from(reorderableList);
-                    final movedSection = reorderedList.removeAt(oldIndex);
-                    reorderedList.insert(newIndex, movedSection);
-
-                    final newVisibleSections = reorderedList
-                        .where((s) => visibleSections.contains(s))
-                        .toList();
-
                     context
                         .read<DashboardCustomizationCubit>()
-                        .updateVisibleSections(newVisibleSections);
+                        .reorderSections(oldIndex, newIndex);
                   },
                 ),
               ),
@@ -94,8 +76,7 @@ class CustomizeDashboardScreen extends StatelessWidget {
                   onPressed: () {
                     context
                         .read<DashboardCustomizationCubit>()
-                        .updateVisibleSections(
-                            const DashboardCustomization().visibleSections);
+                        .resetToDefault();
                   },
                   child: const Text('Reset to Default'),
                 ),

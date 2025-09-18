@@ -6,7 +6,7 @@ import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_event.dart';
@@ -80,7 +80,7 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: widget.entryToEdit != null ? 'Edit CQ Entry' : 'Add CQ Entries',
+        title: widget.entryToEdit != null ? 'Update CQ Entry' : 'Add CQ Entries',
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -132,9 +132,9 @@ class _AddCQEntryViewState extends State<AddCQEntryView> {
             },
           ),
         ),
-        CustomButton(
-          text: 'Add Entries',
+        AnimatedButton(
           onPressed: _addEntries,
+          child: const Text('Add Entries'),
         ),
       ],
     );

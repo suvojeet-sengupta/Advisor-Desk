@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
@@ -136,11 +136,11 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ),
         const SizedBox(height: 24),
-        CustomButton(
-          text: 'Edit Profile',
+        AnimatedButton(
           onPressed: () {
             context.read<ProfileCubit>().setEditing(true);
           },
+          child: const Text('Edit Profile'),
         ),
       ],
     );
@@ -178,8 +178,7 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ),
         const SizedBox(height: 24),
-        CustomButton(
-          text: 'Save Profile',
+        AnimatedButton(
           onPressed: () async {
             final name = _nameController.text.trim();
             final companyName = _companyController.text.trim();
@@ -202,6 +201,7 @@ class _ProfileViewState extends State<ProfileView> {
               Navigator.pushReplacementNamed(context, AppRouter.dashboardRoute);
             }
           },
+          child: const Text('Save Profile'),
         ),
       ],
     );

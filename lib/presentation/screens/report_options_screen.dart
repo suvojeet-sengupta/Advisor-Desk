@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
@@ -97,8 +97,7 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
-              child: CustomButton(
-                text: 'Generate Report',
+              child: AnimatedButton(
                 onPressed: () {
                   if (_selectedSections.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +117,14 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
                     });
                   }
                 },
-                icon: Icons.picture_as_pdf,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.picture_as_pdf),
+                    SizedBox(width: 8),
+                    Text('Generate Report'),
+                  ],
+                ),
               ),
             ),
           ],

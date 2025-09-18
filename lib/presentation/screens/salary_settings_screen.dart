@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 
 class SalarySettingsScreen extends StatefulWidget {
@@ -158,11 +158,16 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
-              child: CustomButton(
-                text: 'Save Salary Settings',
+              child: AnimatedButton(
                 onPressed: _saveSettings,
-                icon: Icons.save,
-                isPrimary: true, // Ensure it uses the primary color
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.save),
+                    SizedBox(width: 8),
+                    Text('Save Salary Settings'),
+                  ],
+                ),
               ),
             ),
           ],

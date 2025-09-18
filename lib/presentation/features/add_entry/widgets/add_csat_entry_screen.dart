@@ -6,7 +6,7 @@ import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_event.dart';
@@ -223,12 +223,18 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                       // Submit Button
                       SizedBox(
                         width: double.infinity,
-                        child: CustomButton(
-                          text: state.isUpdate ? 'Update CSAT Entry' : 'Add CSAT Entry',
+                        child: AnimatedButton(
                           onPressed: state.status == AddCSATEntryStatus.loading ? null : () {
                             context.read<AddCSATEntryBloc>().add(const SubmitCSATEntry());
                           },
-                          icon: state.isUpdate ? Icons.update : Icons.add,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(state.isUpdate ? Icons.update : Icons.add),
+                              const SizedBox(width: 8),
+                              Text(state.isUpdate ? 'Update CSAT Entry' : 'Add CSAT Entry'),
+                            ],
+                          ),
                         ),
                       ),
 
@@ -236,11 +242,18 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                         const SizedBox(height: 16),
                         SizedBox(
                           width: double.infinity,
-                          child: CustomButton(
-                            text: 'Delete Entry',
+                          child: AnimatedButton(
                             onPressed: state.status == AddCSATEntryStatus.loading ? null : () => _showDeleteConfirmationDialog(context),
-                            isPrimary: false,
-                            icon: Icons.delete_outline,
+                            backgroundColor: AppColors.secondaryBackground,
+                            foregroundColor: AppColors.textPrimary,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.delete_outline),
+                                SizedBox(width: 8),
+                                Text('Delete Entry'),
+                              ],
+                            ),
                           ),
                         ),
                       ],

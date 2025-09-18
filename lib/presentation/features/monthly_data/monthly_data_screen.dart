@@ -5,7 +5,7 @@ import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_dat
 import 'package:advisor_desk/presentation/features/monthly_data/bloc/monthly_data_state.dart';
 import 'package:advisor_desk/domain/entities/monthly_data.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 
 class MonthlyDataScreen extends StatefulWidget {
@@ -75,8 +75,7 @@ class _MonthlyDataScreenState extends State<MonthlyDataScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    CustomButton(
-                      text: 'Save',
+                    AnimatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           final nonBillableCalls = int.parse(_nonBillableCallsController.text);
@@ -90,6 +89,7 @@ class _MonthlyDataScreenState extends State<MonthlyDataScreen> {
                           Navigator.pop(context);
                         }
                       },
+                      child: const Text('Save'),
                     ),
                   ],
                 ),

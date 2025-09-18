@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 
 class PinSetupScreen extends StatefulWidget {
   const PinSetupScreen({Key? key}) : super(key: key);
@@ -68,9 +68,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                 },
               ),
               const Spacer(),
-              CustomButton(
-                text: 'Save PIN',
+              AnimatedButton(
                 onPressed: _savePin,
+                child: const Text('Save PIN'),
               ),
             ],
           ),

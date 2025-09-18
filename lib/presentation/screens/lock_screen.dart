@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/utils/authentication_service.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 
 class LockScreen extends StatefulWidget {
   final VoidCallback onUnlocked;
@@ -153,9 +153,9 @@ class _LockScreenState extends State<LockScreen> {
                     const SizedBox(height: 32),
                     SizedBox(
                       width: 250,
-                      child: CustomButton(
-                        text: 'Unlock',
+                      child: AnimatedButton(
                         onPressed: _authenticateWithPin,
+                        child: const Text('Unlock'),
                       ),
                     ),
                     const SizedBox(height: 48),

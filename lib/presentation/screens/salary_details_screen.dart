@@ -32,6 +32,8 @@ class SalaryDetailsScreen extends StatelessWidget {
             _buildSectionTitle(context, 'Deductions'),
             const SizedBox(height: 8),
             _buildDeductionsCard(context, currencyFormat),
+            if (summary.customRateEntries.isNotEmpty)
+              _buildCustomRateCard(context, currencyFormat),
           ],
         ),
       ),
@@ -143,6 +145,45 @@ class SalaryDetailsScreen extends StatelessWidget {
         ),
       );
     }
+  }
+
+  Widget _buildCustomRateCard(BuildContext context, NumberFormat currencyFormat) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 24),
+        _buildSectionTitle(context, 'Custom Rate Details'),
+        const SizedBox(height: 8),
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildSalaryDetailRow(
+                  context,
+                  'Total Calls with Custom Rate',
+                  summary.totalCustomRateCalls.toString(),
+                  Icons.call,
+                  Theme.of(context).colorScheme.tertiary,
+                ),
+                const Divider(),
+                ...summary.customRateEntries.map((entry) {
+                  return _buildSalaryDetailRow(
+                    context,
+                    '${DateFormat('dd MMM').format(entry.date)}',
+                    currencyFormat.format(entry.customCallRate),
+                    Icons.calendar_today,
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildSalaryDetailRow(BuildContext context, String title, String value, IconData icon, Color iconColor) {

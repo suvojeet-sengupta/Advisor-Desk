@@ -134,6 +134,16 @@ class MonthlySummary extends Equatable {
   String get formattedMonthYear {
     return '$monthName $year';
   }
+
+  // Get entries with custom call rates
+  List<DailyEntry> get customRateEntries {
+    return entries.where((entry) => entry.customCallRate != null).toList();
+  }
+
+  // Get total calls made with custom rates
+  int get totalCustomRateCalls {
+    return customRateEntries.fold(0, (sum, entry) => sum + entry.callCount);
+  }
   
   @override
   List<Object?> get props => [month, year, entries, csatSummary, cqSummary, nonBillableCalls, baseSalary];

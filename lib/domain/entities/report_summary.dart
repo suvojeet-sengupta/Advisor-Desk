@@ -125,6 +125,16 @@ class ReportSummary extends Equatable {
     return months[month - 1];
   }
 
+  // Get entries with custom call rates
+  List<DailyEntry> get customRateEntries {
+    return entries.where((entry) => entry.customCallRate != null).toList();
+  }
+
+  // Get total calls made with custom rates
+  int get totalCustomRateCalls {
+    return customRateEntries.fold(0, (sum, entry) => sum + entry.callCount);
+  }
+
   @override
   List<Object?> get props => [startDate, endDate, entries, csatSummary, cqSummary, baseSalary];
 }

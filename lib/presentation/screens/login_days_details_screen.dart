@@ -77,6 +77,8 @@ class LoginDaysDetailsScreen extends StatelessWidget {
       children: [
         _buildStatItem(context, 'Present', state.presentCount.toString(), Colors.green),
         _buildStatItem(context, 'Absent', state.absentCount.toString(), Colors.red),
+        if (state.inProgressCount > 0)
+          _buildStatItem(context, 'In Progress', state.inProgressCount.toString(), Colors.grey),
         _buildStatItem(context, 'Week Off', state.weekOffCount.toString(), Colors.blue),
         _buildStatItem(context, 'Personal', state.personalLeaveCount.toString(), Colors.orange),
       ],
@@ -121,6 +123,7 @@ class LoginDaysDetailsScreen extends StatelessWidget {
           final isLoginDay = loginDates.any((d) => d.year == date.year && d.month == date.month && d.day == date.day);
           final leaveEntry = leaveEntries[date];
           final isFutureDay = date.isAfter(DateTime.now());
+          final isToday = date.year == DateTime.now().year && date.month == DateTime.now().month && date.day == DateTime.now().day;
 
           Color bgColor;
           Color textColor;
@@ -143,8 +146,13 @@ class LoginDaysDetailsScreen extends StatelessWidget {
               icon = Icon(Icons.person, size: 16, color: Colors.orange);
             }
           } else { // Absent day
-            bgColor = Colors.red.withOpacity(0.2);
-            textColor = Colors.red;
+            if (isToday) {
+              bgColor = Colors.grey.withOpacity(0.2);
+              textColor = Colors.grey;
+            } else {
+              bgColor = Colors.red.withOpacity(0.2);
+              textColor = Colors.red;
+            }
           }
 
           return GestureDetector(
@@ -160,21 +168,32 @@ class LoginDaysDetailsScreen extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        DateFormat('EEE').format(date).toUpperCase(),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: textColor,
-                          fontWeight: FontWeight.w600,
+                      if (isToday && !isLoginDay && leaveEntry == null)
+                        Text(
+                          'In Progress',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      else ...[
+                        Text(
+                          DateFormat('EEE').format(date).toUpperCase(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: textColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '$day',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
+                        const SizedBox(height: 2),
+                        Text(
+                          '$day',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
                         ),
-                      ),
+                      ]
                     ],
                   ),
                   if (icon != null)
@@ -245,6 +264,7 @@ class LoginDaysDetailsScreen extends StatelessWidget {
       children: [
         _buildLegendItem(context, Colors.green, 'Present'),
         _buildLegendItem(context, Colors.red, 'Absent'),
+        _buildLegendItem(context, Colors.grey, 'In Progress'),
         _buildLegendItem(context, Colors.blue, 'Week Off'),
         _buildLegendItem(context, Colors.orange, 'Personal'),
       ],

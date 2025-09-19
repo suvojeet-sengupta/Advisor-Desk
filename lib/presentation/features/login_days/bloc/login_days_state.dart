@@ -20,6 +20,7 @@ class LoginDaysLoaded extends LoginDaysState {
   final int absentCount;
   final int weekOffCount;
   final int personalLeaveCount;
+  final int inProgressCount;
 
   const LoginDaysLoaded({
     required this.loginEntries,
@@ -28,10 +29,11 @@ class LoginDaysLoaded extends LoginDaysState {
     required this.absentCount,
     required this.weekOffCount,
     required this.personalLeaveCount,
+    required this.inProgressCount,
   });
 
   @override
-  List<Object> get props => [loginEntries, leaveEntries, presentCount, absentCount, weekOffCount, personalLeaveCount];
+  List<Object> get props => [loginEntries, leaveEntries, presentCount, absentCount, weekOffCount, personalLeaveCount, inProgressCount];
 }
 
 class LoginDaysError extends LoginDaysState {

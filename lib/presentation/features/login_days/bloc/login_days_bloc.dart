@@ -66,9 +66,16 @@ class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
   void _emitLoadedState(Emitter<LoginDaysState> emit, List<DailyEntry> loginEntries, List<LeaveEntry> leaveEntries, int year, int month) {
     final now = DateTime.now();
     int daysToConsider;
+    int inProgressCount = 0;
 
     if (year == now.year && month == now.month) {
       daysToConsider = now.day; // Only consider days up to today for the current month
+      final todayEntry = loginEntries.any((e) => e.date.day == now.day);
+      final todayLeave = leaveEntries.any((e) => e.date.day == now.day);
+      if (!todayEntry && !todayLeave) {
+        inProgressCount = 1;
+        daysToConsider -= 1;
+      }
     } else {
       daysToConsider = DateTime(year, month + 1, 0).day; // All days for past months
     }
@@ -87,6 +94,7 @@ class LoginDaysBloc extends Bloc<LoginDaysEvent, LoginDaysState> {
       absentCount: actualAbsentCount < 0 ? 0 : actualAbsentCount, // Ensure absent count is not negative
       weekOffCount: weekOffCount,
       personalLeaveCount: personalLeaveCount,
+      inProgressCount: inProgressCount,
     ));
   }
 }

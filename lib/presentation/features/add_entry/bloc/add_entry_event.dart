@@ -84,3 +84,16 @@ class ShowSuccessMessage extends AddEntryEvent {
 class DeleteEntry extends AddEntryEvent {
   const DeleteEntry();
 }
+
+class ToggleCustomRate extends AddEntryEvent {
+  const ToggleCustomRate();
+}
+
+class CustomRateChanged extends AddEntryEvent {
+  final double rate;
+
+  const CustomRateChanged({required this.rate});
+
+  @override
+  List<Object> get props => [rate];
+}

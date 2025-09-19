@@ -13,6 +13,8 @@ class AddEntryState extends Equatable {
   final DailyEntry? existingEntry;
   final String? errorMessage;
   final bool isDelete; // नया फ्लैग
+  final bool isCustomRateEnabled;
+  final double? customCallRate;
 
   const AddEntryState({
     this.status = AddEntryStatus.initial,
@@ -24,6 +26,8 @@ class AddEntryState extends Equatable {
     this.existingEntry,
     this.errorMessage,
     this.isDelete = false, // डिफ़ॉल्ट वैल्यू
+    this.isCustomRateEnabled = false,
+    this.customCallRate,
   });
 
   factory AddEntryState.initial() {
@@ -42,6 +46,8 @@ class AddEntryState extends Equatable {
     DailyEntry? existingEntry,
     String? errorMessage,
     bool? isDelete,
+    bool? isCustomRateEnabled,
+    double? customCallRate,
   }) {
     return AddEntryState(
       status: status ?? this.status,
@@ -53,6 +59,8 @@ class AddEntryState extends Equatable {
       existingEntry: existingEntry ?? this.existingEntry,
       errorMessage: errorMessage,
       isDelete: isDelete ?? this.isDelete,
+      isCustomRateEnabled: isCustomRateEnabled ?? this.isCustomRateEnabled,
+      customCallRate: customCallRate ?? this.customCallRate,
     );
   }
 
@@ -77,6 +85,7 @@ class AddEntryState extends Equatable {
       loginMinutes: loginMinutes,
       loginSeconds: loginSeconds,
       callCount: callCount,
+      customCallRate: isCustomRateEnabled ? customCallRate : null,
     );
   }
 
@@ -91,5 +100,7 @@ class AddEntryState extends Equatable {
         existingEntry,
         errorMessage,
         isDelete,
+        isCustomRateEnabled,
+        customCallRate,
       ];
 }

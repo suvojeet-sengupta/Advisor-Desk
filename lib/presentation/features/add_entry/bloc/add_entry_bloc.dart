@@ -28,6 +28,8 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     on<CallCountChanged>(_onCallCountChanged);
     on<SubmitEntry>(_onSubmitEntry);
     on<DeleteEntry>(_onDeleteEntry);
+    on<ToggleCustomRate>(_onToggleCustomRate);
+    on<CustomRateChanged>(_onCustomRateChanged);
     
   }
 
@@ -37,6 +39,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
   ) async {
     // अगर entry सीधे pass की gayi है (edit mode), to उसे use karein
     if (event.entry != null) {
+      final isCustomRateEnabled = event.entry?.customCallRate != null;
       emit(state.copyWith(
         status: AddEntryStatus.loaded,
         date: event.entry!.date,
@@ -45,6 +48,8 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
         loginSeconds: event.entry!.loginSeconds,
         callCount: event.entry!.callCount,
         existingEntry: event.entry,
+        isCustomRateEnabled: isCustomRateEnabled,
+        customCallRate: event.entry!.customCallRate,
       ));
       return;
     }
@@ -56,6 +61,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
       final existingEntry = await repository.getEntryForDate(date);
 
       if (existingEntry != null) {
+        final isCustomRateEnabled = existingEntry.customCallRate != null;
         // Agar entry hai, to use edit mode mein kholen
         emit(state.copyWith(
           status: AddEntryStatus.loaded,
@@ -65,6 +71,8 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
           loginSeconds: existingEntry.loginSeconds,
           callCount: existingEntry.callCount,
           existingEntry: existingEntry,
+          isCustomRateEnabled: isCustomRateEnabled,
+          customCallRate: existingEntry.customCallRate,
         ));
       } else {
         // **सबसे महत्वपूर्ण बदलाव यहाँ है**
@@ -119,6 +127,20 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     Emitter<AddEntryState> emit,
   ) {
     emit(state.copyWith(callCount: event.callCount));
+  }
+
+  void _onToggleCustomRate(
+    ToggleCustomRate event,
+    Emitter<AddEntryState> emit,
+  ) {
+    emit(state.copyWith(isCustomRateEnabled: !state.isCustomRateEnabled));
+  }
+
+  void _onCustomRateChanged(
+    CustomRateChanged event,
+    Emitter<AddEntryState> emit,
+  ) {
+    emit(state.copyWith(customCallRate: event.rate));
   }
 
   Future<void> _onSubmitEntry(

@@ -20,7 +20,7 @@ class AppConstants {
 
   // Database constants
   static const String databaseName = 'advisor_desk.db';
-  static const int databaseVersion = 6; // Updated version for monthly data
+  static const int databaseVersion = 7; // Updated version for custom call rate
 
   // Table names
   static const String tableEntries = 'daily_entries';

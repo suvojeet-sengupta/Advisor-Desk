@@ -45,7 +45,8 @@ class LocalDataSource {
             login_hours INTEGER NOT NULL,
             login_minutes INTEGER NOT NULL,
             login_seconds INTEGER NOT NULL,
-            call_count INTEGER NOT NULL
+            call_count INTEGER NOT NULL,
+            custom_call_rate REAL
           )
         ''');
         // Create CSAT entries table
@@ -150,6 +151,11 @@ class LocalDataSource {
           await db.execute('DROP TABLE ${AppConstants.tableEntries}');
 
           await db.execute('ALTER TABLE temp_tableEntries RENAME TO ${AppConstants.tableEntries}');
+        }
+        if (oldVersion < 7) {
+          await db.execute('''
+            ALTER TABLE ${AppConstants.tableEntries} ADD COLUMN custom_call_rate REAL
+          ''');
         }
       },
     );

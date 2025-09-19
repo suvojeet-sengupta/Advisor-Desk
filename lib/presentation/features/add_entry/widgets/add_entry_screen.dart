@@ -67,6 +67,7 @@ class _AddEntryViewState extends State<AddEntryView> {
   late final TextEditingController _loginMinutesController;
   late final TextEditingController _loginSecondsController;
   late final TextEditingController _callCountController;
+  late final TextEditingController _customCallRateController;
 
   @override
   void initState() {
@@ -76,6 +77,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     _loginMinutesController = TextEditingController();
     _loginSecondsController = TextEditingController();
     _callCountController = TextEditingController();
+    _customCallRateController = TextEditingController();
   }
 
   @override
@@ -84,6 +86,7 @@ class _AddEntryViewState extends State<AddEntryView> {
     _loginMinutesController.dispose();
     _loginSecondsController.dispose();
     _callCountController.dispose();
+    _customCallRateController.dispose();
     super.dispose();
   }
 
@@ -108,6 +111,10 @@ class _AddEntryViewState extends State<AddEntryView> {
                 }
                 if (_callCountController.text != state.callCount.toString()) {
                   _callCountController.text = state.callCount.toString();
+                }
+                if (state.customCallRate != null &&
+                    _customCallRateController.text != state.customCallRate.toString()) {
+                  _customCallRateController.text = state.customCallRate.toString();
                 }
               }
 
@@ -389,6 +396,50 @@ class _AddEntryViewState extends State<AddEntryView> {
                       );
                 },
               ),
+              const SizedBox(height: 24),
+
+              // Custom Call Rate Section
+              _buildSectionTitle(context, 'Custom Per Call Rate'),
+              const SizedBox(height: 8),
+              CustomCard(
+                child: SwitchListTile(
+                  title: const Text('Enable Custom Rate'),
+                  value: state.isCustomRateEnabled,
+                  onChanged: (_) {
+                    context.read<AddEntryBloc>().add(const ToggleCustomRate());
+                  },
+                  secondary: Icon(
+                    Icons.price_change,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+              if (state.isCustomRateEnabled)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: CustomFormField(
+                    label: 'Custom Rate',
+                    hintText: 'Enter custom rate per call',
+                    icon: Icons.monetization_on,
+                    controller: _customCallRateController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (value) {
+                      context.read<AddEntryBloc>().add(
+                            CustomRateChanged(rate: double.tryParse(value) ?? 0.0),
+                          );
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter a rate';
+                      }
+                      final rate = double.tryParse(value);
+                      if (rate == null || rate <= 0) {
+                        return 'Enter a valid rate';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
               const SizedBox(height: 32),
 
               // Buttons Section

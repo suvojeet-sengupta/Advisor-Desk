@@ -209,6 +209,25 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
     );
   }
 
+  if (summary.customRateEntries.isNotEmpty) {
+    content.add(
+      _buildInfoCard(
+        title: 'Custom Rate Details',
+        children: [
+          _buildInfoRow('Total Calls with Custom Rate',
+              summary.totalCustomRateCalls.toString()),
+          pw.Divider(color: primaryColor.shade(0.5)),
+          ...summary.customRateEntries.map((entry) {
+            return _buildInfoRow(
+              '${DateFormat('dd MMM yyyy').format(entry.date)}',
+              'Rs. ${formatter.format(entry.customCallRate)}',
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
   pw.Widget _buildTable(String title, List<String> headers, List<List<String>> data) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,

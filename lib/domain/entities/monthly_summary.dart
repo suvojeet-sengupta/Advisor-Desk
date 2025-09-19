@@ -12,6 +12,7 @@ class MonthlySummary extends Equatable {
   final CQSummary? cqSummary; // Add CQSummary field
   final int loginDays;
   final int nonBillableCalls;
+  final double baseSalary;
   
   const MonthlySummary({
     required this.month,
@@ -21,6 +22,7 @@ class MonthlySummary extends Equatable {
     this.cqSummary, // Make it optional for now, will be populated later
     required this.loginDays,
     this.nonBillableCalls = 0,
+    required this.baseSalary,
   });
   
   // Total login hours for the month
@@ -61,11 +63,6 @@ class MonthlySummary extends Equatable {
   bool get isBonusAchieved {
     return totalCalls >= AppConstants.bonusCallTarget && 
            totalLoginHours >= AppConstants.bonusHourTarget;
-  }
-  
-  // Calculate base salary (₹4.30 per call)
-  double get baseSalary {
-    return billableCalls * AppConstants.baseRatePerCall;
   }
   
   // Calculate bonus amount (₹2000 if targets are met)
@@ -139,6 +136,6 @@ class MonthlySummary extends Equatable {
   }
   
   @override
-  List<Object?> get props => [month, year, entries, csatSummary, cqSummary, nonBillableCalls];
+  List<Object?> get props => [month, year, entries, csatSummary, cqSummary, nonBillableCalls, baseSalary];
 }
 

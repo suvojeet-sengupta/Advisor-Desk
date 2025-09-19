@@ -10,6 +10,7 @@ class ReportSummary extends Equatable {
   final List<DailyEntry> entries;
   final CSATSummary? csatSummary;
   final CQSummary? cqSummary;
+  final double baseSalary;
 
   const ReportSummary({
     required this.startDate,
@@ -17,6 +18,7 @@ class ReportSummary extends Equatable {
     required this.entries,
     this.csatSummary,
     this.cqSummary,
+    required this.baseSalary,
   });
 
   // Total login hours for the period
@@ -52,11 +54,6 @@ class ReportSummary extends Equatable {
   bool get isBonusAchieved {
     return totalCalls >= AppConstants.bonusCallTarget &&
            totalLoginHours >= AppConstants.bonusHourTarget;
-  }
-
-  // Calculate base salary (₹4.30 per call)
-  double get baseSalary {
-    return billableCalls * AppConstants.baseRatePerCall;
   }
 
   // Calculate bonus amount (₹2000 if targets are met)
@@ -129,5 +126,5 @@ class ReportSummary extends Equatable {
   }
 
   @override
-  List<Object?> get props => [startDate, endDate, entries, csatSummary, cqSummary];
+  List<Object?> get props => [startDate, endDate, entries, csatSummary, cqSummary, baseSalary];
 }

@@ -7,6 +7,7 @@ import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
 
 class MonthlyGoalsSection extends StatelessWidget {
   final MonthlySummary summary;
@@ -192,6 +193,8 @@ class MonthlyGoalsSection extends StatelessWidget {
       loginSeconds: 0,
     );
 
+    final projectedBaseSalary = goalsState.targetCalls * AppConstants.baseRatePerCall;
+
     return MonthlySummary(
       month: currentSummary.month,
       year: currentSummary.year,
@@ -199,6 +202,7 @@ class MonthlyGoalsSection extends StatelessWidget {
       csatSummary: currentSummary.csatSummary,
       cqSummary: currentSummary.cqSummary,
       loginDays: currentSummary.loginDays, // This might not be accurate for projection, but it's the best we have
+      baseSalary: projectedBaseSalary,
     );
   }
 

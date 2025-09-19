@@ -16,6 +16,7 @@ import 'package:advisor_desk/domain/entities/monthly_data.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:archive/archive_io.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
 
 class PerformanceRepositoryImpl implements PerformanceRepository {
   final LocalDataSource localDataSource;
@@ -86,6 +87,13 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     final cqEntries = await localDataSource.getCQEntriesForMonth(month, year);
     final monthlyData = await localDataSource.getMonthlyData(month, year);
 
+    // Calculate base salary with custom rate logic
+    double baseSalary = 0;
+    for (final entry in entries) {
+      final rate = entry.customCallRate ?? AppConstants.baseRatePerCall;
+      baseSalary += entry.callCount * rate;
+    }
+
     return MonthlySummary(
       month: month,
       year: year,
@@ -94,6 +102,7 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
       cqSummary: CQSummary(entries: cqEntries, month: month, year: year),
       loginDays: entries.length,
       nonBillableCalls: monthlyData?.nonBillableCalls ?? 0,
+      baseSalary: baseSalary,
     );
   }
 
@@ -103,12 +112,20 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     final csatEntries = await localDataSource.getCSATEntriesForDateRange(startDate, endDate);
     final cqEntries = await localDataSource.getCQEntriesForDateRange(startDate, endDate);
 
+    // Calculate base salary with custom rate logic
+    double baseSalary = 0;
+    for (final entry in entries) {
+      final rate = entry.customCallRate ?? AppConstants.baseRatePerCall;
+      baseSalary += entry.callCount * rate;
+    }
+
     return ReportSummary(
       startDate: startDate,
       endDate: endDate,
       entries: entries,
       csatSummary: CSATSummary(entries: csatEntries, month: startDate.month, year: startDate.year), // Month and year might not be accurate for range, but needed for CSATSummary constructor
       cqSummary: CQSummary(entries: cqEntries, month: startDate.month, year: startDate.year), // Month and year might not be accurate for range, but needed for CQSummary constructor
+      baseSalary: baseSalary,
     );
   }
 

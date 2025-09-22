@@ -255,12 +255,22 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
                             ),
                             title: Text('T2: ${entry.t2Count}, B2: ${entry.b2Count}, N: ${entry.nCount}'),
                             subtitle: Text(DateFormat('MMM dd, yyyy').format(entry.date)),
-                            trailing: Text(
-                              '${dailyCsat.toStringAsFixed(2)}%',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
-                              ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${dailyCsat.toStringAsFixed(2)}%',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: dailyCsat < 60 ? theme.colorScheme.error : theme.colorScheme.tertiary,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  dailyCsat < 60 ? '😞' : '😊',
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -278,18 +288,33 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
 
   Widget _buildSummaryRow(BuildContext context, String label, String value, Color valueColor) {
     final theme = Theme.of(context);
+    // Determine if the value represents a CSAT percentage and if it's low
+    bool isMonthlyCsat = label == 'Monthly CSAT';
+    bool needsImprovement = isMonthlyCsat && double.tryParse(value.replaceAll('%', '')) != null && double.parse(value.replaceAll('%', '')) < 60.0;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: theme.textTheme.titleMedium),
-          Text(
-            value,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: valueColor,
-            ),
+          Row(
+            children: [
+              Text(
+                value,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: valueColor,
+                ),
+              ),
+              if (isMonthlyCsat) ...[
+                const SizedBox(width: 8),
+                Text(
+                  needsImprovement ? '😞' : '😊',
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ],
+            ],
           ),
         ],
       ),

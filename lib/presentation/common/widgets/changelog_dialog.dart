@@ -12,33 +12,30 @@ class ChangelogDialog extends StatelessWidget {
         children: [
           Icon(Icons.new_releases, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          const Text("What's New in v1.3.1"),
+          const Text("What's New in v1.3.2"), // Updated version
         ],
       ),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(context, '🚀 New Features'),
-            _buildListItem(context, 'Advisor Desk AI', 'Meet your new AI assistant! Formerly AI Co-pilot, it now has a new name and a dedicated screen for performance analysis and chat.'),
-            _buildListItem(context, 'AI-Powered Goal Suggestions', 'Get smart, personalized suggestions for your monthly goals based on your past performance.'),
-            _buildListItem(context, 'Home Screen Widget (Android)', 'Track your key metrics directly from your home screen.'),
-            _buildListItem(context, 'AMOLED Dark Theme', 'A new, battery-saving dark theme for OLED screens.'),
-            _buildListItem(context, 'Enhanced Animations', 'Enjoy a more polished experience with new loading and transition animations.'),
-            
+            _buildSectionTitle(context, '🎉 New & Exciting!'),
+            _buildListItem(context, 'Expressive CSAT Scores', 'CSAT scores now display dynamic emojis (sad/happy) on both the details screen and dashboard card, providing quick visual feedback.'),
+            _buildListItem(context, 'Login Calendar Progress', 'The login calendar now clearly indicates the current day with an "In Progress" status.'),
+            _buildListItem(context, 'Custom Rate Details in Reports', 'PDF reports now include detailed information about custom call rates.'),
+            _buildListItem(context, 'Custom Rate Display in Salary', 'View custom call rate details directly within the salary section.'),
+            _buildListItem(context, 'Custom Per Call Rate', 'Added the ability to set custom per-call rates for daily entries, allowing for more flexible salary calculations.'),
+            _buildListItem(context, 'Material 3 Navigation', 'The bottom navigation bar has been updated to a modern Material 3 design.'),
+
             const SizedBox(height: 20),
             _buildSectionTitle(context, '✨ Improvements'),
-            _buildListItem(context, 'Smoother Scrolling', 'Optimized performance on details pages (like Total Calls, Login Hours, CSAT, and CQ) for a faster and more responsive scrolling experience.'),
-            _buildListItem(context, 'Enhanced Onboarding', 'Added a new page to the app tutorial to better introduce the Advisor Desk AI feature.'),
-            _buildListItem(context, 'Smarter AI Chat', 'The AI can now answer questions about your CSAT and CQ scores and has a better understanding of your historical data.'),
-            _buildListItem(context, 'Improved UI/UX', 'The AI chat and analyzer screens have been redesigned for a cleaner, more intuitive experience. The dashboard layout has also been improved.'),
-            _buildListItem(context, 'Better Backup & Restore', 'The backup and restore process is now more user-friendly.'),
+            _buildListItem(context, 'Animated Buttons', 'Replaced standard buttons with animated versions for a more engaging user experience.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '🐛 Bug Fixes'),
-            _buildListItem(context, 'General Stability', 'Fixed various build errors and bugs to improve the overall stability of the app.'),
-            _buildListItem(context, 'Dark Mode Colors', 'Corrected color schemes for better readability in dark mode.'),
-            _buildListItem(context, 'UI Glitches', 'Fixed issues with the AI Insight Card and other UI elements.'),
+            _buildListItem(context, 'Icon Not Found Error', 'Resolved a build error by replacing an unavailable icon in the CSAT card on the dashboard.'),
+            _buildListItem(context, 'CSAT Card Emoji Style', 'Corrected the CSAT card emoji on the dashboard to use consistent icon styles instead of text-based emojis.'),
+            _buildListItem(context, 'Custom Rate Salary Calculation', 'Fixed an issue where custom call rates were not correctly integrated into salary calculations.'),
           ],
         ),
       ),

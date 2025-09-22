@@ -600,7 +600,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
               DashboardCard(
                 title: 'CSAT Score',
                 value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
-                icon: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Icons.sentiment_dissatisfied_alt : Icons.sentiment_satisfied_alt,
+                icon: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Icons.sentiment_dissatisfied : Icons.sentiment_satisfied_alt,
                 iconColor: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
                 onTap: () {
                   if (dashboardState.csatSummary != null) {

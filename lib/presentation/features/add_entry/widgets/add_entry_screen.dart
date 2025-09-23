@@ -294,8 +294,8 @@ class _AddEntryViewState extends State<AddEntryView> {
               ),
               const SizedBox(height: 24),
 
-              // Login Time Section
-              _buildSectionTitle(context, 'Login Time'),
+              // Login Hours Section
+              _buildSectionTitle(context, 'Login Hours'),
               const SizedBox(height: 8),
               Row(
                 children: [

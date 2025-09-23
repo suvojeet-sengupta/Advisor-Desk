@@ -19,17 +19,17 @@ class DailyEntry extends Equatable {
     this.customCallRate,
   });
 
-  // Total login time in seconds
+  // Total login hours in seconds
   int get totalLoginTimeInSeconds {
     return (loginHours * 3600) + (loginMinutes * 60) + loginSeconds;
   }
 
-  // Total login time in hours (as double for calculations)
+  // Total login hours (as double for calculations)
   double get totalLoginTimeInHours {
     return loginHours + (loginMinutes / 60) + (loginSeconds / 3600);
   }
 
-  // Format login time as HH:MM:SS
+  // Format login hours as HH:MM:SS
   String get formattedLoginTime {
     return '${'${loginHours}'.padLeft(2, '0')}:${'${loginMinutes}'.padLeft(2, '0')}:${'${loginSeconds}'.padLeft(2, '0')}';
   }

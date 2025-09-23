@@ -70,7 +70,7 @@ class DailyEntriesSection extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          '${entry.callCount} calls • Login Time: ${entry.formattedLoginTime}',
+          '${entry.callCount} calls • Login Hours: ${entry.formattedLoginTime}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         trailing: IconButton(

@@ -251,7 +251,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
     content.add(
       _buildTable(
         'Daily Entries',
-        ['Date', 'Login Time', 'Call Count'],
+        ['Date', 'Login Hours', 'Call Count'],
         summary.entries
             .map((entry) => [
                   DateFormat('dd-MMM-yyyy').format(entry.date),

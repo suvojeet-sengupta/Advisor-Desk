@@ -189,7 +189,7 @@ class ExcelService {
         sheet.appendRow(['Daily Entries']);
         sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: sheet.maxRows - 1),
             CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: sheet.maxRows - 1));
-        sheet.appendRow(['Date', 'Login Time', 'Call Count']);
+        sheet.appendRow(['Date', 'Login Hours', 'Call Count']);
         for (var entry in summary.entries) {
           sheet.appendRow([
             DateFormat('dd-MMM-yyyy').format(entry.date),

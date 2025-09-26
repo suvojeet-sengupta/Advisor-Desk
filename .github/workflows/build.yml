@@ -25,7 +25,7 @@ jobs:
   build_artifacts:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # Only read permission needed for building artifacts
+      contents: write # Permission to write to the repository
     outputs:
       release_tag: ${{ steps.setup_vars.outputs.release_tag }}
 
@@ -54,6 +54,17 @@ jobs:
 
       - name: 🔄 Get Dependencies
         run: flutter pub get
+
+      - name: 🖼️ Generate App Icons
+        run: flutter pub run flutter_launcher_icons:main
+
+      - name: 🚀 Commit and Push Icon Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "feat(assets): generate new app icons" || echo "No changes to commit"
+          git push
 
       - name: Decode Keystore
         run: |

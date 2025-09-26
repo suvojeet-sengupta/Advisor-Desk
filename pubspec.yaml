@@ -61,6 +61,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   change_app_package_name: ^1.1.0 # <-- यह लाइन जोड़ें
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/new_logo.jpg"
 
 flutter:
   uses-material-design: true

@@ -29,6 +29,9 @@ class AppConstants {
   static const String tableLeaveEntries = 'leave_entries'; // New Leave table
   static const String tableMonthlyData = 'monthly_data'; // New Monthly Data table
 
+  // UI constants
+  static const double cardBorderRadius = 12.0;
+
   // Shared preferences keys
   static const String prefThemeMode = 'theme_mode';
 

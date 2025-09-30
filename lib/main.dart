@@ -36,6 +36,7 @@ import 'package:advisor_desk/presentation/screens/lock_screen.dart';
 import 'package:advisor_desk/core/utils/ad_blocker_service.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
+import 'package:advisor_desk/domain/services/goal_prediction_service.dart'; // Import GoalPredictionService
 import 'package:advisor_desk/presentation/common/widgets/disable_ad_blocker_dialog.dart';
 
 // Custom ScrollBehavior for smoother scrolling
@@ -256,6 +257,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
             RepositoryProvider<AiInsightService>(create: (context) => AiInsightService()),
             RepositoryProvider<NlpService>(create: (context) => NlpService(performanceRepository: context.read<PerformanceRepository>())),
+            RepositoryProvider<GoalPredictionService>(create: (context) => GoalPredictionServiceImpl()),
           ],
           child: MultiBlocProvider(
             providers: [

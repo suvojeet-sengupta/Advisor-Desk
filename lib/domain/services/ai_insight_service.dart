@@ -64,8 +64,14 @@ class AiInsightService {
     if (hour >= 17 && todayEntry != null) {
       return _getEndOfDaySummary(profile, todayEntry, summary, goals);
     }
+
+    // Priority 4: Anomaly Detection
+    final anomalyInsight = _getAnomalyDetectionInsight(summary, profile);
+    if (anomalyInsight != null) {
+      return anomalyInsight;
+    }
     
-    // Priority 4: Weekly Review (on Sunday or Monday)
+    // Priority 5: Weekly Review (on Sunday or Monday)
     if (now.weekday == DateTime.monday || now.weekday == DateTime.sunday) {
         return AiInsight(
           message: "It's the start of a new week, ${profile.name ?? 'User'}! Let's set some great goals and make it a productive one."
@@ -113,38 +119,136 @@ class AiInsightService {
     return AiInsight(message: summaryText);
   }
 
-  AiInsight _getGenericPacingAlert(MonthlySummary summary, GoalsState goals, Profile profile) {
-    final name = profile.name != null ? ", ${profile.name}" : "";
-    final progress = (summary.totalCalls / goals.targetCalls * 100).clamp(0, 100);
-    return AiInsight(message: "Hello${name}! You've completed ${progress.toStringAsFixed(0)}% of your monthly call target. Keep pushing!");
-  }
-
   AiInsight? _getGoalAnalysisInsight(MonthlySummary summary, GoalsState goals) {
     final bool callTargetMet = summary.totalCalls >= goals.targetCalls;
     final bool hourTargetMet = summary.totalLoginHours >= goals.targetHours;
 
-    if (callTargetMet && !hourTargetMet) {
-      final remainingHours = (goals.targetHours - summary.totalLoginHours).clamp(0, goals.targetHours);
-      return AiInsight(message: "Congratulations! You've hit your call target of ${goals.targetCalls} for the month! Your next milestone is the login hours target. You are currently at ${summary.totalLoginHours.toStringAsFixed(1)} out of ${goals.targetHours} hours.");
-    }
+    final now = DateTime.now();
+    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0).day;
+    final remainingDays = (lastDayOfMonth - now.day + 1).clamp(0, 31);
 
-    if (!callTargetMet && hourTargetMet) {
-      final remainingCalls = (goals.targetCalls - summary.totalCalls).clamp(0, goals.targetCalls);
-      return AiInsight(message: "Congratulations! You've achieved your login hours target of ${goals.targetHours} for the month! Your next milestone is the call target. You need $remainingCalls more calls to reach it.");
-    }
-
+    // If goals are met, provide positive reinforcement
     if (callTargetMet && hourTargetMet) {
-      return const AiInsight(message: "Amazing work! You've achieved both your call and login hour targets for the month!");
+      return const AiInsight(message: "Amazing work! You've achieved both your call and login hour targets for the month! Keep up the excellent performance.");
     }
 
-    // If user is close to a target
+    // If close to a target but not met
     final callProgress = summary.totalCalls / goals.targetCalls;
+    final hourProgress = summary.totalLoginHours / goals.targetHours;
+
     if (callProgress >= 0.9 && !callTargetMet) {
       final remainingCalls = goals.targetCalls - summary.totalCalls;
       return AiInsight(message: "You're almost there! Just $remainingCalls more calls to hit your monthly target. Keep up the great momentum!");
     }
+    if (hourProgress >= 0.9 && !hourTargetMet) {
+      final remainingHours = (goals.targetHours - summary.totalLoginHours).toStringAsFixed(1);
+      return AiInsight(message: "You're very close to your login hours target! Just $remainingHours more hours to go. A final push will get you there!");
+    }
+
+    // If falling behind significantly
+    if (remainingDays > 0) {
+      final callsNeeded = (goals.targetCalls - summary.totalCalls).clamp(0, goals.targetCalls);
+      final hoursNeeded = (goals.targetHours - summary.totalLoginHours).clamp(0.0, goals.targetHours.toDouble());
+
+      final dailyCallsNeeded = (callsNeeded / remainingDays).ceil();
+      final dailyHoursNeeded = (hoursNeeded / remainingDays).toStringAsFixed(1);
+
+      if (callProgress < 0.7 && summary.totalCalls < goals.targetCalls) {
+        return AiInsight(message: "Your call volume is a bit behind schedule. To meet your goal, you need to average about $dailyCallsNeeded calls per day for the rest of the month. Let's focus on increasing your outreach!");
+      }
+      if (hourProgress < 0.7 && summary.totalLoginHours < goals.targetHours) {
+        return AiInsight(message: "You're falling behind on your login hours. To hit your target, aim for $dailyHoursNeeded hours per day for the remaining days. Consistent effort will make a difference!");
+      }
+    }
 
     return null; // No specific goal insight
+  }
+
+  AiInsight _getGenericPacingAlert(MonthlySummary summary, GoalsState goals, Profile profile) {
+    final name = profile.name != null ? ", ${profile.name}" : "";
+    final now = DateTime.now();
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    final currentDay = now.day;
+
+    // Calculate expected progress based on current day of the month
+    final expectedCallProgress = (currentDay / daysInMonth);
+    final expectedHourProgress = (currentDay / daysInMonth);
+
+    final actualCallProgress = summary.totalCalls / goals.targetCalls;
+    final actualHourProgress = summary.totalLoginHours / goals.targetHours;
+
+    String message = "Hello${name}!";
+
+    if (actualCallProgress < expectedCallProgress * 0.8) { // More than 20% behind expected call progress
+      message += " Your call volume seems a bit low for this point in the month. Consider increasing your daily outreach to stay on track with your goals.";
+    } else if (actualHourProgress < expectedHourProgress * 0.8) { // More than 20% behind expected hour progress
+      message += " Your login hours are a bit behind schedule. Try to be more consistent with your daily login to meet your monthly target.";
+    } else if (actualCallProgress > expectedCallProgress * 1.2 && actualHourProgress > expectedHourProgress * 1.2) { // More than 20% ahead
+      message += " You're well ahead of schedule on both calls and hours! Keep up the fantastic momentum, you're set for a great month!";
+    } else {
+      message += " You're making good progress towards your monthly goals. Keep up the consistent effort!";
+    }
+
+    return AiInsight(message: message);
+  }
+
+  AiInsight? _getAnomalyDetectionInsight(MonthlySummary summary, Profile profile) {
+    final name = profile.name ?? 'User';
+    final now = DateTime.now();
+
+    // Get last 7 days of entries (excluding today if it's not complete)
+    final recentEntries = summary.entries.where((e) =>
+        e.date.isAfter(now.subtract(const Duration(days: 8))) &&
+        e.date.isBefore(now.subtract(const Duration(days: 0))) // Exclude today for average calculation
+    ).toList();
+
+    if (recentEntries.length < 3) { // Need at least 3 days for a meaningful average
+      return null;
+    }
+
+    final double avgRecentCalls = recentEntries.map((e) => e.callCount).reduce((a, b) => a + b) / recentEntries.length;
+    final double avgRecentHours = recentEntries.map((e) => (e.loginHours * 60) + e.loginMinutes + (e.loginSeconds / 60)).reduce((a, b) => a + b) / recentEntries.length;
+
+    // Get today's entry
+    DailyEntry? todayEntry;
+    try {
+      todayEntry = summary.entries.firstWhere((e) =>
+          e.date.year == now.year &&
+          e.date.month == now.month &&
+          e.date.day == now.day);
+    } catch (e) {
+      todayEntry = null;
+    }
+
+    if (todayEntry != null) {
+      // Check for significant drop in calls
+      if (todayEntry.callCount < avgRecentCalls * 0.5) { // If today's calls are less than 50% of recent average
+        return AiInsight(
+          message: "Hey $name! Your call count today (${todayEntry.callCount}) is significantly lower than your recent daily average (${avgRecentCalls.toStringAsFixed(0)}). Is everything okay? Let's try to pick up the pace!",
+          buttonText: "View Daily Entries",
+          navigationRoute: AppRouter.monthlyDataRoute,
+          navigationArguments: {
+            'month': now.month,
+            'year': now.year,
+          },
+        );
+      }
+
+      // Check for significant drop in hours
+      if (((todayEntry.loginHours * 60) + todayEntry.loginMinutes + (todayEntry.loginSeconds / 60)) < avgRecentHours * 0.5) { // If today's hours are less than 50% of recent average
+        return AiInsight(
+          message: "Hi $name! Your login hours today (${todayEntry.formattedLoginTime}) are quite a bit lower than your recent daily average (${Duration(minutes: avgRecentHours.round()).toString().split('.').first}). Make sure you're logging your time accurately!",
+          buttonText: "View Daily Entries",
+          navigationRoute: AppRouter.monthlyDataRoute,
+          navigationArguments: {
+            'month': now.month,
+            'year': now.year,
+          },
+        );
+      }
+    }
+
+    return null;
   }
 
   AiInsight getAnalyzerInsight({

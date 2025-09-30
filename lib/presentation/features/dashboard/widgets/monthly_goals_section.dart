@@ -68,7 +68,9 @@ class MonthlyGoalsSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               CustomCard(
-                child: Column(
+                child: (hoursProgress >= 1.0 && callsProgress >= 1.0)
+                    ? _buildGoalsComplete(context)
+                    : Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -250,6 +252,50 @@ class MonthlyGoalsSection extends StatelessWidget {
         const SizedBox(width: 8), // Add some space between label and value
         Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: color)),
       ],
+    );
+  }
+
+  Widget _buildGoalsComplete(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primaryContainer.withOpacity(0.6),
+            theme.colorScheme.secondaryContainer.withOpacity(0.6),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.check_circle,
+            color: theme.colorScheme.primary,
+            size: 60,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Congratulations!',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'You have successfully achieved your monthly goals.',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 

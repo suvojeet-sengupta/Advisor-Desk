@@ -69,7 +69,7 @@ class MonthlyGoalsSection extends StatelessWidget {
               const SizedBox(height: 12),
               CustomCard(
                 child: (hoursProgress >= 1.0 && callsProgress >= 1.0)
-                    ? _buildGoalsComplete(context)
+                    ? _buildGoalsComplete(context, state)
                     : Column(
                   children: [
                     Row(
@@ -255,7 +255,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildGoalsComplete(BuildContext context) {
+  Widget _buildGoalsComplete(BuildContext context, GoalsState state) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -293,6 +293,18 @@ class MonthlyGoalsSection extends StatelessWidget {
               color: theme.colorScheme.onPrimaryContainer,
             ),
             textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          TextButton.icon(
+            onPressed: () => _showEditGoalsDialog(context, state.targetHours, state.targetCalls),
+            icon: Icon(Icons.visibility, color: theme.colorScheme.onPrimaryContainer),
+            label: Text(
+              'View Targets',
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),

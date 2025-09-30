@@ -15,6 +15,8 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart'; // Import PackageInfo
+import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart'; // Import ChangelogDialog
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -36,6 +38,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _getAppVersion();
     _loadAppLockState();
     _loadLastBackupDate();
+  }
+
+  // ... (rest of the class methods)
+
+  Widget _buildSettingsTile(BuildContext context, {required IconData icon, required String title, String? subtitle, VoidCallback? onTap}) {
+    return ListTile(
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
+      title: Text(title),
+      subtitle: subtitle != null ? Text(subtitle) : null,
+      trailing: onTap != null ? const Icon(Icons.arrow_forward_ios, size: 16) : null,
+      contentPadding: EdgeInsets.zero,
+      onTap: onTap,
+    );
   }
 
   Future<void> _loadLastBackupDate() async {
@@ -178,31 +193,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 context,
                 'App Information',
                 [
-                  _buildInfoTile('Version', _appVersion, Icons.info_outline),
-                  _buildLinkTile(
-                    context,
-                    'Credits',
-                    AppRouter.creditsRoute,
-                    Icons.people,
-                  ),
-                  _buildLinkTile(
-                    context,
-                    'GitHub Repository',
-                    'https://github.com/suvojit213/Advisor-Desk',
-                    Icons.code,
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.email, color: Theme.of(context).colorScheme.secondary),
-                    title: Text(
-                      'suvojitsengupta21@gmail.com',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Column( // Wrap in Column to add another tile
+                  children: [
+                    _buildSettingsTile(
+                      context,
+                      icon: Icons.verified,
+                      title: 'App Version',
+                      subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
+                      onTap: () {
+                        // No action for tapping app version itself
+                      },
                     ),
-                    onTap: () => _launchURL('mailto:suvojitsengupta21@gmail.com'),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
+                    _buildSettingsTile( // New "What's New" tile
+                      context, 
+                      icon: Icons.new_releases,
+                      title: 'What\'s New',
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => ChangelogDialog(),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
                 ],
               ),
               const SizedBox(height: 16),

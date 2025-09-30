@@ -12,7 +12,7 @@ class ChangelogDialog extends StatelessWidget {
         children: [
           Icon(Icons.new_releases, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          const Text("What's New in v1.3.2"), // Updated version
+          const Text("What's New in v1.4.0"), // Updated version
         ],
       ),
       content: SingleChildScrollView(
@@ -20,22 +20,18 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '🎉 New & Exciting!'),
-            _buildListItem(context, 'Expressive CSAT Scores', 'CSAT scores now display dynamic emojis (sad/happy) on both the details screen and dashboard card, providing quick visual feedback.'),
-            _buildListItem(context, 'Login Calendar Progress', 'The login calendar now clearly indicates the current day with an "In Progress" status.'),
-            _buildListItem(context, 'Custom Rate Details in Reports', 'PDF reports now include detailed information about custom call rates.'),
-            _buildListItem(context, 'Custom Rate Display in Salary', 'View custom call rate details directly within the salary section.'),
-            _buildListItem(context, 'Custom Per Call Rate', 'Added the ability to set custom per-call rates for daily entries, allowing for more flexible salary calculations.'),
-            _buildListItem(context, 'Material 3 Navigation', 'The bottom navigation bar has been updated to a modern Material 3 design.'),
+            _buildListItem(context, 'Smart Goal Setting & AI Insights', 'The app will now suggest more accurate goals based on your past performance. And if there\'s a sudden change in your performance, the AI will alert you!'),
+            _buildListItem(context, '\'View Targets\' Option in Monthly Goals', 'You can now view your targets in the monthly goals completion message.'),
+            _buildListItem(context, 'Monthly Goals Completion Message', 'You will now see a special message upon completing your monthly goals.'),
+            _buildListItem(context, 'New App Icons', 'The app icons are now better and new!'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '✨ Improvements'),
-            _buildListItem(context, 'Animated Buttons', 'Replaced standard buttons with animated versions for a more engaging user experience.'),
+            _buildListItem(context, 'Login Time to Login Hours', '\'Login Time\' has been changed to \'Login Hours\' throughout the app for clarity.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '🐛 Bug Fixes'),
-            _buildListItem(context, 'Icon Not Found Error', 'Resolved a build error by replacing an unavailable icon in the CSAT card on the dashboard.'),
-            _buildListItem(context, 'CSAT Card Emoji Style', 'Corrected the CSAT card emoji on the dashboard to use consistent icon styles instead of text-based emojis.'),
-            _buildListItem(context, 'Custom Rate Salary Calculation', 'Fixed an issue where custom call rates were not correctly integrated into salary calculations.'),
+            _buildListItem(context, 'Card Border Radius', 'Card corners will now appear smoother.'),
           ],
         ),
       ),

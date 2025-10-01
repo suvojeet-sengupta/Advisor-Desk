@@ -9,6 +9,7 @@ import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/features/all_reports/bloc/all_reports_bloc.dart';
 import 'package:advisor_desk/presentation/features/all_reports/bloc/all_reports_event.dart';
 import 'package:advisor_desk/presentation/features/all_reports/bloc/all_reports_state.dart';
+import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:flutter/services.dart';
@@ -149,7 +150,11 @@ class AllReportsView extends StatelessWidget {
             }
 
             if (state.summaries.isEmpty) {
-              return const Center(child: Text('No monthly reports found.'));
+              return EmptyStateWidget(
+                message: 'No monthly reports found.',
+                illustrationPath: 'assets/images/no_data.svg',
+                onRetry: () => context.read<AllReportsBloc>().add(LoadAllMonthlySummaries()),
+              );
             }
 
             return ListView.builder(

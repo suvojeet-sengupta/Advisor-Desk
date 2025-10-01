@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
 import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart'; // Import InteractiveTutorialOverlay
+import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
 
 
 class CqDetailsScreen extends StatefulWidget {
@@ -190,13 +191,9 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
               ? SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: const CustomCard(
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text('No CQ entries for this month.'),
-                        ),
-                      ),
+                    child: const EmptyStateWidget(
+                      message: 'No CQ entries for this month.',
+                      illustrationPath: 'assets/images/no_data.svg',
                     ),
                   ),
                 )

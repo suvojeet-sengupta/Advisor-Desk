@@ -1,4 +1,5 @@
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:flutter/material.dart';
@@ -26,13 +27,9 @@ class DailyEntriesSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (entries.isEmpty)
-            const CustomCard(
-              child: Center(
-                child: Text(
-                  'Is mahine ke liye koi entry nahi hai.',
-                  style: TextStyle(color: Colors.grey), // Use a theme-aware color if possible
-                ),
-              ),
+            const EmptyStateWidget(
+              message: 'No entries for this month.',
+              illustrationPath: 'assets/images/no_data.svg',
             )
           else
             ListView.builder(

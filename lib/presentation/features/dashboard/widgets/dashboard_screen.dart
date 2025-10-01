@@ -310,7 +310,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                       ),
                     ),
                     Expanded(
-                      child: dashboardState.monthlySummary == null || dashboardState.monthlySummary!.entries.isEmpty
+                      child: dashboardState.monthlySummary == null
                           ? EmptyStateWidget(
                               message: 'No entries found for this month.\nTap the + button to add your first entry!',
                               illustrationPath: 'assets/images/no_data.svg',

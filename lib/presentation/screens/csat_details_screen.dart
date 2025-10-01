@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
 import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart'; // Import InteractiveTutorialOverlay
+import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
 
 class CsatDetailsScreen extends StatefulWidget {
   final CSATSummary csatSummary;
@@ -194,14 +195,10 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: _currentCsatSummary.entries.isEmpty
-              ? SliverToBoxAdapter(
-                  child: const CustomCard(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text('No CSAT entries for this month.'),
-                      ),
-                    ),
+              ? const SliverToBoxAdapter(
+                  child: EmptyStateWidget(
+                    message: 'No CSAT entries for this month.',
+                    illustrationPath: 'assets/images/no_data.svg',
                   ),
                 )
               : SliverList(

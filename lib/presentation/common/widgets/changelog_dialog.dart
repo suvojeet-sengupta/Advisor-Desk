@@ -20,6 +20,7 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '🎉 New & Exciting!'),
+            _buildListItem(context, 'App Shortcuts', 'Long-press the app icon to quickly access key features like adding a new entry.'),
             _buildListItem(context, 'Smart Goal Setting & AI Insights', 'The app will now suggest more accurate goals based on your past performance. And if there\'s a sudden change in your performance, the AI will alert you!'),
             _buildListItem(context, '\'View Targets\' Option in Monthly Goals', 'You can now view your targets in the monthly goals completion message.'),
             _buildListItem(context, 'Monthly Goals Completion Message', 'You will now see a special message upon completing your monthly goals.'),
@@ -27,6 +28,8 @@ class ChangelogDialog extends StatelessWidget {
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '✨ Improvements'),
+            _buildListItem(context, 'AI Assistant Guidance', 'The AI assistant will now guide you to add data when it doesn\'t have any to analyze, making the feature more helpful for new users.'),
+            _buildListItem(context, 'Improved Empty States', 'Empty screens are now more informative and visually appealing, guiding you on what to do next.'),
             _buildListItem(context, 'Login Time to Login Hours', '\'Login Time\' has been changed to \'Login Hours\' throughout the app for clarity.'),
 
             const SizedBox(height: 20),

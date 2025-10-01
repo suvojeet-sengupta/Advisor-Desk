@@ -29,28 +29,48 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
   ) async {
     emit(state.copyWith(status: AdvisorDeskAIStatus.loading));
     try {
-      // This is a placeholder logic. A real implementation would be more complex.
-      // 1. Fetch last 30 days of entries
-      // 2. Calculate performance score
-      // 3. Get insight history (for now, we'll generate one insight)
       final now = DateTime.now();
       final summary = await _performanceRepository.getMonthlySummary(now.month, now.year);
-      
-      int score = (summary.totalCalls / 3000 * 50).clamp(0, 50).toInt() +
-                  (summary.totalLoginHours / 150 * 30).clamp(0, 30).toInt() +
-                  (summary.csatSummary!.monthlyCSATPercentage / 100 * 20).clamp(0, 20).toInt();
 
-      // For now, we don't have a history of insights, so we'll just show one.
-      // A full implementation would store and retrieve these.
-      final initialInsight = const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.");
+      // Check if there is any data to analyze
+      final bool hasData = summary.totalCalls > 0 ||
+          summary.totalLoginHours > 0 ||
+          (summary.csatSummary?.monthlyCSATPercentage ?? 0) > 0;
+
+      int score = 0;
+      AiInsight initialInsight;
+
+      if (hasData) {
+        score = (summary.totalCalls / 3000 * 50).clamp(0, 50).toInt() +
+            (summary.totalLoginHours / 150 * 30).clamp(0, 30).toInt() +
+            (summary.csatSummary!.monthlyCSATPercentage / 100 * 20).clamp(0, 20).toInt();
+        
+        initialInsight = const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.");
+      } else {
+        initialInsight = const AiInsight(
+          message: "Welcome to Advisor Desk AI! I'm here to help you analyze your performance, but I don't have any data yet. "
+                   "Start by adding your daily entries, and I'll provide insights once I have something to work with. "
+                   "The more data you provide, the smarter I get! Let's get started.",
+        );
+      }
 
       emit(state.copyWith(
         status: AdvisorDeskAIStatus.loaded,
         performanceScore: score,
-        insightHistory: [initialInsight], // Placeholder
+        insightHistory: [initialInsight],
       ));
     } catch (e) {
-      emit(state.copyWith(status: AdvisorDeskAIStatus.error, errorMessage: e.toString()));
+      // If there's an error (e.g., no data for the month), guide the user.
+      final initialInsight = const AiInsight(
+        message: "Welcome to Advisor Desk AI! I'm having trouble fetching your data right now. "
+                 "This usually happens when there are no entries for the current month. "
+                 "Please add some data, and I'll be ready to assist you.",
+      );
+      emit(state.copyWith(
+        status: AdvisorDeskAIStatus.loaded, // Loaded, but with a message
+        performanceScore: 0,
+        insightHistory: [initialInsight],
+      ));
     }
   }
 
@@ -65,6 +85,17 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     emit(state.copyWith(insightHistory: newHistory, isAiTyping: true));
 
     try {
+      // If there is no data, guide the user to add some.
+      if (state.performanceScore == 0) {
+        final noDataAnswer = const AiInsight(
+          message: "I can't answer questions until I have some performance data. "
+                   "Please add your daily entries first, and then I'll be able to help you.",
+        );
+        final finalHistory = List<AiInsight>.from(state.insightHistory)..add(noDataAnswer);
+        emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+        return;
+      }
+
       final aiAnswer = await _nlpService.processQuestion(question: event.question);
 
       // Introduce a 2-second delay for typing animation

@@ -14,6 +14,15 @@ class AiInsightService {
     required GoalsState goals,
     required Profile profile,
   }) {
+    // First, check if there is any data to analyze.
+    if (summary.totalCalls == 0 && summary.totalLoginHours == 0) {
+      return const AiInsight(
+        message: "I'm ready to help, but I don't have any data for this month yet. Add your first entry to get started!",
+        buttonText: "Add Entry",
+        navigationRoute: AppRouter.addEntryRoute,
+      );
+    }
+
     final now = DateTime.now();
     final hour = now.hour;
 
@@ -258,6 +267,15 @@ class AiInsightService {
     required GoalsState goals,
     required Profile profile,
   }) {
+    // First, check if there is any data to analyze.
+    if (summary.totalCalls == 0 && summary.totalLoginHours == 0) {
+      return const AiInsight(
+        message: "I don't have any performance data to analyze for this month yet. "
+                 "Once you add your daily entries, I can provide a detailed breakdown of your performance, including calls, login hours, CSAT, and CQ scores. "
+                 "Let's get some data in!",
+      );
+    }
+
     final name = profile.name ?? 'Advisor';
     final month = summary.monthName;
 

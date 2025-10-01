@@ -204,9 +204,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.verified,
                       title: 'App Version',
                       subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
-                      onTap: () {
-                        // No action for tapping app version itself
-                      },
+                      onTap: null,
                     ),
                     _buildSettingsTile( // New "What's New" tile
                       context, 

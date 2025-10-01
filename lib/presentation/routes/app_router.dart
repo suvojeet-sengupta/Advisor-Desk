@@ -97,9 +97,18 @@ class AppRouter {
           builder: (_) => const DashboardScreen(),
         );
       case addEntryRoute:
-        final DailyEntry? entryToEdit = settings.arguments as DailyEntry?;
+        final args = settings.arguments;
+        DailyEntry? entryToEdit;
+        int initialTabIndex = 0;
+
+        if (args is DailyEntry) {
+          entryToEdit = args;
+        } else if (args is Map) {
+          initialTabIndex = args['initial_tab'] ?? 0;
+        }
+        
         return MaterialPageRoute(
-          builder: (_) => AddEntryScreen(entryToEdit: entryToEdit),
+          builder: (_) => AddEntryScreen(entryToEdit: entryToEdit, initialTabIndex: initialTabIndex),
         );
       
       case addCQEntryRoute:

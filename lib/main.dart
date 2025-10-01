@@ -1,4 +1,5 @@
 import 'package:advisor_desk/core/utils/rate_app_helper.dart';
+import 'package:flutter/services.dart';
 
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/data/datasources/goal_data_source.dart';
@@ -132,6 +133,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final ValueNotifier<bool> isLocked = ValueNotifier(false);
   bool _justUnlocked = false;
+  static const _shortcutChannel = MethodChannel('com.suvojeet.advisordesk/shortcuts');
+  final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
@@ -139,7 +142,48 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initializeLockState();
     checkForUpdate();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkAdBlocker(context));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+       _checkAdBlocker(context);
+       _handleShortcuts();
+    });
+  }
+
+  Future<void> _handleShortcuts() async {
+    try {
+      final String? action = await _shortcutChannel.invokeMethod('getShortcutAction');
+      if (action != null) {
+        _navigateToShortcut(action);
+      }
+    } on PlatformException catch (e) {
+      print("Failed to get shortcut action: '${e.message}'.");
+    }
+
+    _shortcutChannel.setMethodCallHandler((call) async {
+      if (call.method == 'newShortcutAction') {
+        final String action = call.arguments;
+        _navigateToShortcut(action);
+      }
+    });
+  }
+
+  void _navigateToShortcut(String action) {
+    final navigator = _navigatorKey.currentState;
+    if (navigator == null) return;
+
+    switch (action) {
+      case 'com.suvojeet.advisordesk.ADD_ENTRY':
+        navigator.pushNamed(AppRouter.addEntryRoute, arguments: {'initial_tab': 0});
+        break;
+      case 'com.suvojeet.advisordesk.ADD_CSAT':
+        navigator.pushNamed(AppRouter.addEntryRoute, arguments: {'initial_tab': 1});
+        break;
+      case 'com.suvojeet.advisordesk.ADD_CQ':
+        navigator.pushNamed(AppRouter.addEntryRoute, arguments: {'initial_tab': 2});
+        break;
+      case 'android.intent.action.VIEW':
+        navigator.popUntil((route) => route.isFirst);
+        break;
+    }
   }
 
   Future<void> _checkAdBlocker(BuildContext context) async {
@@ -283,6 +327,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     }
 
                     return MaterialApp(
+                      navigatorKey: _navigatorKey,
                       title: AppConstants.appName,
                       theme: lightTheme,
                       darkTheme: darkTheme,

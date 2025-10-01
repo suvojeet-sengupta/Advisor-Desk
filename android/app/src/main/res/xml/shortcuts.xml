@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="add_entry"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_add"
+        android:shortcutShortLabel="@string/shortcut_add_entry_short"
+        android:shortcutLongLabel="@string/shortcut_add_entry_long">
+        <intent
+            android:action="com.suvojeet.advisordesk.ADD_ENTRY"
+            android:targetPackage="com.suvojeet.advisordesk"
+            android:targetClass="com.suvojeet.advisordesk.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="add_csat"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_add"
+        android:shortcutShortLabel="@string/shortcut_add_csat_short"
+        android:shortcutLongLabel="@string/shortcut_add_csat_long">
+        <intent
+            android:action="com.suvojeet.advisordesk.ADD_CSAT"
+            android:targetPackage="com.suvojeet.advisordesk"
+            android:targetClass="com.suvojeet.advisordesk.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="add_cq"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_add"
+        android:shortcutShortLabel="@string/shortcut_add_cq_short"
+        android:shortcutLongLabel="@string/shortcut_add_cq_long">
+        <intent
+            android:action="com.suvojeet.advisordesk.ADD_CQ"
+            android:targetPackage="com.suvojeet.advisordesk"
+            android:targetClass="com.suvojeet.advisordesk.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="dashboard"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_view"
+        android:shortcutShortLabel="@string/shortcut_dashboard_short"
+        android:shortcutLongLabel="@string/shortcut_dashboard_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.suvojeet.advisordesk"
+            android:targetClass="com.suvojeet.advisordesk.MainActivity" />
+    </shortcut>
+</shortcuts>

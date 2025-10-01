@@ -23,8 +23,9 @@ import 'package:advisor_desk/presentation/features/add_entry/bloc/add_cq_entry_s
 
 class AddEntryScreen extends StatelessWidget {
   final DailyEntry? entryToEdit;
+  final int initialTabIndex;
 
-  const AddEntryScreen({Key? key, this.entryToEdit}) : super(key: key);
+  const AddEntryScreen({Key? key, this.entryToEdit, this.initialTabIndex = 0}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +50,14 @@ class AddEntryScreen extends StatelessWidget {
           ),
         ),
       ],
-      child: const AddEntryView(),
+      child: AddEntryView(initialTabIndex: initialTabIndex),
     );
   }
 }
 
 class AddEntryView extends StatefulWidget {
-  const AddEntryView({Key? key}) : super(key: key);
+  final int initialTabIndex;
+  const AddEntryView({Key? key, this.initialTabIndex = 0}) : super(key: key);
 
   @override
   State<AddEntryView> createState() => _AddEntryViewState();
@@ -93,6 +95,7 @@ class _AddEntryViewState extends State<AddEntryView> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: widget.initialTabIndex,
       length: 3,
       child: MultiBlocListener(
         listeners: [

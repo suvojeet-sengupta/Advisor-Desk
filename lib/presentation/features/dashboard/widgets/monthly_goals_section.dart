@@ -50,6 +50,21 @@ class MonthlyGoalsSection extends StatelessWidget {
         final remainingCalls = (state.targetCalls - summary.totalCalls).clamp(0, double.infinity).toInt();
         final dailyAvgCalls = remainingDays > 0 ? (remainingCalls / remainingDays).ceil() : remainingCalls;
 
+        DailyEntry? todayEntry;
+        try {
+          todayEntry = summary.entries.firstWhere(
+            (entry) =>
+                entry.date.year == now.year &&
+                entry.date.month == now.month &&
+                entry.date.day == now.day,
+          );
+        } catch (e) {
+          todayEntry = null;
+        }
+
+        final todaysHours = todayEntry?.loginHours ?? 0.0;
+        final todaysCalls = todayEntry?.callCount ?? 0;
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
@@ -111,13 +126,13 @@ class MonthlyGoalsSection extends StatelessWidget {
                     _buildGoalDetails(
                       context,
                       'Daily Avg. Hours Needed:',
-                      '${dailyAvgHours.toStringAsFixed(1)}h',
+                      '${todaysHours.toStringAsFixed(1)}h / ${dailyAvgHours.toStringAsFixed(1)}h',
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
                       'Daily Avg. Calls Needed:',
-                      '${dailyAvgCalls.toInt()}',
+                      '${todaysCalls} / ${dailyAvgCalls.toInt()}',
                     ),
                     _buildSalaryProjection(
                       context,

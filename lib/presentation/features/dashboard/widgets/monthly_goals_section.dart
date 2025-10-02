@@ -143,6 +143,14 @@ class MonthlyGoalsSection extends StatelessWidget {
                           : '${todaysCalls} / ${dailyAvgCalls.toInt()}',
                       isCompleted: isDailyCallsGoalCompleted,
                     ),
+                    if (todayEntry != null)
+                      const SizedBox(height: 8),
+                    if (todayEntry != null)
+                      _buildGoalDetails(
+                        context,
+                        'Remaining Calls for Today:',
+                        '${(dailyAvgCalls - todaysCalls).clamp(0, dailyAvgCalls).toInt()}',
+                      ),
                     _buildSalaryProjection(
                       context,
                       summary, // current summary

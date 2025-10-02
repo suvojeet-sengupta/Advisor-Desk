@@ -17,6 +17,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart'; // Import PackageInfo
 import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart'; // Import ChangelogDialog
+import 'package:advisor_desk/data/datasources/ad_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -108,6 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Backup saved to $outputFile')),
         );
+        await context.read<AdService>().showAd();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Backup cancelled.')),
@@ -157,6 +159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Database restored successfully. Please restart the app.')),
                     );
+                    await context.read<AdService>().showAd();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Restore failed: $e')),

@@ -129,14 +129,18 @@ class MonthlyGoalsSection extends StatelessWidget {
                     _buildGoalDetails(
                       context,
                       'Daily Avg. Hours Needed:',
-                      '${todaysHours.toStringAsFixed(1)}h / ${dailyAvgHours.toStringAsFixed(1)}h',
+                      todayEntry == null
+                          ? '${dailyAvgHours.toStringAsFixed(1)}h'
+                          : '${todaysHours.toStringAsFixed(1)}h / ${dailyAvgHours.toStringAsFixed(1)}h',
                       isCompleted: isDailyHoursGoalCompleted,
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
                       'Daily Avg. Calls Needed:',
-                      '${todaysCalls} / ${dailyAvgCalls.toInt()}',
+                      todayEntry == null
+                          ? '${dailyAvgCalls.toInt()}'
+                          : '${todaysCalls} / ${dailyAvgCalls.toInt()}',
                       isCompleted: isDailyCallsGoalCompleted,
                     ),
                     _buildSalaryProjection(

@@ -1,3 +1,4 @@
+import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/domain/usecases/get_goal_suggestions_usecase.dart';
 import 'package:advisor_desk/domain/services/goal_prediction_service.dart'; // Import GoalPredictionService
 import 'package:advisor_desk/presentation/features/dashboard/widgets/salary_section.dart';
@@ -418,6 +419,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                               ),
                             ),
                     ),
+                    const BannerAdWidget(),
                   ],
                 );
               },

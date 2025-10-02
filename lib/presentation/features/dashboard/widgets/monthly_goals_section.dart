@@ -65,6 +65,9 @@ class MonthlyGoalsSection extends StatelessWidget {
         final todaysHours = todayEntry?.loginHours ?? 0.0;
         final todaysCalls = todayEntry?.callCount ?? 0;
 
+        final isDailyHoursGoalCompleted = dailyAvgHours > 0 && todaysHours >= dailyAvgHours;
+        final isDailyCallsGoalCompleted = dailyAvgCalls > 0 && todaysCalls >= dailyAvgCalls;
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
@@ -127,12 +130,14 @@ class MonthlyGoalsSection extends StatelessWidget {
                       context,
                       'Daily Avg. Hours Needed:',
                       '${todaysHours.toStringAsFixed(1)}h / ${dailyAvgHours.toStringAsFixed(1)}h',
+                      isCompleted: isDailyHoursGoalCompleted,
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
                       'Daily Avg. Calls Needed:',
                       '${todaysCalls} / ${dailyAvgCalls.toInt()}',
+                      isCompleted: isDailyCallsGoalCompleted,
                     ),
                     _buildSalaryProjection(
                       context,
@@ -183,17 +188,26 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildGoalDetails(BuildContext context, String label, String value) {
+  Widget _buildGoalDetails(BuildContext context, String label, String value, {bool isCompleted = false}) {
     final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: theme.textTheme.bodyLarge),
-        Flexible(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-          ),
+        Row(
+          children: [
+            if (isCompleted)
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: Icon(Icons.check_circle, color: Colors.green, size: 16),
+              ),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
         ),
       ],
     );

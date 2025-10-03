@@ -62,7 +62,7 @@ class MonthlyGoalsSection extends StatelessWidget {
           todayEntry = null;
         }
 
-        final todaysHours = todayEntry?.loginHours ?? 0.0;
+        final todaysHours = todayEntry?.totalLoginTimeInHours ?? 0.0;
         final todaysCalls = todayEntry?.callCount ?? 0;
 
         final isDailyHoursGoalCompleted = dailyAvgHours > 0 && todaysHours >= dailyAvgHours;

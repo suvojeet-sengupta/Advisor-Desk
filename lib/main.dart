@@ -72,6 +72,7 @@ void main() async {
   
 
   final prefs = await SharedPreferences.getInstance();
+  final hasAcceptedPrivacy = prefs.getBool('hasAcceptedPrivacyPolicy') ?? false;
   final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
 
   // Instantiate Profile related services
@@ -80,13 +81,18 @@ void main() async {
   // Load profile to determine if it's filled
   final initialProfile = await profileRepository.getProfile();
   final bool isProfileFilled = initialProfile.name != null && initialProfile.companyName != null; // Assuming both are required
+  await prefs.setBool('isProfileFilled', isProfileFilled); // Save for privacy screen to know
 
-  String initialRoute = AppRouter.dashboardRoute;
-  if (!hasShownOnboarding) {
+  String initialRoute;
+  if (!hasAcceptedPrivacy) {
+    initialRoute = AppRouter.privacyPolicyRoute;
+  } else if (!hasShownOnboarding) {
     initialRoute = AppRouter.onboardingTutorialRoute;
     await prefs.setBool('hasShownOnboarding', true);
   } else if (!isProfileFilled) { // If onboarding is done but profile not filled
     initialRoute = AppRouter.profileRoute;
+  } else {
+    initialRoute = AppRouter.dashboardRoute;
   }
   
   runApp(MyApp(

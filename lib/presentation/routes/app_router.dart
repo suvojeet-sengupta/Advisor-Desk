@@ -56,6 +56,7 @@ import 'package:advisor_desk/presentation/screens/advisor_desk_ai_analyzer_scree
 
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
+import 'package:advisor_desk/presentation/screens/privacy_policy_screen.dart';
 
 class AppRouter {
   // Route names
@@ -88,6 +89,7 @@ class AppRouter {
   static const String appLockSettingsRoute = '/app-lock-settings';
   static const String advisorDeskAIRoute = '/advisor-desk-ai';
   static const String advisorDeskAIAnalyzerRoute = '/advisor-desk-ai-analyzer';
+  static const String privacyPolicyRoute = '/privacy-policy';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -263,6 +265,8 @@ class AppRouter {
             ),
           ),
         );
+      case AppRouter.privacyPolicyRoute:
+        return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
       
       default:
         return MaterialPageRoute(

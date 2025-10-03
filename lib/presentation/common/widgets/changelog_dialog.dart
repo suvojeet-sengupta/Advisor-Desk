@@ -12,7 +12,7 @@ class ChangelogDialog extends StatelessWidget {
         children: [
           Icon(Icons.new_releases, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          const Text("What's New in v1.4.0"), // Updated version
+          const Text("What's New in v1.4.1"), // Updated version
         ],
       ),
       content: SingleChildScrollView(
@@ -20,21 +20,18 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '🎉 New & Exciting!'),
-            _buildListItem(context, 'App Shortcuts', 'Long-press the app icon to quickly access key features like adding a new entry.'),
-            _buildListItem(context, 'Smart Goal Setting & AI Insights', 'The app will now suggest more accurate goals based on your past performance. And if there\'s a sudden change in your performance, the AI will alert you!'),
-            _buildListItem(context, '\'View Targets\' Option in Monthly Goals', 'You can now view your targets in the monthly goals completion message.'),
-            _buildListItem(context, 'Monthly Goals Completion Message', 'You will now see a special message upon completing your monthly goals.'),
-            _buildListItem(context, 'New App Icons', 'The app icons are now better and new!'),
+            _buildListItem(context, 'Daily Progress Tracking', 'You can now see your daily progress towards your monthly goals, including remaining calls and hours for the day.'),
+            _buildListItem(context, 'Goal Completion Checkmarks', 'A checkmark will now appear next to your daily goals when you\'ve completed them.'),
+            _buildListItem(context, 'Mandatory Privacy Policy', 'We\'ve added a mandatory privacy policy screen that appears on the first launch of the app.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '✨ Improvements'),
-            _buildListItem(context, 'AI Assistant Guidance', 'The AI assistant will now guide you to add data when it doesn\'t have any to analyze, making the feature more helpful for new users.'),
-            _buildListItem(context, 'Improved Empty States', 'Empty screens are now more informative and visually appealing, guiding you on what to do next.'),
-            _buildListItem(context, 'Login Time to Login Hours', '\'Login Time\' has been changed to \'Login Hours\' throughout the app for clarity.'),
+            _buildListItem(context, 'Optimized PDF Generation', 'We\'ve optimized PDF generation to prevent out-of-memory errors.'),
+            _buildListItem(context, 'Default Theme', 'The default theme of the app is now blue.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '🐛 Bug Fixes'),
-            _buildListItem(context, 'Card Border Radius', 'Card corners will now appear smoother.'),
+            _buildListItem(context, 'Daily Average Hours', 'Fixed a bug where the daily average hours were not being displayed correctly.'),
           ],
         ),
       ),

@@ -248,60 +248,77 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   }
 
   if (sectionsToInclude.contains(ReportSection.dailyEntries) && summary.entries.isNotEmpty) {
-    content.add(
-      _buildTable(
-        'Daily Entries',
-        ['Date', 'Login Hours', 'Call Count'],
-        summary.entries
-            .map((entry) => [
-                  DateFormat('dd-MMM-yyyy').format(entry.date),
-                  entry.formattedLoginTime,
-                  entry.callCount.toString(),
-                ])
-            .toList(),
-      ),
-    );
+    const chunkSize = 15;
+    for (int i = 0; i < summary.entries.length; i += chunkSize) {
+      final end = (i + chunkSize < summary.entries.length) ? i + chunkSize : summary.entries.length;
+      final chunk = summary.entries.sublist(i, end);
+      content.add(
+        _buildTable(
+          i == 0 ? 'Daily Entries' : 'Daily Entries (cont.)',
+          ['Date', 'Login Hours', 'Call Count'],
+          chunk
+              .map((entry) => [
+                    DateFormat('dd-MMM-yyyy').format(entry.date),
+                    entry.formattedLoginTime,
+                    entry.callCount.toString(),
+                  ])
+              .toList(),
+        ),
+      );
+    }
   }
 
   if (sectionsToInclude.contains(ReportSection.csatDailyBreakdown) &&
       summary.csatSummary != null &&
       summary.csatSummary!.entries.isNotEmpty) {
-    content.add(
-      _buildTable(
-        'CSAT Daily Breakdown',
-        ['Date', 'T2', 'B2', 'N', 'CSAT %'],
-        summary.csatSummary!.entries.map((entry) {
-          final total = entry.t2Count + entry.b2Count + entry.nCount;
-          final csatPercentage =
-              total == 0 ? 0.0 : ((entry.t2Count - entry.b2Count) / total) * 100;
-          return [
-            DateFormat('dd-MMM-yyyy').format(entry.date),
-            entry.t2Count.toString(),
-            entry.b2Count.toString(),
-            entry.nCount.toString(),
-            '${csatPercentage.toStringAsFixed(2)}%',
-          ];
-        }).toList(),
-      ),
-    );
+    const chunkSize = 15;
+    final entries = summary.csatSummary!.entries;
+    for (int i = 0; i < entries.length; i += chunkSize) {
+      final end = (i + chunkSize < entries.length) ? i + chunkSize : entries.length;
+      final chunk = entries.sublist(i, end);
+      content.add(
+        _buildTable(
+          i == 0 ? 'CSAT Daily Breakdown' : 'CSAT Daily Breakdown (cont.)',
+          ['Date', 'T2', 'B2', 'N', 'CSAT %'],
+          chunk.map((entry) {
+            final total = entry.t2Count + entry.b2Count + entry.nCount;
+            final csatPercentage =
+                total == 0 ? 0.0 : ((entry.t2Count - entry.b2Count) / total) * 100;
+            return [
+              DateFormat('dd-MMM-yyyy').format(entry.date),
+              entry.t2Count.toString(),
+              entry.b2Count.toString(),
+              entry.nCount.toString(),
+              '${csatPercentage.toStringAsFixed(2)}%',
+            ];
+          }).toList(),
+        ),
+      );
+    }
   }
 
   if (sectionsToInclude.contains(ReportSection.cqDailyBreakdown) &&
       summary.cqSummary != null &&
       summary.cqSummary!.entries.isNotEmpty) {
-    content.add(
-      _buildTable(
-        'CQ Daily Breakdown',
-        ['Date', 'Percentage', 'Quality Rating'],
-        summary.cqSummary!.entries
-            .map((entry) => [
-                  DateFormat('dd-MMM-yyyy').format(entry.auditDate),
-                  '${entry.percentage.toStringAsFixed(2)}%',
-                  _getQualityRating(entry.percentage),
-                ])
-            .toList(),
-      ),
-    );
+    const chunkSize = 15;
+    final entries = summary.cqSummary!.entries;
+    for (int i = 0; i < entries.length; i += chunkSize) {
+      final end = (i + chunkSize < entries.length) ? i + chunkSize : entries.length;
+      final chunk = entries.sublist(i, end);
+      content.add(
+        _buildTable(
+          i == 0 ? 'CQ Daily Breakdown' : 'CQ Daily Breakdown (cont.)',
+          ['Date', 'Percentage', 'Quality Rating'],
+          chunk
+              .map((entry) => [
+                    DateFormat('dd-MMM-yyyy').format(entry.auditDate),
+                    '${entry.percentage.toStringAsFixed(2)}%',
+                    _getQualityRating(entry.percentage),
+                  ])
+              .toList(),
+        ),
+      );
+    }
   }
 
   pdf.addPage(

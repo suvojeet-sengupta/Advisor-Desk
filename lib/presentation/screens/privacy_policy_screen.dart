@@ -55,11 +55,13 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Privacy Policy'),
-        automaticallyImplyLeading: false,
-      ),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Privacy Policy'),
+          automaticallyImplyLeading: false,
+        ),
       body: FutureBuilder<String>(
         future: rootBundle.loadString('assets/web/privacy_policy.html'),
         builder: (context, snapshot) {
@@ -116,6 +118,6 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

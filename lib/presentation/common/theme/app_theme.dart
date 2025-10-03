@@ -425,9 +425,9 @@ class AppTheme {
 
     ColorScheme colorScheme;
     if (brightness == Brightness.light) {
-      colorScheme = _lightColorSchemes[color] ?? _lightColorSchemes[AppColor.orange]!;
+      colorScheme = _lightColorSchemes[color] ?? _lightColorSchemes[AppColor.blue]!;
     } else {
-      colorScheme = _darkColorSchemes[color] ?? _darkColorSchemes[AppColor.orange]!;
+      colorScheme = _darkColorSchemes[color] ?? _darkColorSchemes[AppColor.blue]!;
     }
     
     return brightness == Brightness.light 

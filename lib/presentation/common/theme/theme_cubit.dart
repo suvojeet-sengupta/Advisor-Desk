@@ -24,14 +24,14 @@ class ThemeCubit extends Cubit<ThemeState> {
   static const String _themeModePrefKey = 'theme_mode';
   static const String _themeColorPrefKey = 'theme_color';
 
-  ThemeCubit() : super(const ThemeState(themeMode: AppThemeMode.system, color: AppColor.orange)) {
+  ThemeCubit() : super(const ThemeState(themeMode: AppThemeMode.system, color: AppColor.blue)) {
     _loadTheme();
   }
 
   void _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final themeModeIndex = prefs.getInt(_themeModePrefKey) ?? AppThemeMode.system.index;
-    final colorIndex = prefs.getInt(_themeColorPrefKey) ?? AppColor.orange.index;
+    final colorIndex = prefs.getInt(_themeColorPrefKey) ?? AppColor.blue.index;
     emit(ThemeState(
       themeMode: AppThemeMode.values[themeModeIndex],
       color: AppColor.values[colorIndex],

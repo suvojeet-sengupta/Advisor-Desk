@@ -34,11 +34,10 @@ import 'package:advisor_desk/data/repositories/leave_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/leave_repository.dart';
 import 'package:advisor_desk/core/utils/authentication_service.dart';
 import 'package:advisor_desk/presentation/screens/lock_screen.dart';
-import 'package:advisor_desk/core/utils/ad_blocker_service.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
-import 'package:advisor_desk/domain/services/goal_prediction_service.dart'; // Import GoalPredictionService
-import 'package:advisor_desk/presentation/common/widgets/disable_ad_blocker_dialog.dart';
+import 'package:advisor_desk/domain/services/goal_prediction_service.dart';
+
 
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
@@ -149,7 +148,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     _initializeLockState();
     checkForUpdate();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-       _checkAdBlocker(context);
        _handleShortcuts();
     });
   }
@@ -192,21 +190,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _checkAdBlocker(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    final lastCheckString = prefs.getString('lastAdBlockerCheck');
-    final today = DateTime.now();
-    final todayDate = DateTime(today.year, today.month, today.day).toIso8601String();
 
-    if (lastCheckString != todayDate) {
-      final adBlockerService = AdBlockerService();
-      final isAdBlockerActive = await adBlockerService.isAdBlockerActive();
-      if (isAdBlockerActive && context.mounted) {
-        showDisableAdBlockerDialog(context);
-        await prefs.setString('lastAdBlockerCheck', todayDate);
-      }
-    }
-  }
 
   Future<void> _initializeLockState() async {
     final isEnabled = await AuthenticationService.isAppLockEnabled();

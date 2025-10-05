@@ -37,6 +37,19 @@ import 'package:advisor_desk/presentation/screens/lock_screen.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:advisor_desk/domain/services/goal_prediction_service.dart';
+import 'package:advisor_desk/data/datasources/achievement_local_data_source.dart';
+import 'package:advisor_desk/data/repositories/achievement_repository_impl.dart';
+import 'package:advisor_desk/data/repositories/csat_repository_impl.dart';
+import 'package:advisor_desk/data/repositories/cq_repository_impl.dart';
+import 'package:advisor_desk/data/repositories/daily_entry_repository_impl.dart';
+import 'package:advisor_desk/domain/repositories/achievement_repository.dart';
+import 'package:advisor_desk/domain/repositories/csat_repository.dart';
+import 'package:advisor_desk/domain/repositories/cq_repository.dart';
+import 'package:advisor_desk/domain/repositories/daily_entry_repository.dart';
+import 'package:advisor_desk/domain/services/achievement_service.dart';
+import 'package:advisor_desk/domain/usecases/get_all_achievements.dart';
+import 'package:advisor_desk/domain/usecases/unlock_achievement.dart';
+import 'package:advisor_desk/presentation/bloc/achievement/achievement_bloc.dart';
 
 
 // Custom ScrollBehavior for smoother scrolling
@@ -68,7 +81,19 @@ void main() async {
 
   final leaveRepository = LeaveRepositoryImpl(localDataSource: localDataSource);
 
-  
+  // Instantiate Achievement related services
+  final achievementLocalDataSource = AchievementLocalDataSource(localDataSource: localDataSource);
+  final achievementRepository = AchievementRepositoryImpl(localDataSource: achievementLocalDataSource);
+  final dailyEntryRepository = DailyEntryRepositoryImpl(localDataSource: localDataSource);
+  final csatRepository = CSATRepositoryImpl(localDataSource: localDataSource);
+  final cqRepository = CQRepositoryImpl(localDataSource: localDataSource);
+  final achievementService = AchievementService(
+    achievementRepository: achievementRepository,
+    dailyEntryRepository: dailyEntryRepository,
+    csatRepository: csatRepository,
+    cqRepository: cqRepository,
+  );
+  await achievementService.initializeAchievements();
 
   final prefs = await SharedPreferences.getInstance();
   final hasAcceptedPrivacy = prefs.getBool('hasAcceptedPrivacyPolicy') ?? false;
@@ -148,7 +173,38 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     _initializeLockState();
     checkForUpdate();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-       _handleShortcuts();
+      _handleShortcuts();
+      _listenForAchievements();
+    });
+  }
+
+  void _listenForAchievements() {
+    context.read<AchievementService>().unlockedAchievementsStream.listen((unlockedAchievements) {
+      if (unlockedAchievements.isNotEmpty && _navigatorKey.currentContext != null) {
+        showDialog(
+          context: _navigatorKey.currentContext!,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('🎉 Achievement Unlocked!'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: unlockedAchievements
+                    .map((achievement) => Text('You earned: ${achievement.name}'))
+                    .toList(),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Awesome!'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
     });
   }
 

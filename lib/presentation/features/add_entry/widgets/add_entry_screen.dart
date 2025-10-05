@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:advisor_desk/data/datasources/ad_service.dart';
+import 'package:advisor_desk/domain/services/achievement_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
@@ -122,6 +123,10 @@ class _AddEntryViewState extends State<AddEntryView> {
               }
 
               if (state.status == AddEntryStatus.success) {
+                if (!state.isDelete) {
+                  // Check for new achievements after a successful save/update
+                  context.read<AchievementService>().checkAndUnlockAchievements();
+                }
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
                   ..showSnackBar(

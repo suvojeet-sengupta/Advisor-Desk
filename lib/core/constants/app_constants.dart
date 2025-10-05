@@ -20,7 +20,7 @@ class AppConstants {
 
   // Database constants
   static const String databaseName = 'advisor_desk.db';
-  static const int databaseVersion = 7; // Updated version for custom call rate
+  static const int databaseVersion = 8; // Added achievements table
 
   // Table names
   static const String tableEntries = 'daily_entries';
@@ -28,6 +28,7 @@ class AppConstants {
   static const String tableCQEntries = 'cq_entries'; // New CQ table
   static const String tableLeaveEntries = 'leave_entries'; // New Leave table
   static const String tableMonthlyData = 'monthly_data'; // New Monthly Data table
+  static const String tableAchievements = 'achievements'; // New Achievements table
 
   // UI constants
   static const double cardBorderRadius = 12.0;

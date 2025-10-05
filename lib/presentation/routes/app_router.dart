@@ -57,9 +57,11 @@ import 'package:advisor_desk/presentation/screens/advisor_desk_ai_analyzer_scree
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
 import 'package:advisor_desk/presentation/screens/privacy_policy_screen.dart';
+import 'package:advisor_desk/presentation/pages/achievements_page.dart';
 
 class AppRouter {
   // Route names
+  static const String achievementsRoute = '/achievements';
   static const String dashboardRoute = '/';
   static const String addEntryRoute = '/add-entry';
   static const String addCSATEntryRoute = '/add-csat-entry';
@@ -268,6 +270,11 @@ class AppRouter {
       case AppRouter.privacyPolicyRoute:
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
       
+      case AppRouter.achievementsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AchievementsPage(),
+        );
+
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

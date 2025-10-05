@@ -299,6 +299,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               _buildSectionCard(
                 context,
+                'Community & Motivation',
+                [
+                  _buildLinkTile(
+                    context,
+                    'Achievements & Milestones',
+                    AppRouter.achievementsRoute,
+                    Icons.emoji_events,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
                 'About Developer',
                 [
                   _buildLinkTile(

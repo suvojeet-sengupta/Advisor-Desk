@@ -157,6 +157,18 @@ class LocalDataSource {
             ALTER TABLE ${AppConstants.tableEntries} ADD COLUMN custom_call_rate REAL
           ''');
         }
+        if (oldVersion < 8) {
+          await db.execute('''
+            CREATE TABLE ${AppConstants.tableAchievements} (
+              id TEXT PRIMARY KEY,
+              name TEXT NOT NULL,
+              description TEXT NOT NULL,
+              imagePath TEXT NOT NULL,
+              unlocked INTEGER NOT NULL,
+              unlockedDate INTEGER
+            )
+          ''');
+        }
       },
     );
 

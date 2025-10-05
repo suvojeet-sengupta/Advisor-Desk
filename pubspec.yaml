@@ -74,6 +74,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/achievements/
     - assets/icon/
     - assets/web/
     - assets/fonts/

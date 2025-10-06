@@ -1,4 +1,5 @@
 import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/core/utils/notification_service.dart';
 import 'package:flutter/services.dart'; // Import for MethodChannel and PlatformException
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
@@ -32,6 +33,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isAppLockEnabled = false;
   bool _isLoading = false;
   String? _lastBackupDate;
+  bool _isDailyReminderEnabled = false;
+  TimeOfDay? _reminderTime;
+  final NotificationService _notificationService = NotificationService();
 
   @override
   void initState() {
@@ -39,9 +43,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _getAppVersion();
     _loadAppLockState();
     _loadLastBackupDate();
+    _loadReminderSettings();
   }
 
-  // ... (rest of the class methods)
+  Future<void> _loadReminderSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDailyReminderEnabled = prefs.getBool('isDailyReminderEnabled') ?? false;
+      final reminderHour = prefs.getInt('reminderHour');
+      final reminderMinute = prefs.getInt('reminderMinute');
+      if (reminderHour != null && reminderMinute != null) {
+        _reminderTime = TimeOfDay(hour: reminderHour, minute: reminderMinute);
+      }
+    });
+  }
 
   Widget _buildSettingsTile(BuildContext context, {required IconData icon, required String title, String? subtitle, VoidCallback? onTap}) {
     return ListTile(
@@ -210,7 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: null,
                     ),
                     _buildSettingsTile( // New "What's New" tile
-                      context, 
+                      context,
                       icon: Icons.new_releases,
                       title: 'What\'s New',
                       onTap: () {
@@ -226,6 +241,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               return const SizedBox.shrink();
             },
           ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
+                'Reminders',
+                [
+                  _buildDailyReminderTile(),
+                  if (_isDailyReminderEnabled) _buildReminderTimeTile(),
                 ],
               ),
               const SizedBox(height: 16),
@@ -412,6 +436,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
       secondary: Icon(Icons.fingerprint, color: Theme.of(context).colorScheme.primary),
       contentPadding: EdgeInsets.zero,
     );
+  }
+
+  Widget _buildDailyReminderTile() {
+    return SwitchListTile(
+      title: const Text('Daily Reminder'),
+      subtitle: const Text('Remind me to add my daily entry'),
+      value: _isDailyReminderEnabled,
+      onChanged: (bool newValue) async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isDailyReminderEnabled', newValue);
+        setState(() {
+          _isDailyReminderEnabled = newValue;
+        });
+
+        if (newValue) {
+          if (_reminderTime != null) {
+            _notificationService.scheduleDailyEntryReminder(_reminderTime!);
+          } else {
+            // Prompt user to set a time
+            _selectReminderTime();
+          }
+        } else {
+          _notificationService.cancelDailyEntryReminder();
+        }
+      },
+      secondary: Icon(Icons.notifications_active, color: Theme.of(context).colorScheme.primary),
+      contentPadding: EdgeInsets.zero,
+    );
+  }
+
+  Widget _buildReminderTimeTile() {
+    return ListTile(
+      leading: Icon(Icons.access_time, color: Theme.of(context).colorScheme.primary),
+      title: const Text('Reminder Time'),
+      subtitle: Text(_reminderTime?.format(context) ?? 'Not set'),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      contentPadding: EdgeInsets.zero,
+      onTap: _selectReminderTime,
+    );
+  }
+
+  Future<void> _selectReminderTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _reminderTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != _reminderTime) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('reminderHour', picked.hour);
+      await prefs.setInt('reminderMinute', picked.minute);
+      setState(() {
+        _reminderTime = picked;
+      });
+      if (_isDailyReminderEnabled) {
+        _notificationService.scheduleDailyEntryReminder(picked);
+      }
+    }
   }
 
   Future<void> _launchURL(String url) async {

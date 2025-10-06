@@ -1,3 +1,4 @@
+import 'package:advisor_desk/core/utils/notification_service.dart';
 import 'package:advisor_desk/core/utils/rate_app_helper.dart';
 import 'package:flutter/services.dart';
 
@@ -49,6 +50,8 @@ class SmoothScrollBehavior extends ScrollBehavior {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
+  await WidgetUpdaterService.initialize();
   await InAppReviewHelper.setInstallDate();
   MobileAds.instance.initialize();
   await AppConstants.init();

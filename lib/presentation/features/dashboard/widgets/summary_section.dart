@@ -83,16 +83,24 @@ class SummarySection extends StatelessWidget {
           Icon(icon, color: iconColor, size: 24),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.bodyLarge,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
             ),
           ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerRight,
+            child: Text(
+              value,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
           ),
         ],
       ),

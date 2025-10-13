@@ -5,6 +5,7 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart'; // Import AppRouter
 import 'package:url_launcher/url_launcher.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/usecases/delete_cq_entries_by_date_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_csat_entries_by_date_usecase.dart';
@@ -42,6 +43,124 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ... (rest of the class methods)
+
+  Widget _buildRateTheAppSection(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.star_rate),
+      title: const Text('Rate the App'),
+      onTap: () => _showSatisfactionDialog(context),
+    );
+  }
+
+  void _showSatisfactionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Are you satisfied with this app?'),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.sentiment_satisfied_alt, size: 48, color: Colors.green),
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                      _requestReview();
+                    },
+                  ),
+                  const Text('Yes'),
+                ],
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.sentiment_dissatisfied, size: 48, color: Colors.red),
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                      _showSuggestionDialog(context);
+                    },
+                  ),
+                  const Text('No'),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _requestReview() async {
+    final InAppReview inAppReview = InAppReview.instance;
+
+    if (await inAppReview.isAvailable()) {
+      inAppReview.requestReview();
+    } else {
+      // Optionally, direct to app store if in-app review is not available
+      // For Android, you can use:
+      // launchUrl(Uri.parse('market://details?id=<your_package_name>'));
+      // For iOS, you can use:
+      // launchUrl(Uri.parse('itunes.apple.com/app/id<your_app_id>'));
+    }
+  }
+
+  void _showSuggestionDialog(BuildContext context) {
+    final TextEditingController _suggestionController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Send Suggestion'),
+          content: TextField(
+            controller: _suggestionController,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              hintText: 'Enter your suggestion here...',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_suggestionController.text.isNotEmpty) {
+                  _sendEmail(context, _suggestionController.text);
+                  Navigator.pop(dialogContext);
+                }
+              },
+              child: const Text('Send'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _sendEmail(BuildContext context, String suggestion) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'suvojeetsengupta@zohomail.in',
+      queryParameters: {
+        'subject': 'App Suggestion',
+        'body': suggestion,
+      },
+    );
+
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not launch email app.')),
+      );
+    }
+  }
 
   Widget _buildSettingsTile(BuildContext context, {required IconData icon, required String title, String? subtitle, VoidCallback? onTap}) {
     return ListTile(
@@ -226,6 +345,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               return const SizedBox.shrink();
             },
           ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
+                'Feedback',
+                [
+                  _buildRateTheAppSection(context),
                 ],
               ),
               const SizedBox(height: 16),

@@ -418,7 +418,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildLinkTile(
                     context,
                     'Privacy Policy',
-                    'https://suvojit213.github.io/Privacy_policy_Advisor_Desk/',
+                    'https://suvojeet-sengupta.github.io/Privacy_policy_Advisor_Desk/',
                     Icons.privacy_tip_outlined,
                   ),
                 ],

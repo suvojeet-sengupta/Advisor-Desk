@@ -12,7 +12,7 @@ class ChangelogDialog extends StatelessWidget {
         children: [
           Icon(Icons.new_releases, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          const Text("What's New in v1.4.1"), // Updated version
+          const Text("What's New in v1.4.2"), // Updated version
         ],
       ),
       content: SingleChildScrollView(
@@ -20,18 +20,15 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '🎉 New & Exciting!'),
-            _buildListItem(context, 'Daily Progress Tracking', 'You can now see your daily progress towards your monthly goals, including remaining calls and hours for the day.'),
-            _buildListItem(context, 'Goal Completion Checkmarks', 'A checkmark will now appear next to your daily goals when you\'ve completed them.'),
-            _buildListItem(context, 'Mandatory Privacy Policy', 'We\'ve added a mandatory privacy policy screen that appears on the first launch of the app.'),
+            _buildListItem(context, "New 'Rate the App' Feature", "You can now easily share your feedback! Rate the app directly from the settings, or send us suggestions if you're not fully satisfied."),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '✨ Improvements'),
-            _buildListItem(context, 'Optimized PDF Generation', 'We\'ve optimized PDF generation to prevent out-of-memory errors.'),
-            _buildListItem(context, 'Default Theme', 'The default theme of the app is now blue.'),
+            _buildListItem(context, 'Improved Dashboard Display', 'Text on dashboard summary cards will now adjust automatically to fit, preventing cut-off text and improving readability on all screen sizes.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '🐛 Bug Fixes'),
-            _buildListItem(context, 'Daily Average Hours', 'Fixed a bug where the daily average hours were not being displayed correctly.'),
+            _buildListItem(context, 'Updated Privacy Policy Link', 'The link to our Privacy Policy in the settings has been updated to ensure you always have access to the latest information.'),
           ],
         ),
       ),

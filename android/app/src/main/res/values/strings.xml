@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="shortcut_add_entry_short">New Entry</string>
-    <string name="shortcut_add_entry_long">Add a new daily entry</string>
-    <string name="shortcut_add_csat_short">New CSAT</string>
+    <string name="shortcut_entry_short">New Entry</string>
+    <string name="shortcut_entry_long">Add a new daily entry</string>
+    <string name="shortcut_csat_short">New CSAT</string>
     <string name="shortcut_add_csat_long">Add a new CSAT entry</string>
     <string name="shortcut_add_cq_short">New CQ</string>
     <string name="shortcut_add_cq_long">Add a new CQ entry</string>

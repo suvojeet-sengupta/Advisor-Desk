@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/domain/repositories/leave_repository.dart';
+import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'forecaster_event.dart';
 import 'forecaster_state.dart';
 
@@ -37,16 +38,16 @@ class ForecasterBloc extends Bloc<ForecasterEvent, ForecasterState> {
 
     int remainingDays = await _getRemainingWorkDays(currentYear, currentMonth);
 
-    final avgCalls = remainingDays > 0 ? baseSummary.totalCalls / baseSummary.entries.length : 0;
-    final avgHours = remainingDays > 0 ? baseSummary.totalLoginHours / baseSummary.entries.length : 0;
+    final avgCalls = remainingDays > 0 && baseSummary.entries.isNotEmpty ? baseSummary.totalCalls / baseSummary.entries.length : 0.0;
+    final avgHours = remainingDays > 0 && baseSummary.entries.isNotEmpty ? baseSummary.totalLoginHours / baseSummary.entries.length : 0.0;
 
     emit(state.copyWith(
       status: ForecasterStatus.loaded,
       currentSummary: baseSummary,
       projectedSummary: baseSummary, // Initially, projected is same as current
       remainingWorkDays: remainingDays,
-      projectedDailyCalls: avgCalls.isNaN ? 0 : avgCalls,
-      projectedDailyHours: avgHours.isNaN ? 0 : avgHours,
+      projectedDailyCalls: avgCalls.isNaN ? 0.0 : avgCalls,
+      projectedDailyHours: avgHours.isNaN ? 0.0 : avgHours,
     ));
   }
 
@@ -135,7 +136,7 @@ class ForecasterBloc extends Bloc<ForecasterEvent, ForecasterState> {
     ];
 
     // Recalculate base salary for the projected total calls
-    final newBaseSalary = totalProjectedCalls * 4.30; // Assuming default rate for projection
+    final newBaseSalary = totalProjectedCalls * AppConstants.baseRatePerCall; // Use constant for projection
 
     return ReportSummary(
       startDate: baseSummary.startDate,

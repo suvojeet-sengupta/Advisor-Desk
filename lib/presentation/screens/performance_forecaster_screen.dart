@@ -6,9 +6,9 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/domain/repositories/leave_repository.dart';
-import 'bloc/forecaster_bloc.dart';
-import 'bloc/forecaster_event.dart';
-import 'bloc/forecaster_state.dart';
+import 'package:advisor_desk/presentation/features/performance_forecaster/bloc/forecaster_bloc.dart';
+import 'package:advisor_desk/presentation/features/performance_forecaster/bloc/forecaster_event.dart';
+import 'package:advisor_desk/presentation/features/performance_forecaster/bloc/forecaster_state.dart';
 
 class PerformanceForecasterScreen extends StatelessWidget {
   final MonthlySummary summary;

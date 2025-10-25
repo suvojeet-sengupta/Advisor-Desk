@@ -57,6 +57,7 @@ import 'package:advisor_desk/presentation/screens/advisor_desk_ai_analyzer_scree
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
 import 'package:advisor_desk/presentation/screens/privacy_policy_screen.dart';
+import 'package:advisor_desk/presentation/screens/performance_forecaster_screen.dart';
 
 class AppRouter {
   // Route names
@@ -90,6 +91,7 @@ class AppRouter {
   static const String advisorDeskAIRoute = '/advisor-desk-ai';
   static const String advisorDeskAIAnalyzerRoute = '/advisor-desk-ai-analyzer';
   static const String privacyPolicyRoute = '/privacy-policy';
+  static const String performanceForecasterRoute = '/performance-forecaster';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -264,6 +266,11 @@ class AppRouter {
               profile: profile,
             ),
           ),
+        );
+      case AppRouter.performanceForecasterRoute:
+        final MonthlySummary summary = settings.arguments as MonthlySummary;
+        return MaterialPageRoute(
+          builder: (_) => PerformanceForecasterScreen(summary: summary),
         );
       case AppRouter.privacyPolicyRoute:
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());

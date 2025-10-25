@@ -637,6 +637,19 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
+                title: 'Forecaster',
+                value: 'Project Salary',
+                icon: Icons.insights,
+                iconColor: Theme.of(context).colorScheme.primary,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.performanceForecasterRoute,
+                    arguments: summary,
+                  );
+                },
+              ),
+              DashboardCard(
                 title: 'Login Days',
                 value: summary.loginDays.toString(),
                 icon: Icons.calendar_today,

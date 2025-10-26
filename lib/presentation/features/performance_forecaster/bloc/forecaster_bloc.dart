@@ -46,8 +46,8 @@ class ForecasterBloc extends Bloc<ForecasterEvent, ForecasterState> {
       currentSummary: baseSummary,
       projectedSummary: baseSummary, // Initially, projected is same as current
       remainingWorkDays: remainingDays,
-      projectedDailyCalls: avgCalls.isNaN ? 0.0 : avgCalls,
-      projectedDailyHours: avgHours.isNaN ? 0.0 : avgHours,
+      projectedDailyCalls: 0.0,
+      projectedDailyHours: 0.0,
     ));
   }
 
@@ -106,6 +106,8 @@ class ForecasterBloc extends Bloc<ForecasterEvent, ForecasterState> {
     emit(state.copyWith(
       projectedSummary: state.currentSummary,
       remainingWorkDays: remainingDays,
+      projectedDailyCalls: 0.0,
+      projectedDailyHours: 0.0,
     ));
   }
 

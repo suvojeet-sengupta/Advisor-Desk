@@ -192,6 +192,7 @@ class PerformanceForecasterView extends StatelessWidget {
           Text('Projected Breakdown', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 16),
           _buildBreakdownRow(context, 'Projected Total Calls', summary.totalCalls.toString()),
+          _buildBreakdownRow(context, 'Projected Total Login Hours', '${summary.totalLoginHours.toStringAsFixed(2)} hours'),
           _buildBreakdownRow(context, 'Base Salary', currencyFormat.format(summary.baseSalary)),
           _buildBreakdownRow(context, 'Bonus', currencyFormat.format(summary.bonusAmount), isAchieved: summary.isBonusAchieved),
           _buildBreakdownRow(context, 'CSAT Bonus', currencyFormat.format(summary.csatBonus), isAchieved: summary.isCSATBonusAchieved),

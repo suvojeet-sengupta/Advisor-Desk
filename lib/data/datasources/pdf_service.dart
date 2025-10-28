@@ -5,6 +5,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:intl/intl.dart';
 
@@ -313,7 +314,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
               .map((entry) => [
                     DateFormat('dd-MMM-yyyy').format(entry.auditDate),
                     '${entry.percentage.toStringAsFixed(2)}%',
-                    _getQualityRating(entry.percentage),
+                    QualityRatingHelper.getQualityRating(entry.percentage),
                   ])
               .toList(),
         ),
@@ -376,12 +377,4 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   );
 
   return pdf.save();
-}
-
-String _getQualityRating(double percentage) {
-  if (percentage >= 95) return 'Excellent';
-  if (percentage >= 85) return 'Good';
-  if (percentage >= 75) return 'Average';
-  if (percentage >= 60) return 'Below Average';
-  return 'Poor';
 }

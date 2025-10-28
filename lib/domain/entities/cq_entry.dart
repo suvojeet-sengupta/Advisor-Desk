@@ -1,5 +1,6 @@
 // Call Quality (CQ) Entry Entity
 import 'package:equatable/equatable.dart';
+import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
 class CQEntry extends Equatable {
   final int? id;
@@ -19,11 +20,7 @@ class CQEntry extends Equatable {
   
   // Get quality rating based on percentage
   String get qualityRating {
-    if (percentage >= 95) return 'Excellent';
-    if (percentage >= 85) return 'Good';
-    if (percentage >= 75) return 'Average';
-    if (percentage >= 60) return 'Below Average';
-    return 'Poor';
+    return QualityRatingHelper.getQualityRating(percentage);
   }
   
   // Copy with method for creating a new instance with some updated values

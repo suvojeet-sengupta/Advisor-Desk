@@ -1,6 +1,7 @@
 // Call Quality (CQ) Summary Entity
 import 'package:equatable/equatable.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
+import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
 class CQSummary extends Equatable {
   final List<CQEntry> entries;
@@ -34,8 +35,7 @@ class CQSummary extends Equatable {
   // Get quality rating based on average percentage
   String get qualityRating {
     if (entries.isEmpty) return 'No Audits';
-    if (monthlyAverageCQ >= 85) return 'Quality Met';
-    return 'Quality Not Met';
+    return QualityRatingHelper.getQualityRating(monthlyAverageCQ);
   }
   
   // Get formatted month year

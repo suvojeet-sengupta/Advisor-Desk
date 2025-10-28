@@ -47,6 +47,7 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_blo
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_event.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_state.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/ai_insight_card.dart';
+import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -138,9 +139,9 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   }
 
   Color _getQualityColor(double percentage, BuildContext context) {
-    if (percentage == 0) return Theme.of(context).colorScheme.onSurface;
-    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
-    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
+    final rating = QualityRatingHelper.getQualityRating(percentage);
+    if (rating == 'Excellent' || rating == 'Good') return Theme.of(context).colorScheme.tertiary;
+    if (rating == 'Average') return Theme.of(context).colorScheme.primary;
     return Theme.of(context).colorScheme.error;
   }
 

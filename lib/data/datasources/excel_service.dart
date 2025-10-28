@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
 class ExcelService {
   Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
@@ -234,7 +235,7 @@ class ExcelService {
           sheet.appendRow([
             DateFormat('dd-MMM-yyyy').format(entry.auditDate),
             entry.percentage.toStringAsFixed(2) + '%',
-            _getQualityRating(entry.percentage),
+            QualityRatingHelper.getQualityRating(entry.percentage),
           ]);
         }
         sheet.appendRow([]); // Empty row for spacing
@@ -247,13 +248,5 @@ class ExcelService {
     final file = File(filePath);
     await file.writeAsBytes(excel.encode()!);
     return file;
-  }
-
-  String _getQualityRating(double percentage) {
-    if (percentage >= 95) return 'Excellent';
-    if (percentage >= 85) return 'Good';
-    if (percentage >= 75) return 'Average';
-    if (percentage >= 60) return 'Below Average';
-    return 'Poor';
   }
 }

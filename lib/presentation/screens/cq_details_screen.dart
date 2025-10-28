@@ -12,7 +12,7 @@ import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
 import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart'; // Import InteractiveTutorialOverlay
 import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
-
+import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
 class CqDetailsScreen extends StatefulWidget {
   final CQSummary cqSummary;
@@ -290,8 +290,9 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
   }
 
   Color _getQualityColor(double percentage, BuildContext context) {
-    if (percentage >= 85) return Theme.of(context).colorScheme.tertiary;
-    if (percentage >= 75) return Theme.of(context).colorScheme.primary;
+    final rating = QualityRatingHelper.getQualityRating(percentage);
+    if (rating == 'Excellent' || rating == 'Good') return Theme.of(context).colorScheme.tertiary;
+    if (rating == 'Average') return Theme.of(context).colorScheme.primary;
     return Theme.of(context).colorScheme.error;
   }
 }

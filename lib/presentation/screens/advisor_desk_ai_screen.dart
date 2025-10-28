@@ -2,6 +2,7 @@ import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
+import 'package:advisor_desk/domain/services/query_parser.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_bloc.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_event.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_state.dart';
@@ -20,7 +21,7 @@ class AdvisorDeskAIScreen extends StatelessWidget {
       create: (context) => AdvisorDeskAIBloc(
         performanceRepository: context.read<PerformanceRepository>(),
         aiInsightService: context.read<AiInsightService>(),
-        nlpService: NlpService(performanceRepository: context.read<PerformanceRepository>()),
+        nlpService: NlpService(performanceRepository: context.read<PerformanceRepository>(), queryParser: QueryParser()),
       )..add(LoadAdvisorDeskAIData()),
       child: const AdvisorDeskAIView(),
     );

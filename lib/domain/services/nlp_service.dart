@@ -11,9 +11,9 @@ class NlpService {
   final PerformanceRepository _performanceRepository;
   final QueryParser _queryParser;
 
-  NlpService({required PerformanceRepository performanceRepository})
+  NlpService({required PerformanceRepository performanceRepository, required QueryParser queryParser})
       : _performanceRepository = performanceRepository,
-        _queryParser = QueryParser();
+        _queryParser = queryParser;
 
   Future<AiInsight> processQuestion({
     required String question,

@@ -37,6 +37,8 @@ import 'package:advisor_desk/presentation/screens/lock_screen.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:advisor_desk/domain/services/goal_prediction_service.dart';
+import 'package:advisor_desk/domain/services/query_parser.dart';
+import 'package:advisor_desk/domain/services/query_models.dart';
 
 
 // Custom ScrollBehavior for smoother scrolling
@@ -290,7 +292,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             RepositoryProvider<ProfileRepository>.value(value: widget.profileRepository),
             RepositoryProvider<LeaveRepository>.value(value: widget.leaveRepository),
             RepositoryProvider<AiInsightService>(create: (context) => AiInsightService()),
-            RepositoryProvider<NlpService>(create: (context) => NlpService(performanceRepository: context.read<PerformanceRepository>(), queryParser: context.read<QueryParser>())),
+            RepositoryProvider<NlpService>(create: (context) => NlpService(performanceRepository: context.read<PerformanceRepository>(), queryParser: QueryParser())),
             RepositoryProvider<GoalPredictionService>(create: (context) => GoalPredictionServiceImpl()),
           ],
           child: MultiBlocProvider(

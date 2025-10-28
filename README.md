@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/suvojit213/Advisor-Desk/stargazers"><img src="https://img.shields.io/github/stars/suvojit213/Advisor-Desk?style=for-the-badge" alt="Stars"></a>
-  <a href="https://github.com/suvojit213/Advisor-Desk/network/members"><img src="https://img.shields.io/github/forks/suvojit213/Advisor-Desk?style=for-the-badge" alt="Forks"></a>
-  <a href="https://github.com/suvojit213/Advisor-Desk/issues"><img src="https://img.shields.io/github/issues/suvojit213/Advisor-Desk?style=for-the-badge" alt="Issues"></a>
-  <a href="https://github.com/suvojit213/Advisor-Desk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/suvojit213/Advisor-Desk?style=for-the-badge" alt="License"></a>
+  <a href="https://github.com/suvojeet-sengupta/Advisor-Desk/stargazers"><img src="https://img.shields.io/github/stars/suvojeet-sengupta/Advisor-Desk?style=for-the-badge" alt="Stars"></a>
+  <a href="https://github.com/suvojeet-sengupta/Advisor-Desk/network/members"><img src="https://img.shields.io/github/forks/suvojeet-sengupta/Advisor-Desk?style=for-the-badge" alt="Forks"></a>
+  <a href="https://github.com/suvojeet-sengupta/Advisor-Desk/issues"><img src="https://img.shields.io/github/issues/suvojeet-sengupta/Advisor-Desk?style=for-the-badge" alt="Issues"></a>
+  <a href="https://github.com/suvojeet-sengupta/Advisor-Desk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/suvojeet-sengupta/Advisor-Desk?style=for-the-badge" alt="License"></a>
 </p>
 
 ---
@@ -109,7 +109,7 @@ To get a local copy of the project up and running for development or testing, fo
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/suvojit213/Advisor-Desk.git
+    git clone https://github.com/suvojeet-sengupta/Advisor-Desk.git
     ```
 2.  **Navigate to the project directory:**
     ```bash
@@ -144,7 +144,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Suvojeet Sengupta** - suvojitsengupta21@gmail.com
 
-Project Link: [https://github.com/suvojit213/Advisor-Desk](https://github.com/suvojit213/Advisor-Desk)
+Project Link: [https://github.com/suvojeet-sengupta/Advisor-Desk](https://github.com/suvojeet-sengupta/Advisor-Desk)
 
 ## 🙏 Acknowledgements
 

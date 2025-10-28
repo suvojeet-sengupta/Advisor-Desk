@@ -56,7 +56,7 @@ The app is now ready for Play Store deployment with:
 ### Developer Information
 - **Developer**: Suvojeet Sengupta
 - **Email**: suvojitsengupta21@gmail.com
-- **GitHub**: https://github.com/suvojit213/Advisor-Desk
+- **GitHub**: https://github.com/suvojeet-sengupta/Advisor-Desk
 
 ### Build Instructions
 1. Ensure Flutter SDK is installed

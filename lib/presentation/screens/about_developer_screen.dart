@@ -84,7 +84,7 @@ class AboutDeveloperScreen extends StatelessWidget {
         _buildLinkTile(
           context,
           'GitHub',
-          'https://github.com/suvojit213',
+          'https://github.com/suvojeet-sengupta',
           SvgPicture.asset(
             'assets/images/github_logo.svg',
             height: 24,

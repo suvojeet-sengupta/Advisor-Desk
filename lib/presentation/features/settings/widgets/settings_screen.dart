@@ -315,6 +315,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               _buildSectionCard(
                 context,
+                'App Information',
+                [
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                          children: [
+                            _buildSettingsTile(
+                              context,
+                              icon: Icons.verified,
+                              title: 'App Version',
+                              subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
+                              onTap: null,
+                            ),
+                            _buildSettingsTile(
+                              context,
+                              icon: Icons.new_releases,
+                              title: "What's New",
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => ChangelogDialog(),
+                                );
+                              },
+                            ),
+                            _buildLinkTile(
+                              context,
+                              'About App',
+                              AppRouter.aboutAppRoute, // This route will be renamed to aboutAppRoute
+                              Icons.info_outline,
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildSectionCard(
+                context,
                 'Feedback',
                 [
                   _buildRateTheAppSection(context),
@@ -385,49 +428,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     'Privacy Policy',
                     'https://suvojeet-sengupta.github.io/Privacy_policy_Advisor_Desk/',
                     Icons.privacy_tip_outlined,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSectionCard(
-                context,
-                'App Information',
-                [
-                  FutureBuilder<PackageInfo>(
-                    future: PackageInfo.fromPlatform(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Column(
-                          children: [
-                            _buildSettingsTile(
-                              context,
-                              icon: Icons.verified,
-                              title: 'App Version',
-                              subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
-                              onTap: null,
-                            ),
-                            _buildSettingsTile(
-                              context,
-                              icon: Icons.new_releases,
-                              title: "What's New",
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => ChangelogDialog(),
-                                );
-                              },
-                            ),
-                            _buildLinkTile(
-                              context,
-                              'About App',
-                              AppRouter.aboutAppRoute, // This route will be renamed to aboutAppRoute
-                              Icons.info_outline,
-                            ),
-                          ],
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
                   ),
                 ],
               ),

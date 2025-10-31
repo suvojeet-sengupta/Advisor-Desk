@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({Key? key}) : super(key: key);
@@ -97,6 +98,7 @@ class AboutAppScreen extends StatelessWidget {
           context,
           'Suvojeet Sengupta',
           'Core Developer',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPM_tMOSd7vXc3vObaXRrxmeL9baXeALYgAlrop2VoYSGX2OY1zzglX7mr&s=10',
         ),
         _buildTeamCard(
           context,
@@ -127,7 +129,7 @@ class AboutAppScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTeamCard(BuildContext context, String name, String role) {
+  Widget _buildTeamCard(BuildContext context, String name, String role, [String? imageUrl]) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 8.0),
@@ -137,10 +139,7 @@ class AboutAppScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
-            ),
+            _buildProfileAvatar(context, name, imageUrl),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -165,6 +164,39 @@ class AboutAppScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildProfileAvatar(BuildContext context, String name, String? imageUrl) {
+    if (name == 'Suvojeet Sengupta' && imageUrl != null) {
+      return FutureBuilder<List<ConnectivityResult>>(
+        future: Connectivity().checkConnectivity(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData &&
+              snapshot.data!.contains(ConnectivityResult.none) == false) {
+            return CircleAvatar(
+              backgroundImage: NetworkImage(imageUrl),
+              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+              ),
+            );
+          } else {
+            return CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+            );
+          }
+        },
+      );
+    } else {
+      return CircleAvatar(
+        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+      );
+    }
   }
 
   Widget _buildGetInTouch(BuildContext context) {

@@ -127,6 +127,7 @@ class AboutAppScreen extends StatelessWidget {
           context,
           'Vidhya Mandloi',
           'Testing/Feedback Contributor',
+          'https://lh3.googleusercontent.com/pw/AP1GczMDvLyxiH3nhGETQbNv2T5DwiyElg_DyU4S2K_uMACEc64tQcFbKG6bwUIjl_7h3Xnvlk3TsdTUbAtN1aP_n1d6vzhSS3Mmj5qUl4Emlr6NMC71tq_EyqPKVDlsJLT1oF1UpxwnN1yHO9dEQaKmG1fsNQ=w634-h702-s-no-gm?authuser=0',
         ),
         _buildTeamCard(
           context,

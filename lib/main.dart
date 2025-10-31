@@ -76,6 +76,12 @@ void main() async {
   final hasAcceptedPrivacy = prefs.getBool('hasAcceptedPrivacyPolicy') ?? false;
   final hasShownOnboarding = prefs.getBool('hasShownOnboarding') ?? false;
 
+  // Load theme preferences
+  final themeModeIndex = prefs.getInt('theme_mode') ?? AppThemeMode.system.index;
+  final colorIndex = prefs.getInt('theme_color') ?? AppColor.blue.index;
+  final initialThemeMode = AppThemeMode.values[themeModeIndex];
+  final initialColor = AppColor.values[colorIndex];
+
   // Instantiate Profile related services
   final profileDataSource = ProfileDataSource();
   final profileRepository = ProfileRepositoryImpl(profileDataSource);
@@ -106,6 +112,8 @@ void main() async {
     initialRoute: initialRoute,
     profileRepository: profileRepository, // Pass profileRepository to MyApp
     leaveRepository: leaveRepository,
+    initialThemeMode: initialThemeMode,
+    initialColor: initialColor,
   ));
 }
 
@@ -119,6 +127,8 @@ class MyApp extends StatefulWidget {
   final String initialRoute;
   final ProfileRepository profileRepository; // New
   final LeaveRepository leaveRepository;
+  final AppThemeMode initialThemeMode;
+  final AppColor initialColor;
 
   const MyApp({
     Key? key,
@@ -131,6 +141,8 @@ class MyApp extends StatefulWidget {
     required this.initialRoute,
     required this.profileRepository, // New
     required this.leaveRepository,
+    required this.initialThemeMode,
+    required this.initialColor,
   }) : super(key: key);
 
   @override
@@ -297,7 +309,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ],
           child: MultiBlocProvider(
             providers: [
-              BlocProvider(create: (context) => ThemeCubit()),
+              BlocProvider(create: (context) => ThemeCubit(initialThemeMode: widget.initialThemeMode, initialColor: widget.initialColor)),
               BlocProvider(create: (context) => DashboardCustomizationCubit()),
               BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>())), // New
             ],

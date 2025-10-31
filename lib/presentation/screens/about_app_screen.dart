@@ -12,9 +12,11 @@ class AboutAppScreen extends StatelessWidget {
       appBar: const CustomAppBar(title: 'About App'),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             _buildInfoCard(
               context,
               'About the Developer',
@@ -32,6 +34,7 @@ class AboutAppScreen extends StatelessWidget {
             _buildTeamSection(context),
             const SizedBox(height: 24),
             _buildGetInTouch(context),
+            const SizedBox(height: 16), // Added for bottom padding
           ],
         ),
       ),
@@ -42,6 +45,7 @@ class AboutAppScreen extends StatelessWidget {
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -126,6 +130,7 @@ class AboutAppScreen extends StatelessWidget {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 8.0),
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -203,6 +208,7 @@ class AboutAppScreen extends StatelessWidget {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 8.0),
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: Icon(iconData, color: Theme.of(context).colorScheme.primary),

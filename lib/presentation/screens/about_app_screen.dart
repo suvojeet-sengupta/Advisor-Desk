@@ -17,25 +17,26 @@ class AboutAppScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            _buildInfoCard(
-              context,
-              'About the Developer',
-              'Suvojeet Sengupta',
-              'I am an Arts student with a deep passion for technology and a drive to solve real-world problems. By day, I work as a freelance BPO professional, and by night, I\'m a self-taught developer, always curious and eager to learn new things. This app is the result of my journey to combine my professional experience with my love for technology.',
-            ),
-            const SizedBox(height: 16),
-            _buildInfoCard(
-              context,
-              'The Story Behind Advisor Desk',
-              '',
-              'As a customer care executive, I found it challenging to keep track of my daily calls, login hours, and performance scores. Since my salary is calculated on a per-call basis, I needed a way to monitor my progress and earnings in real-time, without having to wait for my payslip. I wanted to know exactly how many calls I needed to take to reach my target.\n\nTo solve this problem, I created Advisor Desk. This app is designed to help my fellow advisors and other professionals in similar roles to easily track their performance, calculate their earnings, and stay motivated to achieve their goals. It\'s a tool built by an advisor, for advisors.',
-            ),
-            const SizedBox(height: 24),
-            _buildTeamSection(context),
-            const SizedBox(height: 24),
-            _buildGetInTouch(context),
-            const SizedBox(height: 16), // Added for bottom padding
-          ],
+              _buildInfoCard(
+                context,
+                'About the Developer',
+                'Suvojeet Sengupta',
+                'I am an Arts student with a deep passion for technology and a drive to solve real-world problems. By day, I work as a freelance BPO professional, and by night, I\'m a self-taught developer, always curious and eager to learn new things. This app is the result of my journey to combine my professional experience with my love for technology.',
+              ),
+              const SizedBox(height: 16),
+              _buildInfoCard(
+                context,
+                'The Story Behind Advisor Desk',
+                '',
+                'As a customer care executive, I found it challenging to keep track of my daily calls, login hours, and performance scores. Since my salary is calculated on a per-call basis, I needed a way to monitor my progress and earnings in real-time, without having to wait for my payslip. I wanted to know exactly how many calls I needed to take to reach my target.\n\nTo solve this problem, I created Advisor Desk. This app is designed to help my fellow advisors and other professionals in similar roles to easily track their performance, calculate their earnings, and stay motivated to achieve their goals. It\'s a tool built by an advisor, for advisors.',
+              ),
+              const SizedBox(height: 24),
+              _buildTeamSection(context),
+              const SizedBox(height: 24),
+              _buildGetInTouch(context),
+              const SizedBox(height: 16), // Added for bottom padding
+            ],
+          ),
         ),
       ),
     );
@@ -226,3 +227,4 @@ class AboutAppScreen extends StatelessWidget {
     }
   }
 }
+

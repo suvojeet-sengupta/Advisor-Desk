@@ -115,6 +115,7 @@ class AboutAppScreen extends StatelessWidget {
           context,
           'Mouma Sengupta',
           'Testing/Feedback Contributor',
+          'https://lh3.googleusercontent.com/pw/AP1GczNm0taRsJ8YhQJlaTpopdGXIoPlTyKLzAAeVA9g4eCptd4kagBqgVekniedgAGbfB_ipDmFplDxaUOviunTP-qRGYSwJjrXo9bm0wDQA-H2K5Lm3F4FSlNMif01ihAZBtyVhFa1ItAuCuuGN9TNqlsxwg=w1081-h1081-s-no-gm?authuser=0',
         ),
         _buildTeamCard(
           context,
@@ -168,7 +169,7 @@ class AboutAppScreen extends StatelessWidget {
   }
 
   Widget _buildProfileAvatar(BuildContext context, String name, String? imageUrl) {
-    if ((name == 'Suvojeet Sengupta' || name == 'Dheeraj Ravidas') && imageUrl != null) {
+    if ((name == 'Suvojeet Sengupta' || name == 'Dheeraj Ravidas' || name == 'Mouma Sengupta') && imageUrl != null) {
       return FutureBuilder<List<ConnectivityResult>>(
         future: Connectivity().checkConnectivity(),
         builder: (context, snapshot) {

@@ -311,42 +311,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
-              _buildSectionCard(
-                context,
-                'App Information',
-                [
-          FutureBuilder<PackageInfo>(
-            future: PackageInfo.fromPlatform(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column( // Wrap in Column to add another tile
-                  children: [
-                    _buildSettingsTile(
-                      context,
-                      icon: Icons.verified,
-                      title: 'App Version',
-                      subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
-                      onTap: null,
-                    ),
-                    _buildSettingsTile( // New "What's New" tile
-                      context, 
-                      icon: Icons.new_releases,
-                      title: 'What\'s New',
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => ChangelogDialog(),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-                ],
-              ),
+
               const SizedBox(height: 16),
               _buildSectionCard(
                 context,
@@ -426,13 +391,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               _buildSectionCard(
                 context,
-                'About Developer',
+                'App Information',
                 [
-                  _buildLinkTile(
-                    context,
-                    'About Developer',
-                    AppRouter.aboutDeveloperRoute,
-                    Icons.person,
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                          children: [
+                            _buildSettingsTile(
+                              context,
+                              icon: Icons.verified,
+                              title: 'App Version',
+                              subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
+                              onTap: null,
+                            ),
+                            _buildSettingsTile(
+                              context,
+                              icon: Icons.new_releases,
+                              title: "What's New",
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => ChangelogDialog(),
+                                );
+                              },
+                            ),
+                            _buildLinkTile(
+                              context,
+                              'About App',
+                              AppRouter.aboutAppRoute, // This route will be renamed to aboutAppRoute
+                              Icons.info_outline,
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
                 ],
               ),

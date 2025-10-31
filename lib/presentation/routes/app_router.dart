@@ -35,7 +35,7 @@ import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
 import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
 import 'package:advisor_desk/presentation/screens/credits_screen.dart';
 import 'package:advisor_desk/presentation/screens/profile_screen.dart';
-import 'package:advisor_desk/presentation/screens/about_developer_screen.dart';
+import 'package:advisor_desk/presentation/screens/about_app_screen.dart';
 import 'package:advisor_desk/presentation/screens/salary_details_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
@@ -84,7 +84,7 @@ class AppRouter {
   
   
   static const String creditsRoute = '/credits';
-  static const String aboutDeveloperRoute = '/about-developer';
+  static const String aboutAppRoute = '/about-app';
   static const String salaryDetailsRoute = '/salary-details';
   static const String pinSetupRoute = '/pin-setup';
   static const String appLockSettingsRoute = '/app-lock-settings';
@@ -219,9 +219,9 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const CreditsScreen(),
         );
-      case aboutDeveloperRoute:
+      case aboutAppRoute:
         return MaterialPageRoute(
-          builder: (_) => const AboutDeveloperScreen(),
+          builder: (_) => const AboutAppScreen(),
         );
       case profileRoute:
         final bool isMandatoryFill = settings.arguments as bool? ?? false;

@@ -125,6 +125,11 @@ class AboutAppScreen extends StatelessWidget {
         ),
         _buildTeamCard(
           context,
+          'Vidhya Mandloi',
+          'Testing/Feedback Contributor',
+        ),
+        _buildTeamCard(
+          context,
           "And All others whose names I can't mention",
           'Contributors',
         ),
@@ -170,7 +175,7 @@ class AboutAppScreen extends StatelessWidget {
   }
 
   Widget _buildProfileAvatar(BuildContext context, String name, String? imageUrl) {
-    if ((name == 'Suvojeet Sengupta' || name == 'Dheeraj Ravidas' || name == 'Mouma Sengupta' || name == 'Sudhanshu') && imageUrl != null) {
+    if ((name == 'Suvojeet Sengupta' || name == 'Dheeraj Ravidas' || name == 'Mouma Sengupta' || name == 'Sudhanshu' || name == 'Vidhya Mandloi') && imageUrl != null) {
       return FutureBuilder<List<ConnectivityResult>>(
         future: Connectivity().checkConnectivity(),
         builder: (context, snapshot) {

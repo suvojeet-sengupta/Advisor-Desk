@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
+import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/add_user_dialog.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';

@@ -244,7 +244,10 @@ class ExcelService {
 
     // Save the Excel file
     final directory = await getExternalStorageDirectory();
-    final filePath = '${directory!.path}/Advisor_Desk_Report_${summary.formattedDateRange.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}.xlsx';
+    if (directory == null) {
+      throw Exception("External storage directory not found");
+    }
+    final filePath = '${directory.path}/Advisor_Desk_Report_${summary.formattedDateRange.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}.xlsx';
     final file = File(filePath);
     await file.writeAsBytes(excel.encode()!);
     return file;

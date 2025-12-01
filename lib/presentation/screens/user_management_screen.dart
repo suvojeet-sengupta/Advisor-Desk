@@ -57,22 +57,50 @@ class UserManagementScreen extends StatelessWidget {
                       ),
                     ),
                     subtitle: isCurrentUser ? const Text('Current User') : null,
-                    trailing: isCurrentUser
-                        ? const Icon(Icons.check_circle, color: Colors.green)
-                        : ElevatedButton(
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (!isCurrentUser)
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              _showSwitchConfirmation(context, user.name, () {
-                                context.read<UserCubit>().switchUser(user.id);
-                                // Navigate to dashboard to refresh everything visually
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context, 
-                                  AppRouter.dashboardRoute, 
-                                  (route) => false
-                                );
+                              _showDeleteConfirmation(context, user.name, () {
+                                context.read<UserCubit>().deleteUser(user.id);
+                              });
+                            },
+                          ),
+                        if (isCurrentUser)
+                          const Icon(Icons.check_circle, color: Colors.green)
+                        else
+                          ElevatedButton(
+                            onPressed: () {
+                              _showSwitchConfirmation(context, user.name, () async {
+                                await context.read<UserCubit>().switchUser(user.id);
+                                
+                                // Check if profile is filled
+                                final profileState = context.read<ProfileCubit>().state;
+                                final isProfileFilled = profileState.profile.name != null && profileState.profile.companyName != null;
+                                
+                                if (!isProfileFilled) {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context, 
+                                    AppRouter.profileRoute, 
+                                    (route) => false,
+                                    arguments: true // isMandatoryFill
+                                  );
+                                } else {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context, 
+                                    AppRouter.dashboardRoute, 
+                                    (route) => false
+                                  );
+                                }
                               });
                             },
                             child: const Text('Switch'),
                           ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -114,6 +142,29 @@ class UserManagementScreen extends StatelessWidget {
               onConfirm();
             },
             child: const Text('Switch'),
+          ),
+        ],
+      ),
+    );
+  }
+  void _showDeleteConfirmation(BuildContext context, String userName, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete User'),
+        content: Text('Are you sure you want to delete $userName? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.pop(context);
+              onConfirm();
+            },
+            child: const Text('Delete'),
           ),
         ],
       ),

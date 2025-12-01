@@ -57,6 +57,15 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
+  Future<void> deleteUser(String userId) async {
+    try {
+      await _userDataSource.deleteUser(userId);
+      await loadUsers();
+    } catch (e) {
+      emit(UserError("Failed to delete user: $e"));
+    }
+  }
+
   Future<void> switchUser(String userId) async {
     try {
       emit(UserLoading());

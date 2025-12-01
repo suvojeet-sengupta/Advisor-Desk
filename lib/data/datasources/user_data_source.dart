@@ -53,4 +53,13 @@ class UserDataSource {
       return null;
     }
   }
+  Future<void> deleteUser(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final users = await getUsers();
+    
+    users.removeWhere((u) => u.id == userId);
+    
+    final usersJson = users.map((u) => json.encode(u.toMap())).toList();
+    await prefs.setStringList(_usersListKey, usersJson);
+  }
 }

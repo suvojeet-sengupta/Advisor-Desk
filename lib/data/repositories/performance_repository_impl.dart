@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart'; // For compute
 import 'package:advisor_desk/domain/entities/report_summary.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +16,6 @@ import 'package:advisor_desk/domain/entities/cq_summary.dart';
 import 'package:advisor_desk/domain/entities/monthly_data.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:archive/archive_io.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 
 class PerformanceRepositoryImpl implements PerformanceRepository {
@@ -63,36 +63,16 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
-  Future<int> deleteCSATEntriesByDate(DateTime date) {
-    return localDataSource.deleteCSATEntriesByDate(date);
-  }
-
-  @override
-  Future<List<MonthlySummary>> getAllMonthlySummaries() async {
-    final monthYearCombinations = await localDataSource.getUniqueMonthYearCombinations();
-    final List<MonthlySummary> summaries = [];
-    for (final combination in monthYearCombinations) {
-      final month = combination["month"]!;
-      final year = combination["year"]!;
-      final summary = await getMonthlySummary(month, year);
-      summaries.add(summary);
-    }
-    return summaries;
-  }
-
-  @override
   Future<MonthlySummary> getMonthlySummary(int month, int year) async {
+    final totals = await localDataSource.getMonthlyTotals(month, year);
+    
     final entries = await localDataSource.getEntriesForMonth(month, year);
     final csatEntries = await localDataSource.getCSATEntriesForMonth(month, year);
     final cqEntries = await localDataSource.getCQEntriesForMonth(month, year);
     final monthlyData = await localDataSource.getMonthlyData(month, year);
 
-    // Calculate base salary with custom rate logic
-    double baseSalary = 0;
-    for (final entry in entries) {
-      final rate = entry.customCallRate ?? AppConstants.baseRatePerCall;
-      baseSalary += entry.callCount * rate;
-    }
+    // Use values from SQL aggregation
+    double baseSalary = (totals['base_salary'] as num?)?.toDouble() ?? 0.0;
 
     return MonthlySummary(
       month: month,
@@ -100,10 +80,35 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
       entries: entries,
       csatSummary: CSATSummary(entries: csatEntries, month: month, year: year),
       cqSummary: CQSummary(entries: cqEntries, month: month, year: year),
-      loginDays: entries.length,
+      loginDays: (totals['count'] as int?) ?? 0,
       nonBillableCalls: monthlyData?.nonBillableCalls ?? 0,
       baseSalary: baseSalary,
     );
+  }
+
+  @override
+  Future<List<MonthlySummary>> getAllMonthlySummaries({int limit = 10, int offset = 0}) async {
+    final monthYearCombinations = await localDataSource.getUniqueMonthYearCombinations();
+    
+    // Apply pagination
+    final endIndex = (offset + limit) > monthYearCombinations.length 
+        ? monthYearCombinations.length 
+        : offset + limit;
+        
+    if (offset >= monthYearCombinations.length) {
+      return [];
+    }
+
+    final paginatedCombinations = monthYearCombinations.sublist(offset, endIndex);
+
+    final List<MonthlySummary> summaries = [];
+    for (final combination in paginatedCombinations) {
+      final month = combination["month"]!;
+      final year = combination["year"]!;
+      final summary = await getMonthlySummary(month, year);
+      summaries.add(summary);
+    }
+    return summaries;
   }
 
   @override
@@ -156,6 +161,11 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   @override
   Future<int> deleteCSATEntry(int id) async {
     return await localDataSource.deleteCSATEntry(id);
+  }
+
+  @override
+  Future<int> deleteCSATEntriesByDate(DateTime date) async {
+     return await localDataSource.deleteCSATEntriesByDate(date);
   }
 
   // CQ entry methods implementation
@@ -217,12 +227,12 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
 
   @override
   Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
-    return _pdfService.generateReportPdf(summary, sectionsToInclude, profile);
+    return await compute(_generatePdfIsolate, _ReportData(summary, sectionsToInclude, profile));
   }
 
   @override
   Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
-    return _excelService.generateReportExcel(summary, sectionsToInclude, profile);
+    return await compute(_generateExcelIsolate, _ReportData(summary, sectionsToInclude, profile));
   }
 
   @override
@@ -262,6 +272,25 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     // Re-initialize the database after restoring
     await LocalDataSource.init();
   }
+}
 
-  
+// Helper class to pass data to isolates
+class _ReportData {
+  final ReportSummary summary;
+  final List<ReportSection> sectionsToInclude;
+  final Profile profile;
+
+  _ReportData(this.summary, this.sectionsToInclude, this.profile);
+}
+
+// Top-level function for PDF generation isolate
+Future<List<int>> _generatePdfIsolate(_ReportData data) async {
+  final pdfService = PdfService();
+  return await pdfService.generateReportPdf(data.summary, data.sectionsToInclude, data.profile);
+}
+
+// Top-level function for Excel generation isolate
+Future<File> _generateExcelIsolate(_ReportData data) async {
+  final excelService = ExcelService();
+  return await excelService.generateReportExcel(data.summary, data.sectionsToInclude, data.profile);
 }

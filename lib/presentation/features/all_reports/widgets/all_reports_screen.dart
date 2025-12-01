@@ -39,9 +39,41 @@ class AllReportsScreen extends StatelessWidget {
   }
 }
 
-class AllReportsView extends StatelessWidget {
+class AllReportsView extends StatefulWidget {
   final Profile profile;
   const AllReportsView({Key? key, required this.profile}) : super(key: key);
+
+  @override
+  State<AllReportsView> createState() => _AllReportsViewState();
+}
+
+class _AllReportsViewState extends State<AllReportsView> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<AllReportsBloc>().add(LoadMoreMonthlySummaries());
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
 
   Future<void> _generateAndSharePdf(BuildContext context, ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
     ScaffoldMessenger.of(context)
@@ -83,7 +115,7 @@ class AllReportsView extends StatelessWidget {
     } catch (e) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text("Error creating Excel report: \$e")));
+        ..showSnackBar(SnackBar(content: Text("Error creating Excel report: $e")));
     }
   }
 
@@ -117,7 +149,7 @@ class AllReportsView extends StatelessWidget {
                         title: const Text('PDF'),
                         onTap: () {
                           Navigator.pop(dialogContext);
-                          _generateAndSharePdf(context, reportSummary, selectedSections, profile);
+                          _generateAndSharePdf(context, reportSummary, selectedSections, widget.profile);
                         },
                       ),
                       ListTile(
@@ -125,7 +157,7 @@ class AllReportsView extends StatelessWidget {
                         title: const Text('Excel'),
                         onTap: () {
                           Navigator.pop(dialogContext);
-                          _generateAndShareExcel(context, reportSummary, selectedSections, profile);
+                          _generateAndShareExcel(context, reportSummary, selectedSections, widget.profile);
                         },
                       ),
                     ],
@@ -145,7 +177,7 @@ class AllReportsView extends StatelessWidget {
         },
         child: BlocBuilder<AllReportsBloc, AllReportsState>(
           builder: (context, state) {
-            if (state.status == AllReportsStatus.loading) {
+            if (state.status == AllReportsStatus.loading && state.summaries.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -158,12 +190,19 @@ class AllReportsView extends StatelessWidget {
             }
 
             return ListView.builder(
+              controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16),
-              itemCount: state.summaries.length,
+              itemCount: state.hasReachedMax ? state.summaries.length : state.summaries.length + 1,
               itemBuilder: (context, index) {
+                if (index >= state.summaries.length) {
+                  return const Center(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  ));
+                }
                 final summary = state.summaries[index];
-                return _buildReportCard(context, summary, profile);
+                return _buildReportCard(context, summary, widget.profile);
               },
             );
           },

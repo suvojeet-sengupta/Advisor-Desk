@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class ProfileState extends Equatable {
   final Profile profile;
@@ -38,9 +39,23 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(ProfileState(profile, isEditing: profile.name == null));
   }
 
-  void updateProfilePicture(String path) {
-    final newProfile = state.profile.copyWith(profilePicturePath: path);
-    emit(state.copyWith(profile: newProfile));
+  Future<void> updateProfilePicture(String path) async {
+    try {
+      final targetPath = path.replaceAll(RegExp(r'\.(png|jpg|jpeg)$'), '_compressed.jpg');
+      final compressedFile = await FlutterImageCompress.compressAndGetFile(
+        path,
+        targetPath,
+        quality: 70,
+      );
+
+      final newPath = compressedFile?.path ?? path;
+      final newProfile = state.profile.copyWith(profilePicturePath: newPath);
+      emit(state.copyWith(profile: newProfile));
+    } catch (e) {
+      // If compression fails, use original path
+      final newProfile = state.profile.copyWith(profilePicturePath: path);
+      emit(state.copyWith(profile: newProfile));
+    }
   }
 
   void saveProfile(Profile profile, {String? userId}) async {

@@ -6,8 +6,8 @@ class GetAllMonthlySummariesUseCase {
 
   GetAllMonthlySummariesUseCase(this.repository);
 
-  Future<List<MonthlySummary>> execute() {
+  Future<List<MonthlySummary>> execute({int limit = 10, int offset = 0}) {
     // Repository se seedhe summaries laayein aur return karein.
-    return repository.getAllMonthlySummaries();
+    return repository.getAllMonthlySummaries(limit: limit, offset: offset);
   }
 }

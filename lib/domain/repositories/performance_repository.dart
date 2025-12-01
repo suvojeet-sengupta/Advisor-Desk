@@ -20,7 +20,7 @@ abstract class PerformanceRepository {
   Future<int> deleteEntry(int id);
   Future<int> deleteCQEntriesByDate(DateTime date);
   Future<int> deleteCSATEntriesByDate(DateTime date);
-  Future<List<MonthlySummary>> getAllMonthlySummaries();
+  Future<List<MonthlySummary>> getAllMonthlySummaries({int limit = 10, int offset = 0});
   Future<MonthlySummary> getMonthlySummary(int month, int year);
   Future<CSATSummary> getCSATSummary(int month, int year);
   Future<CQSummary> getCQSummary(int month, int year); // Add CQ summary method

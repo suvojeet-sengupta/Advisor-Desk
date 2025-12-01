@@ -10,6 +10,8 @@ abstract class AllReportsEvent extends Equatable {
 
 class LoadAllMonthlySummaries extends AllReportsEvent {}
 
+class LoadMoreMonthlySummaries extends AllReportsEvent {}
+
 class ExportMonthlyReportAsPdf extends AllReportsEvent {
   final MonthlySummary summary;
 

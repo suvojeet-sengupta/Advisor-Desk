@@ -15,6 +15,7 @@ class AllReportsBloc extends Bloc<AllReportsEvent, AllReportsState> {
     _generatePdfReportUseCase = GeneratePdfReportUseCase(repository);
 
     on<LoadAllMonthlySummaries>(_onLoadAllMonthlySummaries);
+    on<LoadMoreMonthlySummaries>(_onLoadMoreMonthlySummaries);
     on<ExportMonthlyReportAsPdf>(_onExportMonthlyReportAsPdf);
   }
 
@@ -24,11 +25,42 @@ class AllReportsBloc extends Bloc<AllReportsEvent, AllReportsState> {
   ) async {
     emit(state.copyWith(status: AllReportsStatus.loading));
     try {
-      final summaries = await _getAllMonthlySummariesUseCase.execute();
+      final summaries = await _getAllMonthlySummariesUseCase.execute(limit: 10, offset: 0);
       emit(state.copyWith(
         status: AllReportsStatus.loaded,
         summaries: summaries,
+        hasReachedMax: summaries.length < 10,
       ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: AllReportsStatus.error,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> _onLoadMoreMonthlySummaries(
+    LoadMoreMonthlySummaries event,
+    Emitter<AllReportsState> emit,
+  ) async {
+    if (state.hasReachedMax) return;
+
+    try {
+      final currentSummaries = state.summaries;
+      final newSummaries = await _getAllMonthlySummariesUseCase.execute(
+        limit: 10,
+        offset: currentSummaries.length,
+      );
+
+      if (newSummaries.isEmpty) {
+        emit(state.copyWith(hasReachedMax: true));
+      } else {
+        emit(state.copyWith(
+          status: AllReportsStatus.loaded,
+          summaries: List.of(currentSummaries)..addAll(newSummaries),
+          hasReachedMax: newSummaries.length < 10,
+        ));
+      }
     } catch (e) {
       emit(state.copyWith(
         status: AllReportsStatus.error,

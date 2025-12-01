@@ -172,6 +172,14 @@ class LocalDataSource {
             ALTER TABLE ${AppConstants.tableEntries} ADD COLUMN custom_call_rate REAL
           ''');
         }
+        if (oldVersion < 8) {
+          // Add indexes for performance
+          await db.execute('CREATE INDEX idx_entries_date ON ${AppConstants.tableEntries} (date)');
+          await db.execute('CREATE INDEX idx_csat_date ON ${AppConstants.tableCSATEntries} (date)');
+          await db.execute('CREATE INDEX idx_cq_date ON ${AppConstants.tableCQEntries} (audit_date)');
+          await db.execute('CREATE INDEX idx_leave_date ON ${AppConstants.tableLeaveEntries} (date)');
+          await db.execute('CREATE INDEX idx_monthly_data_month_year ON ${AppConstants.tableMonthlyData} (month, year)');
+        }
       },
     );
 
@@ -584,6 +592,43 @@ class LocalDataSource {
         nextDay.millisecondsSinceEpoch,
       ],
     );
+  }
+
+  // Get monthly totals using SQL aggregation
+  Future<Map<String, dynamic>> getMonthlyTotals(int month, int year) async {
+    final db = await database;
+    final startDate = DateTime(year, month, 1);
+    final endDate = DateTime(year, month + 1, 1).subtract(const Duration(microseconds: 1));
+
+    final result = await db.rawQuery('''
+      SELECT 
+        COUNT(*) as count,
+        SUM(call_count) as total_calls,
+        SUM(login_hours) as total_hours,
+        SUM(login_minutes) as total_minutes,
+        SUM(login_seconds) as total_seconds,
+        SUM(
+          CASE 
+            WHEN custom_call_rate IS NOT NULL THEN call_count * custom_call_rate
+            ELSE call_count * ${AppConstants.baseRatePerCall}
+          END
+        ) as base_salary
+      FROM ${AppConstants.tableEntries}
+      WHERE date >= ? AND date <= ?
+    ''', [startDate.millisecondsSinceEpoch, endDate.millisecondsSinceEpoch]);
+
+    if (result.isNotEmpty) {
+      return result.first;
+    } else {
+      return {
+        'count': 0,
+        'total_calls': 0,
+        'total_hours': 0,
+        'total_minutes': 0,
+        'total_seconds': 0,
+        'base_salary': 0.0,
+      };
+    }
   }
 
   // Get all unique month-year combinations from daily, CSAT, and CQ entries

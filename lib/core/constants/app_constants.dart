@@ -19,8 +19,9 @@ class AppConstants {
   static double tdsRate = 0.10; // 10% TDS
 
   // Database constants
+  // Database constants
   static const String databaseName = 'advisor_desk.db';
-  static const int databaseVersion = 7; // Updated version for custom call rate
+  static const int databaseVersion = 8; // Updated version for indexing
 
   // Table names
   static const String tableEntries = 'daily_entries';

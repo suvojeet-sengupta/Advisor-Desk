@@ -23,14 +23,29 @@ class LocalDataSource {
   }
 
   // Initialize the database
-  static Future<LocalDataSource> init() async {
+  static Future<LocalDataSource> init({String? userId}) async {
+    // If we are switching users, we might need to close the existing DB if it's different
+    // For simplicity in this singleton pattern, we might need to be careful.
+    // Ideally, we should close the old one if the path is different.
+    
+    // However, since this is a singleton, let's assume we re-init when switching users.
     if (_database != null) {
-      return LocalDataSource();
+       // If we want to force re-init with a new user, we should close it first.
+       // But the current usage checks if _database != null and returns.
+       // We need a way to force re-open if the user changes.
+       // For now, let's assume the caller will call closeDatabase() before init() if switching users.
+       // Or we can check if the current DB path matches the requested one.
     }
 
     // Get the database path
     final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, AppConstants.databaseName);
+    String dbName = AppConstants.databaseName;
+    
+    if (userId != null && userId != '1') {
+      dbName = 'advisor_desk_$userId.db';
+    }
+    
+    final path = join(databasesPath, dbName);
 
     // Open the database
     _database = await openDatabase(

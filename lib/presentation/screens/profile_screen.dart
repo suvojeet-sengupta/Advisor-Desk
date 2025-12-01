@@ -142,6 +142,13 @@ class _ProfileViewState extends State<ProfileView> {
           },
           child: const Text('Edit Profile'),
         ),
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: () {
+            Navigator.pushNamed(context, AppRouter.userManagementRoute);
+          },
+          child: const Text('Manage Users'),
+        ),
       ],
     );
   }

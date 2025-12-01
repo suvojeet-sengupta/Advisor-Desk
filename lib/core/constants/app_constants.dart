@@ -49,21 +49,23 @@ class AppConstants {
   static const String _keyTdsRate = 'tdsRate';
 
   // Initialize and load settings
-  static Future<void> init() async {
+  static Future<void> init({String userId = '1'}) async {
     _prefs = await SharedPreferences.getInstance();
-    _loadSettings();
+    _loadSettings(userId: userId);
   }
 
   // Load settings from SharedPreferences
-  static void _loadSettings() {
-    baseRatePerCall = _prefs.getDouble(_keyBaseRatePerCall) ?? 4.30;
-    bonusAmount = _prefs.getDouble(_keyBonusAmount) ?? 2000.0;
-    bonusCallTarget = _prefs.getInt(_keyBonusCallTarget) ?? 750;
-    bonusHourTarget = _prefs.getInt(_keyBonusHourTarget) ?? 100;
-    csatBonusPercentage = _prefs.getDouble(_keyCsatBonusPercentage) ?? 60.0;
-    csatBonusCallTarget = _prefs.getInt(_keyCsatBonusCallTarget) ?? 1000;
-    csatBonusRate = _prefs.getDouble(_keyCsatBonusRate) ?? 0.05;
-    tdsRate = _prefs.getDouble(_keyTdsRate) ?? 0.10;
+  static void _loadSettings({String userId = '1'}) {
+    final prefix = userId == '1' ? '' : '${userId}_';
+
+    baseRatePerCall = _prefs.getDouble('$prefix$_keyBaseRatePerCall') ?? 4.30;
+    bonusAmount = _prefs.getDouble('$prefix$_keyBonusAmount') ?? 2000.0;
+    bonusCallTarget = _prefs.getInt('$prefix$_keyBonusCallTarget') ?? 750;
+    bonusHourTarget = _prefs.getInt('$prefix$_keyBonusHourTarget') ?? 100;
+    csatBonusPercentage = _prefs.getDouble('$prefix$_keyCsatBonusPercentage') ?? 60.0;
+    csatBonusCallTarget = _prefs.getInt('$prefix$_keyCsatBonusCallTarget') ?? 1000;
+    csatBonusRate = _prefs.getDouble('$prefix$_keyCsatBonusRate') ?? 0.05;
+    tdsRate = _prefs.getDouble('$prefix$_keyTdsRate') ?? 0.10;
   }
 
   // Save settings to SharedPreferences
@@ -76,6 +78,7 @@ class AppConstants {
     required int newCsatBonusCallTarget,
     required double newCsatBonusRate,
     required double newTdsRate,
+    String userId = '1',
   }) async {
     baseRatePerCall = newBaseRatePerCall;
     bonusAmount = newBonusAmount;
@@ -86,13 +89,15 @@ class AppConstants {
     csatBonusRate = newCsatBonusRate;
     tdsRate = newTdsRate;
 
-    await _prefs.setDouble(_keyBaseRatePerCall, baseRatePerCall);
-    await _prefs.setDouble(_keyBonusAmount, bonusAmount);
-    await _prefs.setInt(_keyBonusCallTarget, bonusCallTarget);
-    await _prefs.setInt(_keyBonusHourTarget, bonusHourTarget);
-    await _prefs.setDouble(_keyCsatBonusPercentage, csatBonusPercentage);
-    await _prefs.setInt(_keyCsatBonusCallTarget, csatBonusCallTarget);
-    await _prefs.setDouble(_keyCsatBonusRate, csatBonusRate);
-    await _prefs.setDouble(_keyTdsRate, tdsRate);
+    final prefix = userId == '1' ? '' : '${userId}_';
+
+    await _prefs.setDouble('$prefix$_keyBaseRatePerCall', baseRatePerCall);
+    await _prefs.setDouble('$prefix$_keyBonusAmount', bonusAmount);
+    await _prefs.setInt('$prefix$_keyBonusCallTarget', bonusCallTarget);
+    await _prefs.setInt('$prefix$_keyBonusHourTarget', bonusHourTarget);
+    await _prefs.setDouble('$prefix$_keyCsatBonusPercentage', csatBonusPercentage);
+    await _prefs.setInt('$prefix$_keyCsatBonusCallTarget', csatBonusCallTarget);
+    await _prefs.setDouble('$prefix$_keyCsatBonusRate', csatBonusRate);
+    await _prefs.setDouble('$prefix$_keyTdsRate', tdsRate);
   }
 }

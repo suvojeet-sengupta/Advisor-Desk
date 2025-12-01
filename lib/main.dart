@@ -39,6 +39,8 @@ import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:advisor_desk/domain/services/goal_prediction_service.dart';
 import 'package:advisor_desk/domain/services/query_parser.dart';
 import 'package:advisor_desk/domain/services/query_models.dart';
+import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
+import 'package:advisor_desk/data/datasources/user_data_source.dart';
 
 
 // Custom ScrollBehavior for smoother scrolling
@@ -53,14 +55,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await InAppReviewHelper.setInstallDate();
   MobileAds.instance.initialize();
-  await AppConstants.init();
+  // Initialize User Data Source
+  final userDataSource = UserDataSource();
+  final currentUserId = await userDataSource.getCurrentUserId();
+
+  await AppConstants.init(userId: currentUserId);
   
   // Increment app launch count
   final usageTrackingService = UsageTrackingService();
   await usageTrackingService.incrementLaunchCount();
   
   final adService = AdService()..loadAd();
-  final localDataSource = await LocalDataSource.init();
+  final localDataSource = await LocalDataSource.init(userId: currentUserId);
   final goalDataSource = GoalDataSource();
   
   final performanceRepository = PerformanceRepositoryImpl(localDataSource: localDataSource);
@@ -86,7 +92,7 @@ void main() async {
   final profileDataSource = ProfileDataSource();
   final profileRepository = ProfileRepositoryImpl(profileDataSource);
   // Load profile to determine if it's filled
-  final initialProfile = await profileRepository.getProfile();
+  final initialProfile = await profileRepository.getProfile(userId: currentUserId);
   final bool isProfileFilled = initialProfile.name != null && initialProfile.companyName != null; // Assuming both are required
   await prefs.setBool('isProfileFilled', isProfileFilled); // Save for privacy screen to know
 
@@ -114,6 +120,7 @@ void main() async {
     leaveRepository: leaveRepository,
     initialThemeMode: initialThemeMode,
     initialColor: initialColor,
+    userDataSource: userDataSource, // New
   ));
 }
 
@@ -129,6 +136,7 @@ class MyApp extends StatefulWidget {
   final LeaveRepository leaveRepository;
   final AppThemeMode initialThemeMode;
   final AppColor initialColor;
+  final UserDataSource userDataSource; // New
 
   const MyApp({
     Key? key,
@@ -143,6 +151,7 @@ class MyApp extends StatefulWidget {
     required this.leaveRepository,
     required this.initialThemeMode,
     required this.initialColor,
+    required this.userDataSource, // New
   }) : super(key: key);
 
   @override
@@ -312,6 +321,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               BlocProvider(create: (context) => ThemeCubit(initialThemeMode: widget.initialThemeMode, initialColor: widget.initialColor)),
               BlocProvider(create: (context) => DashboardCustomizationCubit()),
               BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>())), // New
+              BlocProvider(create: (context) => UserCubit(widget.userDataSource, context.read<ProfileCubit>())), // New
             ],
             child: BlocBuilder<ThemeCubit, ThemeState>(
               builder: (context, themeState) {

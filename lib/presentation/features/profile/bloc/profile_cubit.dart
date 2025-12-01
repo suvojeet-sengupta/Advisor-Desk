@@ -27,11 +27,11 @@ class ProfileCubit extends Cubit<ProfileState> {
   final ProfileRepository _repository;
 
   ProfileCubit(this._repository) : super(ProfileState(Profile.initial(), isEditing: true)) {
-    _loadProfile();
+    loadProfile();
   }
 
-  void _loadProfile() async {
-    final profile = await _repository.getProfile();
+  Future<void> loadProfile({String? userId}) async {
+    final profile = await _repository.getProfile(userId: userId);
     emit(ProfileState(profile, isEditing: profile.name == null));
   }
 
@@ -40,8 +40,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(profile: newProfile));
   }
 
-  void saveProfile(Profile profile) async {
-    await _repository.saveProfile(profile);
+  void saveProfile(Profile profile, {String? userId}) async {
+    await _repository.saveProfile(profile, userId: userId);
     emit(ProfileState(profile, isEditing: false));
   }
 

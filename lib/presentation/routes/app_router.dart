@@ -58,6 +58,7 @@ import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
 import 'package:advisor_desk/presentation/screens/privacy_policy_screen.dart';
 import 'package:advisor_desk/presentation/screens/performance_forecaster_screen.dart';
+import 'package:advisor_desk/presentation/screens/user_management_screen.dart';
 
 class AppRouter {
   // Route names
@@ -81,8 +82,6 @@ class AppRouter {
   static const String csatDetailsRoute = '/csat-details';
   static const String loginDaysDetailsRoute = '/login-days-details';
   static const String profileRoute = '/profile';
-  
-  
   static const String creditsRoute = '/credits';
   static const String aboutAppRoute = '/about-app';
   static const String salaryDetailsRoute = '/salary-details';
@@ -90,10 +89,10 @@ class AppRouter {
   static const String appLockSettingsRoute = '/app-lock-settings';
   static const String advisorDeskAIRoute = '/advisor-desk-ai';
   static const String advisorDeskAIAnalyzerRoute = '/advisor-desk-ai-analyzer';
-  static const String privacyPolicyRoute = '/privacy-policy';
   static const String performanceForecasterRoute = '/performance-forecaster';
+  static const String privacyPolicyRoute = '/privacy-policy';
+  static const String userManagementRoute = '/user-management';
 
-  // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case dashboardRoute:
@@ -114,7 +113,6 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => AddEntryScreen(entryToEdit: entryToEdit, initialTabIndex: initialTabIndex),
         );
-      
       case addCQEntryRoute:
         final CQEntry? entryToEdit = settings.arguments as CQEntry?;
         return MaterialPageRoute(
@@ -233,19 +231,19 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => SalaryDetailsScreen(summary: summary),
         );
-      case AppRouter.pinSetupRoute:
+      case pinSetupRoute:
         return MaterialPageRoute(
           builder: (_) => const PinSetupScreen(),
         );
-      case AppRouter.appLockSettingsRoute:
+      case appLockSettingsRoute:
         return MaterialPageRoute(
           builder: (_) => const AppLockSettingsScreen(),
         );
-      case AppRouter.advisorDeskAIRoute:
+      case advisorDeskAIRoute:
         return MaterialPageRoute(
           builder: (_) => const AdvisorDeskAIScreen(),
         );
-      case AppRouter.advisorDeskAIAnalyzerRoute:
+      case advisorDeskAIAnalyzerRoute:
         final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
         final MonthlySummary monthlySummary = args['monthlySummary'] as MonthlySummary;
         final CSATSummary csatSummary = args['csatSummary'] as CSATSummary;
@@ -267,14 +265,17 @@ class AppRouter {
             ),
           ),
         );
-      case AppRouter.performanceForecasterRoute:
+      case performanceForecasterRoute:
         final MonthlySummary summary = settings.arguments as MonthlySummary;
         return MaterialPageRoute(
           builder: (_) => PerformanceForecasterScreen(summary: summary),
         );
-      case AppRouter.privacyPolicyRoute:
+      case privacyPolicyRoute:
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
-      
+      case userManagementRoute:
+        return MaterialPageRoute(
+          builder: (_) => const UserManagementScreen(),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

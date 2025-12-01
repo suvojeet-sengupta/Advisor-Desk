@@ -12,27 +12,30 @@ class ChangelogDialog extends StatelessWidget {
         children: [
           Icon(Icons.new_releases, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          const Text("What's New in v1.4.3"), // Updated version
+          const Text("What's New in v1.4.4"), // Updated version
         ],
       ),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(context, '🎉 New & Exciting!'),
-            _buildListItem(context, 'Performance Forecaster', 'Introducing an interactive Performance Forecaster to help you project total login hours and calls!'),
-            _buildListItem(context, 'Enhanced About App Section', 'The \'About Developer\' section has been revamped to \'About App\', now featuring a dedicated team section with contributor details and profile images.'),
-            _buildListItem(context, 'Smart AI Insights', 'Basic NLP query expansion and parsing have been implemented to provide more intelligent AI insights.'),
+            _buildSectionTitle(context, '🎉 New Features'),
+            _buildListItem(context, 'Multi-User Support', 'Share your device with ease! You can now create multiple profiles and switch between them securely. Perfect for shared devices.'),
 
             const SizedBox(height: 20),
-            _buildSectionTitle(context, '✨ Improvements'),
-            _buildListItem(context, 'Settings Reorganization', 'Key app information and settings are now more accessible, moved to the top of the settings sections for easier navigation.'),
-            _buildListItem(context, 'Quality Rating Logic', 'Underlying logic for quality ratings has been refined for better accuracy and stability.'),
+            _buildSectionTitle(context, '🚀 Performance Boost'),
+            _buildListItem(context, 'Lightning Fast Reports', 'Generating PDF and Excel reports is now smoother and faster, thanks to optimized background processing.'),
+            _buildListItem(context, 'Smoother Scrolling', 'Experience seamless scrolling in the "All Reports" screen with our new lazy loading implementation.'),
+            _buildListItem(context, 'Database Optimization', 'We\'ve supercharged the database! Your data now loads quicker than ever with advanced indexing and aggregation.'),
 
             const SizedBox(height: 20),
-            _buildSectionTitle(context, '🐛 Bug Fixes'),
-            _buildListItem(context, 'Startup Theme Flicker', 'Resolved an issue causing a brief theme flicker when the app starts up.'),
-            _buildListItem(context, 'About App Display', 'Fixed text truncation and alignment issues in the \'About App\' contributors list for a cleaner look.'),
+            _buildSectionTitle(context, '✨ Enhancements'),
+            _buildListItem(context, 'Optimized Profile Images', 'Profile pictures are now automatically compressed to save space and load instantly without losing quality.'),
+
+            const SizedBox(height: 20),
+            _buildSectionTitle(context, '🐛 Bug Fixes & Stability'),
+            _buildListItem(context, 'PDF Export Fix', 'Resolved an issue where exporting PDF reports would sometimes fail. It works perfectly now!'),
+            _buildListItem(context, 'App Stability', 'Fixed various underlying issues to ensure a more stable and reliable experience.'),
           ],
         ),
       ),

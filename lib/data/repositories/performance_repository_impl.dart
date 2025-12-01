@@ -151,9 +151,6 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     if (entry.id == null) {
       return await localDataSource.insertCSATEntry(entry);
     } else {
-      // Assuming updateCSATEntry exists in LocalDataSource, need to add if not.
-      // For now, let's assume insert handles both insert and update based on ID.
-      // If not, we'll need to add updateCSATEntry to LocalDataSource.
       return await localDataSource.insertCSATEntry(entry); // This might need to be updateCSATEntry
     }
   }
@@ -220,201 +217,26 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
-    final tempDir = await getTemporaryDirectory();
-    final backupPath = '${tempDir.path}/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip';
-
-    final encoder = ZipFileEncoder();
-    encoder.create(backupPath);
-    encoder.addFile(dbFile);
-    encoder.close();
-
-    return backupPath;
+  Future<File> generateMonthlyReportExcel(MonthlySummary summary) async {
+    // This method is now deprecated. Use generateReportExcel instead.
+    throw UnimplementedError('generateMonthlyReportExcel is deprecated. Use generateReportExcel instead.');
   }
 
   @override
-  Future<void> restoreDatabase(String backupFilePath) async {
+  Future<List<int>> generateReportPdf(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
+    // PdfService already handles isolate/compute internally
+    return await _pdfService.generateReportPdf(summary, sectionsToInclude, profile);
+  }
+
+  @override
+  Future<File> generateReportExcel(ReportSummary summary, List<ReportSection> sectionsToInclude, Profile profile) async {
+    return await compute(_generateExcelIsolate, _ReportData(summary, sectionsToInclude, profile));
+  }
+
+  @override
+  Future<String> backupDatabase() async {
     final dbPath = await localDataSource.getDatabasePath();
     final dbFile = File(dbPath);
-
-    final inputStream = InputFileStream(backupFilePath);
-    final archive = ZipDecoder().decodeBuffer(inputStream);
-
-    if (archive.files.isEmpty) {
-      throw Exception("Invalid backup file.");
-    }
-
-    final backupDbFile = archive.files.first;
-
-    // Close the database before restoring
-    await localDataSource.closeDatabase();
-
-    dbFile.writeAsBytesSync(backupDbFile.content as List<int>);
-
-    // Re-initialize the database after restoring
-    await LocalDataSource.init();
-  }
-}
-
-// Helper class to pass data to isolates
-class _ReportData {
-  final ReportSummary summary;
-  final List<ReportSection> sectionsToInclude;
-    final totals = await localDataSource.getMonthlyTotals(month, year);
-    
-    final entries = await localDataSource.getEntriesForMonth(month, year);
-    final csatEntries = await localDataSource.getCSATEntriesForMonth(month, year);
-    final cqEntries = await localDataSource.getCQEntriesForMonth(month, year);
-    final monthlyData = await localDataSource.getMonthlyData(month, year);
-
-    // Use values from SQL aggregation
-    double baseSalary = (totals['base_salary'] as num?)?.toDouble() ?? 0.0;
-
-    return MonthlySummary(
-      month: month,
-      year: year,
-      entries: entries,
-      csatSummary: CSATSummary(entries: csatEntries, month: month, year: year),
-      cqSummary: CQSummary(entries: cqEntries, month: month, year: year),
-      loginDays: (totals['count'] as int?) ?? 0,
-      nonBillableCalls: monthlyData?.nonBillableCalls ?? 0,
-      baseSalary: baseSalary,
-    );
-  }
-
-  @override
-  Future<List<MonthlySummary>> getAllMonthlySummaries({int limit = 10, int offset = 0}) async {
-    final monthYearCombinations = await localDataSource.getUniqueMonthYearCombinations();
-    
-    // Apply pagination
-    final endIndex = (offset + limit) > monthYearCombinations.length 
-        ? monthYearCombinations.length 
-        : offset + limit;
-        
-    if (offset >= monthYearCombinations.length) {
-      return [];
-    }
-
-    final paginatedCombinations = monthYearCombinations.sublist(offset, endIndex);
-
-    final List<MonthlySummary> summaries = [];
-    for (final combination in paginatedCombinations) {
-      final month = combination["month"]!;
-      final year = combination["year"]!;
-      final summary = await getMonthlySummary(month, year);
-      summaries.add(summary);
-    }
-    return summaries;
-  }
-
-  @override
-  Future<ReportSummary> getReportSummary(DateTime startDate, DateTime endDate) async {
-    final entries = await localDataSource.getEntriesForDateRange(startDate, endDate);
-    final csatEntries = await localDataSource.getCSATEntriesForDateRange(startDate, endDate);
-    final cqEntries = await localDataSource.getCQEntriesForDateRange(startDate, endDate);
-
-    // Calculate base salary with custom rate logic
-    double baseSalary = 0;
-    for (final entry in entries) {
-      final rate = entry.customCallRate ?? AppConstants.baseRatePerCall;
-      baseSalary += entry.callCount * rate;
-    }
-
-    return ReportSummary(
-      startDate: startDate,
-      endDate: endDate,
-      entries: entries,
-      csatSummary: CSATSummary(entries: csatEntries, month: startDate.month, year: startDate.year), // Month and year might not be accurate for range, but needed for CSATSummary constructor
-      cqSummary: CQSummary(entries: cqEntries, month: startDate.month, year: startDate.year), // Month and year might not be accurate for range, but needed for CQSummary constructor
-      baseSalary: baseSalary,
-    );
-  }
-
-  @override
-  Future<CSATSummary> getCSATSummary(int month, int year) async {
-    final csatEntries = await localDataSource.getCSATEntriesForMonth(month, year);
-    return CSATSummary(entries: csatEntries, month: month, year: year);
-  }
-
-  @override
-  Future<CQSummary> getCQSummary(int month, int year) async {
-    final cqEntries = await localDataSource.getCQEntriesForMonth(month, year);
-    return CQSummary(entries: cqEntries, month: month, year: year);
-  }
-
-  @override
-  Future<int> saveCSATEntry(CSATEntry entry) async {
-    if (entry.id == null) {
-      return await localDataSource.insertCSATEntry(entry);
-    } else {
-      // Assuming updateCSATEntry exists in LocalDataSource, need to add if not.
-      // For now, let's assume insert handles both insert and update based on ID.
-      // If not, we'll need to add updateCSATEntry to LocalDataSource.
-      return await localDataSource.insertCSATEntry(entry); // This might need to be updateCSATEntry
-    }
-  }
-
-  @override
-  Future<int> deleteCSATEntry(int id) async {
-    return await localDataSource.deleteCSATEntry(id);
-  }
-
-  @override
-  Future<int> deleteCSATEntriesByDate(DateTime date) async {
-     return await localDataSource.deleteCSATEntriesByDate(date);
-  }
-
-  // CQ entry methods implementation
-  @override
-  Future<int> saveCQEntry(CQEntry entry) async {
-    if (entry.id == null) {
-      return await localDataSource.insertCQEntry(entry);
-    } else {
-      return await localDataSource.updateCQEntry(entry);
-    }
-  }
-
-  @override
-  Future<int> deleteCQEntry(int id) async {
-    return await localDataSource.deleteCQEntry(id);
-  }
-
-  @override
-  Future<List<CQEntry>> getAllCQEntries() async {
-    return await localDataSource.getAllCQEntries();
-  }
-
-  @override
-  Future<List<CQEntry>> getCQEntriesForMonth(int month, int year) async {
-    return await localDataSource.getCQEntriesForMonth(month, year);
-  }
-
-  @override
-  Future<CQEntry?> getCQEntryForDate(DateTime date) async {
-    return await localDataSource.getCQEntryForDate(date);
-  }
-
-  @override
-  Future<int> updateCQEntry(CQEntry entry) async {
-    return await localDataSource.updateCQEntry(entry);
-  }
-
-  @override
-  Future<void> saveMonthlyData(MonthlyData monthlyData) async {
-    await localDataSource.saveMonthlyData(monthlyData);
-  }
-
-  @override
-  Future<MonthlyData?> getMonthlyData(int month, int year) async {
-    return await localDataSource.getMonthlyData(month, year);
-  }
-
-  @override
-  Future<List<int>> generateMonthlyReportPdf(MonthlySummary summary) async {
-    // This method is now deprecated. Use generateReportPdf instead.
-    throw UnimplementedError('generateMonthlyReportPdf is deprecated. Use generateReportPdf instead.');
-  }
-
-  @override
     final tempDir = await getTemporaryDirectory();
     final backupPath = '${tempDir.path}/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.zip';
 
@@ -458,8 +280,6 @@ class _ReportData {
 
   _ReportData(this.summary, this.sectionsToInclude, this.profile);
 }
-
-
 
 // Top-level function for Excel generation isolate
 Future<File> _generateExcelIsolate(_ReportData data) async {

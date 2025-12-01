@@ -26,11 +26,14 @@ class ProfileState extends Equatable {
 class ProfileCubit extends Cubit<ProfileState> {
   final ProfileRepository _repository;
 
+  String _currentUserId = '1';
+
   ProfileCubit(this._repository) : super(ProfileState(Profile.initial(), isEditing: true)) {
     loadProfile();
   }
 
   Future<void> loadProfile({String? userId}) async {
+    _currentUserId = userId ?? '1';
     final profile = await _repository.getProfile(userId: userId);
     emit(ProfileState(profile, isEditing: profile.name == null));
   }
@@ -41,7 +44,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   void saveProfile(Profile profile, {String? userId}) async {
-    await _repository.saveProfile(profile, userId: userId);
+    final targetUserId = userId ?? _currentUserId;
+    await _repository.saveProfile(profile, userId: targetUserId);
     emit(ProfileState(profile, isEditing: false));
   }
 

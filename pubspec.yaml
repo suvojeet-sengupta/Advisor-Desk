@@ -2,7 +2,7 @@ name: advisor_desk
 description: "Advisor Desk Performance Tracker."
 publish_to: 'none'
 
-version: 1.4.4+47
+version: 1.4.5+48
 
 environment:
   sdk: '>=3.3.1 <4.0.0'

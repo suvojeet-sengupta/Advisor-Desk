@@ -12,7 +12,7 @@ class ChangelogDialog extends StatelessWidget {
         children: [
           Icon(Icons.new_releases, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          const Text("What's New in v1.4.4"), // Updated version
+          const Text("What's New in v1.4.5"), // Updated version
         ],
       ),
       content: SingleChildScrollView(
@@ -20,21 +20,23 @@ class ChangelogDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(context, '🎉 New Features'),
-            _buildListItem(context, 'Multi-User Support', 'Share your device with ease! You can now create multiple profiles and switch between them securely. Perfect for shared devices.'),
+            _buildListItem(context, 'Real-time User Switching', 'Dashboard now instantly updates when you switch users. No more stale data!'),
+            _buildListItem(context, 'Individual Goals', 'Set unique monthly goals (hours & calls) for each user profile. Your targets are now yours alone.'),
+            _buildListItem(context, 'Personalized Salary Settings', 'Salary configurations are now saved per user, allowing for customized earnings tracking.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '🚀 Performance Boost'),
             _buildListItem(context, 'Lightning Fast Reports', 'Generating PDF and Excel reports is now smoother and faster, thanks to optimized background processing.'),
             _buildListItem(context, 'Smoother Scrolling', 'Experience seamless scrolling in the "All Reports" screen with our new lazy loading implementation.'),
-            _buildListItem(context, 'Database Optimization', 'We\'ve supercharged the database! Your data now loads quicker than ever with advanced indexing and aggregation.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '✨ Enhancements'),
+            _buildListItem(context, 'Multi-User Support', 'Share your device with ease! You can now create multiple profiles and switch between them securely.'),
             _buildListItem(context, 'Optimized Profile Images', 'Profile pictures are now automatically compressed to save space and load instantly without losing quality.'),
 
             const SizedBox(height: 20),
             _buildSectionTitle(context, '🐛 Bug Fixes & Stability'),
-            _buildListItem(context, 'PDF Export Fix', 'Resolved an issue where exporting PDF reports would sometimes fail. It works perfectly now!'),
+            _buildListItem(context, 'Dashboard Sync', 'Fixed an issue where dashboard data wouldn\'t refresh immediately after switching users.'),
             _buildListItem(context, 'App Stability', 'Fixed various underlying issues to ensure a more stable and reliable experience.'),
           ],
         ),

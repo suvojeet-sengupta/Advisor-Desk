@@ -234,6 +234,17 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       ),
       body: MultiBlocListener(
         listeners: [
+          BlocListener<UserCubit, UserState>(
+            listener: (context, userState) {
+              if (userState is UserLoaded) {
+                // Reload Dashboard Data
+                final now = DateTime.now();
+                context.read<DashboardBloc>().add(LoadDashboardData(month: now.month, year: now.year));
+                // Reload Goals
+                context.read<GoalsBloc>().add(LoadGoals(userId: userState.currentUserId));
+              }
+            },
+          ),
           BlocListener<DashboardBloc, DashboardState>(
             listener: (context, dashboardState) {
               if (dashboardState.status == DashboardStatus.loaded && dashboardState.monthlySummary != null) {

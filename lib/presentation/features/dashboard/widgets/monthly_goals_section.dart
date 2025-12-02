@@ -8,6 +8,7 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_bloc.dar
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
 
 class MonthlyGoalsSection extends StatelessWidget {
   final MonthlySummary summary;
@@ -459,7 +460,10 @@ class MonthlyGoalsSection extends StatelessWidget {
                   if (_formKey.currentState!.validate()) { // Validate the form
                     final newHours = int.tryParse(hoursController.text) ?? currentHours;
                     final newCalls = int.tryParse(callsController.text) ?? currentCalls;
-                    context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls));
+                    final userId = context.read<UserCubit>().state is UserLoaded
+                        ? (context.read<UserCubit>().state as UserLoaded).currentUserId
+                        : '1';
+                    context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls, userId: userId));
                     Navigator.pop(dialogContext);
                   }
                 },

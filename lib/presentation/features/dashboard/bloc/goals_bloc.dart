@@ -19,7 +19,7 @@ class GoalsBloc extends Bloc<GoalsEvent, GoalsState> {
 
   Future<void> _onLoadGoals(LoadGoals event, Emitter<GoalsState> emit) async {
     emit(state.copyWith(isLoading: true));
-    final goals = await goalRepository.getGoals();
+    final goals = await goalRepository.getGoals(userId: event.userId);
     emit(state.copyWith(
       targetHours: goals['hours'],
       targetCalls: goals['calls'],
@@ -29,8 +29,8 @@ class GoalsBloc extends Bloc<GoalsEvent, GoalsState> {
 
   Future<void> _onSaveGoals(SaveGoals event, Emitter<GoalsState> emit) async {
     emit(state.copyWith(isLoading: true));
-    await goalRepository.saveGoals(hours: event.hours, calls: event.calls);
-    add(LoadGoals()); // लक्ष्यों को सेव करने के बाद फिर से लोड करें
+    await goalRepository.saveGoals(hours: event.hours, calls: event.calls, userId: event.userId);
+    add(LoadGoals(userId: event.userId)); // लक्ष्यों को सेव करने के बाद फिर से लोड करें
   }
 
   Future<void> _onGetGoalSuggestions(

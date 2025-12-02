@@ -4,16 +4,18 @@ class GoalDataSource {
   static const _hoursKey = 'goal_hours';
   static const _callsKey = 'goal_calls';
 
-  Future<void> saveGoals({required int hours, required int calls}) async {
+  Future<void> saveGoals({required int hours, required int calls, required String userId}) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_hoursKey, hours);
-    await prefs.setInt(_callsKey, calls);
+    final prefix = userId == '1' ? '' : '${userId}_';
+    await prefs.setInt('$prefix$_hoursKey', hours);
+    await prefs.setInt('$prefix$_callsKey', calls);
   }
 
-  Future<Map<String, int>> getGoals() async {
+  Future<Map<String, int>> getGoals({required String userId}) async {
     final prefs = await SharedPreferences.getInstance();
-    final hours = prefs.getInt(_hoursKey) ?? 150; // डिफ़ॉल्ट लक्ष्य
-    final calls = prefs.getInt(_callsKey) ?? 1000; // डिफ़ॉल्ट लक्ष्य
+    final prefix = userId == '1' ? '' : '${userId}_';
+    final hours = prefs.getInt('$prefix$_hoursKey') ?? 150; // डिफ़ॉल्ट लक्ष्य
+    final calls = prefs.getInt('$prefix$_callsKey') ?? 1000; // डिफ़ॉल्ट लक्ष्य
     return {'hours': hours, 'calls': calls};
   }
 }

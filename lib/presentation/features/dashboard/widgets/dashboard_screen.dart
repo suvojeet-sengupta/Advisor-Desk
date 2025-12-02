@@ -1,6 +1,6 @@
 import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/domain/usecases/get_goal_suggestions_usecase.dart';
-import 'package:advisor_desk/domain/services/goal_prediction_service.dart'; // Import GoalPredictionService
+import 'package:advisor_desk/domain/services/goal_prediction_service.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/salary_section.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/summary_section.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_divider.dart';
@@ -26,20 +26,21 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/dashboard_stat
 import 'package:advisor_desk/presentation/features/dashboard/widgets/daily_entries_section.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'dart:io';
-import 'package:advisor_desk/core/constants/app_enums.dart'; // Import DashboardSection
-import 'package:advisor_desk/core/models/dashboard_models.dart'; // Import DashboardCustomization
-import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart'; // Import Cubit
+import 'package:advisor_desk/core/constants/app_enums.dart';
+import 'package:advisor_desk/core/models/dashboard_models.dart';
+import 'package:advisor_desk/presentation/features/dashboard/cubit/dashboard_customization_cubit.dart';
 import 'package:advisor_desk/presentation/common/widgets/independence_day_banner.dart';
 import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/data/datasources/profile_data_source.dart';
-import 'package:in_app_review/in_app_review.dart'; // Import in_app_review
-import 'package:advisor_desk/data/datasources/usage_tracking_service.dart'; // Import UsageTrackingService
+import 'package:in_app_review/in_app_review.dart';
+import 'package:advisor_desk/data/datasources/usage_tracking_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
+import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
 
 // Advisor Desk AI Imports
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
@@ -62,13 +63,18 @@ class DashboardScreen extends StatelessWidget {
           )..add(LoadDashboardData(month: DateTime.now().month, year: DateTime.now().year)),
         ),
         BlocProvider(
-          create: (context) => GoalsBloc(
-            goalRepository: context.read<GoalRepository>(),
-            getGoalSuggestionsUseCase: GetGoalSuggestionsUseCase(
-              context.read<PerformanceRepository>(),
-              context.read<GoalPredictionService>(),
-            ),
-          )..add(LoadGoals()),
+          create: (context) {
+            final userId = context.read<UserCubit>().state is UserLoaded
+                ? (context.read<UserCubit>().state as UserLoaded).currentUserId
+                : '1';
+            return GoalsBloc(
+              goalRepository: context.read<GoalRepository>(),
+              getGoalSuggestionsUseCase: GetGoalSuggestionsUseCase(
+                context.read<PerformanceRepository>(),
+                context.read<GoalPredictionService>(),
+              ),
+            )..add(LoadGoals(userId: userId));
+          },
         ),
         BlocProvider(
           create: (context) => AiInsightBloc(
@@ -161,6 +167,8 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final customizationState = context.watch<DashboardCustomizationCubit>().state;
+
     return Scaffold(
       appBar: CustomAppBar(
         titleWidget: FittedBox(
@@ -312,112 +320,101 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                       ),
                     ),
                     Expanded(
-                      child: dashboardState.monthlySummary == null
-                          ? EmptyStateWidget(
-                              message: 'No entries found for this month.\nTap the + button to add your first entry!',
-                              illustrationPath: 'assets/images/no_data.svg',
-                              onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-                            )
-                          : RefreshIndicator(
-                              onRefresh: () async {
-                                context.read<DashboardBloc>().add(RefreshDashboard());
-                                context.read<GoalsBloc>().add(LoadGoals());
-                              },
-                              color: Theme.of(context).colorScheme.primary,
-                              child: BlocBuilder<DashboardCustomizationCubit, DashboardCustomization>(
-                                builder: (context, customizationState) {
-                                  return CustomScrollView(
-                                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                                    slivers: [
-                                      SliverToBoxAdapter(
-                                        child: BlocBuilder<AiInsightBloc, AiInsightState>(
-                                          builder: (context, aiState) {
-                                            if (aiState is AiInsightGenerated) {
-                                              return AiInsightCard(
-                                                insight: aiState.insight,
-                                                onTap: () {
-                                                  final dashboardState = context.read<DashboardBloc>().state;
-                                                  final goalsState = context.read<GoalsBloc>().state;
-                                                  final profile = context.read<ProfileCubit>().state.profile;
+                      child: dashboardState.monthlySummary != null
+                          ? CustomScrollView(
+                              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: BlocBuilder<AiInsightBloc, AiInsightState>(
+                                    builder: (context, aiState) {
+                                      if (aiState is AiInsightGenerated) {
+                                        return AiInsightCard(
+                                          insight: aiState.insight,
+                                          onTap: () {
+                                            final dashboardState = context.read<DashboardBloc>().state;
+                                            final goalsState = context.read<GoalsBloc>().state;
+                                            final profile = context.read<ProfileCubit>().state.profile;
 
-                                                  if (dashboardState.status == DashboardStatus.loaded &&
-                                                      dashboardState.monthlySummary != null &&
-                                                      dashboardState.csatSummary != null &&
-                                                      dashboardState.cqSummary != null) {
-                                                    Navigator.pushNamed(
-                                                      context,
-                                                      AppRouter.advisorDeskAIAnalyzerRoute,
-                                                      arguments: {
-                                                        'monthlySummary': dashboardState.monthlySummary!,
-                                                        'csatSummary': dashboardState.csatSummary!,
-                                                        'cqSummary': dashboardState.cqSummary!,
-                                                        'goalsState': goalsState,
-                                                        'profile': profile,
-                                                      },
-                                                    );
-                                                  }
-                                                },
-                                                onActionPressed: () {
-                                                  if (aiState.insight.navigationRoute == 'show_goals_dialog') {
-                                                    _showEditGoalsDialog(context, context.read<GoalsBloc>().state.targetHours, context.read<GoalsBloc>().state.targetCalls);
-                                                  } else if (aiState.insight.navigationRoute != null) {
-                                                    Navigator.pushNamed(
-                                                      context,
-                                                      aiState.insight.navigationRoute!,
-                                                      arguments: aiState.insight.navigationArguments,
-                                                    );
-                                                  }
+                                            if (dashboardState.status == DashboardStatus.loaded &&
+                                                dashboardState.monthlySummary != null &&
+                                                dashboardState.csatSummary != null &&
+                                                dashboardState.cqSummary != null) {
+                                              Navigator.pushNamed(
+                                                context,
+                                                AppRouter.advisorDeskAIAnalyzerRoute,
+                                                arguments: {
+                                                  'monthlySummary': dashboardState.monthlySummary!,
+                                                  'csatSummary': dashboardState.csatSummary!,
+                                                  'cqSummary': dashboardState.cqSummary!,
+                                                  'goalsState': goalsState,
+                                                  'profile': profile,
                                                 },
                                               );
                                             }
-                                            return const SizedBox.shrink();
                                           },
-                                        ),
-                                      ),
-                                      SliverToBoxAdapter(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                          child: BlocBuilder<ProfileCubit, ProfileState>(
-                                            builder: (context, state) {
-                                              final profile = state.profile;
-                                              final showName = profile.name != null;
-                                              return Text(
-                                                showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
-                                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
+                                          onActionPressed: () {
+                                            if (aiState.insight.navigationRoute == 'show_goals_dialog') {
+                                              _showEditGoalsDialog(context, context.read<GoalsBloc>().state.targetHours, context.read<GoalsBloc>().state.targetCalls);
+                                            } else if (aiState.insight.navigationRoute != null) {
+                                              Navigator.pushNamed(
+                                                context,
+                                                aiState.insight.navigationRoute!,
+                                                arguments: aiState.insight.navigationArguments,
                                               );
-                                            },
-                                          ),
-                                        ),
+                                            }
+                                          },
+                                        );
+                                      }
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
+                                ),
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                    child: BlocBuilder<ProfileCubit, ProfileState>(
+                                      builder: (context, state) {
+                                        final profile = state.profile;
+                                        final showName = profile.name != null;
+                                        return Text(
+                                          showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
+                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                const SliverToBoxAdapter(child: IndependenceDayBanner()),
+                                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                                ...() {
+                                  final sections = customizationState.visibleSections;
+                                  final slivers = <Widget>[];
+                                  for (int i = 0; i < sections.length; i++) {
+                                    final section = sections[i];
+                                    slivers.add(
+                                      _buildDashboardSection(
+                                        context,
+                                        section,
+                                        dashboardState.monthlySummary!,
+                                        dashboardState,
                                       ),
-                                      const SliverToBoxAdapter(child: IndependenceDayBanner()),
-                                      const SliverToBoxAdapter(child: const SizedBox(height: 16)),
-                                      ...() {
-                                        final sections = customizationState.visibleSections;
-                                        final slivers = <Widget>[];
-                                        for (int i = 0; i < sections.length; i++) {
-                                          final section = sections[i];
-                                          slivers.add(
-                                            _buildDashboardSection(
-                                              context,
-                                              section,
-                                              dashboardState.monthlySummary!,
-                                              dashboardState,
-                                            ),
-                                          );
+                                    );
 
-                                          if (i < sections.length - 1) {
-                                            slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 24)));
-                                          }
-                                        }
-                                        return slivers;
-                                      }(),
-                                      const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                                    ],
-                                  );
-                                },
-                              ),
+                                    if (i < sections.length - 1) {
+                                      slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 24)));
+                                    }
+                                  }
+                                  return slivers;
+                                }(),
+                                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                              ],
+                            )
+                          : EmptyStateWidget(
+                              message: 'No data available for this month.',
+                              illustrationPath: 'assets/images/no_data.svg',
+                              onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
                             ),
                     ),
                     const BannerAdWidget(),
@@ -464,19 +461,56 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   }
 
   Widget _buildFabMenu(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () async {
-        final result = await Navigator.pushNamed(context, AppRouter.addEntryRoute, arguments: null);
-        if (result == true) {
-          context.read<DashboardBloc>().add(RefreshDashboard());
-          context.read<GoalsBloc>().add(LoadGoals());
-        }
-      },
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      child: Icon(
-        Icons.add,
-        color: Theme.of(context).colorScheme.onPrimary,
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        if (_isFabMenuOpen) ...[
+           _buildFabMenuItem(
+            context,
+            icon: Icons.note_add,
+            label: 'Add Daily Entry',
+            onPressed: () {
+               setState(() {
+                _isFabMenuOpen = false;
+                _fabAnimationController.reverse();
+              });
+              Navigator.pushNamed(context, AppRouter.addEntryRoute);
+            },
+          ),
+          const SizedBox(height: 16),
+           _buildFabMenuItem(
+            context,
+            icon: Icons.flag,
+            label: 'Set Goals',
+            onPressed: () {
+               setState(() {
+                _isFabMenuOpen = false;
+                _fabAnimationController.reverse();
+              });
+              final goalsState = context.read<GoalsBloc>().state;
+              _showEditGoalsDialog(context, goalsState.targetHours, goalsState.targetCalls);
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+        FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              _isFabMenuOpen = !_isFabMenuOpen;
+              if (_isFabMenuOpen) {
+                _fabAnimationController.forward();
+              } else {
+                _fabAnimationController.reverse();
+              }
+            });
+          },
+          child: AnimatedIcon(
+            icon: AnimatedIcons.menu_close,
+            progress: _fabAnimationController,
+          ),
+        ),
+      ],
     );
   }
 
@@ -770,7 +804,10 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 if (formKey.currentState!.validate()) {
                   final newHours = int.tryParse(hoursController.text) ?? currentHours;
                   final newCalls = int.tryParse(callsController.text) ?? currentCalls;
-                  context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls));
+                  final userId = context.read<UserCubit>().state is UserLoaded
+                      ? (context.read<UserCubit>().state as UserLoaded).currentUserId
+                      : '1';
+                  context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls, userId: userId));
                   Navigator.pop(dialogContext);
                 }
               },

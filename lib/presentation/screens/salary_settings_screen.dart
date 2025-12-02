@@ -4,6 +4,8 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
 import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
 
 class SalarySettingsScreen extends StatefulWidget {
   const SalarySettingsScreen({Key? key}) : super(key: key);
@@ -50,6 +52,10 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
 
   void _saveSettings() async {
     try {
+      final userId = context.read<UserCubit>().state is UserLoaded
+          ? (context.read<UserCubit>().state as UserLoaded).currentUserId
+          : '1';
+
       await AppConstants.saveSettings(
         newBaseRatePerCall: double.parse(_baseRatePerCallController.text),
         newBonusAmount: double.parse(_bonusAmountController.text),
@@ -59,6 +65,7 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
         newCsatBonusCallTarget: int.parse(_csatBonusCallTargetController.text),
         newCsatBonusRate: double.parse(_csatBonusRateController.text),
         newTdsRate: double.parse(_tdsRateController.text),
+        userId: userId,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -49,6 +49,7 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_eve
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_state.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/ai_insight_card.dart';
 import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_refresh_indicator.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -332,9 +333,13 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                     ),
                     Expanded(
                       child: dashboardState.monthlySummary != null
-                          ? CustomScrollView(
-                              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                              slivers: [
+                          ? CustomRefreshIndicator(
+                              onRefresh: () async {
+                                context.read<DashboardBloc>().add(RefreshDashboard());
+                              },
+                              child: CustomScrollView(
+                                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                                slivers: [
                                 SliverToBoxAdapter(
                                   child: BlocBuilder<AiInsightBloc, AiInsightState>(
                                     builder: (context, aiState) {
@@ -421,7 +426,8 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                 }(),
                                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
                               ],
-                            )
+                            ),
+                          )
                           : EmptyStateWidget(
                               message: 'No data available for this month.',
                               illustrationPath: 'assets/images/no_data.svg',

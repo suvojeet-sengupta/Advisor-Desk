@@ -117,10 +117,11 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
 
     try {
       final userId = await _userDataSource.getCurrentUserId();
-      final now = DateTime.now();
+      // final now = DateTime.now(); // No longer needed for single fetch, but maybe for goals?
       
-      // Fetch fresh data for context
-      final summary = await _performanceRepository.getMonthlySummary(now.month, now.year);
+      // Fetch fresh data for context (Last 12 months)
+      final allSummaries = await _performanceRepository.getAllMonthlySummaries(limit: 12);
+      
       final profile = await _profileRepository.getProfile(userId: userId);
       final goalsMap = await _goalRepository.getGoals(userId: userId);
       
@@ -131,7 +132,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
 
       final aiAnswer = await _nlpService.processQuestion(
         question: event.question,
-        summary: summary,
+        histories: allSummaries, // Pass the list
         goals: goalsState,
         profile: profile
       );

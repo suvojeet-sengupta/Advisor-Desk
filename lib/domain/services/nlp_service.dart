@@ -24,7 +24,7 @@ class NlpService {
 
   Future<AiInsight> processQuestion({
     required String question,
-    required MonthlySummary summary,
+    required List<MonthlySummary> histories, // Changed from single summary to list
     required GoalsState goals,
     required Profile profile,
   }) async {
@@ -34,7 +34,7 @@ class NlpService {
     }
 
     // 2. Build Context Prompt
-    final prompt = _buildPrompt(question, summary, goals, profile);
+    final prompt = _buildPrompt(question, histories, goals, profile);
 
     try {
       // 3. Generate Content
@@ -53,35 +53,53 @@ class NlpService {
     }
   }
 
-  String _buildPrompt(String question, MonthlySummary summary, GoalsState goals, Profile profile) {
+  String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile) {
     final name = profile.name ?? 'Advisor';
+    
+    // Sort histories by date (newest first) usually better for context, but chronological for reading. 
+    // Let's do reverse chronological (newest at top of list provided, but in text maybe list them clearly).
+    
+    final StringBuffer dataBuffer = StringBuffer();
+    if (histories.isEmpty) {
+      dataBuffer.writeln("No historical data available.");
+    } else {
+      for (final summary in histories) {
+        dataBuffer.writeln("Month: ${summary.formattedMonthYear}");
+        dataBuffer.writeln("- Total Calls: ${summary.totalCalls}");
+        dataBuffer.writeln("- Total Login Hours: ${summary.totalLoginHours.toStringAsFixed(2)}");
+        dataBuffer.writeln("- CSAT Score: ${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%");
+        dataBuffer.writeln("- CQ Score: ${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%");
+        dataBuffer.writeln("- Net Salary: ₹${summary.netSalary.toStringAsFixed(2)}");
+        dataBuffer.writeln("- Bonus: ${summary.isBonusAchieved ? 'Yes' : 'No'}");
+        dataBuffer.writeln("---"); // Separator
+      }
+    }
+
     return '''
     You are an intelligent assistant for "Advisor Desk", a performance tracking app for customer care advisors.
-    Your name is "Advisor Assistant". You are helpful, motivating, and professional.
+    Your name is "Advisor Assistant". You are helpful, motivating, professional, and conversational.
     
     User Context:
     - Name: $name
-    - Month: ${summary.formattedMonthYear}
     - Company: ${profile.companyName ?? 'N/A'}
     
-    Current Performance Data:
-    - Total Calls: ${summary.totalCalls}
-    - Total Login Hours: ${summary.totalLoginHours.toStringAsFixed(2)} hours
-    - Goal Target Calls: ${goals.targetCalls}
-    - Goal Target Hours: ${goals.targetHours}
-    - CSAT Score: ${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%
-    - CQ Score: ${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%
-    - Net Salary Projected: ₹${summary.netSalary.toStringAsFixed(2)}
-    - Bonus Achieved: ${summary.isBonusAchieved ? 'Yes' : 'No'}
+    Current Goals:
+    - Target Calls: ${goals.targetCalls}
+    - Target Hours: ${goals.targetHours}
+    
+    Available Performance Data (Last 12 Months):
+    $dataBuffer
     
     User Question: "$question"
     
     Instructions:
-    - Answer the user's question directly based on the provided data.
-    - Be concise and friendly.
-    - If the user asks for a comparison but you don't have previous month data here, gently explain you are looking at the current month.
-    - Do not invent data not shown above.
-    - If the question is unrelated to work/performance, politely guide them back to the app's purpose.
+    1. **Direct Answers**: Answer the user's question directly based on the "Available Performance Data" provided above.
+    2. **Handling Ambiguity**: 
+       - If the user asks about a specific month (e.g., "November") and the data contains multiple Novembers (e.g., Nov 2023 and Nov 2024), **DO NOT GUESS**. Instead, ask the user to clarify: "Did you mean November 2023 or November 2024?".
+       - If the user asks for a month for which there is NO data in the list above, state clearly: "I don't have data for [Month] yet. Please add some entries for that month."
+    3. **Tone**: Be concise, friendly, and act like a human assistant. Use emojis occasionally if appropriate.
+    4. **Complex Queries**: If the user asks for comparisons (e.g., "Compare Oct and Nov"), use the data to provide a clear comparison of Calls, Login Hours, and Scores.
+    5. **Privacy**: Do not invent data. If it's not in the list, you don't know it.
     ''';
   }
 }

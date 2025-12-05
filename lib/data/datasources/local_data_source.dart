@@ -99,6 +99,17 @@ class LocalDataSource {
             PRIMARY KEY (month, year)
           )
         ''');
+        // Create Chat History table
+        await db.execute('''
+          CREATE TABLE ${AppConstants.tableChatHistory} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            message TEXT NOT NULL,
+            is_user INTEGER NOT NULL, -- 0 for AI, 1 for User
+            timestamp INTEGER NOT NULL,
+            button_text TEXT,
+            navigation_route TEXT
+          )
+        ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -179,6 +190,19 @@ class LocalDataSource {
           await db.execute('CREATE INDEX idx_cq_date ON ${AppConstants.tableCQEntries} (audit_date)');
           await db.execute('CREATE INDEX idx_leave_date ON ${AppConstants.tableLeaveEntries} (date)');
           await db.execute('CREATE INDEX idx_monthly_data_month_year ON ${AppConstants.tableMonthlyData} (month, year)');
+        }
+        if (oldVersion < 9) {
+           await db.execute('''
+            CREATE TABLE ${AppConstants.tableChatHistory} (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              message TEXT NOT NULL,
+              is_user INTEGER NOT NULL, -- 0 for AI, 1 for User
+              timestamp INTEGER NOT NULL,
+              button_text TEXT,
+              navigation_route TEXT
+            )
+          ''');
+          await db.execute('CREATE INDEX idx_chat_timestamp ON ${AppConstants.tableChatHistory} (timestamp)');
         }
       },
     );
@@ -717,6 +741,57 @@ class LocalDataSource {
       AppConstants.tableLeaveEntries,
       where: 'date = ?',
       whereArgs: [normalizedDate.millisecondsSinceEpoch],
+    );
+  }
+
+  // Chat History CRUD operations
+  Future<void> insertChatMessage(AiInsight message, bool isUser) async {
+    final db = await database;
+    await db.insert(
+      AppConstants.tableChatHistory,
+      {
+        'message': message.message,
+        'is_user': isUser ? 1 : 0,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'button_text': message.buttonText,
+        'navigation_route': message.navigationRoute,
+        // serialize map to string if needed, or simple ignore as we might not persist complicated deep links yet
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<AiInsight>> getChatHistory() async {
+    final db = await database;
+    // Get messages from last 7 days
+    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
+    
+    final List<Map<String, dynamic>> maps = await db.query(
+      AppConstants.tableChatHistory,
+      where: 'timestamp >= ?',
+      whereArgs: [sevenDaysAgo],
+      orderBy: 'timestamp ASC',
+    );
+
+    return List.generate(maps.length, (i) {
+      return AiInsight(
+        message: maps[i]['message'],
+        buttonText: maps[i]['button_text'],
+        navigationRoute: maps[i]['navigation_route'],
+        isUser: maps[i]['is_user'] == 1,
+      );
+    });
+  }
+
+  Future<void> deleteOldChatMessages() async {
+    final db = await database;
+     // Delete messages older than 7 days
+    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
+    
+    await db.delete(
+      AppConstants.tableChatHistory,
+      where: 'timestamp < ?',
+      whereArgs: [sevenDaysAgo],
     );
   }
 }

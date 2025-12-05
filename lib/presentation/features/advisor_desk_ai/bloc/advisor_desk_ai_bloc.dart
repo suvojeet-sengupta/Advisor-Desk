@@ -32,7 +32,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         _goalRepository = goalRepository,
         _profileRepository = profileRepository,
         _userDataSource = userDataSource,
-        super(const AdvisorDeskAIState()) {
+      super(const AdvisorDeskAIState()) {
     on<LoadAdvisorDeskAIData>(_onLoadAdvisorDeskAIData);
     on<AskAdvisorDeskAIQuestion>(_onAskAdvisorDeskAIQuestion);
   }
@@ -43,6 +43,12 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
   ) async {
     emit(state.copyWith(status: AdvisorDeskAIStatus.loading));
     try {
+      // 1. Clean up old messages
+      await _performanceRepository.deleteOldChatMessages();
+
+      // 2. Load stored history
+      List<AiInsight> storedHistory = await _performanceRepository.getChatHistory();
+
       final now = DateTime.now();
       final summary = await _performanceRepository.getMonthlySummary(now.month, now.year);
 
@@ -52,38 +58,46 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
           (summary.csatSummary?.monthlyCSATPercentage ?? 0) > 0;
 
       int score = 0;
-      AiInsight initialInsight;
-
+      
       if (hasData) {
         score = (summary.totalCalls / 3000 * 50).clamp(0, 50).toInt() +
             (summary.totalLoginHours / 150 * 30).clamp(0, 30).toInt() +
             (summary.csatSummary!.monthlyCSATPercentage / 100 * 20).clamp(0, 20).toInt();
-        
-        initialInsight = const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.");
-      } else {
-        initialInsight = const AiInsight(
-          message: "Welcome to Advisor Desk AI! I'm here to help you analyze your performance, but I don't have any data yet. "
-                   "Start by adding your daily entries, and I'll provide insights once I have something to work with. "
-                   "The more data you provide, the smarter I get! Let's get started.",
-        );
+      }
+
+      // 3. Add welcome message ONLY if history is empty
+      if (storedHistory.isEmpty) {
+        if (hasData) {
+           storedHistory = [const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.")];
+        } else {
+           storedHistory = [const AiInsight(
+            message: "Welcome to Advisor Desk AI! I'm here to help you analyze your performance, but I don't have any data yet. "
+                     "Start by adding your daily entries, and I'll provide insights once I have something to work with. "
+                     "The more data you provide, the smarter I get! Let's get started.",
+          )];
+        }
+        // Save initial welcome message
+        await _performanceRepository.insertChatMessage(storedHistory.first, false);
       }
 
       emit(state.copyWith(
         status: AdvisorDeskAIStatus.loaded,
         performanceScore: score,
-        insightHistory: [initialInsight],
+        insightHistory: storedHistory,
       ));
     } catch (e) {
-      // If there's an error (e.g., no data for the month), guide the user.
-      final initialInsight = const AiInsight(
-        message: "Welcome to Advisor Desk AI! I'm having trouble fetching your data right now. "
-                 "This usually happens when there are no entries for the current month. "
-                 "Please add some data, and I'll be ready to assist you.",
-      );
+      // Return whatever we have with an error/fallback state
+       List<AiInsight> fallbackHistory = await _performanceRepository.getChatHistory();
+       if (fallbackHistory.isEmpty) {
+          fallbackHistory = [const AiInsight(
+            message: "Welcome to Advisor Desk AI! I'm having trouble fetching your data right now, but I'm ready to chat.",
+          )];
+       }
+
       emit(state.copyWith(
-        status: AdvisorDeskAIStatus.loaded, // Loaded, but with a message
+        status: AdvisorDeskAIStatus.loaded,
         performanceScore: 0,
-        insightHistory: [initialInsight],
+        insightHistory: fallbackHistory,
       ));
     }
   }
@@ -93,19 +107,15 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     Emitter<AdvisorDeskAIState> emit,
   ) async {
     // Add user's question to history
-    final userMessage = AiInsight(message: event.question);
+    final userMessage = AiInsight(message: event.question, isUser: true);
     final newHistory = List<AiInsight>.from(state.insightHistory)..add(userMessage);
 
     emit(state.copyWith(insightHistory: newHistory, isAiTyping: true));
+    
+    // Save User Message
+    await _performanceRepository.insertChatMessage(userMessage, true);
 
     try {
-      // If there is no data, guide the user to add some.
-      if (state.performanceScore == 0 && state.insightHistory.length <= 2) { // check history length to avoid blocking if user chats anyway
-         // allow chat even if score is 0, but maybe warn? 
-         // Actually let's assume if score is 0, we still want to try answering if we can.
-         // But NlpService might need data. NlpCheck handles 0 data gracefully? logic below handles it.
-      }
-
       final userId = await _userDataSource.getCurrentUserId();
       final now = DateTime.now();
       
@@ -114,13 +124,10 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       final profile = await _profileRepository.getProfile(userId: userId);
       final goalsMap = await _goalRepository.getGoals(userId: userId);
       
-      // Convert map to GoalsState (basic) or just pass map values if NlpService accepted it.
-      // NlpService expects GoalsState. Let's create a temporary one.
       final goalsState = GoalsState(
         targetHours: goalsMap['hours'] ?? 150,
         targetCalls: goalsMap['calls'] ?? 3000,
       );
-
 
       final aiAnswer = await _nlpService.processQuestion(
         question: event.question,
@@ -129,17 +136,20 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         profile: profile
       );
 
-      // Introduce a small delay for typing animation feel (Gemini is fast)
-      // await Future.delayed(const Duration(milliseconds: 500)); 
-
       final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiAnswer);
       emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+      
+      // Save AI Message
+      await _performanceRepository.insertChatMessage(aiAnswer, false);
 
     } catch (e, stack) {
       print("Gemini Error: $e, $stack"); // helpful for debug
       final errorInsight = AiInsight(message: "Sorry, I encountered an error answering that. Please try again later.");
       final finalHistory = List<AiInsight>.from(state.insightHistory)..add(errorInsight);
       emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+      
+      // Save Error Message
+      await _performanceRepository.insertChatMessage(errorInsight, false);
     }
   }
 }

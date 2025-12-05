@@ -6,11 +6,14 @@ class AiInsight extends Equatable {
   final String? navigationRoute;
   final dynamic navigationArguments;
 
+  final bool isUser;
+
   const AiInsight({
     required this.message,
     this.buttonText,
     this.navigationRoute,
     this.navigationArguments,
+    this.isUser = false,
   });
 
   @override

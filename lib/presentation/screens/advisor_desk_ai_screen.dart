@@ -148,8 +148,8 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final insight = state.insightHistory[index];
-          // Simple way to distinguish user question from AI answer
-          final isUserMessage = insight.buttonText == null && insight.navigationRoute == null && index > 0;
+          // Use authoritative isUser property
+          final isUserMessage = insight.isUser;
           return _buildChatItem(context, insight, isUserMessage);
         },
         childCount: state.insightHistory.length,
@@ -176,12 +176,12 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
-              color: isUserMessage ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant, // Lighter background for AI
+              color: isUserMessage ? theme.primaryColor : Colors.grey[800], // User: Theme Color, AI: Grey
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
               insight.message,
-              style: TextStyle(color: isUserMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant), // Darker text for AI
+              style: TextStyle(color: isUserMessage ? Colors.white : Colors.white), // White text for both for contrast
             ),
           ),
           if (isUserMessage) ...[

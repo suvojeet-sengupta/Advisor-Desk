@@ -8,6 +8,7 @@ import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart'; // Import CQSummary
 import 'package:advisor_desk/domain/entities/monthly_data.dart';
+import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'dart:io';
 
 abstract class PerformanceRepository {
@@ -52,6 +53,11 @@ abstract class PerformanceRepository {
   // Database backup and restore
   Future<String> backupDatabase();
   Future<void> restoreDatabase(String backupFilePath);
+
+  // Chat History methods
+  Future<void> insertChatMessage(AiInsight message, bool isUser);
+  Future<List<AiInsight>> getChatHistory();
+  Future<void> deleteOldChatMessages();
 }
 
 

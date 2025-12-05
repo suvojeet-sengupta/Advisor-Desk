@@ -270,6 +270,21 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     // Re-initialize the database after restoring
     await LocalDataSource.init();
   }
+
+  @override
+  Future<void> insertChatMessage(AiInsight message, bool isUser) async {
+    await localDataSource.insertChatMessage(message, isUser);
+  }
+
+  @override
+  Future<List<AiInsight>> getChatHistory() async {
+    return await localDataSource.getChatHistory();
+  }
+
+  @override
+  Future<void> deleteOldChatMessages() async {
+    await localDataSource.deleteOldChatMessages();
+  }
 }
 
 // Helper class to pass data to isolates

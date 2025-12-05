@@ -510,6 +510,19 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             },
           ),
           const SizedBox(height: 16),
+          _buildFabMenuItem(
+            context,
+            icon: Icons.psychology,
+            label: 'Chat with Advisor Desk AI',
+            onPressed: () {
+               setState(() {
+                _isFabMenuOpen = false;
+                _fabAnimationController.reverse();
+              });
+              Navigator.pushNamed(context, AppRouter.advisorDeskAIRoute);
+            },
+          ),
+          const SizedBox(height: 16),
         ],
         FloatingActionButton(
           onPressed: () {

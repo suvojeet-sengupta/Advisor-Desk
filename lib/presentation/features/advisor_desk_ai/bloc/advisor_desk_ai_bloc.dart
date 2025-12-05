@@ -118,7 +118,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       // NlpService expects GoalsState. Let's create a temporary one.
       final goalsState = GoalsState(
         targetHours: goalsMap['hours'] ?? 150,
-        targetCalls: goalsMap['calls'] ?? 3000, context: '',
+        targetCalls: goalsMap['calls'] ?? 3000,
       );
 
 

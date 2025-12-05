@@ -6,6 +6,7 @@ import 'package:advisor_desk/domain/entities/csat_entry.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/domain/entities/leave_entry.dart';
 import 'package:advisor_desk/domain/entities/monthly_data.dart';
+import 'package:advisor_desk/domain/entities/ai_insight.dart';
 
 class LocalDataSource {
   static Database? _database;

@@ -17,6 +17,7 @@ import 'package:advisor_desk/domain/entities/monthly_data.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:archive/archive_io.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/domain/entities/ai_insight.dart';
 
 class PerformanceRepositoryImpl implements PerformanceRepository {
   final LocalDataSource localDataSource;

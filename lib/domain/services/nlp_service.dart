@@ -24,9 +24,10 @@ class NlpService {
 
   Future<AiInsight> processQuestion({
     required String question,
-    required List<MonthlySummary> histories, // Changed from single summary to list
+    required List<MonthlySummary> histories,
     required GoalsState goals,
     required Profile profile,
+    required List<AiInsight> chatHistory, // Add chat history
   }) async {
     // 1. Check if API key is present
     if (AppConstants.geminiApiKey.isEmpty) {
@@ -34,7 +35,7 @@ class NlpService {
     }
 
     // 2. Build Context Prompt
-    final prompt = _buildPrompt(question, histories, goals, profile);
+    final prompt = _buildPrompt(question, histories, goals, profile, chatHistory);
 
     try {
       // 3. Generate Content
@@ -53,12 +54,12 @@ class NlpService {
     }
   }
 
-  String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile) {
+  String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile, List<AiInsight> chatHistory) {
     final name = profile.name ?? 'Advisor';
+    final now = DateTime.now();
+    final timeString = "${now.hour}:${now.minute}";
     
-    // Sort histories by date (newest first) usually better for context, but chronological for reading. 
-    // Let's do reverse chronological (newest at top of list provided, but in text maybe list them clearly).
-    
+    // Sort histories by date
     final StringBuffer dataBuffer = StringBuffer();
     if (histories.isEmpty) {
       dataBuffer.writeln("No historical data available.");
@@ -71,35 +72,48 @@ class NlpService {
         dataBuffer.writeln("- CQ Score: ${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%");
         dataBuffer.writeln("- Net Salary: ₹${summary.netSalary.toStringAsFixed(2)}");
         dataBuffer.writeln("- Bonus: ${summary.isBonusAchieved ? 'Yes' : 'No'}");
-        dataBuffer.writeln("---"); // Separator
+        dataBuffer.writeln("---"); 
       }
     }
 
+    // Format recent chat history (last 5 messages for context)
+    final StringBuffer historyBuffer = StringBuffer();
+    final recentHistory = chatHistory.length > 5 ? chatHistory.sublist(chatHistory.length - 5) : chatHistory;
+    for (final insight in recentHistory) {
+      final role = insight.isUser ? "User" : "Advisor Assistant";
+      historyBuffer.writeln("$role: ${insight.message}");
+    }
+
     return '''
-    You are an intelligent assistant for "Advisor Desk", a performance tracking app for customer care advisors.
-    Your name is "Advisor Assistant". You are helpful, motivating, professional, and conversational.
+    You are an intelligent assistant for "Advisor Desk".
+    Your name is "Advisor Assistant". 
     
-    User Context:
-    - Name: $name
+    **Current Context**:
+    - User Name: $name
     - Company: ${profile.companyName ?? 'N/A'}
+    - Current Time: $timeString
+    - Goals: Calls ${goals.targetCalls}, Hours ${goals.targetHours}
     
-    Current Goals:
-    - Target Calls: ${goals.targetCalls}
-    - Target Hours: ${goals.targetHours}
-    
-    Available Performance Data (Last 12 Months):
+    **Performance Data (Last 12 Months)**:
     $dataBuffer
     
-    User Question: "$question"
+    **Recent Conversation**:
+    $historyBuffer
+    User: "$question"
     
-    Instructions:
-    1. **Direct Answers**: Answer the user's question directly based on the "Available Performance Data" provided above.
-    2. **Handling Ambiguity**: 
-       - If the user asks about a specific month (e.g., "November") and the data contains multiple Novembers (e.g., Nov 2023 and Nov 2024), **DO NOT GUESS**. Instead, ask the user to clarify: "Did you mean November 2023 or November 2024?".
-       - If the user asks for a month for which there is NO data in the list above, state clearly: "I don't have data for [Month] yet. Please add some entries for that month."
-    3. **Tone**: Be concise, friendly, and act like a human assistant. Use emojis occasionally if appropriate.
-    4. **Complex Queries**: If the user asks for comparisons (e.g., "Compare Oct and Nov"), use the data to provide a clear comparison of Calls, Login Hours, and Scores.
-    5. **Privacy**: Do not invent data. If it's not in the list, you don't know it.
+    **Instructions**:
+    1. **Persona**: Act strictly as a human colleague/friend. Be casual, empathetic, and natural. Do NOT be robotic or overly formal.
+       - Use comments like "late night?", "good morning!", "long day?" based on the Current Time.
+    2. **Language Matching**: Reply in the EXACT SAME language and script as the user. 
+       - If User speaks English -> Reply in English.
+       - If User speaks Hindi -> Reply in Hindi (Devanagari).
+       - If User speaks Hinglish (Hindi in English script) -> Reply in Hinglish.
+       - If User mixes -> Mix naturally.
+    3. **Conciseness**: Keep answers short, crisp, and to the point. No long paragraphs unless necessary for complex explanations.
+    4. **Context**: Use the "Recent Conversation" to understand follow-up questions.
+    5. **Data**: Answer strictly based on "Performance Data". If asking for month X and data has multiple years, ask for clarification.
+    
+    Response:
     ''';
   }
 }

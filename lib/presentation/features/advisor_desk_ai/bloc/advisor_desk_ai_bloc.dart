@@ -132,9 +132,10 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
 
       final aiAnswer = await _nlpService.processQuestion(
         question: event.question,
-        histories: allSummaries, // Pass the list
+        histories: allSummaries, 
         goals: goalsState,
-        profile: profile
+        profile: profile,
+        chatHistory: state.insightHistory, // Pass current history
       );
 
       final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiAnswer);

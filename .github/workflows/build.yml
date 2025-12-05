@@ -69,11 +69,11 @@ jobs:
         working-directory: android/
 
       - name: 💪 Build Release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=GEMINI_API_1="${{ secrets.GEMINI_API_1 }}"
         working-directory: ./
 
       - name: 💪 Build Release AAB
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --dart-define=GEMINI_API_1="${{ secrets.GEMINI_API_1 }}"
         working-directory: ./
 
       - name: 📦 Prepare Release Artifacts

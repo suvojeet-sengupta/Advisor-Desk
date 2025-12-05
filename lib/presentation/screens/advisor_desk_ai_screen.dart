@@ -6,6 +6,9 @@ import 'package:advisor_desk/domain/services/query_parser.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_bloc.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_event.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/bloc/advisor_desk_ai_state.dart';
+import 'package:advisor_desk/domain/repositories/goal_repository.dart';
+import 'package:advisor_desk/domain/repositories/profile_repository.dart';
+import 'package:advisor_desk/data/datasources/user_data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
@@ -22,6 +25,9 @@ class AdvisorDeskAIScreen extends StatelessWidget {
         performanceRepository: context.read<PerformanceRepository>(),
         aiInsightService: context.read<AiInsightService>(),
         nlpService: NlpService(performanceRepository: context.read<PerformanceRepository>(), queryParser: QueryParser()),
+        goalRepository: context.read<GoalRepository>(),
+        profileRepository: context.read<ProfileRepository>(),
+        userDataSource: context.read<UserDataSource>(),
       )..add(LoadAdvisorDeskAIData()),
       child: const AdvisorDeskAIView(),
     );

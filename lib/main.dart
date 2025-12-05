@@ -315,6 +315,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             RepositoryProvider<AiInsightService>(create: (context) => AiInsightService()),
             RepositoryProvider<NlpService>(create: (context) => NlpService(performanceRepository: context.read<PerformanceRepository>(), queryParser: QueryParser())),
             RepositoryProvider<GoalPredictionService>(create: (context) => GoalPredictionServiceImpl()),
+            RepositoryProvider<UserDataSource>.value(value: widget.userDataSource),
           ],
           child: MultiBlocProvider(
             providers: [

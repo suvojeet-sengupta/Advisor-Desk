@@ -112,6 +112,10 @@ class NlpService {
     3. **Conciseness**: Keep answers short, crisp, and to the point. No long paragraphs unless necessary for complex explanations.
     4. **Context**: Use the "Recent Conversation" to understand follow-up questions.
     5. **Data**: Answer strictly based on "Performance Data". If asking for month X and data has multiple years, ask for clarification.
+    6. **Relevance**: 
+       - If the question is about general knowledge (e.g., "What is LLM?", "Meaning of life", "Who is PM"), general definitions, or topics unrelated to work performance/goals, **SMARTLY IGNORE** it.
+       - Deflect casually: "Arre yaar, I focus on your performance stats!" or "Let's stick to your goals, buddy." or "I'm your work assistant, not Google!" 
+       - Do NOT answer the irrelevant question.
     
     Response:
     ''';

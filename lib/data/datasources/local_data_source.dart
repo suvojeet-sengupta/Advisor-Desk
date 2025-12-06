@@ -80,7 +80,11 @@ class LocalDataSource {
           CREATE TABLE ${AppConstants.tableCQEntries} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             audit_date INTEGER NOT NULL,
-            percentage REAL NOT NULL
+            percentage REAL NOT NULL,
+            cif_id TEXT,
+            caller_id TEXT,
+            total_score INTEGER,
+            out_of INTEGER
           )
         ''');
         // Create Leave entries table
@@ -204,6 +208,12 @@ class LocalDataSource {
             )
           ''');
           await db.execute('CREATE INDEX idx_chat_timestamp ON ${AppConstants.tableChatHistory} (timestamp)');
+        }
+        if (oldVersion < 10) {
+          await db.execute('ALTER TABLE ${AppConstants.tableCQEntries} ADD COLUMN cif_id TEXT');
+          await db.execute('ALTER TABLE ${AppConstants.tableCQEntries} ADD COLUMN caller_id TEXT');
+          await db.execute('ALTER TABLE ${AppConstants.tableCQEntries} ADD COLUMN total_score INTEGER');
+          await db.execute('ALTER TABLE ${AppConstants.tableCQEntries} ADD COLUMN out_of INTEGER');
         }
       },
     );

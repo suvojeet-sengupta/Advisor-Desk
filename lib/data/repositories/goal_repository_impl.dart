@@ -7,7 +7,7 @@ class GoalRepositoryImpl implements GoalRepository {
   GoalRepositoryImpl(this.dataSource);
 
   @override
-  Future<Map<String, int>> getGoals({required String userId}) {
+  Future<Map<String, dynamic>> getGoals({required String userId}) {
     return dataSource.getGoals(userId: userId);
   }
 

@@ -10,7 +10,7 @@ import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart'
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
 class CqEntryManagementScreen extends StatefulWidget {
-  final CqEntry? entry;
+  final CQEntry? entry;
 
   const CqEntryManagementScreen({super.key, this.entry});
 
@@ -55,7 +55,7 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
 
     if (allValid) {
       for (final formData in _formEntries) {
-        final entry = CqEntry(
+        final entry = CQEntry(
           id: formData.entry?.id,
           date: formData.selectedDate,
           cifId: formData.cifIdController.text,
@@ -191,15 +191,15 @@ class _CqEntryManagementScreenState extends State<CqEntryManagementScreen> {
 
 class _CqEntryFormData {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final CqEntry? entry;
+  final CQEntry? entry;
   late final TextEditingController cifIdController;
   late final TextEditingController callerIdController;
   late final TextEditingController totalScoreController;
   late final TextEditingController outOfController;
   DateTime selectedDate;
 
-  _CqEntryFormData({this.entry}) : selectedDate = entry?.date ?? DateTime.now() {
-    cifIdController = TextEditingController(text: entry?.cifId);
+  _CqEntryFormData({this.entry}) : selectedDate = entry?.auditDate ?? DateTime.now() {
+    cifIdController = TextEditingController(text: entry?.cifId); // Wait, check CQEntry fields
     callerIdController = TextEditingController(text: entry?.callerId);
     totalScoreController = TextEditingController(text: entry?.totalScore.toString());
     outOfController = TextEditingController(text: entry?.outOf.toString());

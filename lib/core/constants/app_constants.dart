@@ -22,7 +22,7 @@ class AppConstants {
   // Database constants
   // Database constants
   static const String databaseName = 'advisor_desk.db';
-  static const int databaseVersion = 9; // Updated version for chat history
+  static const int databaseVersion = 10; // Updated version for CQ fields
   
   // Table names
   static const String tableEntries = 'daily_entries';

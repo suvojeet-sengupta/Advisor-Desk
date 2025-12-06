@@ -222,7 +222,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
   ) async {
     emit(state.copyWith(status: AddEntryStatus.loading));
     try {
-      final entry = event.entry as CqEntry;
+      final entry = event.entry as CQEntry;
       await repository.saveCQEntry(entry);
       emit(state.copyWith(status: AddEntryStatus.success));
     } catch (e) {

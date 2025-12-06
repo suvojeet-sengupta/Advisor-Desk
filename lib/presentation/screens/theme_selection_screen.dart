@@ -3,89 +3,163 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/common/theme/theme_cubit.dart';
 
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+
 class ThemeSelectionScreen extends StatelessWidget {
   const ThemeSelectionScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Theme'),
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: const CustomAppBar(title: 'Theme & Appearance'),
       body: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
-          return ListView(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                child: Text('Theme Mode', style: Theme.of(context).textTheme.titleLarge),
-              ),
-              RadioListTile<AppThemeMode>(
-                title: const Text('Light'),
-                value: AppThemeMode.light,
-                groupValue: themeState.themeMode,
-                onChanged: (AppThemeMode? newValue) {
-                  if (newValue != null) {
-                    context.read<ThemeCubit>().setThemeMode(newValue);
-                  }
-                },
-              ),
-              RadioListTile<AppThemeMode>(
-                title: const Text('Dark'),
-                value: AppThemeMode.dark,
-                groupValue: themeState.themeMode,
-                onChanged: (AppThemeMode? newValue) {
-                  if (newValue != null) {
-                    context.read<ThemeCubit>().setThemeMode(newValue);
-                  }
-                },
-              ),
-              RadioListTile<AppThemeMode>(
-                title: const Text('System Default'),
-                value: AppThemeMode.system,
-                groupValue: themeState.themeMode,
-                onChanged: (AppThemeMode? newValue) {
-                  if (newValue != null) {
-                    context.read<ThemeCubit>().setThemeMode(newValue);
-                  }
-                },
-              ),
-              const Divider(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('Accent Color', style: Theme.of(context).textTheme.titleLarge),
-              ),
-              for (final color in AppColor.values)
-                RadioListTile<AppColor>(
-                  title: Text(
-                    color == AppColor.materialYou
-                        ? 'Material You'
-                        : color.toString().split('.').last.toUpperCase(),
-                  ),
-                  subtitle: color == AppColor.materialYou
-                      ? const Text('Uses wallpaper colors (Android 12+)')
-                      : null,
-                  value: color,
-                  groupValue: themeState.color,
-                  onChanged: (AppColor? newValue) {
-                    if (newValue != null) {
-                      context.read<ThemeCubit>().setColor(newValue);
-                    }
-                  },
-                  secondary: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _getColorForEnum(color),
+          return SingleChildScrollView(
+             padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader(context, 'Appearance Mode'),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(child: _buildThemeModeCard(context, 'Light', Icons.light_mode_rounded, AppThemeMode.light, themeState.themeMode)),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildThemeModeCard(context, 'Dark', Icons.dark_mode_rounded, AppThemeMode.dark, themeState.themeMode)),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildThemeModeCard(context, 'System', Icons.settings_brightness_rounded, AppThemeMode.system, themeState.themeMode)),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                
+                _buildSectionHeader(context, 'Accent Color'),
+                const SizedBox(height: 12),
+                CustomCard(
+                  padding: const EdgeInsets.all(20),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
                     ),
+                    itemCount: AppColor.values.length,
+                    itemBuilder: (context, index) {
+                      final appColor = AppColor.values[index];
+                      return _buildColorOption(context, appColor, themeState.color);
+                    },
                   ),
                 ),
-            ],
+                
+                if (themeState.color == AppColor.materialYou)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: Text(
+                      'Material You uses your system wallpaper colors for a personalized look (Android 12+).',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+              ],
+            ),
           );
         },
       ),
     );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeModeCard(BuildContext context, String title, IconData icon, AppThemeMode mode, AppThemeMode currentMode) {
+    final isSelected = mode == currentMode;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return GestureDetector(
+      onTap: () => context.read<ThemeCubit>().setThemeMode(mode),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: isSelected ? primaryColor.withOpacity(0.1) : Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? primaryColor : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: [
+             if (!isSelected)
+               BoxShadow(
+                 color: Colors.black.withOpacity(0.05),
+                 blurRadius: 10,
+                 offset: const Offset(0, 4),
+               ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: isSelected ? primaryColor : Colors.grey, size: 28),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isSelected ? primaryColor : Theme.of(context).textTheme.bodyMedium?.color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorOption(BuildContext context, AppColor appColor, AppColor currentColor) {
+    final isSelected = appColor == currentColor;
+    final color = _getColorForEnum(appColor);
+
+    return GestureDetector(
+      onTap: () => context.read<ThemeCubit>().setColor(appColor),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          border: isSelected 
+              ? Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 3) 
+              : null,
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                color: color.withOpacity(0.5),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+          ],
+        ),
+        child: isSelected 
+            ? Center(child: Icon(Icons.check, color: _getContrastingTextColor(color), size: 16))
+            : null,
+      ),
+    );
+  }
+  
+  Color _getContrastingTextColor(Color color) {
+    // Simple logic to decide check icon color (white or black) based on luminance
+    return color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
 
   

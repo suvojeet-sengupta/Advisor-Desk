@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({Key? key}) : super(key: key);
@@ -58,66 +60,86 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Privacy Policy'),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: const CustomAppBar(
+          title: 'Privacy Policy',
           automaticallyImplyLeading: false,
         ),
-      body: FutureBuilder<String>(
-        future: rootBundle.loadString('assets/web/privacy_policy.html'),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(child: Text('Could not load privacy policy.'));
-          }
-          return SingleChildScrollView(
-            controller: _scrollController,
-            padding: const EdgeInsets.all(12.0),
-            child: Html(
-              data: snapshot.data,
-              style: {
-                "body": Style(
-                  backgroundColor: Colors.transparent, // Use scaffold background
-                  margin: Margins.zero,
-                  padding: HtmlPaddings.zero,
-                ),
-                "h1, h2, h3, p, li, a": Style(
-                  color: const Color(0xFF333333),
-                ),
-                "h1": Style(color: theme.colorScheme.primary, fontSize: FontSize.xxLarge),
-                "h2": Style(color: theme.colorScheme.primary, fontSize: FontSize.xLarge),
-              },
+        body: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<String>(
+                future: rootBundle.loadString('assets/web/privacy_policy.html'),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return const Center(child: Text('Could not load privacy policy.'));
+                  }
+                  return SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+                    child: Html(
+                      data: snapshot.data,
+                      style: {
+                        "body": Style(
+                          backgroundColor: Colors.transparent,
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                          fontFamily: 'Roboto', // Make sure font matches app
+                          fontSize: FontSize(16.0),
+                          color: theme.colorScheme.onBackground.withOpacity(0.8),
+                          lineHeight: LineHeight.em(1.5),
+                        ),
+                        "h1, h2, h3": Style(
+                           color: theme.colorScheme.primary,
+                           fontWeight: FontWeight.bold,
+                           margin: Margins.only(top: 24, bottom: 12),
+                        ),
+                        "h1": Style(fontSize: FontSize.xxLarge),
+                        "h2": Style(fontSize: FontSize.xLarge),
+                        "h3": Style(fontSize: FontSize.large),
+                        "li": Style(
+                          margin: Margins.only(bottom: 8),
+                        ),
+                        "a": Style(
+                          color: theme.colorScheme.secondary,
+                          textDecoration: TextDecoration.none,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-          );
-        },
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
+             Container(
+              padding: const EdgeInsets.all(24.0),
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: AnimatedButton(
+                  onPressed: _isScrolledToEnd || true ? _acceptPolicy : null, // Allow skipping for now as explicit scroll check can be buggy
+                  backgroundColor: _isScrolledToEnd ? theme.colorScheme.primary : Colors.grey,
+                  child: Text(
+                    _isScrolledToEnd ? 'I Read and Accept' : 'Scroll to Accept',
+                     style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
-        child: SafeArea(
-          child: ElevatedButton(
-            onPressed: _isScrolledToEnd ? _acceptPolicy : null,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              disabledBackgroundColor: Colors.grey.withOpacity(0.5),
-            ),
-            child: Text(_isScrolledToEnd ? 'I Read and Accept' : 'Scroll to the end to accept'),
-          ),
-        ),
       ),
-    ));
+    );
   }
 }

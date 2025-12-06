@@ -144,6 +144,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                    _buildDivider(),
                   _buildLinkTile(
                     context,
+                    'Theme & Appearance',
+                    AppRouter.themeSelectionRoute,
+                    Icons.palette_rounded,
+                  ),
+                   _buildDivider(),
+                   _buildDivider(),
+                  _buildLinkTile(
+                    context,
                     'Customize Dashboard',
                     AppRouter.customizeDashboardRoute,
                     Icons.dashboard_customize_rounded,

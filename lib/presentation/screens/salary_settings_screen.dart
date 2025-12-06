@@ -6,6 +6,7 @@ import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
 class SalarySettingsScreen extends StatefulWidget {
   const SalarySettingsScreen({Key? key}) : super(key: key);
@@ -85,84 +86,108 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Salary Settings'),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: const CustomAppBar(title: 'Salary Parameters'),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomFormField(
-              label: 'Base Rate Per Call',
-              hintText: 'Enter base rate per call',
-              icon: Icons.currency_rupee,
-              controller: _baseRatePerCallController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (value) {},
+            _buildSectionHeader(context, 'Core Earnings'),
+            CustomCard(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Column(
+                children: [
+                  CustomFormField(
+                    label: 'Base Rate (Per Call)',
+                    hintText: '4.30',
+                    icon: Icons.currency_rupee_rounded,
+                    controller: _baseRatePerCallController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomFormField(
+                    label: 'Bonus Amount',
+                    hintText: '2000',
+                    icon: Icons.card_giftcard_rounded,
+                    controller: _bonusAmountController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            CustomFormField(
-              label: 'Bonus Amount',
-              hintText: 'Enter bonus amount',
-              icon: Icons.card_giftcard,
-              controller: _bonusAmountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (value) {},
+            const SizedBox(height: 24),
+            
+            _buildSectionHeader(context, 'Targets'),
+            CustomCard(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Column(
+                children: [
+                  CustomFormField(
+                    label: 'Bonus Call Target',
+                    hintText: '750',
+                    icon: Icons.call_made_rounded,
+                    controller: _bonusCallTargetController,
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomFormField(
+                    label: 'Bonus Hour Target (Hrs)',
+                    hintText: '100',
+                    icon: Icons.timer_outlined,
+                    controller: _bonusHourTargetController,
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            CustomFormField(
-              label: 'Bonus Call Target',
-              hintText: 'Enter bonus call target',
-              icon: Icons.call,
-              controller: _bonusCallTargetController,
-              keyboardType: TextInputType.number,
-              onChanged: (value) {},
+            const SizedBox(height: 24),
+
+            _buildSectionHeader(context, 'CSAT & Quality'),
+            CustomCard(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Column(
+                children: [
+                   CustomFormField(
+                    label: 'CSAT Bonus Target',
+                    hintText: '1000',
+                    icon: Icons.stars_rounded,
+                    controller: _csatBonusCallTargetController,
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomFormField(
+                    label: 'CSAT Percentage Required (%)',
+                    hintText: '60',
+                    icon: Icons.percent_rounded,
+                    controller: _csatBonusPercentageController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomFormField(
+                    label: 'CSAT Bonus Rate (Decimal)',
+                    hintText: '0.05 (for 5%)',
+                    icon: Icons.calculate_outlined,
+                    controller: _csatBonusRateController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            CustomFormField(
-              label: 'Bonus Hour Target (in hours)',
-              hintText: 'Enter bonus hour target',
-              icon: Icons.timer,
-              controller: _bonusHourTargetController,
-              keyboardType: TextInputType.number,
-              onChanged: (value) {},
+            const SizedBox(height: 24),
+
+            _buildSectionHeader(context, 'Deductions'),
+            CustomCard(
+               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: CustomFormField(
+                label: 'TDS Rate (Decimal)',
+                hintText: '0.10 (for 10%)',
+                icon: Icons.money_off_rounded,
+                controller: _tdsRateController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
             ),
-            const SizedBox(height: 16),
-            CustomFormField(
-              label: 'CSAT Bonus Percentage',
-              hintText: 'Enter CSAT bonus percentage',
-              icon: Icons.sentiment_satisfied_alt,
-              controller: _csatBonusPercentageController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-            CustomFormField(
-              label: 'CSAT Bonus Call Target',
-              hintText: 'Enter CSAT bonus call target',
-              icon: Icons.call,
-              controller: _csatBonusCallTargetController,
-              keyboardType: TextInputType.number,
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-            CustomFormField(
-              label: 'CSAT Bonus Rate (e.g., 0.05 for 5%)',
-              hintText: 'Enter CSAT bonus rate',
-              icon: Icons.star,
-              controller: _csatBonusRateController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-            CustomFormField(
-              label: 'TDS Rate (e.g., 0.10 for 10%)',
-              hintText: 'Enter TDS rate',
-              icon: Icons.percent,
-              controller: _tdsRateController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
+            
             SizedBox(
               width: double.infinity,
               child: AnimatedButton(
@@ -170,14 +195,30 @@ class _SalarySettingsScreenState extends State<SalarySettingsScreen> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.save),
+                    Icon(Icons.save_rounded),
                     SizedBox(width: 8),
-                    Text('Save Salary Settings'),
+                    Text('Save Configuration'),
                   ],
                 ),
               ),
             ),
+            const SizedBox(height: 20),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
         ),
       ),
     );

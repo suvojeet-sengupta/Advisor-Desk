@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/domain/usecases/get_all_monthly_summaries_usecase.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
@@ -57,44 +58,64 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(title: 'Generate Custom Report'),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(context, 'Select Period'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildYearDropdown(),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildMonthDropdown(),
-                ),
-              ],
+            _buildSectionHeader(context, 'Select Period'),
+            CustomCard(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Expanded(child: _buildYearDropdown()),
+                  const SizedBox(width: 16),
+                  Expanded(child: _buildMonthDropdown()),
+                ],
+              ),
             ),
+            
             const SizedBox(height: 24),
-            _buildSectionTitle(context, 'Select Report Sections'),
-            const SizedBox(height: 8),
-            ...ReportSection.values.map((section) {
-              return CheckboxListTile(
-                title: Text(_getSectionTitleText(section)),
-                value: _selectedSections.contains(section),
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    if (newValue == true) {
-                      _selectedSections.add(section);
-                    } else {
-                      _selectedSections.remove(section);
-                    }
-                  });
-                },
-              );
-            }).toList(),
-            const SizedBox(height: 32),
+            _buildSectionHeader(context, 'Report Sections'),
+            CustomCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: ReportSection.values.asMap().entries.map((entry) {
+                   final index = entry.key;
+                   final section = entry.value;
+                   final isLast = index == ReportSection.values.length - 1;
+                   
+                   return Column(
+                     children: [
+                       CheckboxListTile(
+                         activeColor: Theme.of(context).colorScheme.primary,
+                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                         title: Text(
+                           _getSectionTitleText(section),
+                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+                         ),
+                         value: _selectedSections.contains(section),
+                         onChanged: (bool? newValue) {
+                           setState(() {
+                             if (newValue == true) {
+                               _selectedSections.add(section);
+                             } else {
+                               _selectedSections.remove(section);
+                             }
+                           });
+                         },
+                       ),
+                       if (!isLast)
+                         Divider(height: 1, indent: 16, endIndent: 16, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+                     ],
+                   );
+                }).toList(),
+              ),
+            ),
+            
+            const SizedBox(height: 40),
+            
             SizedBox(
               width: double.infinity,
               child: AnimatedButton(
@@ -120,76 +141,94 @@ class _ReportOptionsScreenState extends State<ReportOptionsScreen> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.picture_as_pdf),
+                    Icon(Icons.picture_as_pdf_rounded),
                     SizedBox(width: 8),
                     Text('Generate Report'),
                   ],
                 ),
               ),
             ),
+             const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
   Widget _buildYearDropdown() {
-    return DropdownButtonFormField<int>(
-      value: _selectedYear,
-      items: _years.map((year) {
-        return DropdownMenuItem<int>(
-          value: year,
-          child: Text(year.toString()),
-        );
-      }).toList(),
-      onChanged: (int? newValue) {
-        setState(() {
-          _selectedYear = newValue;
-          // Update months based on selected year
-          // This logic needs to be re-implemented based on how you get the months for a year
-          _selectedMonth = null;
-        });
-      },
-      decoration: const InputDecoration(
-        labelText: 'Year',
-        border: OutlineInputBorder(),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: _selectedYear,
+          isExpanded: true,
+          hint: const Text('Year'),
+          items: _years.map((year) {
+            return DropdownMenuItem<int>(
+              value: year,
+              child: Text(year.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
+            );
+          }).toList(),
+          onChanged: (int? newValue) {
+            setState(() {
+              _selectedYear = newValue;
+              _selectedMonth = null;
+            });
+          },
+        ),
       ),
     );
   }
 
   Widget _buildMonthDropdown() {
-    return DropdownButtonFormField<int>(
-      value: _selectedMonth,
-      items: _months.map((month) {
-        return DropdownMenuItem<int>(
-          value: month,
-          child: Text(DateFormat.MMMM().format(DateTime(0, month))),
-        );
-      }).toList(),
-      onChanged: (int? newValue) {
-        setState(() {
-          _selectedMonth = newValue;
-        });
-      },
-      decoration: const InputDecoration(
-        labelText: 'Month',
-        border: OutlineInputBorder(),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+         color: Theme.of(context).scaffoldBackgroundColor,
+         borderRadius: BorderRadius.circular(12),
+         border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+           value: _selectedMonth,
+           isExpanded: true,
+           hint: const Text('Month'),
+           items: _months.map((month) {
+            return DropdownMenuItem<int>(
+              value: month,
+              child: Text(DateFormat.MMMM().format(DateTime(0, month)), style: const TextStyle(fontWeight: FontWeight.bold)),
+            );
+          }).toList(),
+          onChanged: (int? newValue) {
+            setState(() {
+              _selectedMonth = newValue;
+            });
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        title,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
 
   String _getSectionTitleText(ReportSection section) {
     switch (section) {

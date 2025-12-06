@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
 
 class OnboardingTutorialScreen extends StatefulWidget {
@@ -74,12 +75,14 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Advisor Desk Features'),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: const CustomAppBar(title: 'Features Tour'),
       body: Column(
         children: [
           Expanded(
             child: PageView.builder(
               controller: _pageController,
+              physics: const BouncingScrollPhysics(),
               itemCount: _onboardingPages.length,
               onPageChanged: (int page) {
                 setState(() {
@@ -87,40 +90,118 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
                 });
               },
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(24.0), // Increased padding
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _onboardingPages[index]['image'] as IconData,
-                        size: 120, // Increased icon size
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(height: 40), // Increased spacing
-                      Text(
-                        _onboardingPages[index]['title'] as String,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ), // Larger title
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 20), // Increased spacing
-                      Text(
-                        _onboardingPages[index]['description'] as String,
-                        style: Theme.of(context).textTheme.titleMedium, // Larger description
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                );
+                return _buildOnboardingPage(context, _onboardingPages[index]);
               },
             ),
           ),
+          _buildBottomControls(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOnboardingPage(BuildContext context, Map<String, dynamic> data) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              data['image'] as IconData,
+              size: 100,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 48),
+          Text(
+            data['title'] as String,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            data['description'] as String,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey,
+                  height: 1.5,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomControls() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
           _buildPageIndicator(),
-          _buildNavigationButtons(),
-          const SizedBox(height: 30), // Increased bottom spacing
+          const SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (_currentPage > 0)
+                TextButton(
+                  onPressed: () {
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 350),
+                      curve: Curves.easeOutCubic,
+                    );
+                  },
+                  child: Text(
+                    'Back',
+                    style: TextStyle(
+                      color: Colors.grey.withOpacity(0.8),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              else
+                const SizedBox(width: 48), // Spacer to balance layout
+              
+              if (_currentPage < _onboardingPages.length - 1)
+                SizedBox(
+                  width: 140,
+                  child: AnimatedButton(
+                     onPressed: () {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeOutCubic,
+                      );
+                    },
+                    child: Row(
+                       mainAxisSize: MainAxisSize.min,
+                      children: const [
+                         Text('Next'),
+                         SizedBox(width: 8),
+                         Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                 SizedBox(
+                   width: 140,
+                   child: AnimatedButton(
+                     onPressed: () {
+                      Navigator.pop(context);
+                    },
+                     child: const Text('Get Started'),
+                  ),
+                 ),
+            ],
+          ),
         ],
       ),
     );
@@ -133,71 +214,16 @@ class _OnboardingTutorialScreenState extends State<OnboardingTutorialScreen> {
         _onboardingPages.length,
         (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          height: 12, // Increased height
-          width: _currentPage == index ? 36 : 12, // Increased width
-          margin: const EdgeInsets.symmetric(horizontal: 6), // Increased margin
+          height: 6,
+          width: _currentPage == index ? 24 : 6,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: _currentPage == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withOpacity(0.4), // Lighter grey for inactive
-            borderRadius: BorderRadius.circular(6),
+            color: _currentPage == index 
+                ? Theme.of(context).colorScheme.primary 
+                : Colors.grey.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(3),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildNavigationButtons() {
-    return Padding(
-      padding: const EdgeInsets.all(24.0), // Increased padding
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          if (_currentPage > 0)
-            ElevatedButton(
-              onPressed: () {
-                _pageController.previousPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeIn,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary, // Orange button
-                foregroundColor: Theme.of(context).colorScheme.onPrimary, // White text
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), // Larger padding
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Rounded corners
-              ),
-              child: const Text('Previous', style: TextStyle(fontSize: 16)), // Larger text
-            ),
-          const Spacer(),
-          if (_currentPage < _onboardingPages.length - 1)
-            ElevatedButton(
-              onPressed: () {
-                _pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeIn,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              child: const Text('Next', style: TextStyle(fontSize: 16)),
-            )
-          else
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Or navigate to home screen
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              child: const Text('Finish', style: TextStyle(fontSize: 16)),
-            ),
-        ],
       ),
     );
   }

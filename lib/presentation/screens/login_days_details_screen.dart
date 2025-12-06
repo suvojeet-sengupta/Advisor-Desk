@@ -8,6 +8,7 @@ import 'package:advisor_desk/presentation/common/widgets/details_screen_banner_a
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bloc.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_state.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 
 class LoginDaysDetailsScreen extends StatelessWidget {
   final MonthlySummary summary;
@@ -30,34 +31,41 @@ class LoginDaysDetailsScreen extends StatelessWidget {
             return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  child: CustomCard(
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          summary.formattedMonthYear,
-                          style: Theme.of(context).textTheme.headlineSmall,
+                          'Attendance Statistics',
+                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                             fontWeight: FontWeight.bold,
+                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildStats(context, state),
                         const SizedBox(height: 24),
+                        _buildStats(context, state),
                       ],
                     ),
                   ),
                 ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  sliver: _buildCalendar(context, state),
-                ),
+                SliverToBoxAdapter(child: const SizedBox(height: 24)),
                 SliverToBoxAdapter(
+                   child: Text(
+                      summary.formattedMonthYear.toUpperCase(),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                   ),
+                ),
+                SliverToBoxAdapter(child: const SizedBox(height: 12)),
+                _buildCalendar(context, state),
+                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 24),
-                        _buildLegend(context),
-                      ],
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    child: CustomCard(
+                       child: _buildLegend(context),
                     ),
                   ),
                 ),
@@ -73,25 +81,31 @@ class LoginDaysDetailsScreen extends StatelessWidget {
 
   Widget _buildStats(BuildContext context, LoginDaysLoaded state) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildStatItem(context, 'Present', state.presentCount.toString(), Colors.green),
-        _buildStatItem(context, 'Absent', state.absentCount.toString(), Colors.red),
-        if (state.inProgressCount > 0)
-          _buildStatItem(context, 'In Progress', state.inProgressCount.toString(), Colors.grey),
-        _buildStatItem(context, 'Week Off', state.weekOffCount.toString(), Colors.blue),
-        _buildStatItem(context, 'Personal', state.personalLeaveCount.toString(), Colors.orange),
+        Expanded(child: _buildStatItem(context, 'Present', state.presentCount.toString(), Colors.green, Icons.check_circle_rounded)),
+        Expanded(child: _buildStatItem(context, 'Absent', state.absentCount.toString(), Colors.red, Icons.cancel_rounded)),
+        Expanded(child: _buildStatItem(context, 'Off', state.weekOffCount.toString(), Colors.blue, Icons.weekend_rounded)),
       ],
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value, Color color) {
+  Widget _buildStatItem(BuildContext context, String label, String value, Color color, IconData icon) {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Text(value, style: theme.textTheme.headlineSmall?.copyWith(color: color, fontWeight: FontWeight.bold)),
+        Container(
+           padding: const EdgeInsets.all(8),
+           decoration: BoxDecoration(
+             color: color.withOpacity(0.1),
+             shape: BoxShape.circle,
+           ),
+           child: Icon(icon, color: color, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(value, style: theme.textTheme.headlineLarge?.copyWith(color: color, fontWeight: FontWeight.bold, height: 1.0)),
         const SizedBox(height: 4),
-        Text(label, style: theme.textTheme.bodyMedium),
+        Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey)),
       ],
     );
   }
@@ -107,11 +121,15 @@ class LoginDaysDetailsScreen extends StatelessWidget {
     final loginDates = state.loginEntries.map((e) => e.date).toSet();
     final leaveEntries = {for (var e in state.leaveEntries) e.date: e};
 
+    // Weekdays Header
+    // TODO: Can be added as a persistent header or just above grid
+    
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
+        childAspectRatio: 0.8,
       ),
       delegate: SliverChildBuilderDelegate(
         (context, index) {
@@ -125,33 +143,40 @@ class LoginDaysDetailsScreen extends StatelessWidget {
           final isFutureDay = date.isAfter(DateTime.now());
           final isToday = date.year == DateTime.now().year && date.month == DateTime.now().month && date.day == DateTime.now().day;
 
-          Color bgColor;
-          Color textColor;
+          Color bgColor = theme.cardColor;
+          Color textColor = theme.textTheme.bodyMedium!.color!;
+          Color borderColor = Colors.transparent;
           Widget? icon;
 
           if (isFutureDay) {
-            bgColor = theme.disabledColor.withOpacity(0.1);
+            bgColor = theme.disabledColor.withOpacity(0.05);
             textColor = theme.disabledColor;
+             borderColor = theme.disabledColor.withOpacity(0.1);
           } else if (isLoginDay) {
-            bgColor = Colors.green.withOpacity(0.2);
+            bgColor = Colors.green.withOpacity(0.1);
             textColor = Colors.green;
+            borderColor = Colors.green.withOpacity(0.3);
           } else if (leaveEntry != null) {
             if (leaveEntry.type == LeaveType.weekOff) {
-              bgColor = Colors.blue.withOpacity(0.2);
+              bgColor = Colors.blue.withOpacity(0.1);
               textColor = Colors.blue;
-              icon = Icon(Icons.weekend, size: 16, color: Colors.blue);
+              icon = Icon(Icons.weekend, size: 14, color: Colors.blue);
+              borderColor = Colors.blue.withOpacity(0.3);
             } else {
-              bgColor = Colors.orange.withOpacity(0.2);
+              bgColor = Colors.orange.withOpacity(0.1);
               textColor = Colors.orange;
-              icon = Icon(Icons.person, size: 16, color: Colors.orange);
+              icon = Icon(Icons.person, size: 14, color: Colors.orange);
+               borderColor = Colors.orange.withOpacity(0.3);
             }
           } else { // Absent day
             if (isToday) {
-              bgColor = Colors.grey.withOpacity(0.2);
-              textColor = Colors.grey;
+               bgColor = theme.colorScheme.surface;
+                textColor = theme.colorScheme.primary; 
+                borderColor = theme.colorScheme.primary;
             } else {
-              bgColor = Colors.red.withOpacity(0.2);
+              bgColor = Colors.red.withOpacity(0.1);
               textColor = Colors.red;
+              borderColor = Colors.red.withOpacity(0.3);
             }
           }
 
@@ -160,7 +185,8 @@ class LoginDaysDetailsScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: bgColor,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: borderColor),
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -168,32 +194,25 @@ class LoginDaysDetailsScreen extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                       Text(
+                        DateFormat('E').format(date).toUpperCase().substring(0, 1),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: textColor.withOpacity(0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$day',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
                       if (isToday && !isLoginDay && leaveEntry == null)
-                        Text(
-                          'In Progress',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: textColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        )
-                      else ...[
-                        Text(
-                          DateFormat('EEE').format(date).toUpperCase(),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: textColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '$day',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                      ]
+                         Padding(
+                           padding: const EdgeInsets.only(top: 2.0),
+                           child: Icon(Icons.timelapse, size: 12, color: theme.colorScheme.primary),
+                         ),
                     ],
                   ),
                   if (icon != null)

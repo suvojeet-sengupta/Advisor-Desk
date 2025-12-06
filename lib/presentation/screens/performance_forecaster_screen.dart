@@ -32,6 +32,7 @@ class PerformanceForecasterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(title: 'Performance Forecaster'),
       body: BlocBuilder<ForecasterBloc, ForecasterState>(
         builder: (context, state) {
@@ -46,15 +47,34 @@ class PerformanceForecasterView extends StatelessWidget {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildProjectionCard(context, state),
                 const SizedBox(height: 24),
+                Text(
+                  'ADJUST PROJECTIONS',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 _buildControlsCard(context, state),
                 const SizedBox(height: 24),
+                 Text(
+                  'PROJECTED BREAKDOWN',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 _buildSalaryBreakdownCard(context, state),
+                const SizedBox(height: 40),
               ],
             ),
           );
@@ -68,24 +88,38 @@ class PerformanceForecasterView extends StatelessWidget {
     final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
 
     return CustomCard(
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
           Text(
-            'Projected Net Salary',
-            style: theme.textTheme.titleLarge,
+            'PROJECTED NET SALARY',
+            style: theme.textTheme.labelMedium?.copyWith(
+               color: Colors.grey,
+               letterSpacing: 1.2,
+               fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             currencyFormat.format(state.projectedSummary!.netSalary),
             style: theme.textTheme.displayMedium?.copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.bold,
+              letterSpacing: -1.0,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            'based on ${state.remainingWorkDays} remaining work days',
-            style: theme.textTheme.bodySmall,
+          const SizedBox(height: 16),
+          Container(
+             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+             decoration: BoxDecoration(
+               color: theme.colorScheme.surface,
+               borderRadius: BorderRadius.circular(20),
+               border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+             ),
+             child: Text(
+              '${state.remainingWorkDays} work days remaining',
+              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+            ),
           ),
         ],
       ),
@@ -97,8 +131,6 @@ class PerformanceForecasterView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Adjust Your Projections', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 16),
           _buildSlider(
             context,
             label: 'Avg. Daily Calls',
@@ -106,23 +138,25 @@ class PerformanceForecasterView extends StatelessWidget {
             min: 0,
             max: 200,
             divisions: 200,
+            icon: Icons.call,
             onChanged: (value) {
               context.read<ForecasterBloc>().add(ProjectedValuesChanged(dailyCalls: value));
             },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           _buildSlider(
             context,
-            label: 'Avg. Daily Hours',
+            label: 'Avg. Login Hours',
             value: state.projectedDailyHours,
             min: 0,
             max: 12,
             divisions: 24,
+             icon: Icons.timer,
             onChanged: (value) {
               context.read<ForecasterBloc>().add(ProjectedValuesChanged(dailyHours: value));
             },
           ),
-           const SizedBox(height: 24),
+           const SizedBox(height: 32),
           Row(
             children: [
               Expanded(
@@ -130,8 +164,12 @@ class PerformanceForecasterView extends StatelessWidget {
                   onPressed: () {
                      context.read<ForecasterBloc>().add(SimulateDayOff(date: DateTime.now()));
                   },
-                  child: const Text('Simulate Day Off'),
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                   // TODO: Fix AnimatedButton generic argument type if needed, passing text style manually
+                  child: Text(
+                     'Simulate Day Off', 
+                     style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -140,7 +178,8 @@ class PerformanceForecasterView extends StatelessWidget {
                   onPressed: () {
                     context.read<ForecasterBloc>().add(ResetSimulation());
                   },
-                  child: const Text('Reset'),
+                  backgroundColor: Colors.grey.withOpacity(0.1),
+                  child: const Text('Reset', style: TextStyle(color: Colors.grey)),
                 ),
               ),
             ],
@@ -157,25 +196,36 @@ class PerformanceForecasterView extends StatelessWidget {
       required double min,
       required double max,
       required int divisions,
+      required IconData icon,
       required ValueChanged<double> onChanged}) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: theme.textTheme.titleMedium),
-            Text(value.toStringAsFixed(1), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-          ],
+           children: [
+             Icon(icon, size: 18, color: Colors.grey),
+             const SizedBox(width: 8),
+             Text(label, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+             const Spacer(),
+             Text(value.toStringAsFixed(1), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary)),
+           ],
         ),
-        Slider(
-          value: value,
-          min: min,
-          max: max,
-          divisions: divisions,
-          label: value.toStringAsFixed(1),
-          onChanged: onChanged,
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            trackHeight: 4,
+            activeTrackColor: theme.colorScheme.primary,
+            inactiveTrackColor: theme.colorScheme.primary.withOpacity(0.2),
+            thumbColor: theme.colorScheme.primary,
+            overlayColor: theme.colorScheme.primary.withOpacity(0.1),
+          ),
+          child: Slider(
+            value: value,
+            min: min,
+            max: max,
+            divisions: divisions,
+            onChanged: onChanged,
+          ),
         ),
       ],
     );
@@ -186,48 +236,53 @@ class PerformanceForecasterView extends StatelessWidget {
     final summary = state.projectedSummary!;
 
     return CustomCard(
+      padding: EdgeInsets.zero,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Projected Breakdown', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 16),
-          _buildBreakdownRow(context, 'Projected Total Calls', summary.totalCalls.toString()),
-          _buildBreakdownRow(context, 'Projected Total Login Hours', '${summary.totalLoginHours.toStringAsFixed(2)} hours'),
-          _buildBreakdownRow(context, 'Base Salary', currencyFormat.format(summary.baseSalary)),
-          _buildBreakdownRow(context, 'Bonus', currencyFormat.format(summary.bonusAmount), isAchieved: summary.isBonusAchieved),
-          _buildBreakdownRow(context, 'CSAT Bonus', currencyFormat.format(summary.csatBonus), isAchieved: summary.isCSATBonusAchieved),
-          const Divider(),
-          _buildBreakdownRow(context, 'Gross Salary', currencyFormat.format(summary.totalSalary + summary.csatBonus)),
-          _buildBreakdownRow(context, 'TDS Deduction', currencyFormat.format(summary.tdsDeduction)),
-          const Divider(),
-          _buildBreakdownRow(context, 'Net Salary', currencyFormat.format(summary.netSalary), isHighlight: true),
+           _buildBreakdownRow(context, 'Projected Calls', summary.totalCalls.toString(), icon: Icons.call),
+           Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+          _buildBreakdownRow(context, 'Projected Hours', '${summary.totalLoginHours.toStringAsFixed(1)}h', icon: Icons.timer),
+           Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+          _buildBreakdownRow(context, 'Base Salary', currencyFormat.format(summary.baseSalary), icon: Icons.money),
+           Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+          _buildBreakdownRow(context, 'Bonus', currencyFormat.format(summary.bonusAmount), isAchieved: summary.isBonusAchieved, icon: Icons.star_border),
+           Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+          _buildBreakdownRow(context, 'CSAT Bonus', currencyFormat.format(summary.csatBonus), isAchieved: summary.isCSATBonusAchieved, icon: Icons.sentiment_satisfied),
+           Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+          _buildBreakdownRow(context, 'Gross Salary', currencyFormat.format(summary.totalSalary + summary.csatBonus), icon: Icons.account_balance_wallet),
+           Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),
+          _buildBreakdownRow(context, 'TDS Deduction', currencyFormat.format(summary.tdsDeduction), isPayment: false, icon: Icons.remove_circle_outline),
+           // Net Salary is already in hero card, so skipping here or can be added as footer
         ],
       ),
     );
   }
 
-  Widget _buildBreakdownRow(BuildContext context, String title, String value, {bool? isAchieved, bool isHighlight = false}) {
+  Widget _buildBreakdownRow(BuildContext context, String title, String value, {bool? isAchieved, bool isPayment = true, IconData? icon}) {
     final theme = Theme.of(context);
-    Color? statusColor;
+    Color valueColor = theme.textTheme.bodyMedium?.color ?? Colors.black;
+    
     if (isAchieved != null) {
-      statusColor = isAchieved ? Colors.green : Colors.red;
+       valueColor = isAchieved ? Colors.green : Colors.red;
+    } else if (!isPayment) {
+       valueColor = Colors.red;
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal)),
-              if (isAchieved != null) ...[
+          if (icon != null) ...[
+             Icon(icon, size: 18, color: Colors.grey),
+             const SizedBox(width: 12),
+          ],
+          Text(title, style: theme.textTheme.bodyMedium),
+          const Spacer(),
+          Text(value, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: valueColor)),
+           if (isAchieved != null) ...[
                 const SizedBox(width: 8),
-                Icon(isAchieved ? Icons.check_circle : Icons.cancel, color: statusColor, size: 16),
-              ]
-            ],
-          ),
-          Text(value, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal)),
+                Icon(isAchieved ? Icons.check_circle : Icons.cancel, color: isAchieved ? Colors.green : Colors.red, size: 16),
+           ]
         ],
       ),
     );

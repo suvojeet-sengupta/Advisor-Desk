@@ -4,6 +4,7 @@ import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
 import 'package:advisor_desk/presentation/features/profile/bloc/profile_cubit.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/add_user_dialog.dart';
+import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 
 class UserManagementScreen extends StatelessWidget {
@@ -12,6 +13,7 @@ class UserManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(title: 'Manage Users'),
       body: BlocConsumer<UserCubit, UserState>(
         listener: (context, state) {
@@ -25,45 +27,67 @@ class UserManagementScreen extends StatelessWidget {
           if (state is UserLoading || state is UserInitial) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is UserLoaded) {
-            return ListView.builder(
-              padding: const EdgeInsets.all(16.0),
+            return ListView.separated(
+              padding: const EdgeInsets.all(20.0),
               itemCount: state.users.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final user = state.users[index];
                 final isCurrentUser = user.id == state.currentUserId;
 
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: isCurrentUser
-                        ? BorderSide(color: Theme.of(context).primaryColor, width: 2)
-                        : BorderSide.none,
-                  ),
+                return CustomCard(
+                  padding: EdgeInsets.zero,
+                  // Improve border logic in CustomCard if possible, otherwise use wrapping container logic
+                  // Here we rely on the internal Container of CustomCard. 
+                  // If we need specific border for current user, we might need a wrapper.
+                  // For now, let's use a colored header or icon to denote current user clearly.
                   child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: isCurrentUser ? Theme.of(context).primaryColor : Colors.grey.shade300,
-                      child: Text(
-                        user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                        style: TextStyle(
-                          color: isCurrentUser ? Colors.white : Colors.black87,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    leading: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: isCurrentUser 
+                              ? Theme.of(context).colorScheme.primary 
+                              : Colors.transparent, 
+                            width: 2
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: isCurrentUser 
+                            ? Theme.of(context).colorScheme.primary.withOpacity(0.1) 
+                            : Colors.grey.withOpacity(0.1),
+                        child: Text(
+                          user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                          style: TextStyle(
+                            color: isCurrentUser 
+                                ? Theme.of(context).colorScheme.primary 
+                                : Theme.of(context).textTheme.bodyMedium?.color,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
                     title: Text(
                       user.name,
-                      style: TextStyle(
-                        fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.w500,
                       ),
                     ),
-                    subtitle: isCurrentUser ? const Text('Current User') : null,
+                    subtitle: isCurrentUser 
+                        ? Text(
+                            'Active Session', 
+                            style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12)
+                          ) 
+                        : null,
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (!isCurrentUser)
                           IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(Icons.delete_outline_rounded, color: Theme.of(context).colorScheme.error),
                             onPressed: () {
                               _showDeleteConfirmation(context, user.name, () {
                                 context.read<UserCubit>().deleteUser(user.id);
@@ -71,14 +95,13 @@ class UserManagementScreen extends StatelessWidget {
                             },
                           ),
                         if (isCurrentUser)
-                          const Icon(Icons.check_circle, color: Colors.green)
-                        else
-                          ElevatedButton(
-                            onPressed: () {
+                          Icon(Icons.check_circle_rounded, color: Theme.of(context).colorScheme.primary),
+                        if (!isCurrentUser)
+                          TextButton(
+                             onPressed: () {
                               _showSwitchConfirmation(context, user.name, () async {
                                 await context.read<UserCubit>().switchUser(user.id);
                                 
-                                // Check if profile is filled
                                 final profileState = context.read<ProfileCubit>().state;
                                 final isProfileFilled = profileState.profile.name != null && profileState.profile.companyName != null;
                                 
@@ -87,7 +110,7 @@ class UserManagementScreen extends StatelessWidget {
                                     context, 
                                     AppRouter.profileRoute, 
                                     (route) => false,
-                                    arguments: true // isMandatoryFill
+                                    arguments: true
                                   );
                                 } else {
                                   Navigator.pushNamedAndRemoveUntil(
@@ -98,7 +121,7 @@ class UserManagementScreen extends StatelessWidget {
                                 }
                               });
                             },
-                            child: const Text('Switch'),
+                             child: const Text('Switch'),
                           ),
                       ],
                     ),

@@ -21,6 +21,7 @@ import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart'; // Import CustomCard
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -339,109 +340,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _backupDatabase() async {
-    bool hasPermission = false;
-    
-    if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      if (androidInfo.version.sdkInt >= 33) {
-        hasPermission = true; // Android 13+ doesn't need explicit storage permission for FilePicker/SAF
-      } else {
-        hasPermission = await Permission.storage.request().isGranted || await Permission.manageExternalStorage.request().isGranted;
+    setState(() => _isLoading = true);
+    try {
+      final repository = context.read<PerformanceRepository>();
+      final backupPath = await repository.backupDatabase();
+
+      if (backupPath.isNotEmpty) {
+        final prefs = await SharedPreferences.getInstance();
+        final now = DateTime.now();
+        final formattedDate = '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}';
+        await prefs.setString('last_backup_date', formattedDate);
+        setState(() {
+          _lastBackupDate = formattedDate;
+        });
+
+        // Share the backup file
+        await Share.shareXFiles([XFile(backupPath)], text: 'Advisor Desk Backup');
       }
-    } else {
-      hasPermission = true; // iOS/other
-    }
-
-    if (hasPermission) {
-      setState(() => _isLoading = true);
-      try {
-        final dbFolder = await getApplicationDocumentsDirectory();
-        final dbPath = '${dbFolder.path}/app_database.db';
-        final file = File(dbPath);
-
-        if (await file.exists()) {
-          String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-
-          if (selectedDirectory != null) {
-            final backupPath = '$selectedDirectory/advisor_desk_backup_${DateTime.now().millisecondsSinceEpoch}.db';
-            // On Android 13+, if selectedDirectory is a scoped storage path, simple File.copy MIGHT fail if not handled by SAF.
-            // But usually FilePicker.getDirectoryPath returns a path we can write to if we have the URI permission.
-            // If this fails, we might need a stream-based copy or saf_stream. 
-            // For now, assume File.copy works or is sufficient given the user request "fix the permission message".
-            await file.copy(backupPath);
-            
-            final prefs = await SharedPreferences.getInstance();
-            final now = DateTime.now();
-            final formattedDate = '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}';
-            await prefs.setString('last_backup_date', formattedDate);
-            setState(() {
-              _lastBackupDate = formattedDate;
-            });
-
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Backup successful!')));
-            }
-          }
-        } else {
-             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No database found to backup.')));
-            }
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Backup failed: $e')));
-        }
-      } finally {
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Backup failed: $e')));
+      }
+    } finally {
+      if (mounted) {
         setState(() => _isLoading = false);
       }
-    } else {
-       if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Storage permission required for backup.')));
-        }
     }
   }
 
   Future<void> _restoreDatabase() async {
-    bool hasPermission = false;
-    
-    if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      if (androidInfo.version.sdkInt >= 33) {
-        hasPermission = true; // Android 13+ doesn't need explicit storage permission for FilePicker
-      } else {
-        hasPermission = await Permission.storage.request().isGranted || await Permission.manageExternalStorage.request().isGranted;
-      }
-    } else {
-      hasPermission = true; // iOS/other
-    }
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    if (hasPermission) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.single.path != null) {
+      setState(() => _isLoading = true);
+      try {
+        final repository = context.read<PerformanceRepository>();
+        await repository.restoreDatabase(result.files.single.path!);
 
-      if (result != null) {
-        setState(() => _isLoading = true);
-        try {
-          File sourceFile = File(result.files.single.path!);
-          final dbFolder = await getApplicationDocumentsDirectory();
-          final dbPath = '${dbFolder.path}/app_database.db';
-          
-          await sourceFile.copy(dbPath);
-
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Restore successful! Restart app to see changes.')));
-          }
-        } catch (e) {
-           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Restore failed: $e')));
-          }
-        } finally {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Restore successful! Please restart the app.')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Restore failed: $e')));
+        }
+      } finally {
+        if (mounted) {
           setState(() => _isLoading = false);
         }
       }
-    } else {
-       if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Storage permission required for restore.')));
-        }
     }
   }
 

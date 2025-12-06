@@ -31,8 +31,42 @@ class AiInsightCard extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    
+    // Generate a rich gradient based on the primary color
+    // We use HSL to ensure we get a nice visible gradient regardless of the input color
+    final hslPrimary = HSLColor.fromColor(primaryColor);
+    final color1 = hslPrimary.withLightness((hslPrimary.lightness + 0.1).clamp(0.0, 1.0)).toColor();
+    final color2 = hslPrimary.withLightness((hslPrimary.lightness - 0.2).clamp(0.0, 1.0)).withSaturation((hslPrimary.saturation + 0.1).clamp(0.0, 1.0)).toColor();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          colors: [color1, color2],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(

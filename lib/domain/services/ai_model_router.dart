@@ -5,36 +5,35 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 class AIModelRouter {
   final String apiKey;
   
-  // Priority 1: The BEAST. Unlimited usage.
+  // Priority 1: Primary model with unlimited usage
   final String primaryModel = "gemini-2.5-flash-live";
   
-  // Priority 2: High RPD (14.4K daily), good for general tasks if Primary is busy/down
+  // Priority 2: Fallback models with high daily quota (14.4K RPD)
   final List<String> fallbackPool = [
     "gemma-3-27b",
     "gemma-3-12b",
   ];
   
-  // Priority 3: The "Limited Edition" (Only 20/day). Use ONLY for emergency or very specific logic.
+  // Priority 3: Emergency model with limited daily quota (20 RPD)
   final String emergencyModel = "gemini-2.5-flash";
 
   AIModelRouter({required this.apiKey});
 
   /// Tries to generate content using the best available model in sequence.
-  /// Never lets you hit a rate limit wall without fighting back!
+  /// Implements automatic fallback logic to handle rate limits gracefully.
   Future<GenerateContentResponse?> generateContent(
     List<Content> content, {
     void Function(String)? onModelSwitch,
   }) async {
-    // --- STEP 1: Try the Unlimited King (Flash Live) ---
-    onModelSwitch?.call('👉 Trying Primary Model: $primaryModel (Unlimited!)');
+    // STEP 1: Try primary model with unlimited usage
+    onModelSwitch?.call('👉 Trying Primary Model: $primaryModel (Unlimited)');
     final primaryResult = await _callModel(primaryModel, content, onModelSwitch);
     if (primaryResult != null) {
       return primaryResult;
     }
 
-    // --- STEP 2: Fallback to Gemma (High Volume Workers) ---
-    // If the main one fails, don't cry. Use the soldiers.
-    onModelSwitch?.call('⚠️ Primary busy/error. Switching to Gemma Squad...');
+    // STEP 2: Fallback to high-volume secondary models
+    onModelSwitch?.call('⚠️ Primary busy/error. Switching to fallback models...');
     for (final model in fallbackPool) {
       onModelSwitch?.call('👉 Trying Backup: $model');
       final result = await _callModel(model, content, onModelSwitch);
@@ -43,9 +42,8 @@ class AIModelRouter {
       }
     }
 
-    // --- STEP 3: Last Resort (The 20 RPD guys) ---
-    // Sirf tab use karna jab duniya khatam ho rahi ho.
-    onModelSwitch?.call('🚨 All systems critical! Using Emergency Reserve (Flash Standard)...');
+    // STEP 3: Last resort - use emergency model with limited quota
+    onModelSwitch?.call('🚨 All systems critical! Using Emergency Reserve...');
     final emergencyResult = await _callModel(emergencyModel, content, onModelSwitch);
     if (emergencyResult != null) {
       return emergencyResult;

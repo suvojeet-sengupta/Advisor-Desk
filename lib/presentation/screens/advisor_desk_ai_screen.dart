@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:advisor_desk/presentation/common/widgets/typing_indicator.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class AdvisorDeskAIScreen extends StatelessWidget {
   const AdvisorDeskAIScreen({Key? key}) : super(key: key);
@@ -334,13 +335,36 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                     ),
                 ],
               ),
-              child: Text(
-                insight.message,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: isUserMessage ? Colors.white : theme.textTheme.bodyLarge?.color,
-                  height: 1.4,
-                ),
-              ),
+              child: isUserMessage
+                  ? Text(
+                      insight.message,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: Colors.white,
+                        height: 1.4,
+                      ),
+                    )
+                  : MarkdownBody(
+                      data: insight.message,
+                      selectable: true,
+                      styleSheet: MarkdownStyleSheet(
+                        p: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+                        strong: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          height: 1.5,
+                        ),
+                        em: theme.textTheme.bodyLarge?.copyWith(
+                          fontStyle: FontStyle.italic,
+                          height: 1.5,
+                        ),
+                        listBullet: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+                        h1: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                        h2: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        h3: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        blockSpacing: 12,
+                        listIndent: 16,
+                        listBulletPadding: const EdgeInsets.only(right: 8),
+                      ),
+                    ),
             ),
           ),
           if (isUserMessage) ...[

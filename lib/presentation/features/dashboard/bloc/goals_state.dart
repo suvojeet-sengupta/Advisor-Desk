@@ -7,7 +7,6 @@ class GoalsState extends Equatable {
   final bool isGoalsSet;
   final int? suggestedHours;
   final int? suggestedCalls;
-  final int? suggestedCalls;
   final bool suggestionsLoading;
   final bool isAiLoading;
 

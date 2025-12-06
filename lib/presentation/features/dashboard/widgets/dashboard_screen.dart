@@ -862,71 +862,74 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           labelText: 'Target Login Hours (Max 570)',
-                    border: theme.inputDecorationTheme.border,
-                    enabledBorder: theme.inputDecorationTheme.enabledBorder,
-                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                    fillColor: theme.inputDecorationTheme.fillColor,
-                    filled: theme.inputDecorationTheme.filled,
+                          border: theme.inputDecorationTheme.border,
+                          enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                          fillColor: theme.inputDecorationTheme.fillColor,
+                          filled: theme.inputDecorationTheme.filled,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter target hours';
+                          }
+                          final hours = int.tryParse(value);
+                          if (hours == null) {
+                            return 'Please enter a valid number';
+                          }
+                          if (hours > 570) {
+                            return 'Hours cannot exceed 570';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: callsController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Target Call Count',
+                          border: theme.inputDecorationTheme.border,
+                          enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                          fillColor: theme.inputDecorationTheme.fillColor,
+                          filled: theme.inputDecorationTheme.filled,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter target calls';
+                          }
+                          if (int.tryParse(value) == null) {
+                            return 'Please enter a valid number';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter target hours';
-                    }
-                    final hours = int.tryParse(value);
-                    if (hours == null) {
-                      return 'Please enter a valid number';
-                    }
-                    if (hours > 570) {
-                      return 'Hours cannot exceed 570';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: callsController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Target Call Count',
-                    border: theme.inputDecorationTheme.border,
-                    enabledBorder: theme.inputDecorationTheme.enabledBorder,
-                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                    fillColor: theme.inputDecorationTheme.fillColor,
-                    filled: theme.inputDecorationTheme.filled,
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Cancel'),
                   ),
-                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter target calls';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return 'Please enter a valid number';
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        final newHours = int.tryParse(hoursController.text) ?? currentHours;
+                        final newCalls = int.tryParse(callsController.text) ?? currentCalls;
+                        final userId = context.read<UserCubit>().state is UserLoaded
+                            ? (context.read<UserCubit>().state as UserLoaded).currentUserId
+                            : '1';
+                        context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls, userId: userId));
+                        Navigator.pop(dialogContext);
+                      }
+                    },
+                    child: const Text('Save'),
+                  )
+                ],
+              );
+            },
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  final newHours = int.tryParse(hoursController.text) ?? currentHours;
-                  final newCalls = int.tryParse(callsController.text) ?? currentCalls;
-                  final userId = context.read<UserCubit>().state is UserLoaded
-                      ? (context.read<UserCubit>().state as UserLoaded).currentUserId
-                      : '1';
-                  context.read<GoalsBloc>().add(SaveGoals(hours: newHours, calls: newCalls, userId: userId));
-                  Navigator.pop(dialogContext);
-                }
-              },
-              child: const Text('Save'),
-            )
-          ],
         );
       },
     );

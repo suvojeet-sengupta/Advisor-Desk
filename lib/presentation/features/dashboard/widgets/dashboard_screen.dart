@@ -50,7 +50,6 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_eve
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_state.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/ai_insight_card.dart';
 import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
-import 'package:advisor_desk/presentation/common/widgets/custom_refresh_indicator.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -234,13 +233,9 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 }
 
                 return SafeArea(
-                  child: CustomRefreshIndicator(
-                    onRefresh: () async {
-                      context.read<DashboardBloc>().add(RefreshDashboard());
-                    },
-                    child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      slivers: [
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                    slivers: [
                         // Custom Header
                         SliverToBoxAdapter(
                           child: Padding(
@@ -262,14 +257,35 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                               ),
                                         ),
                                         const SizedBox(height: 4),
-                                        Text(
-                                          profile.name ?? 'User',
-                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: isDark ? Colors.white : Colors.black87,
+                                        Row(
+                                          children: [
+                                            Text(
+                                              profile.name ?? 'User',
+                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: isDark ? Colors.white : Colors.black87,
+                                                  ),
+                                            ),
+                                            if (profile.name == 'Suvojeet Sengupta') ...[
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                                child: Text(
+                                                  'DEV',
+                                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                                        color: Theme.of(context).colorScheme.onPrimary,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 10,
+                                                      ),
+                                                ),
                                               ),
-                                        ),
-                                      ],
+                                            ],
+                                          ],
+                                        ),                                      ],
                                     ),
                                     GestureDetector(
                                       onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
@@ -449,8 +465,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                           ),
                       ],
                     ),
-                  ),
-                );
+                  );
               },
             ),
             if (_isFabMenuOpen)
@@ -507,7 +522,11 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 _isFabMenuOpen = false;
                 _fabAnimationController.reverse();
               });
-              Navigator.pushNamed(context, AppRouter.addEntryRoute);
+              Navigator.pushNamed(context, AppRouter.addEntryRoute).then((result) {
+                if (result == true) {
+                  context.read<DashboardBloc>().add(RefreshDashboard());
+                }
+              });
             },
           ),
           const SizedBox(height: 16),
@@ -694,7 +713,11 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 iconColor: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
                 onTap: () {
                   if (dashboardState.csatSummary != null) {
-                    Navigator.pushNamed(context, AppRouter.csatDetailsRoute, arguments: dashboardState.csatSummary);
+                    Navigator.pushNamed(context, AppRouter.csatDetailsRoute, arguments: dashboardState.csatSummary).then((result) {
+                      if (result == true) {
+                        context.read<DashboardBloc>().add(RefreshDashboard());
+                      }
+                    });
                   }
                 },
               ),
@@ -705,7 +728,11 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 iconColor: _getQualityColor(dashboardState.cqSummary!.monthlyAverageCQ, context),
                 onTap: () {
                   if (dashboardState.cqSummary != null) {
-                    Navigator.pushNamed(context, AppRouter.cqDetailsRoute, arguments: dashboardState.cqSummary);
+                    Navigator.pushNamed(context, AppRouter.cqDetailsRoute, arguments: dashboardState.cqSummary).then((result) {
+                      if (result == true) {
+                        context.read<DashboardBloc>().add(RefreshDashboard());
+                      }
+                    });
                   }
                 },
               ),
@@ -769,7 +796,10 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         return SliverToBoxAdapter(
           child: Column(
             children: [
-              DailyEntriesSection(entries: summary.entries),
+              DailyEntriesSection(
+                entries: summary.entries,
+                onEntryChanged: () => context.read<DashboardBloc>().add(RefreshDashboard()),
+              ),
             ],
           ),
         );

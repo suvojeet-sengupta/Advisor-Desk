@@ -138,6 +138,10 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     // Save User Message
     await _performanceRepository.insertChatMessage(userMessage, true);
 
+    // Artificial delay to show typing indicator as requested (2-3 seconds)
+    // This makes the interaction feel more "alive"
+    await Future.delayed(const Duration(seconds: 2));
+
     try {
       final userId = await _userDataSource.getCurrentUserId();
       // final now = DateTime.now(); // No longer needed for single fetch, but maybe for goals?

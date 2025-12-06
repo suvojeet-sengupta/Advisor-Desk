@@ -27,6 +27,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
   late CQSummary _currentCqSummary;
   final GlobalKey _firstCqEntryKey = GlobalKey(); // Declare GlobalKey
   late OverlayEntry overlayEntry; // Declare here
+  bool _hasDataChanged = false;
 
   @override
   void initState() {
@@ -72,6 +73,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     );
     setState(() {
       _currentCqSummary = updatedSummary;
+      _hasDataChanged = true;
     });
   }
 
@@ -131,10 +133,17 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: const CustomAppBar(title: 'CQ Performance'),
-      body: CustomScrollView(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.of(context).pop(_hasDataChanged);
+        }
+      },
+      child: Scaffold(
+         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: const CustomAppBar(title: 'CQ Performance'),
+        body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: <Widget>[
           SliverToBoxAdapter(
@@ -338,6 +347,7 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
         ],
       ),
       bottomNavigationBar: const DetailsScreenBannerAd(),
+      ),
     );
   }
 

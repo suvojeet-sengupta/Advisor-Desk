@@ -26,6 +26,7 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
   late CSATSummary _currentCsatSummary;
   final GlobalKey _firstCsatEntryKey = GlobalKey(); // Declare GlobalKey
   late OverlayEntry overlayEntry; // Declare here
+  bool _hasDataChanged = false;
 
   @override
   void initState() {
@@ -71,6 +72,7 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
     );
     setState(() {
       _currentCsatSummary = updatedSummary;
+      _hasDataChanged = true;
     });
   }
 
@@ -130,10 +132,17 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: const CustomAppBar(title: 'CSAT Performance'),
-      body: CustomScrollView(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.of(context).pop(_hasDataChanged);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: const CustomAppBar(title: 'CSAT Performance'),
+        body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: <Widget>[
           SliverToBoxAdapter(
@@ -349,6 +358,7 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
         ],
       ),
       bottomNavigationBar: const DetailsScreenBannerAd(),
+      ),
     );
   }
 

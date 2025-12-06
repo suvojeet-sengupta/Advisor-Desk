@@ -10,6 +10,8 @@ class AnimatedButton extends StatefulWidget {
   final BorderRadius? borderRadius;
   final double elevation;
   final bool enableHaptic;
+  final double? width;
+  final double? height;
 
   const AnimatedButton({
     Key? key,
@@ -21,6 +23,8 @@ class AnimatedButton extends StatefulWidget {
     this.borderRadius,
     this.elevation = 0, // Default to 0 for flat look
     this.enableHaptic = true,
+    this.width,
+    this.height,
   }) : super(key: key);
 
   @override
@@ -92,6 +96,8 @@ class _AnimatedButtonState extends State<AnimatedButton>
           return Transform.scale(
             scale: _scaleAnimation.value,
             child: Container(
+              width: widget.width,
+              height: widget.height,
               decoration: BoxDecoration(
                 borderRadius: widget.borderRadius ?? BorderRadius.circular(16), // Rounded
                 color: backgroundColor, // Solid color

@@ -158,9 +158,31 @@ class _ProfileViewState extends State<ProfileView> {
                   child: Icon(Icons.person_outline_rounded, color: Theme.of(context).colorScheme.primary),
                 ),
                 title: Text('Name', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
-                subtitle: Text(
-                  profile.name ?? 'Not Set', 
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                subtitle: Row(
+                  children: [
+                    Text(
+                      profile.name ?? 'Not Set', 
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    if (profile.name == 'Suvojeet Sengupta') ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'DEV',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
               Divider(height: 1, color: Theme.of(context).dividerColor.withOpacity(0.1)),

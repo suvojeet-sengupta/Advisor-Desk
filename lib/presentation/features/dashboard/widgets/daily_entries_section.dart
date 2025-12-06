@@ -8,10 +8,12 @@ import 'package:intl/intl.dart';
 
 class DailyEntriesSection extends StatelessWidget {
   final List<DailyEntry> entries;
+  final VoidCallback? onEntryChanged;
 
   const DailyEntriesSection({
     Key? key,
     required this.entries,
+    this.onEntryChanged,
   }) : super(key: key);
 
   @override
@@ -73,13 +75,14 @@ class DailyEntriesSection extends StatelessWidget {
         trailing: IconButton(
           icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.secondary),
           onPressed: () {
-            // Edit ke liye AddEntryScreen par navigate karein
             Navigator.pushNamed(
               context,
               AppRouter.addEntryRoute,
-              arguments: entry, // Entry object ko arguments ke roop mein pass karein
-            ).then((_) {
-              // Dashboard ko refresh karein (optional, agar BLoC se handle nahi ho raha)
+              arguments: entry,
+            ).then((result) {
+              if (result == true) {
+                onEntryChanged?.call();
+              }
             });
           },
         ),
@@ -87,3 +90,4 @@ class DailyEntriesSection extends StatelessWidget {
     );
   }
 }
+

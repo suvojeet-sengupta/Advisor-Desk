@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter/physics.dart';
 
 class CustomRefreshIndicator extends StatefulWidget {
   final Widget child;
@@ -20,128 +22,185 @@ class CustomRefreshIndicator extends StatefulWidget {
 }
 
 class _CustomRefreshIndicatorState extends State<CustomRefreshIndicator>
-    with TickerProviderStateMixin {
-  late AnimationController _lottieController;
-  late AnimationController _scaleController;
-  late Animation<double> _scaleAnimation;
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  late AnimationController _scaleController; 
   
-  bool _isRefreshing = false;
+  // Spring Physics for "Jumpback"
+  final SpringDescription _spring = const SpringDescription(
+    mass: 1,
+    stiffness: 100, // Higher ease
+    damping: 10,  // Lower damping = more bounciness
+  );
+
   double _dragOffset = 0;
-  final double _dragThreshold = 100;
+  bool _isRefreshing = false;
+  static const double _refreshTriggerHeight = 100;
+  static const double _maxDragOffset = 150;
 
   @override
   void initState() {
     super.initState();
-    _lottieController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
+    _controller = AnimationController(vsync: this);
+    
+    _controller.addListener(() {
+      setState(() {
+        _dragOffset = _controller.value * _refreshTriggerHeight;
+      });
+    });
+    
     _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.easeOutBack,
-    ));
+        vsync: this, duration: const Duration(milliseconds: 300));
   }
 
   @override
   void dispose() {
-    _lottieController.dispose();
+    _controller.dispose();
     _scaleController.dispose();
     super.dispose();
   }
 
-  Widget _buildLottieAnimation() {
-    // Default loading animation if no asset provided
-    if (widget.lottieAsset != null) {
-      return Lottie.asset(
-        widget.lottieAsset!,
-        controller: _lottieController,
-        height: 60,
-        width: 60,
-      );
+  Future<void> _handleRefresh() async {
+    setState(() => _isRefreshing = true);
+    _scaleController.repeat(); // Spin indicator or pulse
+    
+    // Sync controller to current drag state to avoid visual jump
+    _controller.value = _dragOffset / _refreshTriggerHeight;
+    
+    // Animate to hold position
+    await _controller.animateTo(1.0, duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+    
+    try {
+      await widget.onRefresh();
+    } finally {
+      if (mounted) {
+         setState(() => _isRefreshing = false);
+         _scaleController.stop();
+         
+         // Smooth Jumpback Animation
+         // Simulating spring release
+         await _controller.animateWith(SpringSimulation(
+             _spring, 
+             _controller.value, 
+             0.0, 
+             -_controller.velocity,
+         )); 
+      }
+    }
+  }
+  
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (_isRefreshing) return false;
+
+    // Handle OverscrollNotification for Android (clamping scroll physics)
+    if (notification is OverscrollNotification) {
+      // Only track overscroll at the top (negative overscroll)
+      if (notification.overscroll < 0) {
+        setState(() {
+          _dragOffset = (_dragOffset - notification.overscroll).clamp(0, _maxDragOffset);
+        });
+      }
+    }
+
+    // Handle ScrollUpdateNotification for iOS (bouncing scroll physics)
+    if (notification is ScrollUpdateNotification) {
+      if (notification.metrics.extentBefore == 0 && notification.metrics.pixels < 0) {
+        final overscroll = notification.metrics.pixels.abs();
+        setState(() {
+          _dragOffset = overscroll.clamp(0, _maxDragOffset);
+        });
+      } else if (_dragOffset > 0 && notification.metrics.pixels >= 0 && !_isRefreshing) {
+         // Reset offset when scrolling back down (not at top anymore)
+         setState(() {
+           _dragOffset = 0;
+         });
+      }
+    }
+
+    // Handle UserScrollNotification for finger lift detection
+    if (notification is UserScrollNotification) {
+      if (notification.direction == ScrollDirection.idle) {
+        if (_dragOffset >= _refreshTriggerHeight) {
+          _handleRefresh();
+        } else if (_dragOffset > 0) {
+          // Reset if released before trigger
+          setState(() {
+            _dragOffset = 0;
+          });
+        }
+      }
     }
     
-    // Fallback to built-in circular animation
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-      ),
-      child: Center(
-        child: SizedBox(
-          width: 30,
-          height: 30,
-          child: CircularProgressIndicator(
-            strokeWidth: 3,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        ),
-      ),
-    );
+    // Handle ScrollEndNotification as fallback
+    if (notification is ScrollEndNotification) {
+       if (_dragOffset >= _refreshTriggerHeight) {
+          _handleRefresh();
+       } else if (_dragOffset > 0) {
+          // Reset if released before trigger
+          setState(() {
+            _dragOffset = 0;
+          });
+       }
+    }
+    
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator.adaptive(
-      onRefresh: () async {
-        setState(() {
-          _isRefreshing = true;
-        });
-        _scaleController.forward();
-        _lottieController.repeat();
-        
-        await widget.onRefresh();
-        
-        _lottieController.stop();
-        _scaleController.reverse();
-        setState(() {
-          _isRefreshing = false;
-        });
-      },
-      backgroundColor: widget.backgroundColor ?? Theme.of(context).cardColor,
-      color: Theme.of(context).colorScheme.primary,
+    return NotificationListener<ScrollNotification>(
+      onNotification: _handleScrollNotification,
       child: Stack(
         children: [
           widget.child,
-          if (_isRefreshing)
+          
+          // Indicator Overlay
+          // Only visible when there is an offset or refreshing
+          if (_dragOffset > 0 || _isRefreshing)
             Positioned(
-              top: MediaQuery.of(context).padding.top + 20,
+              top: 0,
               left: 0,
               right: 0,
-              child: Center(
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: _buildLottieAnimation(),
-                  ),
-                ),
+              child: Container(
+                alignment: Alignment.center,
+                height: _isRefreshing ? _refreshTriggerHeight : _dragOffset.clamp(0, _maxDragOffset),
+                child: _buildLottieAnimation(),
               ),
             ),
         ],
       ),
     );
+  }
+  
+  Widget _buildLottieAnimation() {
+      if (widget.lottieAsset != null) {
+        return Lottie.asset(
+          widget.lottieAsset!,
+          height: 50,
+          width: 50,
+        );
+      }
+      return Container(
+        height: 45, width: 45,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          shape: BoxShape.circle,
+          boxShadow: [
+             BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0,4))
+          ]
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Theme.of(context).colorScheme.primary),
+             value: _isRefreshing 
+                ? null 
+                : (_dragOffset / _refreshTriggerHeight).clamp(0.0, 1.0),
+          ),
+        ),
+      );
   }
 }
 

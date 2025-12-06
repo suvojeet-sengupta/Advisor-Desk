@@ -1,5 +1,6 @@
 import 'package:advisor_desk/core/utils/rate_app_helper.dart';
 import 'package:flutter/services.dart';
+import 'package:advisor_desk/core/utils/app_logger.dart';
 
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/data/datasources/goal_data_source.dart';
@@ -182,7 +183,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         _navigateToShortcut(action);
       }
     } on PlatformException catch (e) {
-      print("Failed to get shortcut action: '${e.message}'.");
+      AppLogger.error('Failed to get shortcut action', e);
     }
 
     _shortcutChannel.setMethodCallHandler((call) async {
@@ -248,8 +249,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         }
       }
     } catch (e) {
-      print('Failed to check for update: $e');
-      // Handle error, e.g., show a message to the user
+      AppLogger.error('Failed to check for update', e);
     }
   }
 
@@ -270,7 +270,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           InAppUpdate.completeFlexibleUpdate();
         }
       }).catchError((e) {
-        print('Failed to check for update on resume: $e');
+        AppLogger.error('Failed to check for update on resume', e);
       });
 
       // Check for app lock on resume

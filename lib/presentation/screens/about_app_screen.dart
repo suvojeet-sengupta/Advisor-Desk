@@ -3,6 +3,7 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:advisor_desk/core/utils/app_logger.dart';
 
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({Key? key}) : super(key: key);
@@ -355,8 +356,7 @@ class AboutAppScreen extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      // Handle error gracefully or debug log
-      debugPrint('Could not launch $url');
+      AppLogger.warning('Could not launch URL: $url');
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:advisor_desk/core/utils/app_logger.dart';
 
 class AuthenticationService {
   static final _auth = LocalAuthentication();
@@ -21,7 +22,7 @@ class AuthenticationService {
         ),
       );
     } on PlatformException catch (e) {
-      print(e); // Handle error
+      AppLogger.error('Biometric authentication failed', e);
       return false;
     }
   }

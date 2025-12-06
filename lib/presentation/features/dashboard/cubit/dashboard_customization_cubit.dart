@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/core/models/dashboard_models.dart';
+import 'package:advisor_desk/core/utils/app_logger.dart';
 
 class DashboardCustomizationCubit extends Cubit<DashboardCustomization> {
   static const String _prefsKey = 'dashboard_customization';
@@ -19,8 +20,7 @@ class DashboardCustomizationCubit extends Cubit<DashboardCustomization> {
         final Map<String, dynamic> jsonMap = json.decode(jsonString);
         emit(DashboardCustomization.fromJson(jsonMap));
       } catch (e) {
-        // Handle parsing errors, maybe reset to default
-        print('Error loading dashboard customization: $e');
+        AppLogger.error('Error loading dashboard customization', e);
         emit(const DashboardCustomization());
       }
     } else {

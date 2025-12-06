@@ -61,6 +61,7 @@ dependencies:
   google_generative_ai: 0.4.7
   flutter_markdown: ^0.7.7+1
   printing: ^5.14.2
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:

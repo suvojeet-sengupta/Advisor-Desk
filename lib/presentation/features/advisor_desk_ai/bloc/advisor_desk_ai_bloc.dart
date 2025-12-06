@@ -11,6 +11,7 @@ import 'package:advisor_desk/data/datasources/user_data_source.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 import 'package:intl/intl.dart';
+import 'package:advisor_desk/core/utils/app_logger.dart';
 
 
 class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
@@ -182,7 +183,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
             await _performanceRepository.insertChatMessage(aiAnswer, false);
       
           } catch (e, stack) {
-            print("Gemini Error: $e, $stack"); // helpful for debug
+            AppLogger.error('Gemini API error', e, stack);
             final errorInsight = AiInsight(message: "Sorry, I encountered an error answering that. Please try again later.");
             final finalHistory = List<AiInsight>.from(state.insightHistory)..add(errorInsight);
             emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));

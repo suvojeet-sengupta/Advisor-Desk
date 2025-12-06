@@ -1,5 +1,6 @@
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
+import 'package:advisor_desk/domain/entities/ai_response.dart';
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
@@ -28,7 +29,10 @@ class NlpService {
           );
         }
 
-  Future<Map<String, dynamic>> processQuestion({
+  // Duration for showing "Switching model..." indicator
+  static const Duration _modelSwitchDisplayDuration = Duration(seconds: 3);
+
+  Future<AiResponse> processQuestion({
     required String question,
     required List<MonthlySummary> histories,
     required GoalsState goals,
@@ -39,10 +43,10 @@ class NlpService {
   }) async {
     // 1. Check if API key is present
     if (AppConstants.geminiApiKey.isEmpty) {
-       return {
-         'insight': const AiInsight(message: "AI configuration is missing (API Key). Please contact the developer."),
-         'modelSwitched': false,
-       };
+       return const AiResponse(
+         insight: AiInsight(message: "AI configuration is missing (API Key). Please contact the developer."),
+         modelSwitched: false,
+       );
     }
 
     // 2. Build Context Prompt
@@ -55,16 +59,16 @@ class NlpService {
 
       final text = response.text;
       if (text == null || text.isEmpty) {
-        return {
-          'insight': const AiInsight(message: "I'm having trouble thinking right now. Please try again."),
-          'modelSwitched': false,
-        };
+        return const AiResponse(
+          insight: AiInsight(message: "I'm having trouble thinking right now. Please try again."),
+          modelSwitched: false,
+        );
       }
 
-      return {
-        'insight': AiInsight(message: text),
-        'modelSwitched': false,
-      };
+      return AiResponse(
+        insight: AiInsight(message: text),
+        modelSwitched: false,
+      );
 
     } catch (e) {
       // Check if error is quota/limit exceeded
@@ -81,28 +85,28 @@ class NlpService {
 
           final text = response.text;
           if (text == null || text.isEmpty) {
-            return {
-              'insight': const AiInsight(message: "I'm having trouble thinking right now. Please try again."),
-              'modelSwitched': true,
-            };
+            return const AiResponse(
+              insight: AiInsight(message: "I'm having trouble thinking right now. Please try again."),
+              modelSwitched: true,
+            );
           }
 
-          return {
-            'insight': AiInsight(message: text),
-            'modelSwitched': true,
-          };
+          return AiResponse(
+            insight: AiInsight(message: text),
+            modelSwitched: true,
+          );
         } catch (fallbackError) {
-          return {
-            'insight': AiInsight(message: "I encountered an error connecting to my brain: $fallbackError"),
-            'modelSwitched': true,
-          };
+          return AiResponse(
+            insight: AiInsight(message: "I encountered an error connecting to my brain: $fallbackError"),
+            modelSwitched: true,
+          );
         }
       }
       
-      return {
-        'insight': AiInsight(message: "I encountered an error connecting to my brain: $e"),
-        'modelSwitched': false,
-      };
+      return AiResponse(
+        insight: AiInsight(message: "I encountered an error connecting to my brain: $e"),
+        modelSwitched: false,
+      );
     }
   }
 
@@ -324,6 +328,23 @@ Response:
       final response = await _modelLite.generateContent(content);
       return AiInsight(message: response.text ?? "");
     } catch (e) {
+      // Check if error is quota/limit exceeded
+      final errorMessage = e.toString().toLowerCase();
+      if (errorMessage.contains('quota') || 
+          errorMessage.contains('limit') || 
+          errorMessage.contains('resource') ||
+          errorMessage.contains('exceeded')) {
+        
+        // Try fallback to gemini-2.5-flash
+        try {
+          final content = [Content.text(prompt)];
+          final response = await _modelFlash.generateContent(content);
+          return AiInsight(message: response.text ?? "");
+        } catch (fallbackError) {
+          return AiInsight(message: "Error generating goals: $fallbackError");
+        }
+      }
+      
       return AiInsight(message: "Error generating goals: $e");
     }
   }

@@ -7,7 +7,9 @@ class GoalsState extends Equatable {
   final bool isGoalsSet;
   final int? suggestedHours;
   final int? suggestedCalls;
+  final int? suggestedCalls;
   final bool suggestionsLoading;
+  final bool isAiLoading;
 
   const GoalsState({
     this.targetHours = 0,
@@ -17,6 +19,7 @@ class GoalsState extends Equatable {
     this.suggestedHours,
     this.suggestedCalls,
     this.suggestionsLoading = false,
+    this.isAiLoading = false,
   });
 
   GoalsState copyWith({
@@ -27,6 +30,7 @@ class GoalsState extends Equatable {
     int? suggestedHours,
     int? suggestedCalls,
     bool? suggestionsLoading,
+    bool? isAiLoading,
   }) {
     return GoalsState(
       targetHours: targetHours ?? this.targetHours,
@@ -36,6 +40,7 @@ class GoalsState extends Equatable {
       suggestedHours: suggestedHours ?? this.suggestedHours,
       suggestedCalls: suggestedCalls ?? this.suggestedCalls,
       suggestionsLoading: suggestionsLoading ?? this.suggestionsLoading,
+      isAiLoading: isAiLoading ?? this.isAiLoading,
     );
   }
 
@@ -48,5 +53,6 @@ class GoalsState extends Equatable {
         suggestedHours,
         suggestedCalls,
         suggestionsLoading,
+        isAiLoading,
       ];
 }

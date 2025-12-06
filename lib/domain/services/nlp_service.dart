@@ -140,4 +140,55 @@ class NlpService {
     Response:
     ''';
   }
+
+  Future<AiInsight> suggestGoals({
+    required List<MonthlySummary> histories,
+    required Profile profile,
+  }) async {
+    if (AppConstants.geminiApiKey.isEmpty) {
+      return const AiInsight(message: "Error: AI not configured.");
+    }
+
+    // 1. Build Prompt
+    final StringBuffer dataBuffer = StringBuffer();
+    // Sort slightly to be safe
+    final sortedHistories = List<MonthlySummary>.from(histories)
+      ..sort((a, b) => a.year == b.year ? a.month.compareTo(b.month) : a.year.compareTo(b.year));
+    
+    // Take last 6 months for relevance
+    final relevantHistory = sortedHistories.length > 6 ? sortedHistories.sublist(sortedHistories.length - 6) : sortedHistories;
+
+    for (final summary in relevantHistory) {
+      dataBuffer.writeln("Month: ${summary.formattedMonthYear}, Calls: ${summary.totalCalls}, Hours: ${summary.totalLoginHours.round()}");
+    }
+
+    final prompt = '''
+    You are a data analyst for a work performance app.
+    
+    **User History (Last 6 Months)**:
+    $dataBuffer
+
+    **Task**:
+    Suggest realistic but challenging goals for the NEXT month based on the trend.
+    - If trend is up, increase slightly (5-10%).
+    - If trend is stable, maintain or slight push.
+    - If irregular, suggest an average.
+
+    **Output Format**:
+    Return ONLY a JSON string. No markdown, no explanations.
+    {
+      "suggestedCalls": <int>,
+      "suggestedHours": <int>,
+      "reasoning": "<short single sentence reasoning>"
+    }
+    ''';
+
+    try {
+      final content = [Content.text(prompt)];
+      final response = await _model.generateContent(content);
+      return AiInsight(message: response.text ?? "");
+    } catch (e) {
+      return AiInsight(message: "Error generating goals: $e");
+    }
+  }
 }

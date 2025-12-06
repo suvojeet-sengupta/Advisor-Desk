@@ -41,6 +41,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 
 // Advisor Desk AI Imports
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
@@ -783,22 +784,84 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     final hoursController = TextEditingController(text: currentHours.toString());
     final callsController = TextEditingController(text: currentCalls.toString());
     final formKey = GlobalKey<FormState>();
+    
+    // Capture blocs from context before showing dialog
+    final goalsBloc = context.read<GoalsBloc>();
+    final profileCubit = context.read<ProfileCubit>();
 
     showDialog(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Set Monthly Goals'),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: hoursController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Target Login Hours (Max 570)',
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: goalsBloc),
+            BlocProvider.value(value: profileCubit),
+          ],
+          child: BlocConsumer<GoalsBloc, GoalsState>(
+            listener: (context, state) {
+              if (state.suggestedHours != null && state.suggestedHours != 0) {
+                 hoursController.text = state.suggestedHours.toString();
+              }
+              if (state.suggestedCalls != null && state.suggestedCalls != 0) {
+                 callsController.text = state.suggestedCalls.toString();
+              }
+            },
+            builder: (context, state) {
+              return AlertDialog(
+                title: const Text('Set Monthly Goals'),
+                content: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (state.isAiLoading)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary),
+                              ),
+                              const SizedBox(width: 12),
+                              Text("Asking AI for suggestions...", style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary)),
+                            ],
+                          ),
+                        )
+                      else
+                         Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          width: double.infinity,
+                          child: AnimatedButton(
+                            onPressed: () {
+                              final profile = profileCubit.state.profile;
+                              goalsBloc.add(FetchAiGoalSuggestions(profileObject: profile));
+                            },
+                            backgroundColor: theme.colorScheme.tertiaryContainer,
+                            foregroundColor: theme.colorScheme.onTertiaryContainer,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.auto_awesome, size: 18),
+                                SizedBox(width: 8),
+                                Text("Ask AI for Suggestions"),
+                              ],
+                            ),
+                          ),
+                        ),
+                      TextFormField(
+                        controller: hoursController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Target Login Hours (Max 570)',
                     border: theme.inputDecorationTheme.border,
                     enabledBorder: theme.inputDecorationTheme.enabledBorder,
                     focusedBorder: theme.inputDecorationTheme.focusedBorder,

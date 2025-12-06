@@ -1,10 +1,17 @@
 import 'package:advisor_desk/domain/entities/monthly_summary.dart';
+import 'package:advisor_desk/domain/entities/profile.dart';
+import 'package:advisor_desk/domain/services/nlp_service.dart';
 
 abstract class GoalPredictionService {
   Future<Map<String, int>> suggestGoals(List<MonthlySummary> historicalSummaries);
+  Future<Map<String, int>> suggestGoalsWithAI(List<MonthlySummary> historicalSummaries, Profile profile);
 }
 
 class GoalPredictionServiceImpl implements GoalPredictionService {
+  final NlpService _nlpService;
+
+  GoalPredictionServiceImpl({required NlpService nlpService}) : _nlpService = nlpService;
+
   @override
   Future<Map<String, int>> suggestGoals(List<MonthlySummary> historicalSummaries) async {
     if (historicalSummaries.isEmpty) {
@@ -46,5 +53,34 @@ class GoalPredictionServiceImpl implements GoalPredictionService {
     final finalSuggestedCalls = suggestedCalls < latestSummary.totalCalls ? latestSummary.totalCalls : suggestedCalls;
 
     return {'hours': finalSuggestedHours.toInt(), 'calls': finalSuggestedCalls.toInt()};
+  }
+
+  @override
+  Future<Map<String, int>> suggestGoalsWithAI(List<MonthlySummary> historicalSummaries, Profile profile) async {
+    try {
+      if (historicalSummaries.isEmpty) return {'hours': 0, 'calls': 0};
+
+      final insight = await _nlpService.suggestGoals(histories: historicalSummaries, profile: profile);
+      final jsonString = insight.message.replaceAll('```json', '').replaceAll('```', '').trim();
+      
+      // Simple JSON parsing (avoiding adding full json_convert dependecy if possible, but manual is safer for now)
+      // Assuming Gemini follows instructions well. If fails, fallback to algorithmic.
+      
+      // Regex extraction to be safe even if JSON is malformed
+      final callsMatch = RegExp(r'"suggestedCalls":\s*(\d+)').firstMatch(jsonString);
+      final hoursMatch = RegExp(r'"suggestedHours":\s*(\d+)').firstMatch(jsonString);
+      
+      if (callsMatch != null && hoursMatch != null) {
+        return {
+          'calls': int.parse(callsMatch.group(1)!),
+          'hours': int.parse(hoursMatch.group(1)!),
+          'reasoning': 1 // Hack to indicate success, but map is <String, int> so strictly numbers
+          // Ideally we change signature, but for minimal friction we just return values
+        };
+      }
+      return suggestGoals(historicalSummaries); // Fallback
+    } catch (e) {
+       return suggestGoals(historicalSummaries); // Fallback
+    }
   }
 }

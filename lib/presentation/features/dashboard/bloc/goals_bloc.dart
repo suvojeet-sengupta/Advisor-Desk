@@ -15,6 +15,7 @@ class GoalsBloc extends Bloc<GoalsEvent, GoalsState> {
     on<LoadGoals>(_onLoadGoals);
     on<SaveGoals>(_onSaveGoals);
     on<GetGoalSuggestions>(_onGetGoalSuggestions);
+    on<FetchAiGoalSuggestions>(_onFetchAiGoalSuggestions);
   }
 
   Future<void> _onLoadGoals(LoadGoals event, Emitter<GoalsState> emit) async {
@@ -43,5 +44,29 @@ class GoalsBloc extends Bloc<GoalsEvent, GoalsState> {
       suggestedCalls: suggestions['calls'],
       suggestionsLoading: false,
     ));
+  }
+
+  Future<void> _onFetchAiGoalSuggestions(
+      FetchAiGoalSuggestions event, Emitter<GoalsState> emit) async {
+    final dynamic profile = event.profileObject;
+    if (profile == null) return;
+    
+    // Explicitly cast if possible or use as dynamic. 
+    // Since we know usecase accepts Profile from domain/entities
+    // And presentation layer likely uses Profile from domain/entities too.
+    // We cast it to ensure type safety passed to usecase
+    
+    emit(state.copyWith(isAiLoading: true));
+    try {
+      final suggestions = await getGoalSuggestionsUseCase.execute(useAi: true, profile: profile);
+      emit(state.copyWith(
+        suggestedHours: suggestions['hours'],
+        suggestedCalls: suggestions['calls'],
+        isAiLoading: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(isAiLoading: false));
+      // Optionally emit error state or show snackbar via listener
+    }
   }
 }

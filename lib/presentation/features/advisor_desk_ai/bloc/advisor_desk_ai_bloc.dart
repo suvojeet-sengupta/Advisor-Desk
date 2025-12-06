@@ -47,10 +47,13 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     try {
       await _performanceRepository.clearChatHistory();
       
-      // Reload with fresh/empty state, effectively showing the welcome message again logic
-      // But we might just want to clear the list in state.
-      // Let's reload to be consistent with "LoadAdvisorDeskAIData" logic for welcome message.
-      add(LoadAdvisorDeskAIData()); 
+      // Immediately set state to empty/welcome state
+      final welcomeMessage = const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.");
+      await _performanceRepository.insertChatMessage(welcomeMessage, false);
+      
+      emit(state.copyWith(
+        insightHistory: [welcomeMessage],
+      ));
       
     } catch (e) {
       // Handle error silently or show a message? For now silently.

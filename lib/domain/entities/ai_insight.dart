@@ -17,5 +17,5 @@ class AiInsight extends Equatable {
   });
 
   @override
-  List<Object?> get props => [message, buttonText, navigationRoute, navigationArguments];
+  List<Object?> get props => [message, buttonText, navigationRoute, navigationArguments, isUser];
 }

@@ -28,6 +28,7 @@ class NlpService {
     required GoalsState goals,
     required Profile profile,
     required List<AiInsight> chatHistory, // Add chat history
+    DailyEntry? dailyEntry,
   }) async {
     // 1. Check if API key is present
     if (AppConstants.geminiApiKey.isEmpty) {
@@ -35,7 +36,7 @@ class NlpService {
     }
 
     // 2. Build Context Prompt
-    final prompt = _buildPrompt(question, histories, goals, profile, chatHistory);
+    final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry);
 
     try {
       // 3. Generate Content
@@ -54,7 +55,7 @@ class NlpService {
     }
   }
 
-  String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile, List<AiInsight> chatHistory) {
+  String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile, List<AiInsight> chatHistory, DailyEntry? dailyEntry) {
     final name = profile.name ?? 'Advisor';
     final now = DateTime.now();
     final timeString = "${now.hour}:${now.minute}";
@@ -74,6 +75,15 @@ class NlpService {
         dataBuffer.writeln("- Bonus: ${summary.isBonusAchieved ? 'Yes' : 'No'}");
         dataBuffer.writeln("---"); 
       }
+    }
+
+    // Specific Daily Data Context
+    final StringBuffer dailyDataBuffer = StringBuffer();
+    if (dailyEntry != null) {
+      dailyDataBuffer.writeln("Detailed Data for Requested Date (${dailyEntry.date.toLocal().toString().split(' ')[0]}):");
+      dailyDataBuffer.writeln("- Calls: ${dailyEntry.callCount}");
+      dailyDataBuffer.writeln("- Login Time: ${dailyEntry.formattedLoginTime}");
+      dailyDataBuffer.writeln("- Login Hours (Decimal): ${dailyEntry.totalLoginTimeInHours.toStringAsFixed(2)}");
     }
 
     // Format recent chat history (last 5 messages for context)
@@ -97,6 +107,9 @@ class NlpService {
     **Performance Data (Last 12 Months)**:
     $dataBuffer
     
+    **Specific Daily Data (If requested)**:
+    ${dailyDataBuffer.isEmpty ? "No specific date requested." : dailyDataBuffer.toString()}
+    
     **Recent Conversation**:
     $historyBuffer
     User: "$question"
@@ -111,8 +124,9 @@ class NlpService {
        - If User mixes -> Mix naturally.
     3. **Conciseness**: Keep answers short, crisp, and to the point. No long paragraphs unless necessary for complex explanations.
     4. **Context**: Use the "Recent Conversation" to understand follow-up questions.
-    5. **Data**: Answer strictly based on "Performance Data". If asking for month X and data has multiple years, ask for clarification.
-    6. **Relevance**: 
+    5. **Data**: Answer strictly based on "Performance Data" or "Specific Daily Data" if present. If asking for month X and data has multiple years, ask for clarification.
+    6. **Hypotheticals**: If the user asks "What if..." questions regarding work (e.g., "What if I miss 3 days login?", "What if I do 100 calls less?"), use the provided data and goals to ESTIMATE the impact. Be helpful but clarify these are estimates.
+    7. **Relevance**: 
        - If the question is about general knowledge (e.g., "What is LLM?", "Meaning of life", "Who is PM"), general definitions, or topics unrelated to work performance/goals, **SMARTLY IGNORE** it.
        - Deflect casually: "Arre yaar, I focus on your performance stats!" or "Let's stick to your goals, buddy." or "I'm your work assistant, not Google!" 
        - Do NOT answer the irrelevant question.

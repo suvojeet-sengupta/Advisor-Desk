@@ -9,6 +9,8 @@ import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 import 'package:advisor_desk/data/datasources/user_data_source.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
+import 'package:intl/intl.dart';
 
 
 class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
@@ -129,6 +131,14 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         targetHours: goalsMap['hours'] ?? 150,
         targetCalls: goalsMap['calls'] ?? 3000,
       );
+      
+      // --- Check for specific date in query ---
+      DailyEntry? dailyEntry;
+      final date = _extractDateFromQuery(event.question);
+      if (date != null) {
+        dailyEntry = await _performanceRepository.getEntryForDate(date);
+      }
+      // ----------------------------------------
 
       final aiAnswer = await _nlpService.processQuestion(
         question: event.question,
@@ -136,6 +146,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         goals: goalsState,
         profile: profile,
         chatHistory: state.insightHistory, // Pass current history
+        dailyEntry: dailyEntry, // Pass the fetched daily entry
       );
 
       final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiAnswer);
@@ -152,6 +163,77 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       
       // Save Error Message
       await _performanceRepository.insertChatMessage(errorInsight, false);
+    }
+  }
+
+  DateTime? _extractDateFromQuery(String query) {
+    query = query.toLowerCase();
+    final now = DateTime.now();
+
+    if (query.contains('today') || query.contains('aaj')) {
+      return DateTime(now.year, now.month, now.day);
+    }
+    if (query.contains('yesterday') || query.contains('kal')) {
+      return DateTime(now.year, now.month, now.day).subtract(const Duration(days: 1));
+    }
+
+    // Try parsing explicit dates
+    // Formats: 5th aug, 12 october, 2023-10-12, 12/10/2023, etc.
+    
+    // Regex for "d MMM" or "d MMMM" (e.g., 5 aug, 12 october)
+    final dayMonthRegex = RegExp(r'(\d{1,2})(?:st|nd|rd|th)?\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*', caseSensitive: false);
+    final match = dayMonthRegex.firstMatch(query);
+    
+    if (match != null) {
+      try {
+        final day = int.parse(match.group(1)!);
+        final monthStr = match.group(2)!;
+        int month = _getMonthNumber(monthStr);
+        
+        // Guess year: if month > current month, assume last year, else this year.
+        // Or simplistically, assume this year unless specified. Let's assume this year for now.
+        // If user asks "5th Jan" in "Dec", they likely mean this year.
+        // If user asks "5th Dec" in "Jan", they likely mean last year.
+        int year = now.year;
+        if (month > now.month && (month - now.month) > 6) {
+             year = now.year - 1; // asking for Dec when in Jan
+        } else if (month < now.month && (now.month - month) > 9) {
+            year = now.year + 1; // unlikely but future
+        }
+        
+        return DateTime(year, month, day);
+      } catch (e) {
+        // extraction failed
+      }
+    }
+
+    // Regex for YYYY-MM-DD
+    final isoDateRegex = RegExp(r'\d{4}-\d{2}-\d{2}');
+    final isoMatch = isoDateRegex.firstMatch(query);
+    if (isoMatch != null) {
+      try {
+        return DateTime.parse(isoMatch.group(0)!);
+      } catch (_) {}
+    }
+
+    return null;
+  }
+
+  int _getMonthNumber(String monthAbbr) {
+    switch (monthAbbr.toLowerCase()) {
+      case 'jan': return 1;
+      case 'feb': return 2;
+      case 'mar': return 3;
+      case 'apr': return 4;
+      case 'may': return 5;
+      case 'jun': return 6;
+      case 'jul': return 7;
+      case 'aug': return 8;
+      case 'sep': return 9;
+      case 'oct': return 10;
+      case 'nov': return 11;
+      case 'dec': return 12;
+      default: return 1;
     }
   }
 }

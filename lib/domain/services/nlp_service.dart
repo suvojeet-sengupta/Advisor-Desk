@@ -30,6 +30,7 @@ class NlpService {
     required Profile profile,
     required List<AiInsight> chatHistory, // Add chat history
     DailyEntry? dailyEntry,
+    DateTime? requestedDate,
   }) async {
     // 1. Check if API key is present
     if (AppConstants.geminiApiKey.isEmpty) {
@@ -37,7 +38,7 @@ class NlpService {
     }
 
     // 2. Build Context Prompt
-    final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry);
+    final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry, requestedDate);
 
     try {
       // 3. Generate Content
@@ -56,7 +57,7 @@ class NlpService {
     }
   }
 
-  String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile, List<AiInsight> chatHistory, DailyEntry? dailyEntry) {
+  String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile, List<AiInsight> chatHistory, DailyEntry? dailyEntry, DateTime? requestedDate) {
     final name = profile.name ?? 'Advisor';
     final now = DateTime.now();
     final timeString = "${now.hour}:${now.minute}";
@@ -85,6 +86,8 @@ class NlpService {
       dailyDataBuffer.writeln("- Calls: ${dailyEntry.callCount}");
       dailyDataBuffer.writeln("- Login Time: ${dailyEntry.formattedLoginTime}");
       dailyDataBuffer.writeln("- Login Hours (Decimal): ${dailyEntry.totalLoginTimeInHours.toStringAsFixed(2)}");
+    } else if (requestedDate != null) {
+       dailyDataBuffer.writeln("User requested data for date: ${requestedDate.toLocal().toString().split(' ')[0]}, but NO ENTRY was found in the database for this date.");
     }
 
     // Format recent chat history (last 5 messages for context)
@@ -125,7 +128,9 @@ class NlpService {
        - If User mixes -> Mix naturally.
     3. **Conciseness**: Keep answers short, crisp, and to the point. No long paragraphs unless necessary for complex explanations.
     4. **Context**: Use the "Recent Conversation" to understand follow-up questions.
-    5. **Data**: Answer strictly based on "Performance Data" or "Specific Daily Data" if present. If asking for month X and data has multiple years, ask for clarification.
+    5. **Data**: Answer strictly based on "Performance Data" or "Specific Daily Data" if present. 
+       - If "Specific Daily Data" says NO ENTRY was found, explicitly tell the user: "I checked, but you haven't added any data for that date yet."
+       - If asking for month X and data has multiple years, ask for clarification.
     6. **Hypotheticals**: If the user asks "What if..." questions regarding work (e.g., "What if I miss 3 days login?", "What if I do 100 calls less?"), use the provided data and goals to ESTIMATE the impact. Be helpful but clarify these are estimates.
     7. **Relevance**: 
        - If the question is about general knowledge (e.g., "What is LLM?", "Meaning of life", "Who is PM"), general definitions, or topics unrelated to work performance/goals, **SMARTLY IGNORE** it.

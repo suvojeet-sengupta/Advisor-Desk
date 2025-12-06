@@ -132,95 +132,119 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         targetCalls: goalsMap['calls'] ?? 3000,
       );
       
-      // --- Check for specific date in query ---
-      DailyEntry? dailyEntry;
-      final date = _extractDateFromQuery(event.question);
-      if (date != null) {
-        dailyEntry = await _performanceRepository.getEntryForDate(date);
-      }
-      // ----------------------------------------
-
-      final aiAnswer = await _nlpService.processQuestion(
-        question: event.question,
-        histories: allSummaries, 
-        goals: goalsState,
-        profile: profile,
-        chatHistory: state.insightHistory, // Pass current history
-        dailyEntry: dailyEntry, // Pass the fetched daily entry
-      );
-
-      final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiAnswer);
-      emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+            // --- Check for specific date in query ---
+            DailyEntry? dailyEntry;
+            final date = _extractDateFromQuery(event.question);
+            if (date != null) {
+              dailyEntry = await _performanceRepository.getEntryForDate(date);
+            }
+            // ----------------------------------------
       
-      // Save AI Message
-      await _performanceRepository.insertChatMessage(aiAnswer, false);
-
-    } catch (e, stack) {
-      print("Gemini Error: $e, $stack"); // helpful for debug
-      final errorInsight = AiInsight(message: "Sorry, I encountered an error answering that. Please try again later.");
-      final finalHistory = List<AiInsight>.from(state.insightHistory)..add(errorInsight);
-      emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+            final aiAnswer = await _nlpService.processQuestion(
+              question: event.question,
+              histories: allSummaries, 
+              goals: goalsState,
+              profile: profile,
+              chatHistory: state.insightHistory, // Pass current history
+              dailyEntry: dailyEntry, // Pass the fetched daily entry
+              requestedDate: date, // Pass the requested date
+            );
       
-      // Save Error Message
-      await _performanceRepository.insertChatMessage(errorInsight, false);
-    }
-  }
-
-  DateTime? _extractDateFromQuery(String query) {
-    query = query.toLowerCase();
-    final now = DateTime.now();
-
-    if (query.contains('today') || query.contains('aaj')) {
-      return DateTime(now.year, now.month, now.day);
-    }
-    if (query.contains('yesterday') || query.contains('kal')) {
-      return DateTime(now.year, now.month, now.day).subtract(const Duration(days: 1));
-    }
-
-    // Try parsing explicit dates
-    // Formats: 5th aug, 12 october, 2023-10-12, 12/10/2023, etc.
-    
-    // Regex for "d MMM" or "d MMMM" (e.g., 5 aug, 12 october)
-    final dayMonthRegex = RegExp(r'(\d{1,2})(?:st|nd|rd|th)?\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*', caseSensitive: false);
-    final match = dayMonthRegex.firstMatch(query);
-    
-    if (match != null) {
-      try {
-        final day = int.parse(match.group(1)!);
-        final monthStr = match.group(2)!;
-        int month = _getMonthNumber(monthStr);
-        
-        // Guess year: if month > current month, assume last year, else this year.
-        // Or simplistically, assume this year unless specified. Let's assume this year for now.
-        // If user asks "5th Jan" in "Dec", they likely mean this year.
-        // If user asks "5th Dec" in "Jan", they likely mean last year.
-        int year = now.year;
-        if (month > now.month && (month - now.month) > 6) {
-             year = now.year - 1; // asking for Dec when in Jan
-        } else if (month < now.month && (now.month - month) > 9) {
-            year = now.year + 1; // unlikely but future
+            final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiAnswer);
+            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+            
+            // Save AI Message
+            await _performanceRepository.insertChatMessage(aiAnswer, false);
+      
+          } catch (e, stack) {
+            print("Gemini Error: $e, $stack"); // helpful for debug
+            final errorInsight = AiInsight(message: "Sorry, I encountered an error answering that. Please try again later.");
+            final finalHistory = List<AiInsight>.from(state.insightHistory)..add(errorInsight);
+            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+            
+            // Save Error Message
+            await _performanceRepository.insertChatMessage(errorInsight, false);
+          }
+        }
+      
+        DateTime? _extractDateFromQuery(String query) {
+          query = query.toLowerCase();
+          final now = DateTime.now();
+      
+          if (query.contains('today') || query.contains('aaj')) {
+            return DateTime(now.year, now.month, now.day);
+          }
+          if (query.contains('yesterday') || query.contains('kal')) {
+            return DateTime(now.year, now.month, now.day).subtract(const Duration(days: 1));
+          }
+      
+          // Format 1: 5th aug, 12 october
+          // Regex for "d MMM" or "d MMMM" (e.g., 5 aug, 12 october)
+          final dayMonthRegex = RegExp(r'(\d{1,2})(?:st|nd|rd|th)?\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*', caseSensitive: false);
+          final match1 = dayMonthRegex.firstMatch(query);
+          
+          if (match1 != null) {
+            try {
+              final day = int.parse(match1.group(1)!);
+              final monthStr = match1.group(2)!; // Group 2 is the month part
+              int month = _getMonthNumber(monthStr);
+              int year = _determineYear(month, now);
+              return DateTime(year, month, day);
+            } catch (e) { }
+          }
+      
+          // Format 2: August 5th, October 12
+          // Regex for "MMM d" or "MMMM d"
+          final monthDayRegex = RegExp(r'(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{1,2})(?:st|nd|rd|th)?', caseSensitive: false);
+          final match2 = monthDayRegex.firstMatch(query);
+      
+          if (match2 != null) {
+            try {
+              final monthStr = match2.group(1)!;
+              final day = int.parse(match2.group(2)!);
+              int month = _getMonthNumber(monthStr);
+              int year = _determineYear(month, now);
+              return DateTime(year, month, day);
+            } catch (e) { }
+          }
+      
+          // Format 3: DD/MM or DD-MM (e.g. 23/11)
+          final numericDateRegex = RegExp(r'(\d{1,2})[-/](\d{1,2})');
+          final match3 = numericDateRegex.firstMatch(query);
+          if (match3 != null) {
+            try {
+              final day = int.parse(match3.group(1)!);
+              final month = int.parse(match3.group(2)!);
+              if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                 int year = _determineYear(month, now);
+                 return DateTime(year, month, day);
+              }
+            } catch (e) {}
+          }
+      
+          // Regex for YYYY-MM-DD
+          final isoDateRegex = RegExp(r'\d{4}-\d{2}-\d{2}');
+          final isoMatch = isoDateRegex.firstMatch(query);
+          if (isoMatch != null) {
+            try {
+              return DateTime.parse(isoMatch.group(0)!);
+            } catch (_) {}
+          }
+      
+          return null;
         }
         
-        return DateTime(year, month, day);
-      } catch (e) {
-        // extraction failed
-      }
-    }
-
-    // Regex for YYYY-MM-DD
-    final isoDateRegex = RegExp(r'\d{4}-\d{2}-\d{2}');
-    final isoMatch = isoDateRegex.firstMatch(query);
-    if (isoMatch != null) {
-      try {
-        return DateTime.parse(isoMatch.group(0)!);
-      } catch (_) {}
-    }
-
-    return null;
-  }
-
-  int _getMonthNumber(String monthAbbr) {
-    switch (monthAbbr.toLowerCase()) {
+        int _determineYear(int month, DateTime now) {
+          int year = now.year;
+          if (month > now.month && (month - now.month) > 6) {
+                year = now.year - 1; // asking for Dec when in Jan
+          } else if (month < now.month && (now.month - month) > 9) {
+              year = now.year + 1; // unlikely but future
+          }
+          return year;
+        }
+      
+        int _getMonthNumber(String monthAbbr) {    switch (monthAbbr.toLowerCase()) {
       case 'jan': return 1;
       case 'feb': return 2;
       case 'mar': return 3;

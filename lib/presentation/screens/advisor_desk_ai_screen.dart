@@ -10,11 +10,13 @@ import 'package:advisor_desk/domain/repositories/goal_repository.dart';
 import 'package:advisor_desk/domain/repositories/profile_repository.dart';
 import 'package:advisor_desk/data/datasources/user_data_source.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:advisor_desk/presentation/common/widgets/typing_indicator.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AdvisorDeskAIScreen extends StatelessWidget {
   const AdvisorDeskAIScreen({Key? key}) : super(key: key);
@@ -148,6 +150,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                   ],
                 ),
               ),
+              _buildQuickPrompts(context),
               _buildInputArea(context),
             ],
           );
@@ -300,7 +303,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUserMessage) ...[
             Container(
@@ -314,57 +317,95 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
             const SizedBox(width: 8),
           ],
           Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: BoxDecoration(
-                color: isUserMessage 
-                    ? theme.colorScheme.primary 
-                    : theme.colorScheme.surface,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(20),
-                  topRight: const Radius.circular(20),
-                  bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
-                  bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+            child: Column(
+              crossAxisAlignment: isUserMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: isUserMessage 
+                        ? theme.colorScheme.primary 
+                        : theme.colorScheme.surface,
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(20),
+                      topRight: const Radius.circular(20),
+                      bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
+                      bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+                    ),
+                    boxShadow: [
+                      if (!isUserMessage)
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                    ],
+                  ),
+                  child: isUserMessage
+                      ? Text(
+                          insight.message,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: Colors.white,
+                            height: 1.4,
+                          ),
+                        )
+                      : MarkdownBody(
+                          data: insight.message,
+                          selectable: true,
+                          styleSheet: MarkdownStyleSheet(
+                            p: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+                            strong: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              height: 1.5,
+                            ),
+                            em: theme.textTheme.bodyLarge?.copyWith(
+                              fontStyle: FontStyle.italic,
+                              height: 1.5,
+                            ),
+                            listBullet: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+                            h1: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                            h2: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                            h3: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            blockSpacing: 12,
+                            listIndent: 16,
+                            listBulletPadding: const EdgeInsets.only(right: 8),
+                          ),
+                        ),
                 ),
-                boxShadow: [
-                  if (!isUserMessage)
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
+                // Copy and Share buttons for AI responses
+                if (!isUserMessage) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildActionButton(
+                        context,
+                        icon: Icons.copy_rounded,
+                        label: 'Copy',
+                        onTap: () {
+                          Clipboard.setData(ClipboardData(text: insight.message));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Copied to clipboard'),
+                              duration: const Duration(seconds: 1),
+                              backgroundColor: theme.colorScheme.primary,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      _buildActionButton(
+                        context,
+                        icon: Icons.share_rounded,
+                        label: 'Share',
+                        onTap: () {
+                          SharePlus.instance.share(ShareParams(text: insight.message));
+                        },
+                      ),
+                    ],
+                  ),
                 ],
-              ),
-              child: isUserMessage
-                  ? Text(
-                      insight.message,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
-                        height: 1.4,
-                      ),
-                    )
-                  : MarkdownBody(
-                      data: insight.message,
-                      selectable: true,
-                      styleSheet: MarkdownStyleSheet(
-                        p: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-                        strong: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          height: 1.5,
-                        ),
-                        em: theme.textTheme.bodyLarge?.copyWith(
-                          fontStyle: FontStyle.italic,
-                          height: 1.5,
-                        ),
-                        listBullet: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-                        h1: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                        h2: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                        h3: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                        blockSpacing: 12,
-                        listIndent: 16,
-                        listBulletPadding: const EdgeInsets.only(right: 8),
-                      ),
-                    ),
+              ],
             ),
           ),
           if (isUserMessage) ...[
@@ -376,6 +417,74 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, {required IconData icon, required String label, required VoidCallback onTap}) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.dividerColor.withOpacity(0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: theme.colorScheme.onSurface.withOpacity(0.7)),
+            const SizedBox(width: 4),
+            Text(label, style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickPrompts(BuildContext context) {
+    final theme = Theme.of(context);
+    final prompts = [
+      'My CSAT this month?',
+      'Total calls today?',
+      'Compare with last month',
+      'How much TDS deducted?',
+      'Am I on track for goals?',
+      'Best performing day?',
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: prompts.map((prompt) => Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: InkWell(
+              onTap: () {
+                _questionController.text = prompt;
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+                ),
+                child: Text(
+                  prompt,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+          )).toList(),
+        ),
       ),
     );
   }

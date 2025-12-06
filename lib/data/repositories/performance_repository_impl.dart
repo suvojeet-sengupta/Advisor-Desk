@@ -286,6 +286,11 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   Future<void> deleteOldChatMessages() async {
     await localDataSource.deleteOldChatMessages();
   }
+
+  @override
+  Future<void> clearChatHistory() async {
+    await localDataSource.clearChatHistory();
+  }
 }
 
 // Helper class to pass data to isolates

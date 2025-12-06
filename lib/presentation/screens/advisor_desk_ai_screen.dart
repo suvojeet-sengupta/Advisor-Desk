@@ -68,7 +68,37 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Dark background for AI feel
-      appBar: const CustomAppBar(title: 'Advisor Desk AI'),
+      appBar: CustomAppBar(
+        title: 'Advisor Desk AI',
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Clear Chat History?'),
+                  content: const Text('Are you sure you want to delete all chat history? This action cannot be undone.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<AdvisorDeskAIBloc>().add(ClearChatHistory());
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: BlocConsumer<AdvisorDeskAIBloc, AdvisorDeskAIState>(
         listener: (context, state) {
           if (state.insightHistory.isNotEmpty) {

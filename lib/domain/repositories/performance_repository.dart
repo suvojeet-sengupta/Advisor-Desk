@@ -58,6 +58,7 @@ abstract class PerformanceRepository {
   Future<void> insertChatMessage(AiInsight message, bool isUser);
   Future<List<AiInsight>> getChatHistory();
   Future<void> deleteOldChatMessages();
+  Future<void> clearChatHistory();
 }
 
 

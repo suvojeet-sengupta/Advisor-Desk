@@ -17,3 +17,5 @@ class AskAdvisorDeskAIQuestion extends AdvisorDeskAIEvent {
   @override
   List<Object> get props => [question];
 }
+
+class ClearChatHistory extends AdvisorDeskAIEvent {}

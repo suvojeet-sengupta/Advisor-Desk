@@ -37,6 +37,24 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       super(const AdvisorDeskAIState()) {
     on<LoadAdvisorDeskAIData>(_onLoadAdvisorDeskAIData);
     on<AskAdvisorDeskAIQuestion>(_onAskAdvisorDeskAIQuestion);
+    on<ClearChatHistory>(_onClearChatHistory);
+  }
+
+  Future<void> _onClearChatHistory(
+    ClearChatHistory event,
+    Emitter<AdvisorDeskAIState> emit,
+  ) async {
+    try {
+      await _performanceRepository.clearChatHistory();
+      
+      // Reload with fresh/empty state, effectively showing the welcome message again logic
+      // But we might just want to clear the list in state.
+      // Let's reload to be consistent with "LoadAdvisorDeskAIData" logic for welcome message.
+      add(LoadAdvisorDeskAIData()); 
+      
+    } catch (e) {
+      // Handle error silently or show a message? For now silently.
+    }
   }
 
   Future<void> _onLoadAdvisorDeskAIData(

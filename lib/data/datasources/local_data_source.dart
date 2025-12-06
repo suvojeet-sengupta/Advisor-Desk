@@ -795,4 +795,9 @@ class LocalDataSource {
       whereArgs: [sevenDaysAgo],
     );
   }
+
+  Future<void> clearChatHistory() async {
+    final db = await database;
+    await db.delete(AppConstants.tableChatHistory);
+  }
 }

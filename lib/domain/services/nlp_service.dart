@@ -5,6 +5,7 @@ import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/services/query_parser.dart'; // Keeping for now if we want hybrid, but mostly replacing
+import 'package:advisor_desk/domain/services/ai_model_router.dart';
 // import 'package:advisor_desk/domain/services/query_models.dart'; // Might remove if unused
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
@@ -12,15 +13,12 @@ import 'package:advisor_desk/domain/entities/daily_entry.dart';
 class NlpService {
   final PerformanceRepository _performanceRepository;
   final QueryParser _queryParser; // Keeping dependency to avoid breaking DI immediately, but can be unused.
-  late final GenerativeModel _model;
+  late final AIModelRouter _modelRouter;
 
   NlpService({required PerformanceRepository performanceRepository, required QueryParser queryParser})
       : _performanceRepository = performanceRepository,
         _queryParser = queryParser {
-          _model = GenerativeModel(
-            model: 'gemini-2.5-flash-lite', 
-            apiKey: AppConstants.geminiApiKey,
-          );
+          _modelRouter = AIModelRouter(apiKey: AppConstants.geminiApiKey);
         }
 
   Future<AiInsight> processQuestion({
@@ -41,9 +39,19 @@ class NlpService {
     final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry, requestedDate);
 
     try {
-      // 3. Generate Content
+      // 3. Generate Content with intelligent model routing
       final content = [Content.text(prompt)];
-      final response = await _model.generateContent(content);
+      final response = await _modelRouter.generateContent(
+        content,
+        onModelSwitch: (message) {
+          // Log model switching for debugging (optional)
+          // print('[AIRouter] $message');
+        },
+      );
+
+      if (response == null) {
+        return const AiInsight(message: "All AI models are currently busy. Please try again in a moment.");
+      }
 
       final text = response.text;
       if (text == null || text.isEmpty) {
@@ -272,7 +280,18 @@ Response:
 
     try {
       final content = [Content.text(prompt)];
-      final response = await _model.generateContent(content);
+      final response = await _modelRouter.generateContent(
+        content,
+        onModelSwitch: (message) {
+          // Log model switching for debugging (optional)
+          // print('[AIRouter] $message');
+        },
+      );
+      
+      if (response == null) {
+        return const AiInsight(message: "Error: All AI models are currently busy.");
+      }
+      
       return AiInsight(message: response.text ?? "");
     } catch (e) {
       return AiInsight(message: "Error generating goals: $e");

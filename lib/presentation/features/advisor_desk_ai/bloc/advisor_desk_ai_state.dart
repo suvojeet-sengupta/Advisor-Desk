@@ -9,6 +9,7 @@ class AdvisorDeskAIState extends Equatable {
   final int performanceScore;
   final String? errorMessage;
   final bool isAiTyping;
+  final bool isSwitchingModel;
 
   const AdvisorDeskAIState({
     this.status = AdvisorDeskAIStatus.initial,
@@ -16,6 +17,7 @@ class AdvisorDeskAIState extends Equatable {
     this.performanceScore = 0,
     this.errorMessage,
     this.isAiTyping = false,
+    this.isSwitchingModel = false,
   });
 
   AdvisorDeskAIState copyWith({
@@ -24,6 +26,7 @@ class AdvisorDeskAIState extends Equatable {
     int? performanceScore,
     String? errorMessage,
     bool? isAiTyping,
+    bool? isSwitchingModel,
   }) {
     return AdvisorDeskAIState(
       status: status ?? this.status,
@@ -31,9 +34,10 @@ class AdvisorDeskAIState extends Equatable {
       performanceScore: performanceScore ?? this.performanceScore,
       errorMessage: errorMessage ?? this.errorMessage,
       isAiTyping: isAiTyping ?? this.isAiTyping,
+      isSwitchingModel: isSwitchingModel ?? this.isSwitchingModel,
     );
   }
 
   @override
-  List<Object?> get props => [status, insightHistory, performanceScore, errorMessage, isAiTyping];
+  List<Object?> get props => [status, insightHistory, performanceScore, errorMessage, isAiTyping, isSwitchingModel];
 }

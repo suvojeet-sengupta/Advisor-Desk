@@ -12,18 +12,23 @@ import 'package:advisor_desk/domain/entities/daily_entry.dart';
 class NlpService {
   final PerformanceRepository _performanceRepository;
   final QueryParser _queryParser; // Keeping dependency to avoid breaking DI immediately, but can be unused.
-  late final GenerativeModel _model;
+  late final GenerativeModel _modelLite;
+  late final GenerativeModel _modelFlash;
 
   NlpService({required PerformanceRepository performanceRepository, required QueryParser queryParser})
       : _performanceRepository = performanceRepository,
         _queryParser = queryParser {
-          _model = GenerativeModel(
+          _modelLite = GenerativeModel(
             model: 'gemini-2.5-flash-lite', 
+            apiKey: AppConstants.geminiApiKey,
+          );
+          _modelFlash = GenerativeModel(
+            model: 'gemini-2.5-flash', 
             apiKey: AppConstants.geminiApiKey,
           );
         }
 
-  Future<AiInsight> processQuestion({
+  Future<Map<String, dynamic>> processQuestion({
     required String question,
     required List<MonthlySummary> histories,
     required GoalsState goals,
@@ -34,26 +39,70 @@ class NlpService {
   }) async {
     // 1. Check if API key is present
     if (AppConstants.geminiApiKey.isEmpty) {
-       return const AiInsight(message: "AI configuration is missing (API Key). Please contact the developer.");
+       return {
+         'insight': const AiInsight(message: "AI configuration is missing (API Key). Please contact the developer."),
+         'modelSwitched': false,
+       };
     }
 
     // 2. Build Context Prompt
     final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry, requestedDate);
 
     try {
-      // 3. Generate Content
+      // 3. Generate Content with gemini-2.5-flash-lite
       final content = [Content.text(prompt)];
-      final response = await _model.generateContent(content);
+      final response = await _modelLite.generateContent(content);
 
       final text = response.text;
       if (text == null || text.isEmpty) {
-        return const AiInsight(message: "I'm having trouble thinking right now. Please try again.");
+        return {
+          'insight': const AiInsight(message: "I'm having trouble thinking right now. Please try again."),
+          'modelSwitched': false,
+        };
       }
 
-      return AiInsight(message: text);
+      return {
+        'insight': AiInsight(message: text),
+        'modelSwitched': false,
+      };
 
     } catch (e) {
-      return AiInsight(message: "I encountered an error connecting to my brain: $e");
+      // Check if error is quota/limit exceeded
+      final errorMessage = e.toString().toLowerCase();
+      if (errorMessage.contains('quota') || 
+          errorMessage.contains('limit') || 
+          errorMessage.contains('resource') ||
+          errorMessage.contains('exceeded')) {
+        
+        // Try fallback to gemini-2.5-flash
+        try {
+          final content = [Content.text(prompt)];
+          final response = await _modelFlash.generateContent(content);
+
+          final text = response.text;
+          if (text == null || text.isEmpty) {
+            return {
+              'insight': const AiInsight(message: "I'm having trouble thinking right now. Please try again."),
+              'modelSwitched': true,
+            };
+          }
+
+          return {
+            'insight': AiInsight(message: text),
+            'modelSwitched': true,
+          };
+        } catch (fallbackError) {
+          return {
+            'insight': AiInsight(message: "I encountered an error connecting to my brain: $fallbackError"),
+            'modelSwitched': true,
+          };
+        }
+      }
+      
+      return {
+        'insight': AiInsight(message: "I encountered an error connecting to my brain: $e"),
+        'modelSwitched': false,
+      };
     }
   }
 
@@ -272,7 +321,7 @@ Response:
 
     try {
       final content = [Content.text(prompt)];
-      final response = await _model.generateContent(content);
+      final response = await _modelLite.generateContent(content);
       return AiInsight(message: response.text ?? "");
     } catch (e) {
       return AiInsight(message: "Error generating goals: $e");

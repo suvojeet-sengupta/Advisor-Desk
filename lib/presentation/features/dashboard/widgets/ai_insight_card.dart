@@ -35,24 +35,24 @@ class AiInsightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Professional Teal-Blue Gradient
-    final gradientColors = [
-      const Color(0xFF1E3C72),
-      const Color(0xFF2A5298)
-    ];
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: gradientColors,
+          colors: [
+            colorScheme.primary,
+            colorScheme.tertiary,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E3C72).withOpacity(0.3),
+            color: colorScheme.primary.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -76,20 +76,20 @@ class AiInsightCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: colorScheme.onPrimary.withOpacity(0.2),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.auto_awesome,
-                            color: Color(0xFFFFD700), // Gold
+                            color: Color(0xFFFFD700), // Keeping Gold as it's a nice accent for AI
                             size: 20,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Advisor Desk AI',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.9),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                                color: colorScheme.onPrimary.withOpacity(0.9),
                                 letterSpacing: 1.0,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -97,7 +97,7 @@ class AiInsightCard extends StatelessWidget {
                       ],
                     ),
                     IconButton(
-                        icon: Icon(Icons.info_outline, color: Colors.white.withOpacity(0.7), size: 20),
+                        icon: Icon(Icons.info_outline, color: colorScheme.onPrimary.withOpacity(0.7), size: 20),
                         onPressed: () => _showAiInsightInfoDialog(context),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -107,8 +107,8 @@ class AiInsightCard extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   insight.message,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                        color: colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
                         height: 1.3,
                       ),
@@ -122,8 +122,8 @@ class AiInsightCard extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: onActionPressed,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF1E3C72),
+                        backgroundColor: colorScheme.surface,
+                        foregroundColor: colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

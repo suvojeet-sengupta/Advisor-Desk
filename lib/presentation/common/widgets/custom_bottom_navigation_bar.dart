@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final Color? backgroundColor;
 
   const CustomBottomNavigationBar({
     Key? key,
     required this.currentIndex,
     required this.onTap,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -17,7 +19,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return NavigationBar(
       selectedIndex: currentIndex,
       onDestinationSelected: onTap,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: backgroundColor ?? theme.colorScheme.surface,
       elevation: 8,
       indicatorColor: theme.colorScheme.primary.withOpacity(0.2),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,

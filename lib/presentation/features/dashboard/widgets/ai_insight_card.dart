@@ -35,76 +35,111 @@ class AiInsightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // Professional Teal-Blue Gradient
+    final gradientColors = [
+      const Color(0xFF1E3C72),
+      const Color(0xFF2A5298)
+    ];
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary.withOpacity(0.1),
-            theme.colorScheme.surface,
-          ],
+          colors: gradientColors,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.3),
-          width: 1,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E3C72).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(
-                      Icons.auto_awesome, // Sparkle icon for AI
-                      color: theme.colorScheme.primary,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Advisor Desk AI',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      icon: const Icon(Icons.info_outline),
-                      onPressed: () => _showAiInsightInfoDialog(context),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  insight.message,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                if (insight.buttonText != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    Row(
                       children: [
-                        TextButton(
-                          onPressed: onActionPressed,
-                          child: Text(insight.buttonText!),
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.auto_awesome,
+                            color: Color(0xFFFFD700), // Gold
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Advisor Desk AI',
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                color: Colors.white.withOpacity(0.9),
+                                letterSpacing: 1.0,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ],
                     ),
+                    IconButton(
+                        icon: Icon(Icons.info_outline, color: Colors.white.withOpacity(0.7), size: 20),
+                        onPressed: () => _showAiInsightInfoDialog(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  insight.message,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        height: 1.3,
+                      ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (insight.buttonText != null) ...[
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: onActionPressed,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF1E3C72),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        insight.buttonText!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                   ),
+                ]
               ],
             ),
           ),

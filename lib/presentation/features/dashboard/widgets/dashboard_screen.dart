@@ -169,79 +169,18 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final customizationState = context.watch<DashboardCustomizationCubit>().state;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark ? const Color(0xFF121212) : const Color(0xFFF6F8FA);
 
     return Scaffold(
-      appBar: CustomAppBar(
-        titleWidget: FittedBox(
-          fit: BoxFit.contain,
-          child: Text(
-            'Dashboard',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-        leading: BlocBuilder<ProfileCubit, ProfileState>(
-          builder: (context, state) {
-            final profile = state.profile;
-            return GestureDetector(
-              onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundImage: profile.profilePicturePath.isNotEmpty
-                      ? FileImage(File(profile.profilePicturePath))
-                      : null,
-                  child: profile.profilePicturePath.isEmpty
-                      ? const Icon(Icons.person)
-                      : null,
-                ),
-              ),
-            );
-          },
-        ),
-        
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () => Navigator.pushNamed(context, AppRouter.onboardingTutorialRoute),
-          ),
-          IconButton(
-            icon: const Icon(Icons.color_lens),
-            onPressed: () => Navigator.pushNamed(context, AppRouter.themeSelectionRoute),
-          ),
-          BlocBuilder<DashboardBloc, DashboardState>(
-            builder: (context, state) {
-              if (state.status == DashboardStatus.loaded && state.monthlySummary != null) {
-                return IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: () {
-                    final profile = context.read<ProfileCubit>().state.profile;
-                    Navigator.pushNamed(
-                      context,
-                      AppRouter.shareThemeSelectorRoute,
-                      arguments: {
-                        'summary': state.monthlySummary!,
-                        'profile': profile,
-                      },
-                    );
-                  },
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-          
-        ],
-      ),
+      backgroundColor: backgroundColor,
       body: MultiBlocListener(
         listeners: [
           BlocListener<UserCubit, UserState>(
             listener: (context, userState) {
               if (userState is UserLoaded) {
-                // Reload Dashboard Data
                 final now = DateTime.now();
                 context.read<DashboardBloc>().add(LoadDashboardData(month: now.month, year: now.year));
-                // Reload Goals
                 context.read<GoalsBloc>().add(LoadGoals(userId: userState.currentUserId));
               }
             },
@@ -293,149 +232,223 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                   );
                 }
 
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.chevron_left),
-                                onPressed: () {
-                                  final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                  final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
-                                  context.read<DashboardBloc>().add(
-                                    LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.chevron_right),
-                                onPressed: () {
-                                  final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                  final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
-                                  context.read<DashboardBloc>().add(
-                                    LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: dashboardState.monthlySummary != null
-                          ? CustomRefreshIndicator(
-                              onRefresh: () async {
-                                context.read<DashboardBloc>().add(RefreshDashboard());
-                              },
-                              child: CustomScrollView(
-                                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                                slivers: [
-                                SliverToBoxAdapter(
-                                  child: BlocBuilder<AiInsightBloc, AiInsightState>(
-                                    builder: (context, aiState) {
-                                      if (aiState is AiInsightGenerated) {
-                                        return AiInsightCard(
-                                          insight: aiState.insight,
-                                          onTap: () {
-                                            final dashboardState = context.read<DashboardBloc>().state;
-                                            final goalsState = context.read<GoalsBloc>().state;
-                                            final profile = context.read<ProfileCubit>().state.profile;
-
-                                            if (dashboardState.status == DashboardStatus.loaded &&
-                                                dashboardState.monthlySummary != null &&
-                                                dashboardState.csatSummary != null &&
-                                                dashboardState.cqSummary != null) {
-                                              Navigator.pushNamed(
-                                                context,
-                                                AppRouter.advisorDeskAIAnalyzerRoute,
-                                                arguments: {
-                                                  'monthlySummary': dashboardState.monthlySummary!,
-                                                  'csatSummary': dashboardState.csatSummary!,
-                                                  'cqSummary': dashboardState.cqSummary!,
-                                                  'goalsState': goalsState,
-                                                  'profile': profile,
-                                                },
-                                              );
-                                            }
-                                          },
-                                          onActionPressed: () {
-                                            if (aiState.insight.navigationRoute == 'show_goals_dialog') {
-                                              _showEditGoalsDialog(context, context.read<GoalsBloc>().state.targetHours, context.read<GoalsBloc>().state.targetCalls);
-                                            } else if (aiState.insight.navigationRoute != null) {
-                                              Navigator.pushNamed(
-                                                context,
-                                                aiState.insight.navigationRoute!,
-                                                arguments: aiState.insight.navigationArguments,
-                                              );
-                                            }
-                                          },
-                                        );
-                                      }
-                                      return const SizedBox.shrink();
-                                    },
-                                  ),
-                                ),
-                                SliverToBoxAdapter(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                    child: BlocBuilder<ProfileCubit, ProfileState>(
-                                      builder: (context, state) {
-                                        final profile = state.profile;
-                                        final showName = profile.name != null;
-                                        return Text(
-                                          showName ? '${_getGreeting()}, ${profile.name!}' : _getGreeting(),
+                return SafeArea(
+                  child: CustomRefreshIndicator(
+                    onRefresh: () async {
+                      context.read<DashboardBloc>().add(RefreshDashboard());
+                    },
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                      slivers: [
+                        // Custom Header
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                            child: BlocBuilder<ProfileCubit, ProfileState>(
+                              builder: (context, state) {
+                                final profile = state.profile;
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _getGreeting(),
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Colors.grey[600],
+                                                fontSize: 14,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          profile.name ?? 'User',
                                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                                 fontWeight: FontWeight.bold,
+                                                color: isDark ? Colors.white : Colors.black87,
                                               ),
-                                        );
-                                      },
+                                        ),
+                                      ],
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 2),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.1),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: CircleAvatar(
+                                          radius: 24,
+                                          backgroundImage: profile.profilePicturePath.isNotEmpty
+                                              ? FileImage(File(profile.profilePicturePath))
+                                              : null,
+                                          child: profile.profilePicturePath.isEmpty
+                                              ? const Icon(Icons.person)
+                                              : null,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+
+                        // Month Selector
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: isDark ? Colors.grey[800] : Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
                                     ),
                                   ),
-                                ),
-                                const SliverToBoxAdapter(child: IndependenceDayBanner()),
-                                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-                                ...() {
-                                  final sections = customizationState.visibleSections;
-                                  final slivers = <Widget>[];
-                                  for (int i = 0; i < sections.length; i++) {
-                                    final section = sections[i];
-                                    slivers.add(
-                                      _buildDashboardSection(
-                                        context,
-                                        section,
-                                        dashboardState.monthlySummary!,
-                                        dashboardState,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                       ),
-                                    );
-
-                                    if (i < sections.length - 1) {
-                                      slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 24)));
-                                    }
-                                  }
-                                  return slivers;
-                                }(),
-                                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                                      const SizedBox(width: 8),
+                                      Row(
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                              final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
+                                              context.read<DashboardBloc>().add(
+                                                LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
+                                              );
+                                            },
+                                            child: Icon(Icons.chevron_left, size: 20, color: Colors.grey[600]),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          InkWell(
+                                            onTap: () {
+                                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                              final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
+                                              context.read<DashboardBloc>().add(
+                                                LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
+                                              );
+                                            },
+                                            child: Icon(Icons.chevron_right, size: 20, color: Colors.grey[600]),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                  icon: const Icon(Icons.settings_outlined),
+                                  onPressed: () => Navigator.pushNamed(context, AppRouter.settingsRoute),
+                                ),
                               ],
                             ),
-                          )
-                          : EmptyStateWidget(
+                          ),
+                        ),
+                        
+                        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
+                        // AI Insight Card
+                        SliverToBoxAdapter(
+                          child: BlocBuilder<AiInsightBloc, AiInsightState>(
+                            builder: (context, aiState) {
+                              if (aiState is AiInsightGenerated) {
+                                return AiInsightCard(
+                                  insight: aiState.insight,
+                                  onTap: () {
+                                    final dashboardState = context.read<DashboardBloc>().state;
+                                    final goalsState = context.read<GoalsBloc>().state;
+                                    final profile = context.read<ProfileCubit>().state.profile;
+
+                                    if (dashboardState.status == DashboardStatus.loaded &&
+                                        dashboardState.monthlySummary != null &&
+                                        dashboardState.csatSummary != null &&
+                                        dashboardState.cqSummary != null) {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRouter.advisorDeskAIAnalyzerRoute,
+                                        arguments: {
+                                          'monthlySummary': dashboardState.monthlySummary!,
+                                          'csatSummary': dashboardState.csatSummary!,
+                                          'cqSummary': dashboardState.cqSummary!,
+                                          'goalsState': goalsState,
+                                          'profile': profile,
+                                        },
+                                      );
+                                    }
+                                  },
+                                  onActionPressed: () {
+                                    if (aiState.insight.navigationRoute == 'show_goals_dialog') {
+                                      _showEditGoalsDialog(context, context.read<GoalsBloc>().state.targetHours, context.read<GoalsBloc>().state.targetCalls);
+                                    } else if (aiState.insight.navigationRoute != null) {
+                                      Navigator.pushNamed(
+                                        context,
+                                        aiState.insight.navigationRoute!,
+                                        arguments: aiState.insight.navigationArguments,
+                                      );
+                                    }
+                                  },
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ),
+
+                        if (dashboardState.monthlySummary != null) ...[
+                          const SliverToBoxAdapter(child: IndependenceDayBanner()),
+                          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                          ...() {
+                            final sections = customizationState.visibleSections;
+                            final slivers = <Widget>[];
+                            for (int i = 0; i < sections.length; i++) {
+                              final section = sections[i];
+                              slivers.add(
+                                _buildDashboardSection(
+                                  context,
+                                  section,
+                                  dashboardState.monthlySummary!,
+                                  dashboardState,
+                                ),
+                              );
+
+                              if (i < sections.length - 1) {
+                                slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 24)));
+                              }
+                            }
+                            return slivers;
+                          }(),
+                          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                        ] else
+                           SliverFillRemaining(
+                            child: EmptyStateWidget(
                               message: 'No data available for this month.',
                               illustrationPath: 'assets/images/no_data.svg',
                               onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
                             ),
+                          ),
+                      ],
                     ),
-                    const BannerAdWidget(),
-                  ],
+                  ),
                 );
               },
             ),
@@ -457,6 +470,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       floatingActionButton: _buildFabMenu(context),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: 0,
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         onTap: (index) {
           switch (index) {
             case 0:
@@ -525,6 +539,8 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           const SizedBox(height: 16),
         ],
         FloatingActionButton(
+          backgroundColor: const Color(0xFF1E3C72),
+          foregroundColor: Colors.white,
           onPressed: () {
             setState(() {
               _isFabMenuOpen = !_isFabMenuOpen;
@@ -551,15 +567,19 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(label, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(width: 12),
           FloatingActionButton(
             onPressed: null, // The GestureDetector handles the tap
             mini: true,
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF1E3C72),
             child: Icon(icon),
           ),
         ],

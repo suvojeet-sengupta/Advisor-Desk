@@ -6,6 +6,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final Widget? leading;
   final PreferredSizeWidget? bottom;
+  final bool automaticallyImplyLeading;
 
   const CustomAppBar({
     Key? key,
@@ -14,6 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.leading,
     this.bottom,
+    this.automaticallyImplyLeading = true,
   }) : assert(title != null || titleWidget != null), super(key: key);
 
   @override
@@ -21,6 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
     return AppBar(
       leading: leading,
+      automaticallyImplyLeading: automaticallyImplyLeading,
       title: titleWidget ?? Text(
         title!,
         style: theme.textTheme.headlineSmall,

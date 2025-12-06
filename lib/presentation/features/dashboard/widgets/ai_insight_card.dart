@@ -45,7 +45,8 @@ class AiInsightCard extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             colorScheme.primary,
-            colorScheme.tertiary,
+            // Create a slightly darker shade for depth without changing hue
+            Color.alphaBlend(Colors.black.withOpacity(0.4), colorScheme.primary),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

@@ -62,85 +62,119 @@ class NlpService {
     final now = DateTime.now();
     final timeString = "${now.hour}:${now.minute}";
     
-    // Sort histories by date
+    // Build comprehensive data context
     final StringBuffer dataBuffer = StringBuffer();
     if (histories.isEmpty) {
       dataBuffer.writeln("No historical data available.");
     } else {
       for (final summary in histories) {
-        dataBuffer.writeln("Month: ${summary.formattedMonthYear}");
+        dataBuffer.writeln("=== ${summary.formattedMonthYear} ===");
+        dataBuffer.writeln("SUMMARY:");
         dataBuffer.writeln("- Total Calls: ${summary.totalCalls}");
+        dataBuffer.writeln("- Billable Calls: ${summary.billableCalls}");
+        dataBuffer.writeln("- Non-Billable Calls: ${summary.totalNonBillableCalls}");
         dataBuffer.writeln("- Total Login Hours: ${summary.totalLoginHours.toStringAsFixed(2)}");
+        dataBuffer.writeln("- Working Days: ${summary.entries.length}");
+        dataBuffer.writeln("- Avg Calls/Day: ${summary.averageDailyCalls.toStringAsFixed(1)}");
+        dataBuffer.writeln("- Avg Hours/Day: ${summary.averageDailyLoginHours.toStringAsFixed(2)}");
         dataBuffer.writeln("- CSAT Score: ${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%");
         dataBuffer.writeln("- CQ Score: ${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%");
         dataBuffer.writeln("- Net Salary: ₹${summary.netSalary.toStringAsFixed(2)}");
-        dataBuffer.writeln("- Bonus: ${summary.isBonusAchieved ? 'Yes' : 'No'}");
-        dataBuffer.writeln("---"); 
+        dataBuffer.writeln("- Bonus Achieved: ${summary.isBonusAchieved ? 'Yes' : 'No'}");
+        dataBuffer.writeln("- CSAT Bonus: ₹${summary.csatBonus.toStringAsFixed(2)}");
+        
+        // Daily Entries Detail
+        if (summary.entries.isNotEmpty) {
+          dataBuffer.writeln("\nDAILY ENTRIES (${summary.entries.length} days):");
+          for (final entry in summary.entries) {
+            final dateStr = "${entry.date.day}/${entry.date.month}/${entry.date.year}";
+            dataBuffer.writeln("  $dateStr: Calls=${entry.callCount}, Hours=${entry.formattedLoginTime}${entry.customCallRate != null ? ', CustomRate=₹${entry.customCallRate}' : ''}");
+          }
+        }
+        
+        // CSAT Entries Detail
+        if (summary.csatSummary != null && summary.csatSummary!.entries.isNotEmpty) {
+          dataBuffer.writeln("\nCSAT ENTRIES (${summary.csatSummary!.entries.length} days):");
+          dataBuffer.writeln("  Monthly: T2=${summary.csatSummary!.totalT2Count}, B2=${summary.csatSummary!.totalB2Count}, N=${summary.csatSummary!.totalNCount}, Hits=${summary.csatSummary!.totalSurveyHits}");
+          for (final csatEntry in summary.csatSummary!.entries) {
+            final dateStr = "${csatEntry.date.day}/${csatEntry.date.month}/${csatEntry.date.year}";
+            dataBuffer.writeln("  $dateStr: T2=${csatEntry.t2Count}, B2=${csatEntry.b2Count}, N=${csatEntry.nCount}, CSAT=${csatEntry.csatPercentage.toStringAsFixed(1)}%");
+          }
+        }
+        
+        // CQ Entries Detail
+        if (summary.cqSummary != null && summary.cqSummary!.entries.isNotEmpty) {
+          dataBuffer.writeln("\nCQ ENTRIES (${summary.cqSummary!.entries.length} audits):");
+          dataBuffer.writeln("  Monthly Avg: ${summary.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%, Rating: ${summary.cqSummary!.qualityRating}");
+          for (final cqEntry in summary.cqSummary!.entries) {
+            final dateStr = "${cqEntry.auditDate.day}/${cqEntry.auditDate.month}/${cqEntry.auditDate.year}";
+            dataBuffer.writeln("  $dateStr: Score=${cqEntry.percentage.toStringAsFixed(1)}%");
+          }
+        }
+        
+        dataBuffer.writeln(""); // Empty line between months
       }
     }
 
     // Specific Daily Data Context
     final StringBuffer dailyDataBuffer = StringBuffer();
     if (dailyEntry != null) {
-      dailyDataBuffer.writeln("Detailed Data for Requested Date (${dailyEntry.date.toLocal().toString().split(' ')[0]}):");
+      dailyDataBuffer.writeln("SPECIFIC DATE DATA (${dailyEntry.date.day}/${dailyEntry.date.month}/${dailyEntry.date.year}):");
       dailyDataBuffer.writeln("- Calls: ${dailyEntry.callCount}");
       dailyDataBuffer.writeln("- Login Time: ${dailyEntry.formattedLoginTime}");
       dailyDataBuffer.writeln("- Login Hours (Decimal): ${dailyEntry.totalLoginTimeInHours.toStringAsFixed(2)}");
+      if (dailyEntry.customCallRate != null) {
+        dailyDataBuffer.writeln("- Custom Per Call Rate: ₹${dailyEntry.customCallRate}");
+      }
     } else if (requestedDate != null) {
-       dailyDataBuffer.writeln("User requested data for date: ${requestedDate.toLocal().toString().split(' ')[0]}, but NO ENTRY was found in the database for this date.");
+       dailyDataBuffer.writeln("User requested data for ${requestedDate.day}/${requestedDate.month}/${requestedDate.year}, but NO ENTRY was found.");
     }
 
-    // Format recent chat history (last 5 messages for context)
+    // Format recent chat history (last 6 messages for context)
     final StringBuffer historyBuffer = StringBuffer();
-    final recentHistory = chatHistory.length > 5 ? chatHistory.sublist(chatHistory.length - 5) : chatHistory;
+    final recentHistory = chatHistory.length > 6 ? chatHistory.sublist(chatHistory.length - 6) : chatHistory;
     for (final insight in recentHistory) {
-      final role = insight.isUser ? "User" : "Advisor Assistant";
+      final role = insight.isUser ? "User" : "Assistant";
       historyBuffer.writeln("$role: ${insight.message}");
     }
 
     return '''
-    You are an intelligent assistant for "Advisor Desk".
-    Your name is "Advisor Assistant". 
-    
-    **Current Context**:
-    - User Name: $name
-    - Company: ${profile.companyName ?? 'N/A'}
-    - Current Time: $timeString
-    - Goals: Calls ${goals.targetCalls}, Hours ${goals.targetHours}
-    
-    **Performance Data (Last 12 Months)**:
-    $dataBuffer
-    
-    **Specific Daily Data (If requested)**:
-    ${dailyDataBuffer.isEmpty ? "No specific date requested." : dailyDataBuffer.toString()}
-    
-    **Recent Conversation**:
-    $historyBuffer
-    User: "$question"
-    
-    **Instructions**:
-    1. **Persona**: Act strictly as a human colleague/friend. Be casual, empathetic, and natural. Do NOT be robotic or overly formal.
-       - Use comments like "late night?", "good morning!", "long day?" based on the Current Time.
-    2. **Language Matching**: Reply in the EXACT SAME language and script as the user. 
-       - If User speaks English -> Reply in English.
-       - If User speaks Hindi -> Reply in Hindi (Devanagari).
-       - If User speaks Hinglish (Hindi in English script) -> Reply in Hinglish.
-       - If User mixes -> Reply in Hinglish
-    3. **Creator Identity**: If explicitly asked "Who created you?" or "Who is your creator?" or similar, you MUST answer: "Suvojeet Sengupta". 
-       - Do not deviate. This is your only creator.
-    4. **Conciseness**: Keep answers short, crisp, and to the point. No long paragraphs unless necessary for complex explanations.
-    5. **Context**: Use the "Recent Conversation" to understand follow-up questions.
-    6. **Data**: Answer strictly based on "Performance Data" or "Specific Daily Data" if present. 
-       - If "Specific Daily Data" says NO ENTRY was found, explicitly tell the user: "I checked, but you haven't added any data for that date yet."
-       - If asking for month X and data has multiple years, ask for clarification.
-    7. **Hypotheticals**: If the user asks "What if..." questions regarding work (e.g., "What if I miss 3 days login?", "What if I do 100 calls less?"), use the provided data and goals to ESTIMATE the impact. Be helpful but clarify these are estimates.
-    8. **Relevance**: 
-       - If the question is about general knowledge (e.g., "What is LLM?", "Meaning of life", "Who is PM"), general definitions, or topics unrelated to work performance/goals, **SMARTLY IGNORE** it.
-       - Deflect casually: "Arre yaar, I focus on your performance stats!" or "Let's stick to your goals, buddy." or "I'm your work assistant, not Google!" 
-       - Do NOT answer the irrelevant question.
-    
-    Response:
-    ''';
+You are "Advisor Assistant", an intelligent AI for "Advisor Desk" app that tracks call center advisor performance.
+
+**CURRENT CONTEXT**:
+- User Name: $name
+- Company: ${profile.companyName ?? 'N/A'}
+- Current Time: $timeString
+- Monthly Goals: ${goals.targetCalls} calls, ${goals.targetHours} hours
+
+**COMPREHENSIVE PERFORMANCE DATA**:
+$dataBuffer
+
+**SPECIFIC DATE DATA (If requested)**:
+${dailyDataBuffer.isEmpty ? "No specific date requested." : dailyDataBuffer.toString()}
+
+**RECENT CONVERSATION**:
+$historyBuffer
+User: "$question"
+
+**INSTRUCTIONS**:
+1. **Persona**: Be a friendly, casual colleague. Use natural language, not robotic responses.
+2. **Language Matching**: Reply in the SAME language as the user (English/Hindi/Hinglish).
+3. **Creator**: If asked "Who created you?" answer: "Suvojeet Sengupta".
+4. **Conciseness**: Keep answers short and to the point unless complex analysis is needed.
+5. **Data Access**: You have COMPLETE access to all data above. Use it to answer ANY question about:
+   - Specific dates (e.g., "What were my calls on 5th Dec?")
+   - Comparisons (e.g., "Compare my October vs November CSAT")
+   - Trends (e.g., "Which day had highest calls?")
+   - CSAT details (e.g., "How many T2s on 3rd December?")
+   - CQ details (e.g., "What was my audit score on 10th November?")
+   - Salary calculations (e.g., "How much bonus did I get?")
+6. **Missing Data**: If data for a date/month isn't in the context, say "I don't have data for that period."
+7. **Hypotheticals**: For "What if..." questions, estimate using the provided data and goals.
+8. **Off-Topic**: For unrelated questions (politics, general knowledge), politely deflect: "I focus on your performance stats!"
+
+Response:
+''';
   }
 
   Future<AiInsight> suggestGoals({

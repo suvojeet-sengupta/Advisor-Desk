@@ -19,7 +19,7 @@ class AnimatedButton extends StatefulWidget {
     this.foregroundColor,
     this.padding,
     this.borderRadius,
-    this.elevation = 2,
+    this.elevation = 0, // Default to 0 for flat look
     this.enableHaptic = true,
   }) : super(key: key);
 
@@ -31,25 +31,17 @@ class _AnimatedButtonState extends State<AnimatedButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _elevationAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 100), // Faster response
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
       begin: 1.0,
-      end: 0.95,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
-    _elevationAnimation = Tween<double>(
-      begin: widget.elevation,
-      end: widget.elevation / 2,
+      end: 0.98, // Subtle scale
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
@@ -101,30 +93,29 @@ class _AnimatedButtonState extends State<AnimatedButton>
             scale: _scaleAnimation.value,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: widget.borderRadius ?? BorderRadius.circular(12),
-                boxShadow: [
+                borderRadius: widget.borderRadius ?? BorderRadius.circular(16), // Rounded
+                color: backgroundColor, // Solid color
+                 boxShadow: [
                   BoxShadow(
                     color: backgroundColor.withOpacity(0.3),
-                    blurRadius: _elevationAnimation.value * 4,
-                    offset: Offset(0, _elevationAnimation.value * 2),
-                  ),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
                 ],
               ),
               child: Material(
-                color: backgroundColor,
-                borderRadius: widget.borderRadius ?? BorderRadius.circular(12),
-                child: InkWell(
-                  onTap: widget.onPressed,
-                  borderRadius: widget.borderRadius ?? BorderRadius.circular(12),
-                  child: Container(
-                    padding: widget.padding ??
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    child: DefaultTextStyle(
-                      style: TextStyle(color: foregroundColor),
-                      child: IconTheme(
-                        data: IconThemeData(color: foregroundColor),
-                        child: widget.child,
-                      ),
+                color: Colors.transparent,
+                child: Padding(
+                  padding: widget.padding ??
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16), // Taller
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                        color: foregroundColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                    child: IconTheme(
+                      data: IconThemeData(color: foregroundColor),
+                      child: Center(child: widget.child),
                     ),
                   ),
                 ),

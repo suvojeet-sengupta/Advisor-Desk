@@ -213,32 +213,34 @@ class _AllReportsViewState extends State<AllReportsView> {
 
   Widget _buildReportCard(BuildContext context, MonthlySummary summary, Profile profile) {
     final formatter = NumberFormat('#,##0.00');
-    return InkWell(
-      onTap: () async { // Made onTap async
-        final startDate = DateTime(summary.year, summary.month, 1);
-        final endDate = DateTime(summary.year, summary.month + 1, 1).subtract(const Duration(microseconds: 1)); // End of the last day
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-        // Fetch ReportSummary for the selected date range
+    return CustomCard(
+      margin: const EdgeInsets.only(bottom: 20),
+      onTap: () async {
+        final startDate = DateTime(summary.year, summary.month, 1);
+        final endDate = DateTime(summary.year, summary.month + 1, 1).subtract(const Duration(microseconds: 1)); 
+
         final reportSummary = await context.read<PerformanceRepository>().getReportSummary(startDate, endDate);
 
         showDialog(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: const Text('Export Report As'),
+            title: const Text('Export Report'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  leading: const Icon(Icons.picture_as_pdf),
-                  title: const Text('PDF'),
+                  leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
+                  title: const Text('Export as PDF'),
                   onTap: () {
                     Navigator.pop(dialogContext);
                     _generateAndSharePdf(context, reportSummary, ReportSection.values, profile);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.table_chart),
-                  title: const Text('Excel'),
+                  leading: const Icon(Icons.table_chart, color: Colors.green),
+                  title: const Text('Export as Excel'),
                   onTap: () {
                     Navigator.pop(dialogContext);
                     _generateAndShareExcel(context, reportSummary, ReportSection.values, profile);
@@ -249,38 +251,90 @@ class _AllReportsViewState extends State<AllReportsView> {
           ),
         );
       },
-      child: CustomCard(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              summary.formattedMonthYear,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    summary.formattedMonthYear.split(' ')[0], // Month
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                   Text(
+                    summary.formattedMonthYear.split(' ')[1], // Year
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey,
+                        ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.download_rounded, color: Theme.of(context).colorScheme.primary),
+              )
+            ],
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.black26 : Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
             ),
-            const Divider(height: 24),
-            _buildInfoRow(context, Icons.call, 'Total Calls', '${summary.totalCalls}', Theme.of(context).colorScheme.secondary),
-            const SizedBox(height: 8),
-            _buildInfoRow(context, Icons.timer, 'Total Hours', '${formatter.format(summary.totalLoginHours)} hrs', Theme.of(context).colorScheme.secondary),
-            const SizedBox(height: 8),
-            _buildInfoRow(context, Icons.monetization_on, 'Total Salary', '₹${formatter.format(summary.totalSalary)}', Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 8), // Added SizedBox for spacing
-            _buildInfoRow(context, Icons.account_balance_wallet, 'Net Salary', '₹${formatter.format(summary.netSalary)}', Theme.of(context).colorScheme.primary), // Added Net Salary row
-            const SizedBox(height: 16),
-          ],
-        ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildCompactStat(context, 'Calls', '${summary.totalCalls}', Icons.call),
+                _buildCompactStat(context, 'Hours', '${formatter.format(summary.totalLoginHours)}', Icons.timer),
+                _buildCompactStat(context, 'Salary', '₹${formatter.format(summary.totalSalary)}', Icons.monetization_on, isHighLight: true),
+              ],
+            ),
+          ),
+           const SizedBox(height: 16),
+           Row(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             children: [
+               Text('Net Salary', style: Theme.of(context).textTheme.bodyMedium),
+               Text(
+                 '₹${formatter.format(summary.netSalary)}',
+                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                   fontWeight: FontWeight.bold,
+                   color: Theme.of(context).colorScheme.primary,
+                 ),
+               ),
+             ],
+           )
+        ],
       ),
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value, Color iconColor) {
-    return Row(
+  Widget _buildCompactStat(BuildContext context, String label, String value, IconData icon, {bool isHighLight = false}) {
+    return Column(
       children: [
-        Icon(icon, size: 20, color: iconColor),
-        const SizedBox(width: 12),
-        Text('$label: ', style: Theme.of(context).textTheme.bodyLarge),
-        const Spacer(),
-        Text(value, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
+        Icon(icon, size: 20, color: isHighLight ? Theme.of(context).colorScheme.primary : Colors.grey),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: isHighLight ? Theme.of(context).colorScheme.primary : null,
+          ),
+        ),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+        ),
       ],
     );
   }

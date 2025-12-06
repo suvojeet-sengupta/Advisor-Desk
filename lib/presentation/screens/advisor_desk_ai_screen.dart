@@ -67,7 +67,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Dark background for AI feel
+      backgroundColor: theme.scaffoldBackgroundColor, 
       appBar: CustomAppBar(
         title: 'Advisor Desk AI',
         actions: [
@@ -121,16 +121,19 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                   slivers: [
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(24.0),
                         child: _buildPerformanceScore(context, state.performanceScore),
                       ),
                     ),
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                         child: Text(
-                          'Conversation',
-                          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+                          'Recent Conversation',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -148,77 +151,135 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
 
   Widget _buildPerformanceScore(BuildContext context, int score) {
     final theme = Theme.of(context);
-    return Center(
-      child: CircularPercentIndicator(
-        radius: 60.0,
-        lineWidth: 10.0,
-        percent: score / 100,
-        center: Text(
-          '$score/100',
-          style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        footer: Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Text(
-            'Overall Performance Score',
-            style: theme.textTheme.titleMedium?.copyWith(color: Colors.white70),
+    final isDark = theme.brightness == Brightness.dark;
+    
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+             color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+             blurRadius: 20,
+             offset: const Offset(0, 10),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          CircularPercentIndicator(
+            radius: 60.0,
+            lineWidth: 12.0,
+            percent: score / 100,
+            center: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '$score',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                Text(
+                  'Score',
+                  style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey),
+                ),
+              ],
+            ),
+            circularStrokeCap: CircularStrokeCap.round,
+            progressColor: theme.colorScheme.primary,
+            backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+            animation: true,
+            animationDuration: 1200,
           ),
-        ),
-        circularStrokeCap: CircularStrokeCap.round,
-        progressColor: theme.colorScheme.primary,
-        backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-        animation: true,
-        animationDuration: 1200,
+          const SizedBox(height: 16),
+          Text(
+            'Overall Performance',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildConversationHistory(BuildContext context, AdvisorDeskAIState state) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final insight = state.insightHistory[index];
-          // Use authoritative isUser property
-          final isUserMessage = insight.isUser;
-          return _buildChatItem(context, insight, isUserMessage);
-        },
-        childCount: state.insightHistory.length,
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final insight = state.insightHistory[index];
+            final isUserMessage = insight.isUser;
+            return _buildChatItem(context, insight, isUserMessage);
+          },
+          childCount: state.insightHistory.length,
+        ),
       ),
     );
   }
 
   Widget _buildChatItem(BuildContext context, AiInsight insight, bool isUserMessage) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUserMessage) ...[
-            CircleAvatar(
-              backgroundColor: theme.colorScheme.secondary,
-              child: Icon(Icons.psychology_outlined, color: theme.colorScheme.onSecondary),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.auto_awesome, color: theme.colorScheme.primary, size: 16),
             ),
             const SizedBox(width: 8),
           ],
-          Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-            padding: const EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              color: isUserMessage ? theme.primaryColor : Colors.grey[800], // User: Theme Color, AI: Grey
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text(
-              insight.message,
-              style: TextStyle(color: isUserMessage ? Colors.white : Colors.white), // White text for both for contrast
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: BoxDecoration(
+                color: isUserMessage 
+                    ? theme.colorScheme.primary 
+                    : (isDark ? const Color(0xFF2C2C2C) : Colors.white),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
+                  bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+                ),
+                boxShadow: [
+                  if (!isUserMessage)
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                ],
+              ),
+              child: Text(
+                insight.message,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: isUserMessage ? Colors.white : theme.textTheme.bodyLarge?.color,
+                  height: 1.4,
+                ),
+              ),
             ),
           ),
           if (isUserMessage) ...[
             const SizedBox(width: 8),
             CircleAvatar(
-              backgroundColor: theme.colorScheme.primary,
-              child: Icon(Icons.person, color: theme.colorScheme.onPrimary),
+              radius: 16,
+              backgroundColor: theme.colorScheme.secondary,
+              child: const Icon(Icons.person, size: 16, color: Colors.white),
             ),
           ],
         ],
@@ -227,54 +288,84 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
   }
 
   Widget _buildInputArea(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Container(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            color: Colors.black.withOpacity(0.3),
-            offset: const Offset(0, -2),
-          )
-        ],
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1))),
       ),
       child: SafeArea(
         child: Row(
           children: [
             Expanded(
-              child: TextField(
-                controller: _questionController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Ask about your performance...',
-                  hintStyle: const TextStyle(color: Colors.white54),
-                  filled: true,
-                  fillColor: const Color(0xFF2A2A2A),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.transparent),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _questionController,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        decoration: InputDecoration(
+                          hintText: 'Ask Advisor AI...',
+                          hintStyle: TextStyle(color: Theme.of(context).hintColor),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                          isDense: true,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.mic_none_rounded, color: Theme.of(context).primaryColor),
+                        onPressed: () {
+                           // Future voice feature
+                        },
+                      ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             BlocBuilder<AdvisorDeskAIBloc, AdvisorDeskAIState>(
               builder: (context, state) {
                 return state.isAiTyping
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TypingIndicator(),
+                    ? Container(
+                        padding: const EdgeInsets.all(12),
+                         decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const TypingIndicator(),
                       )
-                    : IconButton(
-                        icon: const Icon(Icons.send, color: Colors.white),
-                        onPressed: () {
+                    : InkWell(
+                        onTap: () {
                           if (_questionController.text.isNotEmpty) {
                             context.read<AdvisorDeskAIBloc>().add(AskAdvisorDeskAIQuestion(_questionController.text));
                             _questionController.clear();
                           }
                         },
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).primaryColor.withOpacity(0.4),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              )
+                            ],
+                          ),
+                          child: const Icon(Icons.send_rounded, color: Colors.white, size: 24),
+                        ),
                       );
               },
             ),

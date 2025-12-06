@@ -43,23 +43,30 @@ class CustomFormField extends StatelessWidget {
           controller: controller,
           initialValue: initialValue,
           keyboardType: keyboardType,
-          inputFormatters: inputFormatters, // Added inputFormatters
+          inputFormatters: inputFormatters,
+          style: Theme.of(context).textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5)),
             prefixIcon: icon != null ? Icon(icon, color: Theme.of(context).colorScheme.primary) : null,
             suffixText: suffixText,
+            filled: true,
+            fillColor: Theme.of(context).brightness == Brightness.dark 
+                ? const Color(0xFF2C2C2C) 
+                : const Color(0xFFF5F5F5),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none, // Clean look
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
             ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
           onChanged: onChanged,
           validator: validator,

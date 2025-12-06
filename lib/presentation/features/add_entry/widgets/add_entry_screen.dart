@@ -259,54 +259,72 @@ class _AddEntryViewState extends State<AddEntryView> {
         }
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Form(
             key: _formKey,
             child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date Section
-              _buildSectionTitle(context, 'Date'),
-              const SizedBox(height: 8),
+              _buildSectionTitle(context, 'Select Date'),
+              const SizedBox(height: 12),
               CustomCard(
-                child: InkWell(
-                  onTap: () => _selectDate(context),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).inputDecorationTheme.fillColor,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Theme.of(context).colorScheme.outline),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
+                onTap: () => _selectDate(context),
+                padding: EdgeInsets.zero,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.calendar_today_rounded,
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          DateFormat('dd MMM yyyy').format(state.date),
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            DateFormat('MMMM yyyy').format(state.date).toUpperCase(),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              letterSpacing: 1.2,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat('d, EEEE').format(state.date),
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               // Login Hours Section
-              _buildSectionTitle(context, 'Login Hours'),
-              const SizedBox(height: 8),
+              _buildSectionTitle(context, 'Login Duration'),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: CustomFormField(
                       label: 'Hours',
-                      hintText: 'HH',
-                      icon: Icons.timer,
+                      hintText: '00',
                       controller: _loginHoursController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -314,13 +332,9 @@ class _AddEntryViewState extends State<AddEntryView> {
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Enter hours';
-                        }
+                        if (value == null || value.isEmpty) return 'Required';
                         final hours = int.tryParse(value);
-                        if (hours == null || hours < 0 || hours > 23) {
-                          return '0-23';
-                        }
+                        if (hours == null || hours < 0 || hours > 23) return '0-23';
                         return null;
                       },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
@@ -328,12 +342,11 @@ class _AddEntryViewState extends State<AddEntryView> {
                           ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: CustomFormField(
                       label: 'Minutes',
-                      hintText: 'MM',
-                      icon: Icons.timer,
+                      hintText: '00',
                       controller: _loginMinutesController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -341,13 +354,9 @@ class _AddEntryViewState extends State<AddEntryView> {
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Enter mins';
-                        }
+                         if (value == null || value.isEmpty) return 'Required';
                         final mins = int.tryParse(value);
-                        if (mins == null || mins < 0 || mins > 59) {
-                          return '0-59';
-                        }
+                        if (mins == null || mins < 0 || mins > 59) return '0-59';
                         return null;
                       },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
@@ -355,12 +364,11 @@ class _AddEntryViewState extends State<AddEntryView> {
                           ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: CustomFormField(
                       label: 'Seconds',
-                      hintText: 'SS',
-                      icon: Icons.timer,
+                      hintText: '00',
                       controller: _loginSecondsController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -368,13 +376,9 @@ class _AddEntryViewState extends State<AddEntryView> {
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Enter secs';
-                        }
+                        if (value == null || value.isEmpty) return 'Required';
                         final secs = int.tryParse(value);
-                        if (secs == null || secs < 0 || secs > 59) {
-                          return '0-59';
-                        }
+                        if (secs == null || secs < 0 || secs > 59) return '0-59';
                         return null;
                       },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
@@ -384,12 +388,14 @@ class _AddEntryViewState extends State<AddEntryView> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               // Call Count Section
+              _buildSectionTitle(context, 'Performance'),
+              const SizedBox(height: 12),
               CustomFormField(
-                label: 'Call Count',
-                hintText: 'Enter number of calls',
+                label: 'Total Calls',
+                hintText: 'e.g. 50',
                 icon: Icons.call,
                 controller: _callCountController,
                 keyboardType: TextInputType.number,
@@ -399,21 +405,34 @@ class _AddEntryViewState extends State<AddEntryView> {
                       );
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               // Custom Call Rate Section
-              _buildSectionTitle(context, 'Custom Per Call Rate'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                   _buildSectionTitle(context, 'Advanced Options'),
+                ],
+              ),
+              
               const SizedBox(height: 8),
               CustomCard(
+                padding: EdgeInsets.zero,
                 child: SwitchListTile(
-                  title: const Text('Enable Custom Rate'),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  title: const Text('Custom Per Call Rate', style: TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: const Text('Override default rate for this entry'),
                   value: state.isCustomRateEnabled,
                   onChanged: (_) {
                     context.read<AddEntryBloc>().add(const ToggleCustomRate());
                   },
-                  secondary: Icon(
-                    Icons.price_change,
-                    color: Theme.of(context).colorScheme.primary,
+                  secondary: Container(
+                    padding: const EdgeInsets.all(8),
+                     decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.price_change, color: Colors.orange),
                   ),
                 ),
               ),
@@ -421,9 +440,8 @@ class _AddEntryViewState extends State<AddEntryView> {
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: CustomFormField(
-                    label: 'Custom Rate',
-                    hintText: 'Enter custom rate per call',
-                    icon: Icons.monetization_on,
+                    label: 'Custom Rate (₹)',
+                    hintText: 'e.g. 15.0',
                     controller: _customCallRateController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (value) {
@@ -432,18 +450,14 @@ class _AddEntryViewState extends State<AddEntryView> {
                           );
                     },
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter a rate';
-                      }
+                      if (value == null || value.isEmpty) return 'Required';
                       final rate = double.tryParse(value);
-                      if (rate == null || rate <= 0) {
-                        return 'Enter a valid rate';
-                      }
+                      if (rate == null || rate <= 0) return 'Invalid rate';
                       return null;
                     },
                   ),
                 ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 48),
 
               // Buttons Section
               SizedBox(
@@ -457,9 +471,9 @@ class _AddEntryViewState extends State<AddEntryView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(state.isUpdate ? Icons.update : Icons.add),
+                      Icon(state.isUpdate ? Icons.check_circle_outline : Icons.add_circle_outline),
                       const SizedBox(width: 8),
-                      Text(state.isUpdate ? 'Update Entry' : 'Add Entry'),
+                      Text(state.isUpdate ? 'Update Entry' : 'Save Daily Entry'),
                     ],
                   ),
                 ),
@@ -469,16 +483,18 @@ class _AddEntryViewState extends State<AddEntryView> {
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  child: AnimatedButton(
+                  child: TextButton(
                     onPressed: () => _showDeleteConfirmationDialog(context),
-                    backgroundColor: AppColors.secondaryBackground,
-                    foregroundColor: AppColors.textPrimary,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      foregroundColor: Colors.red,
+                    ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.delete_outline),
                         SizedBox(width: 8),
-                        Text('Delete Entry'),
+                        Text('Delete Entry', style: TextStyle(fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -493,11 +509,12 @@ class _AddEntryViewState extends State<AddEntryView> {
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium,
+    return Text(
+      title.toUpperCase(),
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1.0,
       ),
     );
   }

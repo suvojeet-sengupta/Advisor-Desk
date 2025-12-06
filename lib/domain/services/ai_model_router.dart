@@ -5,11 +5,14 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 class AIModelRouter {
   final String apiKey;
   
-  // Priority 1: Primary model with unlimited usage
-  final String primaryModel = "gemini-2.5-flash-live";
+  // Priority 1: Primary model - stable and production-ready
+  // Note: gemini-2.5-flash-live is for Live API only (streaming)
+  // Using gemini-1.5-flash or gemini-2.0-flash-exp for standard text generation
+  final String primaryModel = "gemini-1.5-flash";
   
   // Priority 2: Fallback models with high daily quota (14.4K RPD)
   final List<String> fallbackPool = [
+    "gemini-2.5-flash-lite", // Currently in use, known to work
     "gemma-3-27b",
     "gemma-3-12b",
   ];

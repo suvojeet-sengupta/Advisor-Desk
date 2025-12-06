@@ -7,6 +7,7 @@ import 'package:advisor_desk/domain/usecases/update_entry_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_entry_usecase.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_entry_state.dart';
+import 'package:advisor_desk/domain/entities/cq_entry.dart';
 
 class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
   final PerformanceRepository repository;
@@ -30,6 +31,7 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
     on<DeleteEntry>(_onDeleteEntry);
     on<ToggleCustomRate>(_onToggleCustomRate);
     on<CustomRateChanged>(_onCustomRateChanged);
+    on<AddCqEntryEvent>(_onAddCqEntry);
     
   }
 
@@ -210,6 +212,23 @@ class AddEntryBloc extends Bloc<AddEntryEvent, AddEntryState> {
       emit(state.copyWith(
         status: AddEntryStatus.failure,
         errorMessage: 'Failed to delete entry: ${e.toString()}',
+      ));
+    }
+  }
+
+  Future<void> _onAddCqEntry(
+    AddCqEntryEvent event,
+    Emitter<AddEntryState> emit,
+  ) async {
+    emit(state.copyWith(status: AddEntryStatus.loading));
+    try {
+      final entry = event.entry as CqEntry;
+      await repository.saveCQEntry(entry);
+      emit(state.copyWith(status: AddEntryStatus.success));
+    } catch (e) {
+      emit(state.copyWith(
+        status: AddEntryStatus.failure,
+        errorMessage: 'Failed to add CQ entry: ${e.toString()}',
       ));
     }
   }

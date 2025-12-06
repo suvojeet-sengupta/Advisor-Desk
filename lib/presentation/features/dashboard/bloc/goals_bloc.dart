@@ -23,6 +23,7 @@ class GoalsBloc extends Bloc<GoalsEvent, GoalsState> {
     emit(state.copyWith(
       targetHours: goals['hours'],
       targetCalls: goals['calls'],
+      isGoalsSet: goals['isSet'] ?? false,
       isLoading: false,
     ));
   }

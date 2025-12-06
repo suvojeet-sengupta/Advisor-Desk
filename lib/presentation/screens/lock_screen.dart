@@ -50,24 +50,33 @@ class _LockScreenState extends State<LockScreen> {
       widget.onUnlocked();
     } else {
       _pinController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid PIN. Please try again.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Invalid PIN. Please try again.',
+              style: TextStyle(color: Theme.of(context).colorScheme.onError),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: isDarkMode
-                ? [const Color(0xFF2C3E50), const Color(0xFF000000)]
-                : [const Color(0xFFECE9E6), const Color(0xFFFFFFFF)],
+            colors: [
+              colorScheme.surface,
+              colorScheme.surfaceContainer,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -80,91 +89,122 @@ class _LockScreenState extends State<LockScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/icon/app_icon.png',
-                      height: 100,
-                      width: 100,
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colorScheme.primary.withOpacity(0.2),
+                          width: 2,
+                        ),
+                      ),
+                      child: Image.asset(
+                        'assets/icon/app_icon.png',
+                        height: 80,
+                        width: 80,
+                      ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     Text(
                       'Welcome Back',
-                      style: theme.textTheme.headlineSmall?.copyWith(
+                      style: textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Enter your PIN to unlock Advisor Desk',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: isDarkMode ? Colors.white70 : Colors.black54,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 48),
-                    if (_isBiometricAvailable)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 24.0),
-                        child: GestureDetector(
-                          onTap: _authenticateWithBiometrics,
-                          child: Column(
-                            children: [
-                              Icon(
+                    if (_isBiometricAvailable) ...[
+                      GestureDetector(
+                        onTap: _authenticateWithBiometrics,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: colorScheme.primaryContainer.withOpacity(0.4),
+                              ),
+                              child: Icon(
                                 Icons.fingerprint,
-                                size: 60,
-                                color: theme.colorScheme.primary,
+                                size: 48,
+                                color: colorScheme.primary,
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Unlock with Biometrics',
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: isDarkMode ? Colors.white70 : Colors.black54,
-                                ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Tap to unlock with Biometrics',
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
+                      const SizedBox(height: 32),
+                    ],
                     SizedBox(
-                      width: 250,
+                      width: 200,
                       child: TextField(
                         controller: _pinController,
                         keyboardType: TextInputType.number,
                         maxLength: 4,
                         obscureText: true,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 24,
-                          letterSpacing: 16,
-                          color: isDarkMode ? Colors.white : Colors.black,
+                        style: textTheme.headlineSmall?.copyWith(
+                          color: colorScheme.onSurface,
+                          letterSpacing: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                         decoration: InputDecoration(
                           counterText: "",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: colorScheme.primary.withOpacity(0.5),
+                              width: 2,
+                            ),
                           ),
-                          filled: true,
-                          fillColor: isDarkMode
-                              ? Colors.white.withOpacity(0.1)
-                              : Colors.black.withOpacity(0.1),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: colorScheme.primary,
+                              width: 3,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 40),
                     SizedBox(
-                      width: 250,
+                      width: double.infinity,
                       child: AnimatedButton(
                         onPressed: _authenticateWithPin,
                         child: const Text('Unlock'),
                       ),
                     ),
                     const SizedBox(height: 48),
-                    Text(
-                      'Protected By Advisor Desk',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode ? Colors.white54 : Colors.black45,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.security, size: 16, color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Protected By Advisor Desk',
+                          style: textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

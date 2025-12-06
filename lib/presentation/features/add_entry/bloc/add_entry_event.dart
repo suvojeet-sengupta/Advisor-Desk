@@ -97,3 +97,12 @@ class CustomRateChanged extends AddEntryEvent {
   @override
   List<Object> get props => [rate];
 }
+
+class AddCqEntryEvent extends AddEntryEvent {
+  final dynamic entry; // Using dynamic because import might be tricky here, but better to import it.
+
+  const AddCqEntryEvent(this.entry);
+
+  @override
+  List<Object?> get props => [entry];
+}

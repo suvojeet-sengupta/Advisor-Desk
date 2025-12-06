@@ -4,6 +4,7 @@ class GoalsState extends Equatable {
   final int targetHours;
   final int targetCalls;
   final bool isLoading;
+  final bool isGoalsSet;
   final int? suggestedHours;
   final int? suggestedCalls;
   final bool suggestionsLoading;
@@ -12,6 +13,7 @@ class GoalsState extends Equatable {
     this.targetHours = 0,
     this.targetCalls = 0,
     this.isLoading = false,
+    this.isGoalsSet = false,
     this.suggestedHours,
     this.suggestedCalls,
     this.suggestionsLoading = false,
@@ -21,6 +23,7 @@ class GoalsState extends Equatable {
     int? targetHours,
     int? targetCalls,
     bool? isLoading,
+    bool? isGoalsSet,
     int? suggestedHours,
     int? suggestedCalls,
     bool? suggestionsLoading,
@@ -29,6 +32,7 @@ class GoalsState extends Equatable {
       targetHours: targetHours ?? this.targetHours,
       targetCalls: targetCalls ?? this.targetCalls,
       isLoading: isLoading ?? this.isLoading,
+      isGoalsSet: isGoalsSet ?? this.isGoalsSet,
       suggestedHours: suggestedHours ?? this.suggestedHours,
       suggestedCalls: suggestedCalls ?? this.suggestedCalls,
       suggestionsLoading: suggestionsLoading ?? this.suggestionsLoading,
@@ -40,6 +44,7 @@ class GoalsState extends Equatable {
         targetHours,
         targetCalls,
         isLoading,
+        isGoalsSet,
         suggestedHours,
         suggestedCalls,
         suggestionsLoading,

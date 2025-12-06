@@ -27,7 +27,7 @@ class AiInsightService {
     final hour = now.hour;
 
     // Priority 0: Check if goals are set
-    if (goals.targetCalls == 1000 && goals.targetHours == 150) { // Default values
+    if (!goals.isGoalsSet) {
       return const AiInsight(
         message: "You haven't set your personal goals for the month yet. Setting goals can help you stay motivated!",
         buttonText: "Set Goals Now",

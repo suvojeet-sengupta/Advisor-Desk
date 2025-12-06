@@ -11,11 +11,12 @@ class GoalDataSource {
     await prefs.setInt('$prefix$_callsKey', calls);
   }
 
-  Future<Map<String, int>> getGoals({required String userId}) async {
+  Future<Map<String, dynamic>> getGoals({required String userId}) async {
     final prefs = await SharedPreferences.getInstance();
     final prefix = userId == '1' ? '' : '${userId}_';
     final hours = prefs.getInt('$prefix$_hoursKey') ?? 150; // डिफ़ॉल्ट लक्ष्य
     final calls = prefs.getInt('$prefix$_callsKey') ?? 1000; // डिफ़ॉल्ट लक्ष्य
-    return {'hours': hours, 'calls': calls};
+    final isSet = prefs.containsKey('$prefix$_hoursKey') || prefs.containsKey('$prefix$_callsKey');
+    return {'hours': hours, 'calls': calls, 'isSet': isSet};
   }
 }

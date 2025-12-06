@@ -82,8 +82,15 @@ ON chat_history(is_user);
 -- Check database size
 -- SELECT page_count * page_size as size FROM pragma_page_count(), pragma_page_size();
 
--- Check table sizes
--- SELECT name, (SELECT COUNT(*) FROM daily_entries) as row_count FROM sqlite_master WHERE type='table';
+-- Check table row counts (run for each table individually)
+-- SELECT COUNT(*) FROM daily_entries;
+-- SELECT COUNT(*) FROM csat_entries;
+-- SELECT COUNT(*) FROM cq_entries;
+-- SELECT COUNT(*) FROM leave_entries;
+-- SELECT COUNT(*) FROM monthly_data;
+
+-- Or use this query to list all tables
+-- SELECT name FROM sqlite_master WHERE type='table';
 
 -- Find duplicate entries (example for daily_entries)
 -- SELECT date, COUNT(*) as count FROM daily_entries GROUP BY date HAVING count > 1;

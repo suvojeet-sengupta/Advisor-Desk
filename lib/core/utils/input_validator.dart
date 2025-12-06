@@ -47,11 +47,17 @@ class InputValidator {
   }
 
   /// Validates if a string is a valid phone number (basic validation)
+  /// Note: For comprehensive phone validation, consider using a specialized package
+  /// like libphonenumber or phone_number
   static bool isValidPhoneNumber(String? value) {
     if (value == null || value.trim().isEmpty) return false;
     
-    final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
-    return phoneRegex.hasMatch(value.trim().replaceAll(RegExp(r'[\s-]'), ''));
+    // Remove common formatting characters
+    final cleaned = value.trim().replaceAll(RegExp(r'[\s\-\(\)\+]'), '');
+    
+    // Basic validation: 10-15 digits
+    final phoneRegex = RegExp(r'^[0-9]{10,15}$');
+    return phoneRegex.hasMatch(cleaned);
   }
 
   /// Sanitizes a string by trimming and removing dangerous characters
@@ -135,8 +141,8 @@ class InputValidator {
   /// Validates if a date is within a specific range
   static bool isDateInRange(DateTime? date, DateTime start, DateTime end) {
     if (date == null) return false;
-    return date.isAfter(start.subtract(const Duration(days: 1))) && 
-           date.isBefore(end.add(const Duration(days: 1)));
+    return (date.isAfter(start) || date.isAtSameMomentAs(start)) && 
+           (date.isBefore(end) || date.isAtSameMomentAs(end));
   }
 
   /// Generates error message for validation failures

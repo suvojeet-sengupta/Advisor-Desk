@@ -223,5 +223,48 @@ void main() {
         expect(InputValidator.isNotFutureDate(null), false);
       });
     });
+
+    group('isDateInRange', () {
+      test('returns true for date within range', () {
+        final start = DateTime(2024, 1, 1);
+        final end = DateTime(2024, 1, 31);
+        final date = DateTime(2024, 1, 15);
+        expect(InputValidator.isDateInRange(date, start, end), true);
+      });
+
+      test('returns true for date at start boundary', () {
+        final start = DateTime(2024, 1, 1);
+        final end = DateTime(2024, 1, 31);
+        final date = DateTime(2024, 1, 1);
+        expect(InputValidator.isDateInRange(date, start, end), true);
+      });
+
+      test('returns true for date at end boundary', () {
+        final start = DateTime(2024, 1, 1);
+        final end = DateTime(2024, 1, 31);
+        final date = DateTime(2024, 1, 31);
+        expect(InputValidator.isDateInRange(date, start, end), true);
+      });
+
+      test('returns false for date before range', () {
+        final start = DateTime(2024, 1, 1);
+        final end = DateTime(2024, 1, 31);
+        final date = DateTime(2023, 12, 31);
+        expect(InputValidator.isDateInRange(date, start, end), false);
+      });
+
+      test('returns false for date after range', () {
+        final start = DateTime(2024, 1, 1);
+        final end = DateTime(2024, 1, 31);
+        final date = DateTime(2024, 2, 1);
+        expect(InputValidator.isDateInRange(date, start, end), false);
+      });
+
+      test('returns false for null date', () {
+        final start = DateTime(2024, 1, 1);
+        final end = DateTime(2024, 1, 31);
+        expect(InputValidator.isDateInRange(null, start, end), false);
+      });
+    });
   });
 }

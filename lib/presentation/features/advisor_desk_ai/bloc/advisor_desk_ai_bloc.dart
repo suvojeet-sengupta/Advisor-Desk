@@ -1,4 +1,5 @@
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
+import 'package:advisor_desk/domain/entities/ai_response.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
@@ -133,7 +134,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     final userMessage = AiInsight(message: event.question, isUser: true);
     final newHistory = List<AiInsight>.from(state.insightHistory)..add(userMessage);
 
-    emit(state.copyWith(insightHistory: newHistory, isAiTyping: true));
+    emit(state.copyWith(insightHistory: newHistory, isAiTyping: true, isSwitchingModel: false));
     
     // Save User Message
     await _performanceRepository.insertChatMessage(userMessage, true);
@@ -165,7 +166,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
             }
             // ----------------------------------------
       
-            final aiAnswer = await _nlpService.processQuestion(
+            final aiResponse = await _nlpService.processQuestion(
               question: event.question,
               histories: allSummaries, 
               goals: goalsState,
@@ -174,18 +175,24 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
               dailyEntry: dailyEntry, // Pass the fetched daily entry
               requestedDate: date, // Pass the requested date
             );
+            
+            // If model switched, show "Switching model..." for a few seconds
+            if (aiResponse.modelSwitched) {
+              emit(state.copyWith(isSwitchingModel: true, isAiTyping: true));
+              await Future.delayed(NlpService.modelSwitchDisplayDuration);
+            }
       
-            final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiAnswer);
-            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+            final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiResponse.insight);
+            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false, isSwitchingModel: false));
             
             // Save AI Message
-            await _performanceRepository.insertChatMessage(aiAnswer, false);
+            await _performanceRepository.insertChatMessage(aiResponse.insight, false);
       
           } catch (e, stack) {
             print("Gemini Error: $e, $stack"); // helpful for debug
             final errorInsight = AiInsight(message: "Sorry, I encountered an error answering that. Please try again later.");
             final finalHistory = List<AiInsight>.from(state.insightHistory)..add(errorInsight);
-            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false));
+            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false, isSwitchingModel: false));
             
             // Save Error Message
             await _performanceRepository.insertChatMessage(errorInsight, false);

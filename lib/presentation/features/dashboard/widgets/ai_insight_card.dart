@@ -31,37 +31,6 @@ class AiInsightCard extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.primary,
-            Color.alphaBlend(Colors.black.withOpacity(0.4), colorScheme.primary),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.primary.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
@@ -75,9 +44,9 @@ class AiInsightCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(6),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: colorScheme.onPrimary.withOpacity(0.2),
+                            color: Colors.white.withOpacity(0.2),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -86,32 +55,32 @@ class AiInsightCard extends StatelessWidget {
                             size: 20,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Text(
                           'Advisor Desk AI',
                           style: theme.textTheme.labelMedium?.copyWith(
-                                color: colorScheme.onPrimary.withOpacity(0.9),
-                                letterSpacing: 1.0,
-                                fontWeight: FontWeight.w600,
+                                color: Colors.white.withOpacity(0.9),
+                                letterSpacing: 0.5,
+                                fontWeight: FontWeight.w700,
                               ),
                         ),
                       ],
                     ),
                     IconButton(
-                        icon: Icon(Icons.info_outline, color: colorScheme.onPrimary.withOpacity(0.7), size: 20),
+                        icon: Icon(Icons.info_outline_rounded, color: Colors.white.withOpacity(0.7), size: 22),
                         onPressed: () => _showAiInsightInfoDialog(context),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 Text(
                   insight.message,
                   style: theme.textTheme.titleLarge?.copyWith(
-                        color: colorScheme.onPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        height: 1.3,
+                        height: 1.4,
                       ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -123,14 +92,14 @@ class AiInsightCard extends StatelessWidget {
                     child: _PulseAnimation(
                       child: AnimatedButton(
                         onPressed: onActionPressed,
-                        backgroundColor: colorScheme.surface,
-                        foregroundColor: colorScheme.primary,
-                        borderRadius: BorderRadius.circular(12),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Colors.white,
+                        foregroundColor: primaryColor,
+                        borderRadius: BorderRadius.circular(16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Text(
                           insight.buttonText!,
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
                             fontSize: 16,
                           ),
                         ),

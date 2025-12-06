@@ -30,7 +30,16 @@ class NlpService {
         }
 
   // Duration for showing "Switching model..." indicator
-  static const Duration _modelSwitchDisplayDuration = Duration(seconds: 3);
+  static const Duration modelSwitchDisplayDuration = Duration(seconds: 3);
+
+  // Check if error indicates quota/limit exceeded and should trigger fallback
+  bool _shouldUseFallbackModel(dynamic error) {
+    final errorMessage = error.toString().toLowerCase();
+    return errorMessage.contains('quota') || 
+           errorMessage.contains('limit') || 
+           errorMessage.contains('resource') ||
+           errorMessage.contains('exceeded');
+  }
 
   Future<AiResponse> processQuestion({
     required String question,
@@ -72,11 +81,7 @@ class NlpService {
 
     } catch (e) {
       // Check if error is quota/limit exceeded
-      final errorMessage = e.toString().toLowerCase();
-      if (errorMessage.contains('quota') || 
-          errorMessage.contains('limit') || 
-          errorMessage.contains('resource') ||
-          errorMessage.contains('exceeded')) {
+      if (_shouldUseFallbackModel(e)) {
         
         // Try fallback to gemini-2.5-flash
         try {
@@ -329,11 +334,7 @@ Response:
       return AiInsight(message: response.text ?? "");
     } catch (e) {
       // Check if error is quota/limit exceeded
-      final errorMessage = e.toString().toLowerCase();
-      if (errorMessage.contains('quota') || 
-          errorMessage.contains('limit') || 
-          errorMessage.contains('resource') ||
-          errorMessage.contains('exceeded')) {
+      if (_shouldUseFallbackModel(e)) {
         
         // Try fallback to gemini-2.5-flash
         try {

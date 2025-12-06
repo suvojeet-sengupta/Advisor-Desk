@@ -1,6 +1,7 @@
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
+import 'package:equatable/equatable.dart';
 
-class AiResponse {
+class AiResponse extends Equatable {
   final AiInsight insight;
   final bool modelSwitched;
 
@@ -8,4 +9,7 @@ class AiResponse {
     required this.insight,
     required this.modelSwitched,
   });
+
+  @override
+  List<Object?> get props => [insight, modelSwitched];
 }

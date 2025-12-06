@@ -179,7 +179,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
             // If model switched, show "Switching model..." for a few seconds
             if (aiResponse.modelSwitched) {
               emit(state.copyWith(isSwitchingModel: true, isAiTyping: true));
-              await Future.delayed(NlpService._modelSwitchDisplayDuration);
+              await Future.delayed(NlpService.modelSwitchDisplayDuration);
             }
       
             final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiResponse.insight);

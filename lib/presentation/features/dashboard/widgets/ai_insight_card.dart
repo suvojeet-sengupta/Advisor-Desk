@@ -1,5 +1,6 @@
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:flutter/material.dart';
+import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
 
 class AiInsightCard extends StatelessWidget {
   final AiInsight insight;
@@ -45,7 +46,6 @@ class AiInsightCard extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             colorScheme.primary,
-            // Create a slightly darker shade for depth without changing hue
             Color.alphaBlend(Colors.black.withOpacity(0.4), colorScheme.primary),
           ],
           begin: Alignment.topLeft,
@@ -82,7 +82,7 @@ class AiInsightCard extends StatelessWidget {
                           ),
                           child: const Icon(
                             Icons.auto_awesome,
-                            color: Color(0xFFFFD700), // Keeping Gold as it's a nice accent for AI
+                            color: Color(0xFFFFD700),
                             size: 20,
                           ),
                         ),
@@ -117,25 +117,22 @@ class AiInsightCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (insight.buttonText != null) ...[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: onActionPressed,
-                      style: ElevatedButton.styleFrom(
+                    child: _PulseAnimation(
+                      child: AnimatedButton(
+                        onPressed: onActionPressed,
                         backgroundColor: colorScheme.surface,
                         foregroundColor: colorScheme.primary,
+                        borderRadius: BorderRadius.circular(12),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        insight.buttonText!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                        child: Text(
+                          insight.buttonText!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -146,6 +143,51 @@ class AiInsightCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PulseAnimation extends StatefulWidget {
+  final Widget child;
+  const _PulseAnimation({required this.child});
+
+  @override
+  State<_PulseAnimation> createState() => _PulseAnimationState();
+}
+
+class _PulseAnimationState extends State<_PulseAnimation> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: widget.child,
+        );
+      },
     );
   }
 }

@@ -79,9 +79,13 @@ class NlpService {
         dataBuffer.writeln("- Avg Hours/Day: ${summary.averageDailyLoginHours.toStringAsFixed(2)}");
         dataBuffer.writeln("- CSAT Score: ${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%");
         dataBuffer.writeln("- CQ Score: ${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%");
-        dataBuffer.writeln("- Net Salary: ₹${summary.netSalary.toStringAsFixed(2)}");
-        dataBuffer.writeln("- Bonus Achieved: ${summary.isBonusAchieved ? 'Yes' : 'No'}");
+        dataBuffer.writeln("SALARY BREAKDOWN:");
+        dataBuffer.writeln("- Base Salary: ₹${summary.baseSalary.toStringAsFixed(2)}");
+        dataBuffer.writeln("- Performance Bonus: ₹${summary.bonusAmount.toStringAsFixed(2)} (${summary.isBonusAchieved ? 'Achieved' : 'Not Achieved'})");
         dataBuffer.writeln("- CSAT Bonus: ₹${summary.csatBonus.toStringAsFixed(2)}");
+        dataBuffer.writeln("- Gross Salary: ₹${(summary.totalSalary + summary.csatBonus).toStringAsFixed(2)}");
+        dataBuffer.writeln("- TDS Deduction: ₹${summary.tdsDeduction.toStringAsFixed(2)}");
+        dataBuffer.writeln("- Net Salary: ₹${summary.netSalary.toStringAsFixed(2)}");
         
         // Daily Entries Detail
         if (summary.entries.isNotEmpty) {

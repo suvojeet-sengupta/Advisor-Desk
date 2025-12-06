@@ -118,6 +118,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
               Expanded(
                 child: CustomScrollView(
                   controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
                   slivers: [
                     SliverToBoxAdapter(
                       child: Padding(
@@ -321,12 +322,6 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                         ),
                       ),
                     ),
-                    IconButton(
-                        icon: Icon(Icons.mic_none_rounded, color: Theme.of(context).primaryColor),
-                        onPressed: () {
-                           // Future voice feature
-                        },
-                      ),
                   ],
                 ),
               ),

@@ -76,18 +76,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       return const SizedBox.shrink();
                     },
                   ),
-                  _buildDivider(),
-                  _buildSettingsTile(
-                    context,
-                    icon: Icons.new_releases_rounded,
-                    title: "What's New",
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ChangelogDialog(),
-                      );
-                    },
-                  ),
                    _buildDivider(),
                   _buildLinkTile(
                     context,
@@ -99,14 +87,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               
               const SizedBox(height: 24),
-              _buildSectionHeader('Feedback'),
+              _buildSectionHeader('Advisor AI'),
               _buildSectionCard(
                 context,
                 [
-                   _buildRateTheAppSection(context),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.delete_sweep_rounded,
+                    title: 'Clear Chat History',
+                    subtitle: 'Delete all conversations with the AI Assistant',
+                    onTap: () => _showClearChatHistoryConfirmation(context),
+                  ),
                 ],
               ),
 
+              const SizedBox(height: 24),
+              _buildSectionHeader('Updates'),
+              _buildSectionCard(
+                context,
+                [
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.new_releases_rounded,
+                    title: "What's New",
+                    subtitle: "See the latest features and changes",
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ChangelogDialog(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              
               const SizedBox(height: 24),
               _buildSectionHeader('Data'),
               _buildSectionCard(
@@ -398,6 +412,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (mounted) {
           setState(() => _isLoading = false);
         }
+      }
+    }
+  }
+
+  Future<void> _showClearChatHistoryConfirmation(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear Chat History?'),
+        content: const Text(
+            'This will permanently delete all your conversations with the AI Assistant. This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Clear'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      _clearAiChatHistory();
+    }
+  }
+
+  Future<void> _clearAiChatHistory() async {
+    setState(() => _isLoading = true);
+    try {
+      final repository = context.read<PerformanceRepository>();
+      await repository.clearChatHistory();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Chat history cleared successfully')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to clear history: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }

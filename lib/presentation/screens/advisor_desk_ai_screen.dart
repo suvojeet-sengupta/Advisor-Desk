@@ -217,12 +217,77 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
+            // If we are at the last item AND AI is typing, show the thinking bubble
+            if (state.isAiTyping && index == state.insightHistory.length) {
+              return _buildThinkingBubble(context);
+            }
+            
             final insight = state.insightHistory[index];
             final isUserMessage = insight.isUser;
             return _buildChatItem(context, insight, isUserMessage);
           },
-          childCount: state.insightHistory.length,
+          // Add 1 to count if typing to make space for the bubble
+          childCount: state.insightHistory.length + (state.isAiTyping ? 1 : 0),
         ),
+      ),
+    );
+  }
+
+  Widget _buildThinkingBubble(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.auto_awesome, color: theme.colorScheme.primary, size: 16),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomLeft: Radius.circular(4),
+                bottomRight: Radius.circular(20),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 24, 
+                  height: 16, 
+                  child: const TypingIndicator(),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Thinking...",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontStyle: FontStyle.italic,
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -332,39 +397,36 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
             const SizedBox(width: 12),
             BlocBuilder<AdvisorDeskAIBloc, AdvisorDeskAIState>(
               builder: (context, state) {
-                return state.isAiTyping
-                    ? Container(
-                        padding: const EdgeInsets.all(12),
-                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const TypingIndicator(),
-                      )
-                    : InkWell(
-                        onTap: () {
+                // If typing, show disabled send button (indicator is now in chat bubble)
+                return InkWell(
+                  onTap: state.isAiTyping
+                      ? null
+                      : () {
                           if (_questionController.text.isNotEmpty) {
                             context.read<AdvisorDeskAIBloc>().add(AskAdvisorDeskAIQuestion(_questionController.text));
                             _questionController.clear();
                           }
                         },
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              )
-                            ],
-                          ),
-                          child: const Icon(Icons.send_rounded, color: Colors.white, size: 24),
-                        ),
-                      );
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: state.isAiTyping 
+                          ? Theme.of(context).disabledColor 
+                          : Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        if (!state.isAiTyping)
+                          BoxShadow(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          )
+                      ],
+                    ),
+                    child: const Icon(Icons.send_rounded, color: Colors.white, size: 24),
+                  ),
+                );
               },
             ),
           ],

@@ -262,14 +262,35 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                               ),
                                         ),
                                         const SizedBox(height: 4),
-                                        Text(
-                                          profile.name ?? 'User',
-                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: isDark ? Colors.white : Colors.black87,
+                                        Row(
+                                          children: [
+                                            Text(
+                                              profile.name ?? 'User',
+                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: isDark ? Colors.white : Colors.black87,
+                                                  ),
+                                            ),
+                                            if (profile.name == 'Suvojeet Sengupta') ...[
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                                child: Text(
+                                                  'DEV',
+                                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                                        color: Theme.of(context).colorScheme.onPrimary,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 10,
+                                                      ),
+                                                ),
                                               ),
-                                        ),
-                                      ],
+                                            ],
+                                          ],
+                                        ),                                      ],
                                     ),
                                     GestureDetector(
                                       onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),

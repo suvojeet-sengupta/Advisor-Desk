@@ -177,17 +177,17 @@ class _AdvisorDeskAIAnalyzerScreenState extends State<AdvisorDeskAIAnalyzerScree
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
+            theme.colorScheme.primaryContainer.withOpacity(0.4),
             theme.colorScheme.surface,
-            theme.colorScheme.surface.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: theme.colorScheme.primary.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),

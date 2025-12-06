@@ -72,24 +72,29 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
         title: 'Advisor Desk AI',
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete_outline),
+            icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.onSurface),
             onPressed: () {
+              final bloc = context.read<AdvisorDeskAIBloc>();
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Clear Chat History?'),
-                  content: const Text('Are you sure you want to delete all chat history? This action cannot be undone.'),
+                  backgroundColor: theme.colorScheme.surface,
+                  title: Text('Clear Chat History?', style: TextStyle(color: theme.colorScheme.onSurface)),
+                  content: Text(
+                    'Are you sure you want to delete all chat history? This action cannot be undone.',
+                    style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.8)),
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text('Cancel', style: TextStyle(color: theme.colorScheme.primary)),
                     ),
                     TextButton(
                       onPressed: () {
-                        context.read<AdvisorDeskAIBloc>().add(ClearChatHistory());
+                        bloc.add(ClearChatHistory());
                         Navigator.pop(context);
                       },
-                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
                       child: const Text('Delete'),
                     ),
                   ],
@@ -152,16 +157,15 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
 
   Widget _buildPerformanceScore(BuildContext context, int score) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-             color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+             color: Colors.black.withOpacity(0.05),
              blurRadius: 20,
              offset: const Offset(0, 10),
           )
@@ -225,7 +229,6 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
 
   Widget _buildChatItem(BuildContext context, AiInsight insight, bool isUserMessage) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -250,7 +253,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
               decoration: BoxDecoration(
                 color: isUserMessage 
                     ? theme.colorScheme.primary 
-                    : (isDark ? const Color(0xFF2C2C2C) : Colors.white),
+                    : theme.colorScheme.surface,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
@@ -333,7 +336,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                     ? Container(
                         padding: const EdgeInsets.all(12),
                          decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const TypingIndicator(),
@@ -349,11 +352,11 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Theme.of(context).primaryColor.withOpacity(0.4),
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               )

@@ -7,6 +7,7 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/services/query_parser.dart'; // Keeping for now if we want hybrid, but mostly replacing
 // import 'package:advisor_desk/domain/services/query_models.dart'; // Might remove if unused
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:advisor_desk/domain/entities/daily_entry.dart';
 
 class NlpService {
   final PerformanceRepository _performanceRepository;

@@ -111,9 +111,10 @@ class AiInsightCard extends StatelessWidget {
                 const SizedBox(height: 20),
                 Text(
                   insight.message,
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        fontSize: 15,
                         height: 1.4,
                       ),
                   maxLines: 3,
@@ -129,12 +130,12 @@ class AiInsightCard extends StatelessWidget {
                         backgroundColor: Colors.white,
                         foregroundColor: primaryColor,
                         borderRadius: BorderRadius.circular(16),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Text(
                           insight.buttonText!,
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
-                            fontSize: 16,
+                            fontSize: 14,
                           ),
                         ),
                       ),

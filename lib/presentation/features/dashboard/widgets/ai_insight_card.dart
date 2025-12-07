@@ -37,26 +37,40 @@ class AiInsightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final primaryColor = theme.colorScheme.primary;
-    
-    // Generate a rich gradient based on the primary color
-    // We use HSL to ensure we get a nice visible gradient regardless of the input color
-    final hslPrimary = HSLColor.fromColor(primaryColor);
-    final color1 = hslPrimary.withLightness((hslPrimary.lightness + 0.1).clamp(0.0, 1.0)).toColor();
-    final color2 = hslPrimary.withLightness((hslPrimary.lightness - 0.2).clamp(0.0, 1.0)).withSaturation((hslPrimary.saturation + 0.1).clamp(0.0, 1.0)).toColor();
+
+    Color textColor = isDarkMode ? Colors.black : Colors.white;
+    Color iconColor = isDarkMode ? Colors.black.withOpacity(0.7) : Colors.white.withOpacity(0.7);
+
+    // Generate a rich gradient based on the primary color or a light variant for dark mode
+    Color gradientColor1;
+    Color gradientColor2;
+
+    if (isDarkMode) {
+      // Use lighter colors for the card background in dark mode
+      // This ensures black text is readable.
+      gradientColor1 = Colors.white.withOpacity(0.9);
+      gradientColor2 = Colors.grey[200]!.withOpacity(0.9);
+    } else {
+      final hslPrimary = HSLColor.fromColor(primaryColor);
+      gradientColor1 = hslPrimary.withLightness((hslPrimary.lightness + 0.1).clamp(0.0, 1.0)).toColor();
+      gradientColor2 = hslPrimary.withLightness((hslPrimary.lightness - 0.2).clamp(0.0, 1.0)).withSaturation((hslPrimary.saturation + 0.1).clamp(0.0, 1.0)).toColor();
+    }
+
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
-          colors: [color1, color2],
+          colors: [gradientColor1, gradientColor2],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.3),
+            color: (isDarkMode ? Colors.black : primaryColor).withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -80,12 +94,12 @@ class AiInsightCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: textColor.withOpacity(0.1), // Adjusted for contrast
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.auto_awesome,
-                            color: Color(0xFFFFD700),
+                            color: Color(0xFFFFD700), // Star icon color remains consistent
                             size: 20,
                           ),
                         ),
@@ -93,7 +107,7 @@ class AiInsightCard extends StatelessWidget {
                         Text(
                           'Advisor Desk AI',
                           style: theme.textTheme.labelMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.9),
+                                color: textColor.withOpacity(0.9),
                                 letterSpacing: 0.5,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -101,7 +115,7 @@ class AiInsightCard extends StatelessWidget {
                       ],
                     ),
                     IconButton(
-                        icon: Icon(Icons.info_outline_rounded, color: Colors.white.withOpacity(0.7), size: 22),
+                        icon: Icon(Icons.info_outline_rounded, color: iconColor, size: 22),
                         onPressed: () => _showAiInsightInfoDialog(context),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -112,7 +126,7 @@ class AiInsightCard extends StatelessWidget {
                 Text(
                   insight.message,
                   style: theme.textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
+                        color: textColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                         height: 1.4,
@@ -127,8 +141,8 @@ class AiInsightCard extends StatelessWidget {
                     child: _PulseAnimation(
                       child: AnimatedButton(
                         onPressed: onActionPressed,
-                        backgroundColor: Colors.white,
-                        foregroundColor: primaryColor,
+                        backgroundColor: isDarkMode ? Colors.black : Colors.white, // Button background
+                        foregroundColor: isDarkMode ? primaryColor : primaryColor, // Button text color (primaryColor)
                         borderRadius: BorderRadius.circular(16),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Text(

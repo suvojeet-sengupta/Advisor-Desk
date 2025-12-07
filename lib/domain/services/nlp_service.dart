@@ -195,6 +195,15 @@ class NlpService {
     // Format recent chat history (last 6 messages for context)
     final StringBuffer historyBuffer = StringBuffer();
     final recentHistory = chatHistory.length > 6 ? chatHistory.sublist(chatHistory.length - 6) : chatHistory;
+    bool questionAlreadyInHistory = false;
+    
+    if (recentHistory.isNotEmpty) {
+      final lastInsight = recentHistory.last;
+      if (lastInsight.isUser && lastInsight.message.trim() == question.trim()) {
+        questionAlreadyInHistory = true;
+      }
+    }
+
     for (final insight in recentHistory) {
       final role = insight.isUser ? "User" : "Assistant";
       historyBuffer.writeln("$role: ${insight.message}");
@@ -217,7 +226,7 @@ ${dailyDataBuffer.isEmpty ? "No specific date requested." : dailyDataBuffer.toSt
 
 **RECENT CONVERSATION**:
 $historyBuffer
-User: "$question"
+${questionAlreadyInHistory ? '' : 'User: "$question"'}
 
 **RESPONSE STYLE**:
 1. **DIRECT ANSWERS**: Answer exactly what user asked. No fluff.

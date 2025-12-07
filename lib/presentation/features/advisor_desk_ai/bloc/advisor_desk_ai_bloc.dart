@@ -65,6 +65,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     LoadAdvisorDeskAIData event,
     Emitter<AdvisorDeskAIState> emit,
   ) async {
+    print("BLoC: Loading AI Data...");
     emit(state.copyWith(status: AdvisorDeskAIStatus.loading));
     try {
       // 1. Clean up old messages
@@ -72,6 +73,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
 
       // 2. Load stored history
       List<AiInsight> storedHistory = await _performanceRepository.getChatHistory();
+      print("BLoC: Loaded ${storedHistory.length} messages from history.");
 
       final now = DateTime.now();
       final summary = await _performanceRepository.getMonthlySummary(now.month, now.year);
@@ -91,6 +93,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
 
       // 3. Add welcome message ONLY if history is empty
       if (storedHistory.isEmpty) {
+        print("BLoC: History empty, adding welcome message.");
         if (hasData) {
            storedHistory = [const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.")];
         } else {
@@ -110,6 +113,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         insightHistory: storedHistory,
       ));
     } catch (e) {
+      print("BLoC: Error loading AI Data: $e");
       // Return whatever we have with an error/fallback state
        List<AiInsight> fallbackHistory = await _performanceRepository.getChatHistory();
        if (fallbackHistory.isEmpty) {
@@ -130,6 +134,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     AskAdvisorDeskAIQuestion event,
     Emitter<AdvisorDeskAIState> emit,
   ) async {
+    print("BLoC: Asking Question: ${event.question}");
     // Add user's question to history
     final userMessage = AiInsight(message: event.question, isUser: true);
     final newHistory = List<AiInsight>.from(state.insightHistory)..add(userMessage);
@@ -166,16 +171,19 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
             }
             // ----------------------------------------
       
+            print("BLoC: Processing question with NLP Service...");
             final aiResponse = await _nlpService.processQuestion(
               question: event.question,
               histories: allSummaries, 
               goals: goalsState,
               profile: profile,
-              chatHistory: state.insightHistory, // Pass current history
+              chatHistory: newHistory, // Use newHistory to include the latest user question
               dailyEntry: dailyEntry, // Pass the fetched daily entry
               requestedDate: date, // Pass the requested date
             );
             
+            print("BLoC: Received AI Response: ${aiResponse.insight.message.substring(0, 10)}...");
+
             // If model switched, show "Switching model..." for a few seconds
             if (aiResponse.modelSwitched) {
               emit(state.copyWith(isSwitchingModel: true, isAiTyping: true));

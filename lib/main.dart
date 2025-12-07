@@ -121,6 +121,7 @@ void main() async {
     initialThemeMode: initialThemeMode,
     initialColor: initialColor,
     userDataSource: userDataSource, // New
+    currentUserId: currentUserId,
   ));
 }
 
@@ -137,6 +138,7 @@ class MyApp extends StatefulWidget {
   final AppThemeMode initialThemeMode;
   final AppColor initialColor;
   final UserDataSource userDataSource; // New
+  final String currentUserId;
 
   const MyApp({
     Key? key,
@@ -152,6 +154,7 @@ class MyApp extends StatefulWidget {
     required this.initialThemeMode,
     required this.initialColor,
     required this.userDataSource, // New
+    required this.currentUserId,
   }) : super(key: key);
 
   @override
@@ -321,7 +324,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             providers: [
               BlocProvider(create: (context) => ThemeCubit(initialThemeMode: widget.initialThemeMode, initialColor: widget.initialColor)),
               BlocProvider(create: (context) => DashboardCustomizationCubit()),
-              BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>())), // New
+              BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>(), userId: widget.currentUserId)), // New
               BlocProvider(create: (context) => UserCubit(widget.userDataSource, context.read<ProfileCubit>())), // New
             ],
             child: BlocBuilder<ThemeCubit, ThemeState>(

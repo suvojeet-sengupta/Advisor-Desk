@@ -8,6 +8,7 @@ class UserDataSource {
 
   Future<List<AppUser>> getUsers() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.reload(); // Ensure we have the latest data
     final usersJson = prefs.getStringList(_usersListKey) ?? [];
     if (usersJson.isEmpty) {
       // Return default user if no users exist
@@ -22,7 +23,16 @@ class UserDataSource {
 
   Future<void> saveUser(AppUser user) async {
     final prefs = await SharedPreferences.getInstance();
-    final users = await getUsers();
+    // Re-fetch users to ensure we don't overwrite with stale data
+    await prefs.reload();
+    final usersJsonRaw = prefs.getStringList(_usersListKey) ?? [];
+    List<AppUser> users;
+    
+    if (usersJsonRaw.isEmpty) {
+      users = [AppUser(id: '1', name: 'Default User', profilePicturePath: '')];
+    } else {
+      users = usersJsonRaw.map((str) => AppUser.fromMap(json.decode(str))).toList();
+    }
     
     final index = users.indexWhere((u) => u.id == user.id);
     if (index >= 0) {
@@ -32,17 +42,25 @@ class UserDataSource {
     }
 
     final usersJson = users.map((u) => json.encode(u.toMap())).toList();
-    await prefs.setStringList(_usersListKey, usersJson);
+    final result = await prefs.setStringList(_usersListKey, usersJson);
+    if (!result) {
+       print("Failed to save users list!");
+    }
   }
 
   Future<String> getCurrentUserId() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.reload(); // Ensure we have the latest data
     return prefs.getString(_currentUserIdKey) ?? '1'; // Default to User 1
   }
 
-  Future<void> setCurrentUserId(String id) async {
+  Future<bool> setCurrentUserId(String id) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_currentUserIdKey, id);
+    final result = await prefs.setString(_currentUserIdKey, id);
+    if (!result) {
+      print("Failed to save current user ID!");
+    }
+    return result;
   }
   
   Future<AppUser?> getUserById(String id) async {
@@ -55,11 +73,15 @@ class UserDataSource {
   }
   Future<void> deleteUser(String userId) async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
     final users = await getUsers();
     
     users.removeWhere((u) => u.id == userId);
     
     final usersJson = users.map((u) => json.encode(u.toMap())).toList();
-    await prefs.setStringList(_usersListKey, usersJson);
+    final result = await prefs.setStringList(_usersListKey, usersJson);
+    if (!result) {
+       print("Failed to delete user!");
+    }
   }
 }

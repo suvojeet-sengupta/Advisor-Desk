@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:advisor_desk/presentation/common/widgets/typing_indicator.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:share_plus/share_plus.dart';
@@ -131,7 +130,7 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
-                        child: _buildPerformanceScore(context, state.performanceScore),
+                        child: _buildHeader(context),
                       ),
                     ),
                     SliverToBoxAdapter(
@@ -159,55 +158,55 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
     );
   }
 
-  Widget _buildPerformanceScore(BuildContext context, int score) {
+  Widget _buildHeader(BuildContext context) {
     final theme = Theme.of(context);
     
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.tertiary,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-             color: Colors.black.withOpacity(0.05),
+             color: theme.colorScheme.primary.withOpacity(0.3),
              blurRadius: 20,
              offset: const Offset(0, 10),
           )
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircularPercentIndicator(
-            radius: 60.0,
-            lineWidth: 12.0,
-            percent: score / 100,
-            center: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '$score',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                Text(
-                  'Score',
-                  style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey),
-                ),
-              ],
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
             ),
-            circularStrokeCap: CircularStrokeCap.round,
-            progressColor: theme.colorScheme.primary,
-            backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-            animation: true,
-            animationDuration: 1200,
+            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
-            'Overall Performance',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+            'Advisor Desk AI',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your personal performance assistant. Ask me about your goals, stats, or analysis.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withOpacity(0.9),
+              height: 1.5,
             ),
           ),
         ],

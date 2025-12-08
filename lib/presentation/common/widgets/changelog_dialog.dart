@@ -14,16 +14,16 @@ class ChangelogDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withOpacity(isDark ? 0.85 : 0.95),
-              borderRadius: BorderRadius.circular(24),
+              color: theme.colorScheme.surface.withOpacity(isDark ? 0.90 : 0.95),
+              borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: theme.colorScheme.onSurface.withOpacity(0.1),
+                color: theme.colorScheme.outline.withOpacity(0.2),
                 width: 1,
               ),
               boxShadow: [
@@ -43,8 +43,8 @@ class ChangelogDialog extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFF1E3C72),
-                        const Color(0xFF2A5298),
+                        theme.colorScheme.primary,
+                        theme.colorScheme.tertiary,
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -55,21 +55,20 @@ class ChangelogDialog extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: theme.colorScheme.onPrimary.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 24),
+                        child: Icon(Icons.auto_awesome, color: theme.colorScheme.onPrimary, size: 24),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               "What's New",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                color: theme.colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5,
                               ),
@@ -77,9 +76,8 @@ class ChangelogDialog extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               "v1.5.0 • AI Update",
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 13,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onPrimary.withOpacity(0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -104,7 +102,7 @@ class ChangelogDialog extends StatelessWidget {
                             title: "Powered by Gemini",
                             description: "Experience the power of Google's Gemini AI for deep insights, smarter goal suggestions, and date-specific queries.",
                             icon: Icons.auto_awesome,
-                            color: Colors.blue,
+                            color: theme.colorScheme.primary,
                           ),
                           _buildFeatureItem(
                             context,
@@ -174,12 +172,15 @@ class ChangelogDialog extends StatelessWidget {
                   padding: const EdgeInsets.all(24),
                   child: AnimatedButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    backgroundColor: const Color(0xFF1E3C72),
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     width: double.infinity,
-                    child: const Text(
+                    child: Text(
                       "Awesome, Let's Go!",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -196,10 +197,10 @@ class ChangelogDialog extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: Text(
         title.toUpperCase(),
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
           color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.bold,
-          letterSpacing: 1.0,
+          letterSpacing: 1.2,
         ),
       ),
     );
@@ -235,13 +236,14 @@ class ChangelogDialog extends StatelessWidget {
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   description,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: theme.colorScheme.onSurfaceVariant,
                     height: 1.4,
                   ),
                 ),

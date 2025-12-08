@@ -42,6 +42,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:advisor_desk/presentation/common/widgets/changelog_dialog.dart';
 import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
 import 'package:advisor_desk/presentation/common/widgets/animated_button.dart';
+import 'package:confetti/confetti.dart'; // Confetti Import
 
 // Advisor Desk AI Imports
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
@@ -100,6 +101,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   final UsageTrackingService _usageTrackingService = UsageTrackingService();
   bool _isFabMenuOpen = false;
   late AnimationController _fabAnimationController;
+  late ConfettiController _confettiController; // Confetti Controller
 
   @override
   void initState() {
@@ -108,6 +110,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
       vsync: this,
       duration: const Duration(milliseconds: 75),
     );
+    _confettiController = ConfettiController(duration: const Duration(seconds: 5)); // Init Confetti Controller
     _checkAndRequestReview();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkVersionAndShowChangelog();
@@ -117,6 +120,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
   @override
   void dispose() {
     _fabAnimationController.dispose();
+    _confettiController.dispose(); // Dispose Confetti Controller
     super.dispose();
   }
 
@@ -240,6 +244,19 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
               if (dashboardState.status == DashboardStatus.loaded &&
                   dashboardState.monthlySummary != null &&
                   !goalsState.isLoading) {
+                // Check for goal achievement to trigger confetti
+                final bool callsGoalMet = dashboardState.monthlySummary!.totalCalls >= goalsState.targetCalls;
+                final bool hoursGoalMet = dashboardState.monthlySummary!.totalLoginHours >= goalsState.targetHours;
+
+                // Simple check: if goals are now met, play confetti.
+                // A more robust solution would track if goals were met in the *previous* state
+                // to avoid playing every time the Bloc rebuilds if goals are already met.
+                if (callsGoalMet && hoursGoalMet && goalsState.isGoalsSet && !goalsState.isAiLoading) {
+                  _confettiController.play();
+                  // TODO: Add an event to GoalsBloc to mark confetti as played for this month/goals
+                  // For now, it will play every time goals are met and this listener triggers.
+                }
+
                 context.read<AiInsightBloc>().add(GenerateInsight(
                       summary: dashboardState.monthlySummary!,
                       goals: goalsState,
@@ -537,6 +554,18 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                   color: Colors.black.withOpacity(0.5),
                 ),
               ),
+            // Confetti Widget Overlay
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirectionality: BlastDirectionality.explosive,
+                shouldLoop: false,
+                colors: const [
+                  Colors.green, Colors.blue, Colors.pink, Colors.orange, Colors.purple
+                ],
+              ),
+            ),
           ],
         ),
       ),

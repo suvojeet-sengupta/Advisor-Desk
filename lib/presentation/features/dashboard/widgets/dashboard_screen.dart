@@ -166,10 +166,43 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     return 'Good Night';
   }
 
+  // Helper to determine goal status color
+  Color _getGoalStatusColor(GoalsState goalsState, MonthlySummary? monthlySummary, BuildContext context) {
+    if (monthlySummary == null || !goalsState.isGoalsSet) {
+      return Colors.grey; // Goals not set or no data
+    }
+
+    final targetCalls = goalsState.targetCalls;
+    final targetHours = goalsState.targetHours;
+
+    final achievedCalls = monthlySummary.totalCalls;
+    final achievedHours = monthlySummary.totalLoginHours;
+
+    final now = DateTime.now();
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    final currentDay = now.day;
+
+    // Calculate expected progress based on current day of the month
+    final expectedProgress = currentDay / daysInMonth;
+
+    final callsProgress = achievedCalls / targetCalls;
+    final hoursProgress = achievedHours / targetHours;
+
+    // If both calls and hours are ahead or on track, mark green
+    if (callsProgress >= expectedProgress * 0.9 && hoursProgress >= expectedProgress * 0.9) {
+      return Colors.green; // On track or ahead
+    } else if (callsProgress >= expectedProgress * 0.7 || hoursProgress >= expectedProgress * 0.7) {
+      return Colors.orange; // Slightly behind, but recoverable
+    } else {
+      return Colors.red; // Significantly behind
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final customizationState = context.watch<DashboardCustomizationCubit>().state;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = theme.brightness == Brightness.dark;
     final backgroundColor = isDark ? const Color(0xFF121212) : const Color(0xFFF6F8FA);
 
     return Scaffold(
@@ -241,78 +274,91 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                             child: BlocBuilder<ProfileCubit, ProfileState>(
-                              builder: (context, state) {
-                                final profile = state.profile;
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                              builder: (context, profileState) {
+                                return BlocBuilder<GoalsBloc, GoalsState>(
+                                  builder: (context, goalsState) {
+                                    final profile = profileState.profile;
+                                    final goalStatusColor = _getGoalStatusColor(goalsState, dashboardState.monthlySummary, context);
+
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          _getGreeting(),
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: Colors.grey[600],
-                                                fontSize: 14,
-                                              ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Row(
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              profile.name ?? 'User',
-                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isDark ? Colors.white : Colors.black87,
+                                              _getGreeting(),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    color: Colors.grey[600],
+                                                    fontSize: 14,
                                                   ),
                                             ),
-                                            if (profile.name == 'Suvojeet Sengupta') ...[
-                                              const SizedBox(width: 8),
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context).colorScheme.primary,
-                                                  borderRadius: BorderRadius.circular(4),
-                                                ),
-                                                child: Text(
-                                                  'DEV',
-                                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                                        color: Theme.of(context).colorScheme.onPrimary,
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  profile.name ?? 'User',
+                                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                                         fontWeight: FontWeight.bold,
-                                                        fontSize: 10,
+                                                        color: isDark ? Colors.white : Colors.black87,
                                                       ),
                                                 ),
-                                              ),
-                                            ],
-                                          ],
-                                        ),                                      ],
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: Colors.white, width: 2),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.1),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 2),
+                                                if (profile.name == 'Suvojeet Sengupta') ...[
+                                                  const SizedBox(width: 8),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context).colorScheme.primary,
+                                                      borderRadius: BorderRadius.circular(4),
+                                                    ),
+                                                    child: Text(
+                                                      'DEV',
+                                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                                            color: Theme.of(context).colorScheme.onPrimary,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 10,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
                                             ),
                                           ],
                                         ),
-                                        child: CircleAvatar(
-                                          radius: 24,
-                                          backgroundImage: profile.profilePicturePath.isNotEmpty
-                                              ? FileImage(File(profile.profilePicturePath))
-                                              : null,
-                                          child: profile.profilePicturePath.isEmpty
-                                              ? const Icon(Icons.person)
-                                              : null,
+                                        GestureDetector(
+                                          onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
+                                          child: Stack(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 24,
+                                                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                                                backgroundImage: profile.profilePicturePath.isNotEmpty
+                                                    ? FileImage(File(profile.profilePicturePath))
+                                                    : null,
+                                                child: profile.profilePicturePath.isEmpty
+                                                    ? Icon(Icons.person, color: theme.colorScheme.primary)
+                                                    : null,
+                                              ),
+                                              if (goalsState.isGoalsSet && dashboardState.monthlySummary != null)
+                                                Positioned(
+                                                  bottom: 0,
+                                                  right: 0,
+                                                  child: Container(
+                                                    width: 12,
+                                                    height: 12,
+                                                    decoration: BoxDecoration(
+                                                      color: goalStatusColor,
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ],
+                                      ],
+                                    );
+                                  },
                                 );
                               },
                             ),
@@ -325,57 +371,65 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
                             child: Row(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: isDark ? Colors.grey[800] : Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
-                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: isDark ? Colors.grey[800] : Colors.white,
+                                      borderRadius: BorderRadius.circular(30), // Pill shape
+                                      border: Border.all(
+                                        color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
+                                        width: 0.8,
                                       ),
-                                      const SizedBox(width: 8),
-                                      Row(
-                                        children: [
-                                          InkWell(
-                                            onTap: () {
-                                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                              final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
-                                              context.read<DashboardBloc>().add(
-                                                LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
-                                              );
-                                            },
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                            final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
+                                            context.read<DashboardBloc>().add(
+                                              LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
+                                            );
+                                          },
+                                          customBorder: const CircleBorder(),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
                                             child: Icon(Icons.chevron_left, size: 20, color: Colors.grey[600]),
                                           ),
-                                          const SizedBox(width: 8),
-                                          InkWell(
-                                            onTap: () {
-                                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                              final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
-                                              context.read<DashboardBloc>().add(
-                                                LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
-                                              );
-                                            },
+                                        ),
+                                        Text(
+                                          dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
+                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: isDark ? Colors.white : Colors.black87,
+                                              ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                            final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
+                                            context.read<DashboardBloc>().add(
+                                              LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
+                                            );
+                                          },
+                                          customBorder: const CircleBorder(),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
                                             child: Icon(Icons.chevron_right, size: 20, color: Colors.grey[600]),
                                           ),
-                                        ],
-                                      ),
-                                    ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                const Spacer(),
+                                const SizedBox(width: 12),
                                 IconButton(
                                   icon: const Icon(Icons.settings_outlined),
                                   onPressed: () => Navigator.pushNamed(context, AppRouter.settingsRoute),
+                                  tooltip: 'Settings',
+                                  color: Colors.grey[600],
                                 ),
                               ],
                             ),
@@ -434,11 +488,21 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         if (dashboardState.monthlySummary != null) ...[
                           const SliverToBoxAdapter(child: IndependenceDayBanner()),
                           const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                          
+                          // Salary Section (Bento Box - full width)
+                          SliverToBoxAdapter(
+                            child: SalarySection(summary: dashboardState.monthlySummary!),
+                          ),
+                          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+                          // Other Sections (dynamic, excluding salary)
                           ...() {
                             final sections = customizationState.visibleSections;
                             final slivers = <Widget>[];
                             for (int i = 0; i < sections.length; i++) {
                               final section = sections[i];
+                              if (section == DashboardSection.salaryDetails) continue; // Already rendered
+                              
                               slivers.add(
                                 _buildDashboardSection(
                                   context,

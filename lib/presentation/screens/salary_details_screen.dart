@@ -17,12 +17,8 @@ class SalaryDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Salary Breakdown'),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-         // Depending on theme, might need specific color, assuming theme data handles appBarTheme
+      appBar: const CustomAppBar(
+        title: 'Salary Breakdown',
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),

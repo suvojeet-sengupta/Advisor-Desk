@@ -8,6 +8,9 @@ import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/core/constants/app_colors.dart';
+import 'package:advisor_desk/data/datasources/user_data_source.dart';
+import 'package:advisor_desk/domain/repositories/profile_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MonthlyPerformanceScreen extends StatelessWidget {
   final MonthlySummary summary;
@@ -17,11 +20,51 @@ class MonthlyPerformanceScreen extends StatelessWidget {
     required this.summary,
   }) : super(key: key);
 
+  Future<void> _onSharePressed(BuildContext context) async {
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (c) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final userId = await context.read<UserDataSource>().getCurrentUserId();
+      final profile = await context.read<ProfileRepository>().getProfile(userId: userId);
+      
+      if (context.mounted) {
+        Navigator.pop(context); // Hide loading
+        Navigator.pushNamed(
+          context,
+          AppRouter.shareThemeSelectorRoute,
+          arguments: {
+            'summary': summary,
+            'profile': profile,
+          },
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context); // Hide loading
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error preparing share: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: CustomAppBar(title: summary.formattedMonthYear),
+      appBar: CustomAppBar(
+        title: summary.formattedMonthYear,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_rounded),
+            tooltip: 'Share Stats',
+            onPressed: () => _onSharePressed(context),
+          ),
+        ],
+      ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
           if ((details.primaryVelocity ?? 0) < -200) {

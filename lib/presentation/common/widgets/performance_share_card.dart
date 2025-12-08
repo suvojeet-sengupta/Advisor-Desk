@@ -82,7 +82,7 @@ class _PerformanceShareCardState extends State<PerformanceShareCard> {
         children: [
           Row(
             children: [
-              Image.asset('assets/icon/app_icon.png', width: 36, height: 36),
+              Image.asset('assets/icon/headset_logo.png', width: 36, height: 36),
               const SizedBox(width: 12),
               Text(
                 AppConstants.appName,

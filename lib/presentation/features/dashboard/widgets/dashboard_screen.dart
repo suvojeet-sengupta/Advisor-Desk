@@ -489,19 +489,12 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                           const SliverToBoxAdapter(child: IndependenceDayBanner()),
                           const SliverToBoxAdapter(child: SizedBox(height: 16)),
                           
-                          // Salary Section (Bento Box - full width)
-                          SliverToBoxAdapter(
-                            child: SalarySection(summary: dashboardState.monthlySummary!),
-                          ),
-                          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-                          // Other Sections (dynamic, excluding salary)
+                          // All Sections (dynamic)
                           ...() {
                             final sections = customizationState.visibleSections;
                             final slivers = <Widget>[];
                             for (int i = 0; i < sections.length; i++) {
                               final section = sections[i];
-                              if (section == DashboardSection.salaryDetails) continue; // Already rendered
                               
                               slivers.add(
                                 _buildDashboardSection(

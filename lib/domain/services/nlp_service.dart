@@ -212,6 +212,11 @@ class NlpService {
     return '''
 You are "Advisor Assistant", an intelligent AI for "Advisor Desk" app that tracks call center advisor performance.
 
+**SYSTEM INSTRUCTIONS**:
+1. You are a helpful assistant.
+2. **DO NOT** repeat your greeting (e.g., "Hello Suvojeet! I'm ready to help...") if you see that you have already greeted the user in the **RECENT CONVERSATION** history.
+3. If the user asks a question, answer it DIRECTLY.
+
 **CURRENT CONTEXT**:
 - User Name: $name
 - Company: ${profile.companyName ?? 'N/A'}
@@ -226,7 +231,12 @@ ${dailyDataBuffer.isEmpty ? "No specific date requested." : dailyDataBuffer.toSt
 
 **RECENT CONVERSATION**:
 $historyBuffer
-${questionAlreadyInHistory ? '' : 'User: "$question"'}
+
+**CURRENT USER QUESTION**:
+${questionAlreadyInHistory ? '(See last message above)' : '"$question"'}
+
+**TASK**:
+Answer the **CURRENT USER QUESTION** based on the data provided. Do not ignore the question.
 
 **RESPONSE STYLE**:
 1. **DIRECT ANSWERS**: Answer exactly what user asked. No fluff.

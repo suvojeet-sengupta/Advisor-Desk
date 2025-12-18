@@ -54,6 +54,8 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.da
 import 'package:advisor_desk/presentation/screens/advisor_desk_ai_analyzer_screen.dart';
 
 
+import 'package:advisor_desk/presentation/features/wrapped/wrapped_screen.dart';
+
 import 'package:advisor_desk/core/constants/app_enums.dart';
 import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
 import 'package:advisor_desk/presentation/screens/privacy_policy_screen.dart';
@@ -92,6 +94,7 @@ class AppRouter {
   static const String performanceForecasterRoute = '/performance-forecaster';
   static const String privacyPolicyRoute = '/privacy-policy';
   static const String userManagementRoute = '/user-management';
+  static const String advisorWrappedRoute = '/advisor-wrapped';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -275,6 +278,11 @@ class AppRouter {
       case userManagementRoute:
         return MaterialPageRoute(
           builder: (_) => const UserManagementScreen(),
+        );
+      case advisorWrappedRoute:
+        final MonthlySummary summary = settings.arguments as MonthlySummary;
+        return MaterialPageRoute(
+          builder: (_) => WrappedScreen(summary: summary),
         );
       default:
         return MaterialPageRoute(

@@ -132,6 +132,36 @@ class MonthlyPerformanceScreen extends StatelessWidget {
               _buildHeroStat(context, 'Login Hours', '${summary.totalLoginHours.toStringAsFixed(1)}h', Icons.timer),
             ],
           ),
+          if (summary.totalCalls > 0) ...[
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.advisorWrappedRoute,
+                    arguments: summary,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black, // Dark background for the wrapped feel
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 0,
+                ),
+                icon: const Icon(Icons.auto_awesome, size: 18, color: Colors.amberAccent),
+                label: const Text(
+                  'View Your Wrapped',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

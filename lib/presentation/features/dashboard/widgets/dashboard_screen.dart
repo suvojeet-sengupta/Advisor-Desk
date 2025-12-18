@@ -53,6 +53,8 @@ import 'package:advisor_desk/presentation/features/dashboard/widgets/ai_insight_
 import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
 import 'package:advisor_desk/presentation/features/wrapped/widgets/wrapped_notification_dialog.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -159,18 +161,8 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     return Theme.of(context).colorScheme.error;
   }
 
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) {
-      return 'Good Morning';
-    }
-    if (hour < 17) {
-      return 'Good Afternoon';
-    }
-    if (hour < 21) {
-      return 'Good Evening';
-    }
-    return 'Good Night';
+  String _getGreeting(Language language) {
+    return AppStrings.getGreeting(language, DateTime.now().hour);
   }
 
   // Helper to determine goal status color
@@ -308,7 +300,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
 
                 if (dashboardState.status == DashboardStatus.error) {
                   return EmptyStateWidget(
-                    message: dashboardState.errorMessage ?? 'An unknown error occurred.',
+                    message: dashboardState.errorMessage ?? AppStrings.get(context.read<LanguageCubit>().state, 'unknown_error'),
                     illustrationPath: 'assets/images/error.svg',
                     onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
                   );
@@ -335,12 +327,16 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              _getGreeting(),
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                    color: Colors.grey[600],
-                                                    fontSize: 14,
-                                                  ),
+                                            BlocBuilder<LanguageCubit, Language>(
+                                              builder: (context, language) {
+                                                return Text(
+                                                  _getGreeting(language),
+                                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 14,
+                                                      ),
+                                                );
+                                              },
                                             ),
                                             const SizedBox(height: 4),
                                             Row(
@@ -448,12 +444,16 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                             child: Icon(Icons.chevron_left, size: 20, color: Colors.grey[600]),
                                           ),
                                         ),
-                                        Text(
-                                          dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
-                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: isDark ? Colors.white : Colors.black87,
-                                              ),
+                                        BlocBuilder<LanguageCubit, Language>(
+                                          builder: (context, language) {
+                                            return Text(
+                                              dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month', // Date formatting usually handled by Intl, but 'Select Month' could be localized if it wasn't dynamic
+                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: isDark ? Colors.white : Colors.black87,
+                                                  ),
+                                            );
+                                          },
                                         ),
                                         InkWell(
                                           onTap: () {
@@ -564,7 +564,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         ] else
                            SliverFillRemaining(
                             child: EmptyStateWidget(
-                              message: 'No data available for this month.',
+                              message: AppStrings.get(context.read<LanguageCubit>().state, 'no_data_month'),
                               illustrationPath: 'assets/images/no_data.svg',
                               onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
                             ),
@@ -634,7 +634,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
            _buildFabMenuItem(
             context,
             icon: Icons.note_add,
-            label: 'Add Daily Entry',
+            label: AppStrings.get(context.read<LanguageCubit>().state, 'add_daily_entry_fab'),
             onPressed: () {
                setState(() {
                 _isFabMenuOpen = false;
@@ -651,7 +651,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
            _buildFabMenuItem(
             context,
             icon: Icons.flag,
-            label: 'Set Goals',
+            label: AppStrings.get(context.read<LanguageCubit>().state, 'set_goals_fab'),
             onPressed: () {
                setState(() {
                 _isFabMenuOpen = false;
@@ -665,7 +665,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           _buildFabMenuItem(
             context,
             icon: Icons.psychology,
-            label: 'Chat with Advisor Desk AI',
+            label: AppStrings.get(context.read<LanguageCubit>().state, 'chat_ai_fab'),
             onPressed: () {
                setState(() {
                 _isFabMenuOpen = false;
@@ -731,6 +731,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     MonthlySummary summary,
     DashboardState dashboardState,
   ) {
+    final language = context.read<LanguageCubit>().state;
     switch (section) {
       case DashboardSection.monthlySummary:
         return SliverPadding(
@@ -744,7 +745,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             ),
             delegate: SliverChildListDelegate([
               DashboardCard(
-                title: 'Total Calls',
+                title: AppStrings.get(language, 'total_calls_card'),
                 value: summary.totalCalls.toString(),
                 icon: Icons.call,
                 iconColor: Theme.of(context).colorScheme.secondary,
@@ -761,7 +762,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
               ),
               if (summary.totalNonBillableCalls > 0)
                 DashboardCard(
-                  title: 'Non-billable Calls',
+                  title: AppStrings.get(language, 'non_billable_calls_card'),
                   value: summary.totalNonBillableCalls.toString(),
                   icon: Icons.phone_disabled,
                   iconColor: Theme.of(context).colorScheme.error,
@@ -777,7 +778,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                   },
                 ),
               DashboardCard(
-                title: 'Total Login Hours',
+                title: AppStrings.get(language, 'total_login_hours_card'),
                 value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
                 icon: Icons.timer,
                 iconColor: Theme.of(context).colorScheme.tertiary,
@@ -793,7 +794,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
-                title: 'Avg. Login Hours',
+                title: AppStrings.get(language, 'avg_login_hours_card'),
                 value: summary.averageDailyLoginHours.toStringAsFixed(2),
                 icon: Icons.timer,
                 iconColor: Theme.of(context).colorScheme.tertiary,
@@ -809,7 +810,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
-                title: 'Avg. Calls',
+                title: AppStrings.get(language, 'avg_calls_card'),
                 value: summary.averageDailyCalls.toStringAsFixed(2),
                 icon: Icons.call,
                 iconColor: Theme.of(context).colorScheme.secondary,
@@ -825,7 +826,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
-                title: 'CSAT Score',
+                title: AppStrings.get(language, 'csat_score_card'),
                 value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
                 icon: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Icons.sentiment_dissatisfied : Icons.sentiment_satisfied_alt,
                 iconColor: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
@@ -840,7 +841,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
-                title: 'CQ Score',
+                title: AppStrings.get(language, 'cq_score_card'),
                 value: '${dashboardState.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%',
                 icon: Icons.assessment,
                 iconColor: _getQualityColor(dashboardState.cqSummary!.monthlyAverageCQ, context),
@@ -855,7 +856,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
-                title: 'Net Salary',
+                title: AppStrings.get(language, 'net_salary_card'),
                 value: '₹${summary.netSalary.toStringAsFixed(2)}',
                 icon: Icons.currency_rupee,
                 iconColor: Theme.of(context).colorScheme.secondary,
@@ -868,8 +869,8 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
-                title: 'Forecaster',
-                value: 'Project Salary',
+                title: AppStrings.get(language, 'forecaster_card'),
+                value: AppStrings.get(language, 'project_salary_subtitle'),
                 icon: Icons.insights,
                 iconColor: Theme.of(context).colorScheme.primary,
                 onTap: () {
@@ -881,7 +882,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 },
               ),
               DashboardCard(
-                title: 'Login Days',
+                title: AppStrings.get(language, 'login_days_card'),
                 value: summary.loginDays.toString(),
                 icon: Icons.calendar_today,
                 iconColor: Theme.of(context).colorScheme.tertiary,
@@ -933,6 +934,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
     final callsController = TextEditingController(text: currentCalls.toString());
     final formKey = GlobalKey<FormState>();
     
+    final language = context.read<LanguageCubit>().state;
     // Capture blocs from context before showing dialog
     final goalsBloc = context.read<GoalsBloc>();
     final profileCubit = context.read<ProfileCubit>();
@@ -956,7 +958,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             },
             builder: (context, state) {
               return AlertDialog(
-                title: const Text('Set Monthly Goals'),
+                title: Text(AppStrings.get(language, 'set_monthly_goals_title')),
                 content: Form(
                   key: formKey,
                   child: Column(
@@ -979,7 +981,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                 child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary),
                               ),
                               const SizedBox(width: 12),
-                              Text("Asking AI for suggestions...", style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary)),
+                              Text(AppStrings.get(language, 'asking_ai_suggestions'), style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary)),
                             ],
                           ),
                         )
@@ -997,10 +999,10 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.auto_awesome, size: 18),
-                                SizedBox(width: 8),
-                                Text("Ask AI for Suggestions"),
+                              children: [
+                                const Icon(Icons.auto_awesome, size: 18),
+                                const SizedBox(width: 8),
+                                Text(AppStrings.get(language, 'ask_ai_btn')),
                               ],
                             ),
                           ),
@@ -1009,7 +1011,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         controller: hoursController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          labelText: 'Target Login Hours (Max 570)',
+                          labelText: AppStrings.get(language, 'target_login_hours_label'),
                           border: theme.inputDecorationTheme.border,
                           enabledBorder: theme.inputDecorationTheme.enabledBorder,
                           focusedBorder: theme.inputDecorationTheme.focusedBorder,
@@ -1018,14 +1020,14 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter target hours';
+                            return AppStrings.get(language, 'enter_target_hours_error');
                           }
                           final hours = int.tryParse(value);
                           if (hours == null) {
-                            return 'Please enter a valid number';
+                            return AppStrings.get(language, 'valid_number_error');
                           }
                           if (hours > 570) {
-                            return 'Hours cannot exceed 570';
+                            return AppStrings.get(language, 'hours_exceed_error');
                           }
                           return null;
                         },
@@ -1035,7 +1037,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         controller: callsController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          labelText: 'Target Call Count',
+                          labelText: AppStrings.get(language, 'target_call_count_label'),
                           border: theme.inputDecorationTheme.border,
                           enabledBorder: theme.inputDecorationTheme.enabledBorder,
                           focusedBorder: theme.inputDecorationTheme.focusedBorder,
@@ -1044,10 +1046,10 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter target calls';
+                            return AppStrings.get(language, 'enter_target_calls_error');
                           }
                           if (int.tryParse(value) == null) {
-                            return 'Please enter a valid number';
+                            return AppStrings.get(language, 'valid_number_error');
                           }
                           return null;
                         },
@@ -1058,7 +1060,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('Cancel'),
+                    child: Text(AppStrings.get(language, 'cancel')),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -1072,7 +1074,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                         Navigator.pop(dialogContext);
                       }
                     },
-                    child: const Text('Save'),
+                    child: Text(AppStrings.get(language, 'save_btn')),
                   )
                 ],
               );

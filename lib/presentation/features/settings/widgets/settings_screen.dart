@@ -22,6 +22,8 @@ import 'package:advisor_desk/presentation/common/widgets/custom_card.dart'; // I
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -49,170 +51,183 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: const CustomAppBar(title: 'Settings'),
-      body: Stack(
-        children: [
-          ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+    return BlocBuilder<LanguageCubit, Language>(
+      builder: (context, language) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: CustomAppBar(title: AppStrings.get(language, 'settings_title')),
+          body: Stack(
             children: [
-              _buildSectionHeader('General'),
-              _buildSectionCard(
-                context,
-                [
-                   FutureBuilder<PackageInfo>(
-                    future: PackageInfo.fromPlatform(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                         return _buildSettingsTile(
-                              context,
-                              icon: Icons.info_outline_rounded,
-                              title: 'App Version',
-                              subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
-                              onTap: null,
-                            );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                   _buildDivider(),
-                  _buildLinkTile(
+              ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                children: [
+                  _buildSectionHeader(AppStrings.get(language, 'general_section')),
+                  _buildSectionCard(
                     context,
-                    'About App',
-                    AppRouter.aboutAppRoute,
-                    Icons.business_rounded,
+                    [
+                       FutureBuilder<PackageInfo>(
+                        future: PackageInfo.fromPlatform(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                             return _buildSettingsTile(
+                                  context,
+                                  icon: Icons.info_outline_rounded,
+                                  title: AppStrings.get(language, 'app_version'),
+                                  subtitle: '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
+                                  onTap: null,
+                                );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                       _buildDivider(),
+                      _buildLinkTile(
+                        context,
+                        AppStrings.get(language, 'about_app'),
+                        AppRouter.aboutAppRoute,
+                        Icons.business_rounded,
+                      ),
+                       _buildDivider(),
+                      _buildSettingsTile(
+                        context,
+                        icon: Icons.language,
+                        title: AppStrings.get(language, 'language'),
+                        subtitle: language == Language.english ? 'English' : 'Hinglish',
+                        onTap: () => _showLanguageDialog(context),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              
-              const SizedBox(height: 24),
-              _buildSectionHeader('Advisor AI'),
-              _buildSectionCard(
-                context,
-                [
-                  _buildSettingsTile(
+                  
+                  const SizedBox(height: 24),
+                  _buildSectionHeader(AppStrings.get(language, 'advisor_ai_section')),
+                  _buildSectionCard(
                     context,
-                    icon: Icons.delete_sweep_rounded,
-                    title: 'Clear Chat History',
-                    subtitle: 'Delete all conversations with the AI Assistant',
-                    onTap: () => _showClearChatHistoryConfirmation(context),
+                    [
+                      _buildSettingsTile(
+                        context,
+                        icon: Icons.delete_sweep_rounded,
+                        title: AppStrings.get(language, 'clear_chat_history'),
+                        subtitle: 'Delete all conversations with the AI Assistant',
+                        onTap: () => _showClearChatHistoryConfirmation(context),
+                      ),
+                    ],
                   ),
-                ],
-              ),
 
-              const SizedBox(height: 24),
-              _buildSectionHeader('Updates'),
-              _buildSectionCard(
-                context,
-                [
-                  _buildSettingsTile(
+                  const SizedBox(height: 24),
+                  _buildSectionHeader(AppStrings.get(language, 'updates_section')),
+                  _buildSectionCard(
                     context,
-                    icon: Icons.new_releases_rounded,
-                    title: "What's New",
-                    subtitle: "See the latest features and changes",
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const ChangelogDialog(),
-                      );
-                    },
+                    [
+                      _buildSettingsTile(
+                        context,
+                        icon: Icons.new_releases_rounded,
+                        title: AppStrings.get(language, 'whats_new'),
+                        subtitle: "See the latest features and changes",
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ChangelogDialog(),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              
-              const SizedBox(height: 24),
-              _buildSectionHeader('Data'),
-              _buildSectionCard(
-                context,
-                [
-                  _buildDataManagementTile(
+                  
+                  const SizedBox(height: 24),
+                  _buildSectionHeader(AppStrings.get(language, 'data_section')),
+                  _buildSectionCard(
                     context,
-                    'Backup Data',
-                    _lastBackupDate != null ? 'Last backup: $_lastBackupDate' : 'Save your data locally',
-                    Icons.backup_rounded,
-                    _backupDatabase,
+                    [
+                      _buildDataManagementTile(
+                        context,
+                        AppStrings.get(language, 'backup_data'),
+                        _lastBackupDate != null ? 'Last backup: $_lastBackupDate' : 'Save your data locally',
+                        Icons.backup_rounded,
+                        _backupDatabase,
+                      ),
+                       _buildDivider(),
+                      _buildDataManagementTile(
+                        context,
+                        AppStrings.get(language, 'restore_data'),
+                        'Restore from a backup file',
+                        Icons.restore_rounded,
+                        _restoreDatabase,
+                      ),
+                    ],
                   ),
-                   _buildDivider(),
-                  _buildDataManagementTile(
-                    context,
-                    'Restore Data',
-                    'Restore from a backup file',
-                    Icons.restore_rounded,
-                    _restoreDatabase,
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 24),
-              _buildSectionHeader('Preferences'),
-              _buildSectionCard(
-                context,
-                [
-                   _buildLinkTile(
+                  const SizedBox(height: 24),
+                  _buildSectionHeader(AppStrings.get(language, 'preferences_section')),
+                  _buildSectionCard(
                     context,
-                    'Salary Parameters',
-                    AppRouter.salarySettingsRoute,
-                    Icons.attach_money_rounded,
+                    [
+                       _buildLinkTile(
+                        context,
+                        AppStrings.get(language, 'salary_parameters'),
+                        AppRouter.salarySettingsRoute,
+                        Icons.attach_money_rounded,
+                      ),
+                       _buildDivider(),
+                      _buildLinkTile(
+                        context,
+                        AppStrings.get(language, 'theme_appearance'),
+                        AppRouter.themeSelectionRoute,
+                        Icons.palette_rounded,
+                      ),
+                       _buildDivider(),
+                       _buildDivider(),
+                      _buildLinkTile(
+                        context,
+                        AppStrings.get(language, 'customize_dashboard'),
+                        AppRouter.customizeDashboardRoute,
+                        Icons.dashboard_customize_rounded,
+                      ),
+                    ],
                   ),
-                   _buildDivider(),
-                  _buildLinkTile(
-                    context,
-                    'Theme & Appearance',
-                    AppRouter.themeSelectionRoute,
-                    Icons.palette_rounded,
-                  ),
-                   _buildDivider(),
-                   _buildDivider(),
-                  _buildLinkTile(
-                    context,
-                    'Customize Dashboard',
-                    AppRouter.customizeDashboardRoute,
-                    Icons.dashboard_customize_rounded,
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 24),
-              _buildSectionHeader('Security & Privacy'),
-              _buildSectionCard(
-                context,
-                [
-                  _buildAppLockTile(),
-                  if (_isAppLockEnabled) ...[
-                     _buildDivider(),
-                    _buildLinkTile(
-                      context,
-                      'App Lock Settings',
-                      AppRouter.appLockSettingsRoute,
-                      Icons.lock_person_rounded,
-                    ),
-                  ],
-                   _buildDivider(),
-                  _buildLinkTile(
+                  const SizedBox(height: 24),
+                  _buildSectionHeader(AppStrings.get(language, 'security_section')),
+                  _buildSectionCard(
                     context,
-                    'Privacy Policy',
-                    'https://suvojeet-sengupta.github.io/Privacy_policy_Advisor_Desk/',
-                    Icons.privacy_tip_rounded,
+                    [
+                      _buildAppLockTile(language),
+                      if (_isAppLockEnabled) ...[
+                         _buildDivider(),
+                        _buildLinkTile(
+                          context,
+                          AppStrings.get(language, 'app_lock_settings'),
+                          AppRouter.appLockSettingsRoute,
+                          Icons.lock_person_rounded,
+                        ),
+                      ],
+                       _buildDivider(),
+                      _buildLinkTile(
+                        context,
+                        AppStrings.get(language, 'privacy_policy'),
+                        'https://suvojeet-sengupta.github.io/Privacy_policy_Advisor_Desk/',
+                        Icons.privacy_tip_rounded,
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 40),
                 ],
               ),
-              const SizedBox(height: 40),
+              if (_isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
             ],
           ),
-          if (_isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-        ],
-      ),
+        );
+      },
     );
   }
   
   Widget _buildSectionHeader(String title) {
+
     return Padding(
       padding: const EdgeInsets.only(left: 8, bottom: 12),
       child: Text(
@@ -288,7 +303,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
   }
   
-  Widget _buildAppLockTile() {
+  Widget _buildAppLockTile(Language language) {
     return SwitchListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       secondary: Container(
@@ -299,10 +314,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         child: Icon(Icons.fingerprint_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
       ),
-      title: const Text('App Lock', style: TextStyle(fontWeight: FontWeight.w500)),
+      title: Text(AppStrings.get(language, 'app_lock'), style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: const Text('Secure app access', style: TextStyle(fontSize: 12)),
       value: _isAppLockEnabled,
       onChanged: (bool newValue) async {
+
         if (newValue) {
           final pinWasSet = await Navigator.pushNamed(context, AppRouter.pinSetupRoute);
           if (pinWasSet == true) {
@@ -339,6 +355,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
   }
   
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(AppStrings.get(context.read<LanguageCubit>().state, 'select_language')),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('English'),
+                onTap: () {
+                  context.read<LanguageCubit>().setLanguage(Language.english);
+                  Navigator.pop(context);
+                },
+                trailing: context.read<LanguageCubit>().state == Language.english
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
+              ),
+              ListTile(
+                title: const Text('Hinglish'),
+                subtitle: const Text('हिंदी + English'),
+                onTap: () {
+                  context.read<LanguageCubit>().setLanguage(Language.hinglish);
+                  Navigator.pop(context);
+                },
+                trailing: context.read<LanguageCubit>().state == Language.hinglish
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppStrings.get(context.read<LanguageCubit>().state, 'cancel')),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Logic Methods
   Future<void> _getAppVersion() async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();

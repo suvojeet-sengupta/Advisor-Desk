@@ -6,15 +6,18 @@ import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/add_user_dialog.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 
 class UserManagementScreen extends StatelessWidget {
   const UserManagementScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final language = context.watch<LanguageCubit>().state;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: const CustomAppBar(title: 'Manage Users'),
+      appBar: CustomAppBar(title: AppStrings.get(language, 'manage_users_title')),
       body: BlocConsumer<UserCubit, UserState>(
         listener: (context, state) {
           if (state is UserError) {
@@ -78,7 +81,7 @@ class UserManagementScreen extends StatelessWidget {
                     ),
                     subtitle: isCurrentUser 
                         ? Text(
-                            'Active Session', 
+                            AppStrings.get(language, 'active_session_label'), 
                             style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12)
                           ) 
                         : null,
@@ -91,7 +94,7 @@ class UserManagementScreen extends StatelessWidget {
                             onPressed: () {
                               _showDeleteConfirmation(context, user.name, () {
                                 context.read<UserCubit>().deleteUser(user.id);
-                              });
+                              }, language);
                             },
                           ),
                         if (isCurrentUser)
@@ -119,9 +122,9 @@ class UserManagementScreen extends StatelessWidget {
                                     (route) => false
                                   );
                                 }
-                              });
+                              }, language);
                             },
-                             child: const Text('Switch'),
+                             child: Text(AppStrings.get(language, 'switch_btn')),
                           ),
                       ],
                     ),
@@ -144,43 +147,43 @@ class UserManagementScreen extends StatelessWidget {
           }
         },
         child: const Icon(Icons.add),
-        tooltip: 'Add User',
+        tooltip: AppStrings.get(language, 'add_user_tooltip'),
       ),
     );
   }
 
-  void _showSwitchConfirmation(BuildContext context, String userName, VoidCallback onConfirm) {
+  void _showSwitchConfirmation(BuildContext context, String userName, VoidCallback onConfirm, Language language) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Switch User'),
-        content: Text('Are you sure you want to switch to $userName? The app will reload with their data.'),
+        title: Text(AppStrings.get(language, 'switch_user_title')),
+        content: Text(AppStrings.get(language, 'switch_user_message').replaceAll('{userName}', userName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.get(language, 'cancel')),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               onConfirm();
             },
-            child: const Text('Switch'),
+            child: Text(AppStrings.get(language, 'switch_btn')),
           ),
         ],
       ),
     );
   }
-  void _showDeleteConfirmation(BuildContext context, String userName, VoidCallback onConfirm) {
+  void _showDeleteConfirmation(BuildContext context, String userName, VoidCallback onConfirm, Language language) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete $userName? This action cannot be undone.'),
+        title: Text(AppStrings.get(language, 'delete_user_title')),
+        content: Text(AppStrings.get(language, 'delete_user_message').replaceAll('{userName}', userName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.get(language, 'cancel')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -188,7 +191,7 @@ class UserManagementScreen extends StatelessWidget {
               Navigator.pop(context);
               onConfirm();
             },
-            child: const Text('Delete'),
+            child: Text(AppStrings.get(language, 'delete')),
           ),
         ],
       ),

@@ -11,6 +11,8 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_bloc.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_event.dart';
 import 'package:advisor_desk/presentation/features/add_entry/bloc/add_csat_entry_state.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 
 import 'package:advisor_desk/data/datasources/ad_service.dart'; // Import AdService
 
@@ -64,10 +66,13 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
   Widget build(BuildContext context) {
     return BlocConsumer<AddCSATEntryBloc, AddCSATEntryState>(
       listener: (context, state) {
+        final language = context.read<LanguageCubit>().state;
         if (state.status == AddCSATEntryStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.isDelete ? 'CSAT Entry deleted successfully!' : 'CSAT Entry saved successfully!'),
+              content: Text(state.isDelete 
+                ? AppStrings.get(language, 'csat_deleted_success') 
+                : AppStrings.get(language, 'csat_added_success')),
               backgroundColor: AppColors.accentGreen,
             ),
           );
@@ -75,16 +80,17 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
         } else if (state.status == AddCSATEntryStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.errorMessage ?? 'Failed to save CSAT entry.'),
+              content: Text(state.errorMessage ?? AppStrings.get(language, 'failed_save_csat')),
               backgroundColor: AppColors.accentRed,
             ),
           );
         }
       },
       builder: (context, state) {
+        final language = context.watch<LanguageCubit>().state;
         return Scaffold(
           appBar: CustomAppBar(
-            title: state.isUpdate ? 'Edit CSAT Entry' : 'Add CSAT Entry',
+            title: state.isUpdate ? AppStrings.get(language, 'edit_csat_entry') : AppStrings.get(language, 'add_csat_entry'),
           ),
           body: state.status == AddCSATEntryStatus.loading
               ? const Center(child: CircularProgressIndicator())
@@ -95,7 +101,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Date Section
-                      _buildSectionTitle(context, 'Date'),
+                      _buildSectionTitle(context, AppStrings.get(language, 'date_label')),
                       const SizedBox(height: 8),
                       CustomCard(
                         child: InkWell(
@@ -128,8 +134,8 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
 
                       // T2 Count Section
                       CustomFormField(
-                        label: 'T2 Count (Positive Feedback)',
-                        hintText: 'Enter T2 count',
+                        label: AppStrings.get(language, 't2_count_label'),
+                        hintText: AppStrings.get(language, 'enter_t2_hint'),
                         icon: Icons.thumb_up,
                         controller: _t2CountController,
                         keyboardType: TextInputType.number,
@@ -141,8 +147,8 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
 
                       // B2 Count Section
                       CustomFormField(
-                        label: 'B2 Count (Negative Feedback)',
-                        hintText: 'Enter B2 count',
+                        label: AppStrings.get(language, 'b2_count_label'),
+                        hintText: AppStrings.get(language, 'enter_b2_hint'),
                         icon: Icons.thumb_down,
                         controller: _b2CountController,
                         keyboardType: TextInputType.number,
@@ -154,8 +160,8 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
 
                       // N Count Section
                       CustomFormField(
-                        label: 'N Count (Neutral Feedback)',
-                        hintText: 'Enter N count',
+                        label: AppStrings.get(language, 'n_count_label'),
+                        hintText: AppStrings.get(language, 'enter_n_hint'),
                         icon: Icons.remove,
                         controller: _nCountController,
                         keyboardType: TextInputType.number,
@@ -167,19 +173,19 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
 
                       // Preview Section
                       if (state.t2Count > 0 || state.b2Count > 0 || state.nCount > 0) ...[
-                        _buildSectionTitle(context, 'Preview'),
+                        _buildSectionTitle(context, AppStrings.get(language, 'preview_section')),
                         const SizedBox(height: 8),
                         CustomCard(
                           child: Column(
                             children: [
-                              _buildPreviewRow('Total Survey Hits', '${state.t2Count + state.b2Count + state.nCount}'),
+                              _buildPreviewRow(AppStrings.get(language, 'total_survey_hits'), '${state.t2Count + state.b2Count + state.nCount}'),
                               const Divider(),
-                              _buildPreviewRow('T2 Score', '${_calculateScore(state.t2Count, state).toStringAsFixed(2)}%'),
-                              _buildPreviewRow('B2 Score', '${_calculateScore(state.b2Count, state).toStringAsFixed(2)}%'),
-                              _buildPreviewRow('N Score', '${_calculateScore(state.nCount, state).toStringAsFixed(2)}%'),
+                              _buildPreviewRow(AppStrings.get(language, 't2_score'), '${_calculateScore(state.t2Count, state).toStringAsFixed(2)}%'),
+                              _buildPreviewRow(AppStrings.get(language, 'b2_score'), '${_calculateScore(state.b2Count, state).toStringAsFixed(2)}%'),
+                              _buildPreviewRow(AppStrings.get(language, 'n_score'), '${_calculateScore(state.nCount, state).toStringAsFixed(2)}%'),
                               const Divider(),
                               _buildPreviewRow(
-                                'CSAT Percentage',
+                                AppStrings.get(language, 'csat_percentage'),
                                 '${_calculateCSAT(state).toStringAsFixed(2)}%',
                                 isHighlight: true,
                                 color: _calculateCSAT(state) >= 60 ? Colors.green : Theme.of(context).colorScheme.error,
@@ -203,7 +209,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: Text(
-                                            'CSAT below 60% - Needs Improvement',
+                                            AppStrings.get(language, 'csat_needs_improvement'),
                                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                               color: Theme.of(context).colorScheme.error,
                                               fontWeight: FontWeight.w500,
@@ -232,7 +238,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                             children: [
                               Icon(state.isUpdate ? Icons.update : Icons.add),
                               const SizedBox(width: 8),
-                              Text(state.isUpdate ? 'Update CSAT Entry' : 'Add CSAT Entry'),
+                              Text(state.isUpdate ? AppStrings.get(language, 'update_csat_btn') : AppStrings.get(language, 'save_csat_btn')),
                             ],
                           ),
                         ),
@@ -243,15 +249,15 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                         SizedBox(
                           width: double.infinity,
                           child: AnimatedButton(
-                            onPressed: state.status == AddCSATEntryStatus.loading ? null : () => _showDeleteConfirmationDialog(context),
+                            onPressed: state.status == AddCSATEntryStatus.loading ? null : () => _showDeleteConfirmationDialog(context, language),
                             backgroundColor: AppColors.secondaryBackground,
                             foregroundColor: AppColors.textPrimary,
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.delete_outline),
-                                SizedBox(width: 8),
-                                Text('Delete Entry'),
+                                const Icon(Icons.delete_outline),
+                                const SizedBox(width: 8),
+                                Text(AppStrings.get(language, 'delete_entry_btn')),
                               ],
                             ),
                           ),
@@ -331,18 +337,18 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
     }
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context) {
+  void _showDeleteConfirmationDialog(BuildContext context, Language language) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
           shape: Theme.of(context).dialogTheme.shape,
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this CSAT entry? This action cannot be undone.'),
+          title: Text(AppStrings.get(language, 'confirm_delete_title')),
+          content: Text(AppStrings.get(language, 'confirm_delete_csat_message')),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(AppStrings.get(language, 'cancel')),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
@@ -351,7 +357,7 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: const Text('Delete'),
+              child: Text(AppStrings.get(language, 'delete')),
               onPressed: () {
                 context.read<AddCSATEntryBloc>().add(const DeleteCSATEntry());
                 Navigator.of(dialogContext).pop();

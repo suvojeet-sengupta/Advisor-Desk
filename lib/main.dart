@@ -43,6 +43,8 @@ import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
 import 'package:advisor_desk/data/datasources/user_data_source.dart';
 
 
+import 'package:advisor_desk/core/localization/language_cubit.dart'; // Import LanguageCubit
+
 // Custom ScrollBehavior for smoother scrolling
 class SmoothScrollBehavior extends ScrollBehavior {
   @override
@@ -326,6 +328,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               BlocProvider(create: (context) => DashboardCustomizationCubit()),
               BlocProvider(create: (context) => ProfileCubit(context.read<ProfileRepository>(), userId: widget.currentUserId)), // New
               BlocProvider(create: (context) => UserCubit(widget.userDataSource, context.read<ProfileCubit>())), // New
+              BlocProvider(create: (context) => LanguageCubit()), // Add LanguageCubit
             ],
             child: BlocBuilder<ThemeCubit, ThemeState>(
               builder: (context, themeState) {

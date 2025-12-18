@@ -1,4 +1,6 @@
 import 'package:flutter/services.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 import 'package:advisor_desk/data/datasources/ad_service.dart';
 import 'package:advisor_desk/presentation/common/widgets/banner_ad_widget.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_form_field.dart';
@@ -101,6 +103,7 @@ class _AddEntryViewState extends State<AddEntryView> {
         listeners: [
           BlocListener<AddEntryBloc, AddEntryState>(
             listener: (context, state) {
+               final language = context.read<LanguageCubit>().state;
               // Update controllers when the state changes
               if (state.isUpdate) {
                 if (_loginHoursController.text != state.loginHours.toString()) {
@@ -128,10 +131,10 @@ class _AddEntryViewState extends State<AddEntryView> {
                     SnackBar(
                       content: Text(
                         state.isDelete
-                            ? 'Entry deleted successfully!'
+                            ? AppStrings.get(language, 'entry_deleted_success')
                             : (state.isUpdate
-                                ? 'Entry updated successfully!'
-                                : 'Entry added successfully!'),
+                                ? AppStrings.get(language, 'entry_updated_success')
+                                : AppStrings.get(language, 'entry_added_success')),
                       ),
                       backgroundColor: Theme.of(context).colorScheme.tertiary,
                     ),
@@ -142,7 +145,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
                     SnackBar(
-                      content: Text(state.errorMessage ?? 'Failed to save entry'),
+                      content: Text(state.errorMessage ?? AppStrings.get(language, 'failed_save_entry')),
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
@@ -151,6 +154,7 @@ class _AddEntryViewState extends State<AddEntryView> {
           ),
           BlocListener<AddCSATEntryBloc, AddCSATEntryState>(
             listener: (context, state) {
+               final language = context.read<LanguageCubit>().state;
               if (state.status == AddCSATEntryStatus.success) {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
@@ -158,10 +162,10 @@ class _AddEntryViewState extends State<AddEntryView> {
                     SnackBar(
                       content: Text(
                         state.isDelete
-                            ? 'CSAT entry deleted successfully!'
+                            ? AppStrings.get(language, 'csat_deleted_success')
                             : (state.isUpdate
-                                ? 'CSAT entry updated successfully!'
-                                : 'CSAT entry added successfully!'),
+                                ? AppStrings.get(language, 'csat_updated_success')
+                                : AppStrings.get(language, 'csat_added_success')),
                       ),
                       backgroundColor: Theme.of(context).colorScheme.tertiary,
                     ),
@@ -172,7 +176,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
                     SnackBar(
-                      content: Text(state.errorMessage ?? 'Failed to save entry'),
+                      content: Text(state.errorMessage ?? AppStrings.get(language, 'failed_save_csat')),
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
@@ -181,6 +185,7 @@ class _AddEntryViewState extends State<AddEntryView> {
           ),
           BlocListener<AddCQEntryBloc, AddCQEntryState>(
             listener: (context, state) {
+               final language = context.read<LanguageCubit>().state;
               if (state.status == AddCQEntryStatus.success) {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
@@ -188,10 +193,10 @@ class _AddEntryViewState extends State<AddEntryView> {
                     SnackBar(
                       content: Text(
                         state.isDelete
-                            ? 'CQ entry deleted successfully!'
+                            ? AppStrings.get(language, 'cq_deleted_success')
                             : (state.isUpdate
-                                ? 'CQ entry updated successfully!'
-                                : 'CQ entry added successfully!'),
+                                ? AppStrings.get(language, 'cq_updated_success')
+                                : AppStrings.get(language, 'cq_added_success')),
                       ),
                       backgroundColor: Theme.of(context).colorScheme.tertiary,
                     ),
@@ -202,7 +207,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
                     SnackBar(
-                      content: Text(state.errorMessage ?? 'Failed to save entry'),
+                      content: Text(state.errorMessage ?? AppStrings.get(language, 'failed_save_entry')),
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
@@ -210,27 +215,29 @@ class _AddEntryViewState extends State<AddEntryView> {
             },
           ),
         ],
-        child: Scaffold(
+        child: BlocBuilder<LanguageCubit, Language>(
+        builder: (context, language) {
+          return Scaffold(
           appBar: CustomAppBar(
             title: context.watch<AddEntryBloc>().state.isUpdate
-                ? 'Edit Entry'
-                : 'Add New Entry',
+                ? AppStrings.get(language, 'edit_entry')
+                : AppStrings.get(language, 'add_new_entry'),
             bottom: TabBar(
               labelColor: Theme.of(context).colorScheme.primary,
               unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
               indicatorColor: Theme.of(context).colorScheme.primary,
-              tabs: const [
+              tabs: [
                 Tab(
-                  icon: Icon(Icons.work_outline),
-                  text: 'Daily Entry',
+                  icon: const Icon(Icons.work_outline),
+                  text: AppStrings.get(language, 'daily_entry_tab'),
                 ),
                 Tab(
-                  icon: Icon(Icons.sentiment_satisfied_alt),
-                  text: 'CSAT Entry',
+                  icon: const Icon(Icons.sentiment_satisfied_alt),
+                  text: AppStrings.get(language, 'csat_entry_tab'),
                 ),
                 Tab(
-                  icon: Icon(Icons.assessment),
-                  text: 'CQ Entry',
+                  icon: const Icon(Icons.assessment),
+                  text: AppStrings.get(language, 'cq_entry_tab'),
                 ),
               ],
             ),
@@ -238,7 +245,7 @@ class _AddEntryViewState extends State<AddEntryView> {
           body: TabBarView(
             children: [
               // Daily Entry Tab
-              _buildDailyEntryTab(context),
+              _buildDailyEntryTab(context, language),
               // CSAT Entry Tab
               const AddCSATEntryScreen(),
               // CQ Entry Tab
@@ -246,12 +253,14 @@ class _AddEntryViewState extends State<AddEntryView> {
             ],
           ),
            bottomNavigationBar: const BannerAdWidget(),
-        ),
+        );
+        }
+    ),
     ),
     );
   }
 
-  Widget _buildDailyEntryTab(BuildContext context) {
+  Widget _buildDailyEntryTab(BuildContext context, Language language) {
     return BlocBuilder<AddEntryBloc, AddEntryState>(
       builder: (context, state) {
         if (state.status == AddEntryStatus.initial || state.status == AddEntryStatus.loading) {
@@ -266,7 +275,7 @@ class _AddEntryViewState extends State<AddEntryView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date Section
-              _buildSectionTitle(context, 'Select Date'),
+              _buildSectionTitle(context, AppStrings.get(language, 'select_date')),
               const SizedBox(height: 12),
               CustomCard(
                 onTap: () => _selectDate(context),
@@ -309,7 +318,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                         ],
                       ),
                       const Spacer(),
-                      Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
                     ],
                   ),
                 ),
@@ -317,13 +326,13 @@ class _AddEntryViewState extends State<AddEntryView> {
               const SizedBox(height: 32),
 
               // Login Hours Section
-              _buildSectionTitle(context, 'Login Duration'),
+              _buildSectionTitle(context, AppStrings.get(language, 'login_duration')),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: CustomFormField(
-                      label: 'Hours',
+                      label: AppStrings.get(language, 'hours_label'),
                       hintText: '00',
                       controller: _loginHoursController,
                       keyboardType: TextInputType.number,
@@ -332,7 +341,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Required';
+                        if (value == null || value.isEmpty) return AppStrings.get(language, 'required_error');
                         final hours = int.tryParse(value);
                         if (hours == null || hours < 0 || hours > 23) return '0-23';
                         return null;
@@ -345,7 +354,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: CustomFormField(
-                      label: 'Minutes',
+                      label: AppStrings.get(language, 'minutes_label'),
                       hintText: '00',
                       controller: _loginMinutesController,
                       keyboardType: TextInputType.number,
@@ -354,7 +363,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                         if (value == null || value.isEmpty) return 'Required';
+                         if (value == null || value.isEmpty) return AppStrings.get(language, 'required_error');
                         final mins = int.tryParse(value);
                         if (mins == null || mins < 0 || mins > 59) return '0-59';
                         return null;
@@ -367,7 +376,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: CustomFormField(
-                      label: 'Seconds',
+                      label: AppStrings.get(language, 'seconds_label'),
                       hintText: '00',
                       controller: _loginSecondsController,
                       keyboardType: TextInputType.number,
@@ -376,7 +385,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Required';
+                        if (value == null || value.isEmpty) return AppStrings.get(language, 'required_error');
                         final secs = int.tryParse(value);
                         if (secs == null || secs < 0 || secs > 59) return '0-59';
                         return null;
@@ -391,10 +400,10 @@ class _AddEntryViewState extends State<AddEntryView> {
               const SizedBox(height: 32),
 
               // Call Count Section
-              _buildSectionTitle(context, 'Performance'),
+              _buildSectionTitle(context, AppStrings.get(language, 'performance_section')),
               const SizedBox(height: 12),
               CustomFormField(
-                label: 'Total Calls',
+                label: AppStrings.get(language, 'total_calls_label'),
                 hintText: 'e.g. 50',
                 icon: Icons.call,
                 controller: _callCountController,
@@ -411,7 +420,7 @@ class _AddEntryViewState extends State<AddEntryView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   _buildSectionTitle(context, 'Advanced Options'),
+                   _buildSectionTitle(context, AppStrings.get(language, 'advanced_options')),
                 ],
               ),
               
@@ -420,8 +429,8 @@ class _AddEntryViewState extends State<AddEntryView> {
                 padding: EdgeInsets.zero,
                 child: SwitchListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  title: const Text('Custom Per Call Rate', style: TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: const Text('Override default rate for this entry'),
+                  title: Text(AppStrings.get(language, 'custom_per_call_rate'), style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text(AppStrings.get(language, 'override_default_rate')),
                   value: state.isCustomRateEnabled,
                   onChanged: (_) {
                     context.read<AddEntryBloc>().add(const ToggleCustomRate());
@@ -440,7 +449,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: CustomFormField(
-                    label: 'Custom Rate (₹)',
+                    label: AppStrings.get(language, 'custom_rate_label'),
                     hintText: 'e.g. 15.0',
                     controller: _customCallRateController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -450,9 +459,9 @@ class _AddEntryViewState extends State<AddEntryView> {
                           );
                     },
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Required';
+                      if (value == null || value.isEmpty) return AppStrings.get(language, 'required_error');
                       final rate = double.tryParse(value);
-                      if (rate == null || rate <= 0) return 'Invalid rate';
+                      if (rate == null || rate <= 0) return AppStrings.get(language, 'invalid_rate_error');
                       return null;
                     },
                   ),
@@ -473,7 +482,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                     children: [
                       Icon(state.isUpdate ? Icons.check_circle_outline : Icons.add_circle_outline),
                       const SizedBox(width: 8),
-                      Text(state.isUpdate ? 'Update Entry' : 'Save Daily Entry'),
+                      Text(state.isUpdate ? AppStrings.get(language, 'update_entry_btn') : AppStrings.get(language, 'save_daily_entry_btn')),
                     ],
                   ),
                 ),
@@ -484,17 +493,17 @@ class _AddEntryViewState extends State<AddEntryView> {
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: () => _showDeleteConfirmationDialog(context),
+                    onPressed: () => _showDeleteConfirmationDialog(context, language),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       foregroundColor: Colors.red,
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.delete_outline),
-                        SizedBox(width: 8),
-                        Text('Delete Entry', style: TextStyle(fontWeight: FontWeight.w600)),
+                        const Icon(Icons.delete_outline),
+                        const SizedBox(width: 8),
+                        Text(AppStrings.get(language, 'delete_entry_btn'), style: const TextStyle(fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -509,6 +518,7 @@ class _AddEntryViewState extends State<AddEntryView> {
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) {
+
     return Text(
       title.toUpperCase(),
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -545,18 +555,18 @@ class _AddEntryViewState extends State<AddEntryView> {
     }
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context) {
+  void _showDeleteConfirmationDialog(BuildContext context, Language language) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
           shape: Theme.of(context).dialogTheme.shape,
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this entry? This action cannot be undone.'),
+          title: Text(AppStrings.get(language, 'confirm_delete_title')),
+          content: Text(AppStrings.get(language, 'confirm_delete_message')),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(AppStrings.get(language, 'cancel')),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
@@ -565,7 +575,7 @@ class _AddEntryViewState extends State<AddEntryView> {
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: const Text('Delete'),
+              child: Text(AppStrings.get(language, 'delete')),
               onPressed: () {
                 context.read<AddEntryBloc>().add(const DeleteEntry());
                 Navigator.of(dialogContext).pop();

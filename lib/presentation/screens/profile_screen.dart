@@ -12,6 +12,8 @@ import 'package:advisor_desk/data/repositories/profile_repository_impl.dart';
 import 'package:advisor_desk/data/datasources/profile_data_source.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool isMandatoryFill;
@@ -72,9 +74,10 @@ class _ProfileViewState extends State<ProfileView> {
         }
       },
       builder: (context, state) {
+        final language = context.watch<LanguageCubit>().state;
         return Scaffold(
           appBar: CustomAppBar(
-            title: state.isEditing ? 'Edit Profile' : 'Profile',
+            title: state.isEditing ? AppStrings.get(language, 'edit_profile_title') : AppStrings.get(language, 'profile_title'),
             actions: [
               if (!state.isEditing && !widget.isMandatoryFill)
                 IconButton(
@@ -90,8 +93,8 @@ class _ProfileViewState extends State<ProfileView> {
                 _buildProfileHeader(context, state.profile, state.isEditing),
                 const SizedBox(height: 40),
                 state.isEditing
-                    ? _buildEditView(context, state.profile)
-                    : _buildInfoView(context, state.profile),
+                    ? _buildEditView(context, state.profile, language)
+                    : _buildInfoView(context, state.profile, language),
               ],
             ),
           ),
@@ -140,7 +143,7 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildInfoView(BuildContext context, Profile profile) {
+  Widget _buildInfoView(BuildContext context, Profile profile, Language language) {
     return Column(
       children: [
         CustomCard(
@@ -157,11 +160,11 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                   child: Icon(Icons.person_outline_rounded, color: Theme.of(context).colorScheme.primary),
                 ),
-                title: Text('Name', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
+                title: Text(AppStrings.get(language, 'name_label'), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
                 subtitle: Row(
                   children: [
                     Text(
-                      profile.name ?? 'Not Set', 
+                      profile.name ?? AppStrings.get(language, 'not_set_label'), 
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     if (profile.name == 'Suvojeet Sengupta') ...[
@@ -196,9 +199,9 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                   child: const Icon(Icons.business_center_outlined, color: Colors.orange),
                 ),
-                title: Text('Company', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
+                title: Text(AppStrings.get(language, 'company_label'), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
                 subtitle: Text(
-                  profile.companyName ?? 'Not Set', 
+                  profile.companyName ?? AppStrings.get(language, 'not_set_label'), 
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -223,7 +226,7 @@ class _ProfileViewState extends State<ProfileView> {
                  child: Icon(Icons.people_outline_rounded, color: Theme.of(context).colorScheme.secondary),
                ),
                const SizedBox(width: 16),
-               Text('Manage Users', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+               Text(AppStrings.get(language, 'manage_users_label'), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                const Spacer(),
                Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
              ],
@@ -233,19 +236,19 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildEditView(BuildContext context, Profile profile) {
+  Widget _buildEditView(BuildContext context, Profile profile, Language language) {
     return Column(
       children: [
         CustomFormField(
-          label: 'Name',
-          hintText: 'Enter your name',
+          label: AppStrings.get(language, 'name_label'),
+          hintText: AppStrings.get(language, 'enter_name_hint'),
           controller: _nameController,
           icon: Icons.person_outline_rounded,
         ),
         const SizedBox(height: 24),
         CustomFormField(
-          label: 'Company Name',
-          hintText: 'Enter your company',
+          label: AppStrings.get(language, 'company_name_label'),
+          hintText: AppStrings.get(language, 'enter_company_hint'),
           controller: _companyController,
           icon: Icons.business_rounded,
         ),
@@ -259,7 +262,7 @@ class _ProfileViewState extends State<ProfileView> {
   
               if (name.isEmpty || companyName.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Name and Company Name cannot be empty.')),
+                  SnackBar(content: Text(AppStrings.get(language, 'name_company_empty_error'))),
                 );
                 return;
               }
@@ -274,14 +277,14 @@ class _ProfileViewState extends State<ProfileView> {
                 Navigator.pushReplacementNamed(context, AppRouter.dashboardRoute);
               }
             },
-            child: const Text('Save Profile'),
+            child: Text(AppStrings.get(language, 'save_profile')),
           ),
         ),
         if (!widget.isMandatoryFill) ...[
           const SizedBox(height: 16),
           TextButton(
              onPressed: () => context.read<ProfileCubit>().setEditing(false),
-             child: const Text('Cancel'),
+             child: Text(AppStrings.get(language, 'cancel')),
           ),
         ],
       ],

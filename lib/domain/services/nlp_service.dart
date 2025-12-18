@@ -5,26 +5,30 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
-import 'package:advisor_desk/domain/services/query_parser.dart'; // Keeping for now if we want hybrid, but mostly replacing
-// import 'package:advisor_desk/domain/services/query_models.dart'; // Might remove if unused
+import 'package:advisor_desk/domain/services/query_parser.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 
 class NlpService {
   final PerformanceRepository _performanceRepository;
-  final QueryParser _queryParser; // Keeping dependency to avoid breaking DI immediately, but can be unused.
-  late final GenerativeModel _modelLite;
-  late final GenerativeModel _modelFlash;
+  final QueryParser _queryParser;
+  late final GenerativeModel _modelPrimary;   // gemini-3-flash
+  late final GenerativeModel _modelFallback1; // gemini-2.5-flash
+  late final GenerativeModel _modelFallback2; // gemini-2.5-flash-lite
 
   NlpService({required PerformanceRepository performanceRepository, required QueryParser queryParser})
       : _performanceRepository = performanceRepository,
         _queryParser = queryParser {
-          _modelLite = GenerativeModel(
-            model: 'gemini-2.5-flash-lite', 
+          _modelPrimary = GenerativeModel(
+            model: 'gemini-3-flash-preview', 
             apiKey: AppConstants.geminiApiKey,
           );
-          _modelFlash = GenerativeModel(
+          _modelFallback1 = GenerativeModel(
             model: 'gemini-2.5-flash', 
+            apiKey: AppConstants.geminiApiKey,
+          );
+          _modelFallback2 = GenerativeModel(
+            model: 'gemini-2.5-flash-lite', 
             apiKey: AppConstants.geminiApiKey,
           );
         }
@@ -38,7 +42,8 @@ class NlpService {
     return errorMessage.contains('quota') || 
            errorMessage.contains('limit') || 
            errorMessage.contains('resource') ||
-           errorMessage.contains('exceeded');
+           errorMessage.contains('exceeded') ||
+           errorMessage.contains('429');
   }
 
   Future<AiResponse> processQuestion({
@@ -46,11 +51,10 @@ class NlpService {
     required List<MonthlySummary> histories,
     required GoalsState goals,
     required Profile profile,
-    required List<AiInsight> chatHistory, // Add chat history
+    required List<AiInsight> chatHistory,
     DailyEntry? dailyEntry,
     DateTime? requestedDate,
   }) async {
-    // 1. Check if API key is present
     if (AppConstants.geminiApiKey.isEmpty) {
        return const AiResponse(
          insight: AiInsight(message: "AI configuration is missing (API Key). Please contact the developer."),
@@ -58,61 +62,57 @@ class NlpService {
        );
     }
 
-    // 2. Build Context Prompt
     final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry, requestedDate);
+    final content = [Content.text(prompt)];
 
+    // Try Primary: gemini-3-flash
     try {
-      // 3. Generate Content with gemini-2.5-flash-lite
-      final content = [Content.text(prompt)];
-      final response = await _modelLite.generateContent(content);
-
-      final text = response.text;
-      if (text == null || text.isEmpty) {
-        return const AiResponse(
-          insight: AiInsight(message: "I'm having trouble thinking right now. Please try again."),
-          modelSwitched: false,
-        );
-      }
-
-      return AiResponse(
-        insight: AiInsight(message: text),
-        modelSwitched: false,
-      );
-
+      final response = await _modelPrimary.generateContent(content);
+      return _handleResponse(response, false);
     } catch (e) {
-      // Check if error is quota/limit exceeded
       if (_shouldUseFallbackModel(e)) {
-        
-        // Try fallback to gemini-2.5-flash
+        // Try Fallback 1: gemini-2.5-flash
         try {
-          final content = [Content.text(prompt)];
-          final response = await _modelFlash.generateContent(content);
-
-          final text = response.text;
-          if (text == null || text.isEmpty) {
-            return const AiResponse(
-              insight: AiInsight(message: "I'm having trouble thinking right now. Please try again."),
-              modelSwitched: true,
-            );
+          final response = await _modelFallback1.generateContent(content);
+          return _handleResponse(response, true);
+        } catch (e2) {
+          if (_shouldUseFallbackModel(e2)) {
+            // Try Fallback 2: gemini-2.5-flash-lite
+            try {
+              final response = await _modelFallback2.generateContent(content);
+              return _handleResponse(response, true);
+            } catch (e3) {
+              return AiResponse(
+                insight: AiInsight(message: "All AI models are currently busy or reached their limit: $e3"),
+                modelSwitched: true,
+              );
+            }
           }
-
           return AiResponse(
-            insight: AiInsight(message: text),
-            modelSwitched: true,
-          );
-        } catch (fallbackError) {
-          return AiResponse(
-            insight: AiInsight(message: "I encountered an error connecting to my brain: $fallbackError"),
+            insight: AiInsight(message: "Error connecting to AI brain: $e2"),
             modelSwitched: true,
           );
         }
       }
-      
       return AiResponse(
         insight: AiInsight(message: "I encountered an error connecting to my brain: $e"),
         modelSwitched: false,
       );
     }
+  }
+
+  AiResponse _handleResponse(GenerateContentResponse response, bool switched) {
+    final text = response.text;
+    if (text == null || text.isEmpty) {
+      return AiResponse(
+        insight: const AiInsight(message: "I'm having trouble thinking right now. Please try again."),
+        modelSwitched: switched,
+      );
+    }
+    return AiResponse(
+      insight: AiInsight(message: text),
+      modelSwitched: switched,
+    );
   }
 
   String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile, List<AiInsight> chatHistory, DailyEntry? dailyEntry, DateTime? requestedDate) {
@@ -349,22 +349,25 @@ Response:
 
     try {
       final content = [Content.text(prompt)];
-      final response = await _modelLite.generateContent(content);
+      final response = await _modelPrimary.generateContent(content);
       return AiInsight(message: response.text ?? "");
     } catch (e) {
-      // Check if error is quota/limit exceeded
       if (_shouldUseFallbackModel(e)) {
-        
-        // Try fallback to gemini-2.5-flash
         try {
-          final content = [Content.text(prompt)];
-          final response = await _modelFlash.generateContent(content);
+          final response = await _modelFallback1.generateContent([Content.text(prompt)]);
           return AiInsight(message: response.text ?? "");
-        } catch (fallbackError) {
-          return AiInsight(message: "Error generating goals: $fallbackError");
+        } catch (e2) {
+          if (_shouldUseFallbackModel(e2)) {
+            try {
+              final response = await _modelFallback2.generateContent([Content.text(prompt)]);
+              return AiInsight(message: response.text ?? "");
+            } catch (e3) {
+              return AiInsight(message: "Error generating goals: $e3");
+            }
+          }
+          return AiInsight(message: "Error generating goals: $e2");
         }
       }
-      
       return AiInsight(message: "Error generating goals: $e");
     }
   }

@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppConstants {
   // App information
   static const String appName = 'Advisor Desk';
-  static const String appVersion = '1.0.8';
+  static const String appVersion = '1.6.0';
   static const String appDeveloper = 'Suvojeet';
   static const String geminiApiKey = String.fromEnvironment('GEMINI_API_1');
 

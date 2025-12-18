@@ -229,19 +229,24 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             listener: (context, dashboardState) {
               // Wrapped Notification Listener
               if (dashboardState.wrappedSummary != null) {
+                 // Capture bloc and context to avoid issues inside the dialog builder
+                 final dashboardBloc = context.read<DashboardBloc>();
+                 final navigator = Navigator.of(context);
+                 
                  WidgetsBinding.instance.addPostFrameCallback((_) {
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (context) => WrappedNotificationDialog(
+                      builder: (dialogContext) => WrappedNotificationDialog(
                         monthName: dashboardState.wrappedSummary!.formattedMonthYear, 
                         onViewWrapped: () {
-                           Navigator.pop(context); // Close dialog
+                           Navigator.pop(dialogContext); // Close dialog
+                           
                            // Mark as seen
-                           context.read<DashboardBloc>().markWrappedAsSeen();
-                           // Navigate
-                           Navigator.pushNamed(
-                              context, 
+                           dashboardBloc.markWrappedAsSeen();
+                           
+                           // Navigate using the captured navigator
+                           navigator.pushNamed(
                               AppRouter.advisorWrappedRoute,
                               arguments: dashboardState.wrappedSummary,
                            );

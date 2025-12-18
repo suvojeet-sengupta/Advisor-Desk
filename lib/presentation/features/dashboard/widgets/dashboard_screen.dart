@@ -52,6 +52,8 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_sta
 import 'package:advisor_desk/presentation/features/dashboard/widgets/ai_insight_card.dart';
 import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
+import 'package:advisor_desk/presentation/features/wrapped/widgets/wrapped_notification_dialog.dart';
+
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
@@ -62,7 +64,8 @@ class DashboardScreen extends StatelessWidget {
         BlocProvider(
           create: (context) => DashboardBloc(
             repository: context.read<PerformanceRepository>(),
-          )..add(LoadDashboardData(month: DateTime.now().month, year: DateTime.now().year)),
+          )..add(LoadDashboardData(month: DateTime.now().month, year: DateTime.now().year))
+           ..add(CheckWrapped()),
         ),
         BlocProvider(
           create: (context) {
@@ -224,6 +227,30 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           ),
           BlocListener<DashboardBloc, DashboardState>(
             listener: (context, dashboardState) {
+              // Wrapped Notification Listener
+              if (dashboardState.wrappedSummary != null) {
+                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => WrappedNotificationDialog(
+                        monthName: dashboardState.wrappedSummary!.formattedMonthYear, 
+                        onViewWrapped: () {
+                           Navigator.pop(context); // Close dialog
+                           // Mark as seen
+                           context.read<DashboardBloc>().markWrappedAsSeen();
+                           // Navigate
+                           Navigator.pushNamed(
+                              context, 
+                              AppRouter.advisorWrappedRoute,
+                              arguments: dashboardState.wrappedSummary,
+                           );
+                        },
+                      ),
+                    );
+                 });
+              }
+
               if (dashboardState.status == DashboardStatus.loaded && dashboardState.monthlySummary != null) {
                 final goalsState = context.read<GoalsBloc>().state;
                 final profileState = context.read<ProfileCubit>().state;

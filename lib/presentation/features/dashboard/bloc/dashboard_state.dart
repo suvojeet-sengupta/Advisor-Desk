@@ -8,8 +8,9 @@ enum DashboardStatus { initial, loading, loaded, error }
 class DashboardState extends Equatable {
   final DashboardStatus status;
   final MonthlySummary? monthlySummary;
-  final CSATSummary? csatSummary; // Added CSATSummary field
-  final CQSummary? cqSummary; // Added CQSummary field
+  final CSATSummary? csatSummary; 
+  final CQSummary? cqSummary;
+  final MonthlySummary? wrappedSummary; // Null if no wrapped to show
   final String? errorMessage;
   final int currentMonth;
   final int currentYear;
@@ -17,8 +18,9 @@ class DashboardState extends Equatable {
   const DashboardState({
     this.status = DashboardStatus.initial,
     this.monthlySummary,
-    this.csatSummary, // Added to constructor
-    this.cqSummary, // Added to constructor
+    this.csatSummary,
+    this.cqSummary,
+    this.wrappedSummary,
     this.errorMessage,
     required this.currentMonth,
     required this.currentYear,
@@ -36,8 +38,9 @@ class DashboardState extends Equatable {
   DashboardState copyWith({
     DashboardStatus? status,
     MonthlySummary? monthlySummary,
-    CSATSummary? csatSummary, // Added to copyWith
-    CQSummary? cqSummary, // Added to copyWith
+    CSATSummary? csatSummary,
+    CQSummary? cqSummary,
+    MonthlySummary? wrappedSummary,
     String? errorMessage,
     int? currentMonth,
     int? currentYear,
@@ -45,16 +48,18 @@ class DashboardState extends Equatable {
     return DashboardState(
       status: status ?? this.status,
       monthlySummary: monthlySummary ?? this.monthlySummary,
-      csatSummary: csatSummary ?? this.csatSummary, // Added to copyWith logic
-      cqSummary: cqSummary ?? this.cqSummary, // Added to copyWith logic
+      csatSummary: csatSummary ?? this.csatSummary,
+      cqSummary: cqSummary ?? this.cqSummary,
+      wrappedSummary: wrappedSummary ?? this.wrappedSummary, // Explicitly pass null if needed
       errorMessage: errorMessage,
       currentMonth: currentMonth ?? this.currentMonth,
       currentYear: currentYear ?? this.currentYear,
     );
   }
   
+  // Note: wrappedSummary is usually one-off, but including it in props for correctness
   @override
-  List<Object?> get props => [status, monthlySummary, csatSummary, cqSummary, errorMessage, currentMonth, currentYear];
+  List<Object?> get props => [status, monthlySummary, csatSummary, cqSummary, wrappedSummary, errorMessage, currentMonth, currentYear];
 }
 
 

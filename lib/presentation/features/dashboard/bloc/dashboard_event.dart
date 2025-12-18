@@ -29,3 +29,5 @@ class NavigateToMonthlyPerformance extends DashboardEvent {}
 
 class NavigateToAllReports extends DashboardEvent {}
 
+class CheckWrapped extends DashboardEvent {}
+

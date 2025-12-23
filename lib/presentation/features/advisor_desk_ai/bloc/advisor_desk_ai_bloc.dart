@@ -69,7 +69,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       await _performanceRepository.clearChatHistory();
       
       // Immediately set state to empty/welcome state
-      final welcomeMessage = const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.");
+      final welcomeMessage = AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.");
       await _performanceRepository.insertChatMessage(welcomeMessage, false);
       
       emit(state.copyWith(
@@ -115,9 +115,9 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       if (storedHistory.isEmpty) {
         print("BLoC: History empty, adding welcome message.");
         if (hasData) {
-           storedHistory = [const AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.")];
+           storedHistory = [AiInsight(message: "Hello! I'm your Advisor Desk AI. Ask me anything about your performance.")];
         } else {
-           storedHistory = [const AiInsight(
+           storedHistory = [AiInsight(
             message: "Welcome to Advisor Desk AI! I'm here to help you analyze your performance, but I don't have any data yet. "
                      "Start by adding your daily entries, and I'll provide insights once I have something to work with. "
                      "The more data you provide, the smarter I get! Let's get started.",
@@ -137,7 +137,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       // Return whatever we have with an error/fallback state
        List<AiInsight> fallbackHistory = await _performanceRepository.getChatHistory();
        if (fallbackHistory.isEmpty) {
-          fallbackHistory = [const AiInsight(
+          fallbackHistory = [AiInsight(
             message: "Welcome to Advisor Desk AI! I'm having trouble fetching your data right now, but I'm ready to chat.",
           )];
        }

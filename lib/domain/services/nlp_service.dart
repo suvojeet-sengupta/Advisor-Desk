@@ -56,7 +56,7 @@ class NlpService {
     DateTime? requestedDate,
   }) async {
     if (AppConstants.geminiApiKey.isEmpty) {
-       return const AiResponse(
+       return AiResponse(
          insight: AiInsight(message: "AI configuration is missing (API Key). Please contact the developer."),
          modelSwitched: false,
        );
@@ -105,7 +105,7 @@ class NlpService {
     final text = response.text;
     if (text == null || text.isEmpty) {
       return AiResponse(
-        insight: const AiInsight(message: "I'm having trouble thinking right now. Please try again."),
+        insight: AiInsight(message: "I'm having trouble thinking right now. Please try again."),
         modelSwitched: switched,
       );
     }
@@ -310,7 +310,7 @@ Response:
     required Profile profile,
   }) async {
     if (AppConstants.geminiApiKey.isEmpty) {
-      return const AiInsight(message: "Error: AI not configured.");
+      return AiInsight(message: "Error: AI not configured.");
     }
 
     // 1. Build Prompt

@@ -16,7 +16,7 @@ class AiInsightService {
   }) {
     // First, check if there is any data to analyze.
     if (summary.totalCalls == 0 && summary.totalLoginHours == 0) {
-      return const AiInsight(
+      return AiInsight(
         message: "I'm ready to help, but I don't have any data for this month yet. Add your first entry to get started!",
         buttonText: "Add Entry",
         navigationRoute: AppRouter.addEntryRoute,
@@ -28,7 +28,7 @@ class AiInsightService {
 
     // Priority 0: Check if goals are set
     if (!goals.isGoalsSet) {
-      return const AiInsight(
+      return AiInsight(
         message: "You haven't set your personal goals for the month yet. Setting goals can help you stay motivated!",
         buttonText: "Set Goals Now",
         // This will trigger the dialog on the dashboard
@@ -138,7 +138,7 @@ class AiInsightService {
 
     // If goals are met, provide positive reinforcement
     if (callTargetMet && hourTargetMet) {
-      return const AiInsight(message: "Amazing work! You've achieved both your call and login hour targets for the month! Keep up the excellent performance.");
+      return AiInsight(message: "Amazing work! You've achieved both your call and login hour targets for the month! Keep up the excellent performance.");
     }
 
     // If close to a target but not met
@@ -269,7 +269,7 @@ class AiInsightService {
   }) {
     // First, check if there is any data to analyze.
     if (summary.totalCalls == 0 && summary.totalLoginHours == 0) {
-      return const AiInsight(
+      return AiInsight(
         message: "I don't have any performance data to analyze for this month yet. "
                  "Once you add your daily entries, I can provide a detailed breakdown of your performance, including calls, login hours, CSAT, and CQ scores. "
                  "Let's get some data in!",

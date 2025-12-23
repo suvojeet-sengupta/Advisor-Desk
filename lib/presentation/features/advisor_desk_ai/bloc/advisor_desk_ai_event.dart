@@ -19,3 +19,12 @@ class AskAdvisorDeskAIQuestion extends AdvisorDeskAIEvent {
 }
 
 class ClearChatHistory extends AdvisorDeskAIEvent {}
+
+class DeleteInsight extends AdvisorDeskAIEvent {
+  final String id;
+
+  const DeleteInsight(this.id);
+
+  @override
+  List<Object> get props => [id];
+}

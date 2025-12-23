@@ -273,13 +273,24 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
   }
 
   @override
-  Future<void> insertChatMessage(AiInsight message, bool isUser) async {
-    await localDataSource.insertChatMessage(message, isUser);
+  Future<int> insertChatMessage(AiInsight message, bool isUser) async {
+    return await localDataSource.insertChatMessage(message, isUser);
   }
 
   @override
   Future<List<AiInsight>> getChatHistory() async {
     return await localDataSource.getChatHistory();
+  }
+
+  @override
+  Future<void> deleteChatMessage(String id) async {
+    try {
+      final intId = int.parse(id);
+      await localDataSource.deleteChatMessage(intId);
+    } catch (e) {
+      // If ID is not an int (e.g. temporary timestamp string), just ignore or log
+      print("Cannot delete message with ID $id from DB: $e");
+    }
   }
 
   @override

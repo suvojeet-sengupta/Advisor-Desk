@@ -7,11 +7,13 @@ import 'package:share_plus/share_plus.dart';
 class AdvisorDeskChatBubble extends StatelessWidget {
   final AiInsight insight;
   final bool isUserMessage;
+  final VoidCallback? onDelete;
 
   const AdvisorDeskChatBubble({
     Key? key,
     required this.insight,
     required this.isUserMessage,
+    this.onDelete,
   }) : super(key: key);
 
   @override
@@ -56,64 +58,103 @@ class AdvisorDeskChatBubble extends StatelessWidget {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 14),
-                    decoration: BoxDecoration(
-                      color: isUserMessage
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.surface,
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(20),
-                        topRight: const Radius.circular(20),
-                        bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
-                        bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+                  GestureDetector(
+                    onLongPress: onDelete != null
+                        ? () {
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                backgroundColor: theme.colorScheme.surface,
+                                title: Text('Delete Message?',
+                                    style: TextStyle(
+                                        color: theme.colorScheme.onSurface)),
+                                content: Text(
+                                  'Are you sure you want to delete this message?',
+                                  style: TextStyle(
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.8)),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx),
+                                    child: Text('Cancel',
+                                        style: TextStyle(
+                                            color: theme.colorScheme.primary)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(ctx);
+                                      onDelete!();
+                                    },
+                                    style: TextButton.styleFrom(
+                                        foregroundColor:
+                                            theme.colorScheme.error),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        : null,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: isUserMessage
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.surface,
+                        borderRadius: BorderRadius.only(
+                          topLeft: const Radius.circular(20),
+                          topRight: const Radius.circular(20),
+                          bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
+                          bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+                        ),
+                        boxShadow: [
+                          if (!isUserMessage)
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 5,
+                              offset: const Offset(0, 2),
+                            ),
+                        ],
                       ),
-                      boxShadow: [
-                        if (!isUserMessage)
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
-                          ),
-                      ],
+                      child: isUserMessage
+                          ? Text(
+                              insight.message,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                height: 1.4,
+                              ),
+                            )
+                          : MarkdownBody(
+                              data: insight.message,
+                              selectable: true,
+                              styleSheet: MarkdownStyleSheet(
+                                p: theme.textTheme.bodyLarge
+                                    ?.copyWith(height: 1.5),
+                                strong: theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.5,
+                                ),
+                                em: theme.textTheme.bodyLarge?.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  height: 1.5,
+                                ),
+                                listBullet: theme.textTheme.bodyLarge
+                                    ?.copyWith(height: 1.5),
+                                h1: theme.textTheme.headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                h2: theme.textTheme.titleLarge
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                h3: theme.textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                blockSpacing: 12,
+                                listIndent: 16,
+                                listBulletPadding:
+                                    const EdgeInsets.only(right: 8),
+                              ),
+                            ),
                     ),
-                    child: isUserMessage
-                        ? Text(
-                            insight.message,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              height: 1.4,
-                            ),
-                          )
-                        : MarkdownBody(
-                            data: insight.message,
-                            selectable: true,
-                            styleSheet: MarkdownStyleSheet(
-                              p: theme.textTheme.bodyLarge
-                                  ?.copyWith(height: 1.5),
-                              strong: theme.textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                height: 1.5,
-                              ),
-                              em: theme.textTheme.bodyLarge?.copyWith(
-                                fontStyle: FontStyle.italic,
-                                height: 1.5,
-                              ),
-                              listBullet: theme.textTheme.bodyLarge
-                                  ?.copyWith(height: 1.5),
-                              h1: theme.textTheme.headlineSmall
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              h2: theme.textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              h3: theme.textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              blockSpacing: 12,
-                              listIndent: 16,
-                              listBulletPadding:
-                                  const EdgeInsets.only(right: 8),
-                            ),
-                          ),
                   ),
                   // Actions for AI responses
                   if (!isUserMessage) ...[

@@ -55,8 +55,9 @@ abstract class PerformanceRepository {
   Future<void> restoreDatabase(String backupFilePath);
 
   // Chat History methods
-  Future<void> insertChatMessage(AiInsight message, bool isUser);
+  Future<int> insertChatMessage(AiInsight message, bool isUser);
   Future<List<AiInsight>> getChatHistory();
+  Future<void> deleteChatMessage(String id);
   Future<void> deleteOldChatMessages();
   Future<void> clearChatHistory();
 }

@@ -236,6 +236,9 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
             return AdvisorDeskChatBubble(
               insight: insight,
               isUserMessage: isUserMessage,
+              onDelete: () {
+                context.read<AdvisorDeskAIBloc>().add(DeleteInsight(insight.id));
+              },
             );
           },
           // Add 1 to count if typing to make space for the bubble

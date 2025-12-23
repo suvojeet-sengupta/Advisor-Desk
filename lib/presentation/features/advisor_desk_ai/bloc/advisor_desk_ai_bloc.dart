@@ -39,6 +39,26 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     on<LoadAdvisorDeskAIData>(_onLoadAdvisorDeskAIData);
     on<AskAdvisorDeskAIQuestion>(_onAskAdvisorDeskAIQuestion);
     on<ClearChatHistory>(_onClearChatHistory);
+    on<DeleteInsight>(_onDeleteInsight);
+  }
+
+  Future<void> _onDeleteInsight(
+    DeleteInsight event,
+    Emitter<AdvisorDeskAIState> emit,
+  ) async {
+    try {
+      // Optimistically remove from UI
+      final updatedHistory = state.insightHistory
+          .where((insight) => insight.id != event.id)
+          .toList();
+      emit(state.copyWith(insightHistory: updatedHistory));
+
+      // Remove from DB
+      await _performanceRepository.deleteChatMessage(event.id);
+    } catch (e) {
+      print("Error deleting insight: $e");
+      // Optionally reload history if deletion fails to restore state
+    }
   }
 
   Future<void> _onClearChatHistory(
@@ -137,20 +157,34 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     print("BLoC: Asking Question: ${event.question}");
     // Add user's question to history
     final userMessage = AiInsight(message: event.question, isUser: true);
-    final newHistory = List<AiInsight>.from(state.insightHistory)..add(userMessage);
+    var currentHistory = List<AiInsight>.from(state.insightHistory)..add(userMessage);
 
-    emit(state.copyWith(insightHistory: newHistory, isAiTyping: true, isSwitchingModel: false));
+    emit(state.copyWith(insightHistory: currentHistory, isAiTyping: true, isSwitchingModel: false));
     
-    // Save User Message
-    await _performanceRepository.insertChatMessage(userMessage, true);
+    // Save User Message and update ID
+    final userMsgId = await _performanceRepository.insertChatMessage(userMessage, true);
+    
+    // Update the user message in history with the real ID
+    currentHistory = currentHistory.map((e) {
+      if (e.id == userMessage.id) {
+        return AiInsight(
+          id: userMsgId.toString(),
+          message: e.message,
+          buttonText: e.buttonText,
+          navigationRoute: e.navigationRoute,
+          navigationArguments: e.navigationArguments,
+          isUser: e.isUser,
+        );
+      }
+      return e;
+    }).toList();
+    emit(state.copyWith(insightHistory: currentHistory));
 
     // Artificial delay to show typing indicator as requested (2-3 seconds)
-    // This makes the interaction feel more "alive"
     await Future.delayed(const Duration(seconds: 2));
 
     try {
       final userId = await _userDataSource.getCurrentUserId();
-      // final now = DateTime.now(); // No longer needed for single fetch, but maybe for goals?
       
       // Fetch fresh data for context (Last 12 months)
       final allSummaries = await _performanceRepository.getAllMonthlySummaries(limit: 12);
@@ -163,49 +197,66 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         targetCalls: goalsMap['calls'] ?? 3000,
       );
       
-            // --- Check for specific date in query ---
-            DailyEntry? dailyEntry;
-            final date = _extractDateFromQuery(event.question);
-            if (date != null) {
-              dailyEntry = await _performanceRepository.getEntryForDate(date);
-            }
-            // ----------------------------------------
-      
-            print("BLoC: Processing question with NLP Service...");
-            final aiResponse = await _nlpService.processQuestion(
-              question: event.question,
-              histories: allSummaries, 
-              goals: goalsState,
-              profile: profile,
-              chatHistory: newHistory, // Use newHistory to include the latest user question
-              dailyEntry: dailyEntry, // Pass the fetched daily entry
-              requestedDate: date, // Pass the requested date
-            );
-            
-            print("BLoC: Received AI Response: ${aiResponse.insight.message.substring(0, 10)}...");
+      // --- Check for specific date in query ---
+      DailyEntry? dailyEntry;
+      final date = _extractDateFromQuery(event.question);
+      if (date != null) {
+        dailyEntry = await _performanceRepository.getEntryForDate(date);
+      }
+      // ----------------------------------------
 
-            // If model switched, show "Switching model..." for a few seconds
-            if (aiResponse.modelSwitched) {
-              emit(state.copyWith(isSwitchingModel: true, isAiTyping: true));
-              await Future.delayed(NlpService.modelSwitchDisplayDuration);
-            }
+      print("BLoC: Processing question with NLP Service...");
+      final aiResponse = await _nlpService.processQuestion(
+        question: event.question,
+        histories: allSummaries, 
+        goals: goalsState,
+        profile: profile,
+        chatHistory: currentHistory, 
+        dailyEntry: dailyEntry, 
+        requestedDate: date, 
+      );
       
-            final finalHistory = List<AiInsight>.from(state.insightHistory)..add(aiResponse.insight);
-            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false, isSwitchingModel: false));
-            
-            // Save AI Message
-            await _performanceRepository.insertChatMessage(aiResponse.insight, false);
+      print("BLoC: Received AI Response: ${aiResponse.insight.message.substring(0, 10)}...");
+
+      // If model switched, show "Switching model..." for a few seconds
+      if (aiResponse.modelSwitched) {
+        emit(state.copyWith(isSwitchingModel: true, isAiTyping: true));
+        await Future.delayed(NlpService.modelSwitchDisplayDuration);
+      }
+
+      var aiInsight = aiResponse.insight;
+      currentHistory = List<AiInsight>.from(state.insightHistory)..add(aiInsight);
+      emit(state.copyWith(insightHistory: currentHistory, isAiTyping: false, isSwitchingModel: false));
       
-          } catch (e, stack) {
-            print("Gemini Error: $e, $stack"); // helpful for debug
-            final errorInsight = AiInsight(message: "Sorry, I encountered an error answering that. Please try again later.");
-            final finalHistory = List<AiInsight>.from(state.insightHistory)..add(errorInsight);
-            emit(state.copyWith(insightHistory: finalHistory, isAiTyping: false, isSwitchingModel: false));
-            
-            // Save Error Message
-            await _performanceRepository.insertChatMessage(errorInsight, false);
-          }
-        }
+      // Save AI Message and update ID
+      final aiMsgId = await _performanceRepository.insertChatMessage(aiInsight, false);
+      
+      // Update AI message with real ID
+      currentHistory = currentHistory.map((e) {
+         if (e.id == aiInsight.id) {
+           return AiInsight(
+             id: aiMsgId.toString(),
+             message: e.message,
+             buttonText: e.buttonText,
+             navigationRoute: e.navigationRoute,
+             navigationArguments: e.navigationArguments,
+             isUser: e.isUser,
+           );
+         }
+         return e;
+      }).toList();
+      emit(state.copyWith(insightHistory: currentHistory));
+
+    } catch (e, stack) {
+      print("Gemini Error: $e, $stack"); // helpful for debug
+      final errorInsight = AiInsight(message: "Sorry, I encountered an error answering that. Please try again later.");
+      currentHistory = List<AiInsight>.from(state.insightHistory)..add(errorInsight);
+      emit(state.copyWith(insightHistory: currentHistory, isAiTyping: false, isSwitchingModel: false));
+      
+      // Save Error Message
+      await _performanceRepository.insertChatMessage(errorInsight, false);
+    }
+  }
       
         DateTime? _extractDateFromQuery(String query) {
           query = query.toLowerCase();

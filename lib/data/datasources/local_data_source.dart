@@ -756,9 +756,9 @@ class LocalDataSource {
   }
 
   // Chat History CRUD operations
-  Future<void> insertChatMessage(AiInsight message, bool isUser) async {
+  Future<int> insertChatMessage(AiInsight message, bool isUser) async {
     final db = await database;
-    await db.insert(
+    return await db.insert(
       AppConstants.tableChatHistory,
       {
         'message': message.message,
@@ -766,7 +766,6 @@ class LocalDataSource {
         'timestamp': DateTime.now().millisecondsSinceEpoch,
         'button_text': message.buttonText,
         'navigation_route': message.navigationRoute,
-        // serialize map to string if needed, or simple ignore as we might not persist complicated deep links yet
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -786,12 +785,22 @@ class LocalDataSource {
 
     return List.generate(maps.length, (i) {
       return AiInsight(
+        id: maps[i]['id'].toString(),
         message: maps[i]['message'],
         buttonText: maps[i]['button_text'],
         navigationRoute: maps[i]['navigation_route'],
         isUser: maps[i]['is_user'] == 1,
       );
     });
+  }
+
+  Future<void> deleteChatMessage(int id) async {
+    final db = await database;
+    await db.delete(
+      AppConstants.tableChatHistory,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<void> deleteOldChatMessages() async {

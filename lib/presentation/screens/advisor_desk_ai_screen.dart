@@ -15,6 +15,8 @@ import 'package:advisor_desk/presentation/features/advisor_desk_ai/widgets/advis
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/typing_indicator.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -49,9 +51,57 @@ class AdvisorDeskAIView extends StatefulWidget {
 class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
   final TextEditingController _questionController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSpeech();
+  }
+
+  /// This has to happen only once per app
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {
+      _isListening = true;
+    });
+  }
+
+  /// Manually stop the active speech recognition session
+  /// Note that there are also timeouts that each platform enforces
+  /// and the [listen] method exposes these features.
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {
+      _isListening = false;
+    });
+  }
+
+  /// This is the callback that the SpeechToText plugin calls when
+  /// the platform returns recognized words.
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _questionController.text = result.recognizedWords;
+    });
+    // If it's the final result, we could automatically send it, but usually better to let user review
+    if (result.finalResult) {
+      setState(() {
+        _isListening = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
+    _stopListening();
     _questionController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -343,13 +393,25 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.mic_rounded,
-                          color: Theme.of(context).hintColor),
+                      icon: Icon(
+                        _isListening ? Icons.mic_off_rounded : Icons.mic_rounded,
+                        color: _isListening 
+                            ? Theme.of(context).colorScheme.error 
+                            : Theme.of(context).hintColor,
+                      ),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Voice input coming soon!')),
-                        );
+                        if (!_speechEnabled) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Speech recognition not available')),
+                          );
+                          return;
+                        }
+                        
+                        if (_isListening) {
+                          _stopListening();
+                        } else {
+                          _startListening();
+                        }
                       },
                     ),
                   ],
@@ -365,6 +427,9 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
                       ? null
                       : () {
                           if (_questionController.text.isNotEmpty) {
+                            if (_isListening) {
+                              _stopListening();
+                            }
                             context
                                 .read<AdvisorDeskAIBloc>()
                                 .add(AskAdvisorDeskAIQuestion(

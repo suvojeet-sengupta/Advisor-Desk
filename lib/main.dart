@@ -55,6 +55,15 @@ class SmoothScrollBehavior extends ScrollBehavior {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Edge-to-Edge UI Configuration
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
+  ));
+  
   await InAppReviewHelper.setInstallDate();
   MobileAds.instance.initialize();
   // Initialize User Data Source

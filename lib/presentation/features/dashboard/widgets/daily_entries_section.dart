@@ -3,7 +3,6 @@ import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:flutter/material.dart';
-import 'package:advisor_desk/core/constants/app_colors.dart';
 import 'package:intl/intl.dart';
 
 class DailyEntriesSection extends StatelessWidget {
@@ -18,25 +17,26 @@ class DailyEntriesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Daily Entries',
-            style: Theme.of(context).textTheme.titleLarge,
+      sliver: SliverMainAxisGroup(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Text(
+              'Daily Entries',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
           if (entries.isEmpty)
-            const EmptyStateWidget(
-              message: 'No entries for this month.',
-              illustrationPath: 'assets/images/no_data.svg',
+            const SliverToBoxAdapter(
+              child: EmptyStateWidget(
+                message: 'No entries for this month.',
+                illustrationPath: 'assets/images/no_data.svg',
+              ),
             )
           else
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+            SliverList.builder(
               itemCount: entries.length,
               itemBuilder: (context, index) {
                 final entry = entries[index];
@@ -90,4 +90,3 @@ class DailyEntriesSection extends StatelessWidget {
     );
   }
 }
-

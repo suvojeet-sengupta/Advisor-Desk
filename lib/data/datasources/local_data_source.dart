@@ -31,11 +31,8 @@ class LocalDataSource {
     
     // However, since this is a singleton, let's assume we re-init when switching users.
     if (_database != null) {
-       // If we want to force re-init with a new user, we should close it first.
-       // But the current usage checks if _database != null and returns.
-       // We need a way to force re-open if the user changes.
-       // For now, let's assume the caller will call closeDatabase() before init() if switching users.
-       // Or we can check if the current DB path matches the requested one.
+       await _database!.close();
+       _database = null;
     }
 
     // Get the database path

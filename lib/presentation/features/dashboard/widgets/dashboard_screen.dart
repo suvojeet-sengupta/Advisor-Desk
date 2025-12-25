@@ -293,6 +293,11 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
         child: Stack(
           children: [
             BlocBuilder<DashboardBloc, DashboardState>(
+              buildWhen: (previous, current) =>
+                  previous.status != current.status ||
+                  previous.monthlySummary != current.monthlySummary ||
+                  previous.currentMonth != current.currentMonth ||
+                  previous.currentYear != current.currentYear,
               builder: (context, dashboardState) {
                 if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
                   return const DashboardSkeletonLoader();
@@ -378,7 +383,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                                 radius: 24,
                                                 backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                                                 backgroundImage: profile.profilePicturePath.isNotEmpty
-                                                    ? FileImage(File(profile.profilePicturePath))
+                                                    ? ResizeImage(FileImage(File(profile.profilePicturePath)), width: 96)
                                                     : null,
                                                 child: profile.profilePicturePath.isEmpty
                                                     ? Icon(Icons.person, color: theme.colorScheme.primary)
@@ -912,15 +917,9 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           ),
         );
       case DashboardSection.dailyEntries:
-        return SliverToBoxAdapter(
-          child: Column(
-            children: [
-              DailyEntriesSection(
-                entries: summary.entries,
-                onEntryChanged: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-              ),
-            ],
-          ),
+        return DailyEntriesSection(
+          entries: summary.entries,
+          onEntryChanged: () => context.read<DashboardBloc>().add(RefreshDashboard()),
         );
       
       default:

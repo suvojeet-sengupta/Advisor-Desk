@@ -73,32 +73,36 @@ class MonthlyPerformanceScreen extends StatelessWidget {
             Navigator.pop(context);
           }
         },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeroSummary(context),
-              const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Performance Metrics'),
-              const SizedBox(height: 12),
-              _buildMetricsGrid(context),
-              const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Quality Scores'),
-              const SizedBox(height: 12),
-              _buildQualityScores(context),
-              const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Salary Breakdown'),
-              const SizedBox(height: 12),
-              _buildSalaryBreakdown(context, summary.salaryBreakdown),
-              const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Daily Entries'),
-              const SizedBox(height: 12),
-              DailyEntriesSection(entries: summary.entries),
-              const SizedBox(height: 32),
-            ],
-          ),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeroSummary(context),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle(context, 'Performance Metrics'),
+                    const SizedBox(height: 12),
+                    _buildMetricsGrid(context),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle(context, 'Quality Scores'),
+                    const SizedBox(height: 12),
+                    _buildQualityScores(context),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle(context, 'Salary Breakdown'),
+                    const SizedBox(height: 12),
+                    _buildSalaryBreakdown(context, summary.salaryBreakdown),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+            DailyEntriesSection(entries: summary.entries),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
         ),
       ),
     );

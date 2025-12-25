@@ -12,6 +12,7 @@ import 'package:advisor_desk/data/datasources/user_data_source.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/widgets/advisor_desk_ai_header.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/widgets/advisor_desk_chat_bubble.dart';
 import 'package:advisor_desk/presentation/features/advisor_desk_ai/widgets/advisor_desk_empty_state.dart';
+import 'package:advisor_desk/presentation/features/advisor_desk_ai/widgets/thinking_process_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -249,66 +250,9 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
   }
 
   Widget _buildThinkingBubble(BuildContext context) {
-    final theme = Theme.of(context);
     return BlocBuilder<AdvisorDeskAIBloc, AdvisorDeskAIState>(
       builder: (context, state) {
-        final displayText = state.isSwitchingModel ? "Switching model..." : "Thinking...";
-        
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.auto_awesome, color: theme.colorScheme.primary, size: 16),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(4),
-                    bottomRight: Radius.circular(20),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 24, 
-                      height: 16, 
-                      child: const TypingIndicator(),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      displayText,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontStyle: FontStyle.italic,
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+        return ThinkingProcessIndicator(isThinking: state.isAiTyping || state.isSwitchingModel);
       },
     );
   }

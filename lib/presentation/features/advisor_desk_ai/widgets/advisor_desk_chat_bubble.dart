@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:advisor_desk/presentation/features/advisor_desk_ai/widgets/thinking_process_indicator.dart';
 
 class AdvisorDeskChatBubble extends StatelessWidget {
   final AiInsight insight;
@@ -58,6 +59,8 @@ class AdvisorDeskChatBubble extends StatelessWidget {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
+                  if (!isUserMessage)
+                    const ThinkingProcessIndicator(isThinking: false),
                   GestureDetector(
                     onLongPress: onDelete != null
                         ? () {
@@ -186,8 +189,7 @@ class AdvisorDeskChatBubble extends StatelessWidget {
                             icon: Icons.share_rounded,
                             label: 'Share',
                             onTap: () {
-                              SharePlus.instance
-                                  .share(ShareParams(text: insight.message));
+                              Share.share(insight.message);
                             },
                           ),
                           const SizedBox(width: 8),

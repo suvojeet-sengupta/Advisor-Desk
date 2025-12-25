@@ -28,6 +28,8 @@ class _ThinkingProcessIndicatorState extends State<ThinkingProcessIndicator> {
     super.initState();
     if (widget.isThinking) {
       _startStepSimulation();
+    } else {
+      _currentStep = _steps.length; // All done
     }
   }
 
@@ -39,6 +41,7 @@ class _ThinkingProcessIndicatorState extends State<ThinkingProcessIndicator> {
       _startStepSimulation();
     } else if (!widget.isThinking) {
       _stopStepSimulation();
+      _currentStep = _steps.length;
     }
   }
 
@@ -70,12 +73,11 @@ class _ThinkingProcessIndicatorState extends State<ThinkingProcessIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isThinking) return const SizedBox.shrink();
-
     final theme = Theme.of(context);
+    final isFinished = !widget.isThinking;
     
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0, left: 16.0),
+      padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -89,35 +91,46 @@ class _ThinkingProcessIndicatorState extends State<ThinkingProcessIndicator> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Animated Brain/Sparkle Icon
-                SpinPerfect(
-                  infinite: true,
-                  duration: const Duration(seconds: 2),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
+                // Icon
+                if (isFinished)
+                   Container(
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: Colors.green.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.psychology, color: theme.colorScheme.primary, size: 20),
+                    child: const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                  )
+                else
+                  SpinPerfect(
+                    infinite: true,
+                    duration: const Duration(seconds: 2),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.psychology, color: theme.colorScheme.primary, size: 20),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 
                 // Status Text
                 Text(
-                  _steps[_currentStep],
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
+                  isFinished ? "Thought Process" : _steps[(_currentStep < _steps.length) ? _currentStep : _steps.length - 1],
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: isFinished ? theme.colorScheme.onSurface.withOpacity(0.6) : theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
+                    fontSize: 12,
                   ),
                 ),
                 
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Icon(
                   _isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
                   color: theme.colorScheme.onSurface.withOpacity(0.5),
-                  size: 20,
+                  size: 16,
                 ),
               ],
             ),
@@ -127,38 +140,33 @@ class _ThinkingProcessIndicatorState extends State<ThinkingProcessIndicator> {
           AnimatedCrossFade(
             firstChild: const SizedBox(height: 0, width: double.infinity),
             secondChild: Container(
-              margin: const EdgeInsets.only(top: 12, left: 18),
-              padding: const EdgeInsets.only(left: 16),
+              margin: const EdgeInsets.only(top: 8, left: 11), // Align with icon center roughly
+              padding: const EdgeInsets.only(left: 12),
               decoration: BoxDecoration(
-                border: Border(left: BorderSide(color: theme.colorScheme.primary.withOpacity(0.2), width: 2)),
+                border: Border(left: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2), width: 1.5)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(_steps.length, (index) {
-                  final isCompleted = index < _currentStep;
-                  final isCurrent = index == _currentStep;
-                  final isFuture = index > _currentStep;
+                  final isCompleted = isFinished || index < _currentStep;
+                  final isCurrent = !isFinished && index == _currentStep;
                   
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(vertical: 2.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          isCompleted ? Icons.check_circle_rounded : (isCurrent ? Icons.radio_button_checked : Icons.radio_button_unchecked),
-                          size: 16,
-                          color: isFuture 
-                              ? theme.disabledColor 
-                              : (isCurrent ? theme.colorScheme.primary : Colors.green),
+                          isCompleted ? Icons.check : (isCurrent ? Icons.radio_button_checked : Icons.radio_button_unchecked),
+                          size: 12,
+                          color: isCompleted ? Colors.green : (isCurrent ? theme.colorScheme.primary : theme.disabledColor),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         Text(
                           _steps[index],
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: isFuture 
-                                ? theme.disabledColor 
-                                : theme.colorScheme.onSurface.withOpacity(0.8),
-                            fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                            color: theme.colorScheme.onSurface.withOpacity(isCompleted || isCurrent ? 0.8 : 0.4),
+                            fontSize: 10,
                           ),
                         ),
                       ],

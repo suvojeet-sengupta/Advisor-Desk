@@ -4,6 +4,7 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/wrapped_stats.dart';
 import 'package:advisor_desk/domain/services/wrapped_service.dart';
 import 'package:advisor_desk/presentation/features/wrapped/widgets/wrapped_background.dart';
+import 'package:advisor_desk/presentation/features/wrapped/widgets/story_progress_bar.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,12 @@ class WrappedScreen extends StatefulWidget {
   State<WrappedScreen> createState() => _WrappedScreenState();
 }
 
-class _WrappedScreenState extends State<WrappedScreen> {
+class _WrappedScreenState extends State<WrappedScreen> with TickerProviderStateMixin {
   late WrappedStats stats;
   final PageController _pageController = PageController();
   final ScreenshotController _screenshotController = ScreenshotController();
   late ConfettiController _confettiController;
+  late AnimationController _storyController;
   int _currentPage = 0;
 
   @override
@@ -35,12 +37,28 @@ class _WrappedScreenState extends State<WrappedScreen> {
     super.initState();
     stats = WrappedService().generateStats(widget.summary);
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    
+    _storyController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5), // 5 seconds per slide
+    );
+    
+    _storyController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (_currentPage < 6) {
+           _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        }
+      }
+    });
+
+    _storyController.forward();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     _confettiController.dispose();
+    _storyController.dispose();
     super.dispose();
   }
 
@@ -48,6 +66,11 @@ class _WrappedScreenState extends State<WrappedScreen> {
     setState(() {
       _currentPage = index;
     });
+    _storyController.reset();
+    if (index < 6) { // Don't auto-advance last slide (Summary) immediately or loop
+        _storyController.forward();
+    }
+    
     if (index == 5) { // Persona slide
        _confettiController.play();
     }
@@ -76,43 +99,36 @@ class _WrappedScreenState extends State<WrappedScreen> {
             // Animated Background
             WrappedBackground(pageIndex: _currentPage),
             
-            // Content
-            PageView(
-              controller: _pageController,
-              onPageChanged: _onPageChanged,
-              children: [
-                _buildIntroSlide(),
-                _buildVolumeSlide(),
-                _buildBestDaySlide(),
-                _buildQualitySlide(),
-                _buildEarningsSlide(),
-                _buildPersonaSlide(),
-                _buildSummarySlide(),
-              ],
+            // Content with Pause/Resume
+            GestureDetector(
+              onLongPressDown: (_) => _storyController.stop(),
+              onLongPressUp: () {
+                if (_currentPage < 6) _storyController.forward();
+              },
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: _onPageChanged,
+                children: [
+                  _buildIntroSlide(),
+                  _buildVolumeSlide(),
+                  _buildBestDaySlide(),
+                  _buildQualitySlide(),
+                  _buildEarningsSlide(),
+                  _buildPersonaSlide(),
+                  _buildSummarySlide(),
+                ],
+              ),
             ),
 
-            // Navigation Indicators
+            // Navigation Indicators (Story Progress Bar)
             Positioned(
-              top: 60,
-              left: 0,
-              right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(7, (index) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: _currentPage == index ? 30 : 8,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(_currentPage == index ? 1 : 0.3),
-                      borderRadius: BorderRadius.circular(2),
-                      boxShadow: _currentPage == index ? [
-                        BoxShadow(color: Colors.white.withOpacity(0.5), blurRadius: 8, spreadRadius: 1)
-                      ] : [],
-                    ),
-                  );
-                }),
+              top: 50, // Moved up slightly
+              left: 10,
+              right: 10,
+              child: StoryProgressBar(
+                currentIndex: _currentPage,
+                totalCount: 7,
+                animationController: _storyController,
               ),
             ),
 
@@ -129,7 +145,7 @@ class _WrappedScreenState extends State<WrappedScreen> {
 
             // Close Button
             Positioned(
-              top: 50,
+              top: 70, // Moved down below progress bar
               right: 20,
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white, size: 30),
@@ -445,7 +461,7 @@ class _WrappedScreenState extends State<WrappedScreen> {
                 border: Border.all(color: Colors.greenAccent, width: 4),
                 boxShadow: [BoxShadow(color: Colors.green.withOpacity(0.4), blurRadius: 20)],
               ),
-              child: const Icon(Icons.attach_money_rounded, size: 80, color: Colors.greenAccent),
+              child: const Icon(Icons.currency_rupee, size: 80, color: Colors.greenAccent),
             ),
           ),
           const SizedBox(height: 50),

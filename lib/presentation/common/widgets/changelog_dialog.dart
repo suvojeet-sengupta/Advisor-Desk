@@ -77,7 +77,7 @@ class ChangelogDialog extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "v1.6.0 • Wrapped & Gamified",
+                            "v1.7.0 • Desi AI & Better Stories",
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onPrimary.withOpacity(0.9),
                               fontWeight: FontWeight.w500,
@@ -99,38 +99,57 @@ class ChangelogDialog extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionHeader(context, "🎁 Feature of the Month", delay: 50),
+                        _buildSectionHeader(context, "🌟 Top Updates", delay: 50),
                         _buildFeatureItem(
                           context,
-                          title: "Advisor Wrapped",
-                          description: "Your monthly performance story is here! Discover your 'Advisor Persona', best day, and total earnings in a stunning visual story format.",
-                          icon: Icons.auto_awesome,
-                          color: Colors.amber,
+                          title: "Full Hinglish Dashboard",
+                          description: "The app now speaks your language! Desi Hinglish support added across the entire dashboard and settings for a more personal touch.",
+                          icon: Icons.translate_rounded,
+                          color: Colors.orange,
                           delay: 100,
+                        ),
+                        _buildFeatureItem(
+                          context,
+                          title: "AI Voice & Thinking",
+                          description: "Talk to Advisor Desk AI with the new Voice Mode! Plus, see the AI's 'Thinking Process' in real-time with the new live indicator.",
+                          icon: Icons.psychology_alt_rounded,
+                          color: Colors.purple,
+                          delay: 150,
                         ),
                         
                         const SizedBox(height: 24),
-                        _buildSectionHeader(context, "💎 New & Improved", delay: 150),
+                        _buildSectionHeader(context, "🎥 Wrapped Improvements", delay: 200),
                         _buildFeatureItem(
                           context,
-                          title: "Smoother Workflow",
-                          description: "We've listened to you! Interstitial ads have been removed when adding or updating entries for a faster experience.",
-                          icon: Icons.speed_rounded,
-                          color: Colors.green,
-                          delay: 200,
+                          title: "Instagram-Style Stories",
+                          description: "Advisor Wrapped now features smooth auto-advance and Instagram-style story progress bars for a premium viewing experience.",
+                          icon: Icons.auto_stories_rounded,
+                          color: Colors.pinkAccent,
+                          delay: 250,
                         ),
                         _buildFeatureItem(
                           context,
-                          title: "Share Your Success",
-                          description: "Easily share your monthly stats card with friends and colleagues directly from the Wrapped screen.",
-                          icon: Icons.share_rounded,
-                          color: Colors.blueAccent,
-                          delay: 250,
+                          title: "Monthly Auto-Popup",
+                          description: "Never miss your performance recap! Advisor Wrapped will now automatically show up on the 1st of every month.",
+                          icon: Icons.calendar_month_rounded,
+                          color: Colors.blue,
+                          delay: 300,
                         ),
 
                         const SizedBox(height: 24),
+                        _buildSectionHeader(context, "🚀 System & Performance", delay: 350),
+                        _buildFeatureItem(
+                          context,
+                          title: "Android 14 Ready",
+                          description: "Added support for Predictive Back gestures, Edge-to-Edge UI, and the latest Splash Screen API for a modern feel.",
+                          icon: Icons.android_rounded,
+                          color: Colors.green,
+                          delay: 400,
+                        ),
+
+                        const SizedBox(height: 16),
                         ZoomIn(
-                          delay: const Duration(milliseconds: 300),
+                          delay: const Duration(milliseconds: 450),
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -146,7 +165,7 @@ class ChangelogDialog extends StatelessWidget {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    "Pro Tip: Visit the Monthly Performance screen to unlock your Wrapped summary!",
+                                    "Pro Tip: You can now delete individual AI chats to keep your history clean!",
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w500,
@@ -167,7 +186,7 @@ class ChangelogDialog extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: FadeInUp(
-                  delay: const Duration(milliseconds: 350),
+                  delay: const Duration(milliseconds: 500),
                   child: AnimatedButton(
                     onPressed: () => Navigator.of(context).pop(),
                     backgroundColor: theme.colorScheme.primary,

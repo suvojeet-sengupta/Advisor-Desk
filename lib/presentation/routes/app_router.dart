@@ -14,7 +14,7 @@ import 'package:advisor_desk/domain/entities/monthly_summary.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
 import 'package:advisor_desk/domain/entities/csat_summary.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart';
-import 'package:advisor_desk/presentation/screens/theme_selection_screen.dart';
+import 'package:advisor_desk/presentation/features/settings/screens/theme_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:advisor_desk/presentation/features/onboarding/onboarding_tutorial_screen.dart';
 import 'package:advisor_desk/presentation/features/dashboard/widgets/dashboard_screen.dart';
@@ -25,18 +25,18 @@ import 'package:advisor_desk/presentation/features/monthly_performance/widgets/m
 import 'package:advisor_desk/presentation/features/all_reports/widgets/all_reports_screen.dart';
 
 import 'package:advisor_desk/presentation/features/settings/widgets/settings_screen.dart';
-import 'package:advisor_desk/presentation/screens/customize_dashboard_screen.dart';
-import 'package:advisor_desk/presentation/screens/cq_details_screen.dart';
-import 'package:advisor_desk/presentation/screens/csat_details_screen.dart';
-import 'package:advisor_desk/presentation/screens/login_days_details_screen.dart';
+import 'package:advisor_desk/presentation/features/dashboard/screens/customize_dashboard_screen.dart';
+import 'package:advisor_desk/presentation/features/cq_management/screens/cq_details_screen.dart';
+import 'package:advisor_desk/presentation/features/csat_management/screens/csat_details_screen.dart';
+import 'package:advisor_desk/presentation/features/login_days/screens/login_days_details_screen.dart';
 
 
-import 'package:advisor_desk/presentation/screens/salary_settings_screen.dart';
-import 'package:advisor_desk/presentation/screens/report_options_screen.dart';
-import 'package:advisor_desk/presentation/screens/credits_screen.dart';
-import 'package:advisor_desk/presentation/screens/profile_screen.dart';
-import 'package:advisor_desk/presentation/screens/about_app_screen.dart';
-import 'package:advisor_desk/presentation/screens/salary_details_screen.dart';
+import 'package:advisor_desk/presentation/features/settings/screens/salary_settings_screen.dart';
+import 'package:advisor_desk/presentation/features/settings/screens/report_options_screen.dart';
+import 'package:advisor_desk/presentation/features/about/screens/credits_screen.dart';
+import 'package:advisor_desk/presentation/features/profile/screens/profile_screen.dart';
+import 'package:advisor_desk/presentation/features/about/screens/about_app_screen.dart';
+import 'package:advisor_desk/presentation/features/salary/screens/salary_details_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/repositories/leave_repository.dart';
@@ -45,22 +45,22 @@ import 'package:advisor_desk/domain/usecases/mark_leave_usecase.dart';
 import 'package:advisor_desk/domain/usecases/delete_leave_usecase.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_bloc.dart';
 import 'package:advisor_desk/presentation/features/login_days/bloc/login_days_event.dart';
-import 'package:advisor_desk/presentation/screens/pin_setup_screen.dart';
-import 'package:advisor_desk/presentation/screens/app_lock_settings_screen.dart';
-import 'package:advisor_desk/presentation/screens/advisor_desk_ai_screen.dart';
+import 'package:advisor_desk/presentation/features/user/screens/pin_setup_screen.dart';
+import 'package:advisor_desk/presentation/features/settings/screens/app_lock_settings_screen.dart';
+import 'package:advisor_desk/presentation/features/advisor_desk_ai/screens/advisor_desk_ai_screen.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/ai_insight_bloc.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
-import 'package:advisor_desk/presentation/screens/advisor_desk_ai_analyzer_screen.dart';
+import 'package:advisor_desk/presentation/features/advisor_desk_ai/screens/advisor_desk_ai_analyzer_screen.dart';
 
 
 import 'package:advisor_desk/presentation/features/wrapped/wrapped_screen.dart';
 
 import 'package:advisor_desk/core/constants/app_enums.dart';
-import 'package:advisor_desk/presentation/screens/metric_details_screen.dart';
-import 'package:advisor_desk/presentation/screens/privacy_policy_screen.dart';
-import 'package:advisor_desk/presentation/screens/performance_forecaster_screen.dart';
-import 'package:advisor_desk/presentation/screens/user_management_screen.dart';
+import 'package:advisor_desk/presentation/features/metrics/screens/metric_details_screen.dart';
+import 'package:advisor_desk/presentation/features/about/screens/privacy_policy_screen.dart';
+import 'package:advisor_desk/presentation/features/performance_forecaster/screens/performance_forecaster_screen.dart';
+import 'package:advisor_desk/presentation/features/user/screens/user_management_screen.dart';
 
 class AppRouter {
   // Route names

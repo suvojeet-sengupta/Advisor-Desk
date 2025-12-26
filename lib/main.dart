@@ -33,7 +33,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:advisor_desk/data/repositories/leave_repository_impl.dart';
 import 'package:advisor_desk/domain/repositories/leave_repository.dart';
 import 'package:advisor_desk/core/utils/authentication_service.dart';
-import 'package:advisor_desk/presentation/screens/lock_screen.dart';
+import 'package:advisor_desk/presentation/features/security/screens/lock_screen.dart';
 import 'package:advisor_desk/domain/services/ai_insight_service.dart';
 import 'package:advisor_desk/domain/services/nlp_service.dart';
 import 'package:advisor_desk/domain/services/goal_prediction_service.dart';

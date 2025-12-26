@@ -160,5 +160,42 @@ class StringsEn {
     'user_name_label': 'User Name',
     'enter_user_name_hint': 'Enter name',
     'add_btn': 'Add',
+
+    // Daily Entries Section
+    'daily_entries_title': 'Daily Entries',
+    'no_entries_month': 'No entries for this month.',
+
+    // Monthly Goals Section
+    'monthly_goals_title': 'Monthly Goals',
+    'edit_btn': 'Edit',
+    'login_hours_label': 'Login Hours',
+    'calls_label': 'Calls',
+    'remaining_hours_goal': 'Remaining Hours to Goal:',
+    'remaining_calls_goal': 'Remaining Calls to Goal:',
+    'daily_avg_hours_needed': 'Daily Avg. Hours Needed:',
+    'daily_avg_calls_needed': 'Daily Avg. Calls Needed:',
+    'remaining_calls_today': 'Remaining Calls for Today:',
+    'remaining_hours_today': 'Remaining Hours for Today:',
+    'salary_projection_title': 'Salary Projection',
+    'current_salary_label': 'Current Salary',
+    'projected_salary_label': 'Projected Salary (at 100% goal)',
+    'congratulations_title': 'Congratulations!',
+    'goals_achieved_message': 'You have successfully achieved your monthly goals.',
+    'view_targets_btn': 'View Targets',
+    'get_ai_suggestions_btn': 'Get AI Suggestions',
+
+    // Salary Section
+    'salary_details_title': 'Salary Details',
+    'billable_calls_label': 'Billable Calls',
+    'base_salary_label': 'Base Salary',
+    'bonus_amount_label': 'Bonus Amount',
+    'csat_bonus_label': 'CSAT Bonus',
+    'gross_salary_label': 'Gross Salary',
+    'tds_deduction_label': 'TDS Deduction',
+
+    // Summary Section
+    'monthly_summary_title': 'Monthly Summary',
+    'average_daily_login_hours': 'Average Daily Login Hours',
+    'average_daily_calls': 'Average Daily Calls',
   };
 }

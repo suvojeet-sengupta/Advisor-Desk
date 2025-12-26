@@ -3,7 +3,10 @@ import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
 import 'package:advisor_desk/presentation/routes/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 
 class DailyEntriesSection extends StatelessWidget {
   final List<DailyEntry> entries;
@@ -17,21 +20,22 @@ class DailyEntriesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final language = context.watch<LanguageCubit>().state;
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverMainAxisGroup(
         slivers: [
           SliverToBoxAdapter(
             child: Text(
-              'Daily Entries',
+              AppStrings.get(language, 'daily_entries_title'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 12)),
           if (entries.isEmpty)
-            const SliverToBoxAdapter(
+             SliverToBoxAdapter(
               child: EmptyStateWidget(
-                message: 'No entries for this month.',
+                message: AppStrings.get(language, 'no_entries_month'),
                 illustrationPath: 'assets/images/no_data.svg',
               ),
             )
@@ -40,7 +44,7 @@ class DailyEntriesSection extends StatelessWidget {
               itemCount: entries.length,
               itemBuilder: (context, index) {
                 final entry = entries[index];
-                return _buildEntryItem(context, entry);
+                return _buildEntryItem(context, entry, language);
               },
             ),
         ],
@@ -48,7 +52,7 @@ class DailyEntriesSection extends StatelessWidget {
     );
   }
 
-  Widget _buildEntryItem(BuildContext context, DailyEntry entry) {
+  Widget _buildEntryItem(BuildContext context, DailyEntry entry, Language language) {
     return CustomCard(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       margin: const EdgeInsets.only(bottom: 12),
@@ -69,7 +73,7 @@ class DailyEntriesSection extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          '${entry.callCount} calls • Login Hours: ${entry.formattedLoginTime}',
+          '${entry.callCount} calls • ${AppStrings.get(language, 'login_duration')}: ${entry.formattedLoginTime}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         trailing: IconButton(

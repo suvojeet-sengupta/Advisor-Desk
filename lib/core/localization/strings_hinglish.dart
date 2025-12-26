@@ -160,5 +160,42 @@ class StringsHinglish {
     'user_name_label': 'User Ka Naam',
     'enter_user_name_hint': 'Naam likho',
     'add_btn': 'Jodo (Add)',
+
+    // Daily Entries Section
+    'daily_entries_title': 'Roz Ki Entries',
+    'no_entries_month': 'Iss mahine koi entry nahi hai.',
+
+    // Monthly Goals Section
+    'monthly_goals_title': 'Mahine Ke Goals',
+    'edit_btn': 'Edit',
+    'login_hours_label': 'Login Hours',
+    'calls_label': 'Calls',
+    'remaining_hours_goal': 'Target ke liye bache hours:',
+    'remaining_calls_goal': 'Target ke liye bachi calls:',
+    'daily_avg_hours_needed': 'Roz kitne ghante chahiye:',
+    'daily_avg_calls_needed': 'Roz kitni calls chahiye:',
+    'remaining_calls_today': 'Aaj ke liye bachi calls:',
+    'remaining_hours_today': 'Aaj ke liye bache ghante:',
+    'salary_projection_title': 'Salary Ka Andaza',
+    'current_salary_label': 'Abhi ki Salary',
+    'projected_salary_label': 'Umeed Wali Salary (100% Target pe)',
+    'congratulations_title': 'Badhai Ho!',
+    'goals_achieved_message': 'Aapne apne mahine ke goals poore kar liye hain! Gazab!',
+    'view_targets_btn': 'Targets Dekho',
+    'get_ai_suggestions_btn': 'AI Se Poocho',
+
+    // Salary Section
+    'salary_details_title': 'Salary Ki Puri Jaankari',
+    'billable_calls_label': 'Billable Calls',
+    'base_salary_label': 'Base Salary',
+    'bonus_amount_label': 'Bonus Amount',
+    'csat_bonus_label': 'CSAT Bonus',
+    'gross_salary_label': 'Gross Salary',
+    'tds_deduction_label': 'TDS Kata (Deduction)',
+
+    // Summary Section
+    'monthly_summary_title': 'Mahine Ka Nichod (Summary)',
+    'average_daily_login_hours': 'Avg. Roz ke Hours',
+    'average_daily_calls': 'Avg. Roz ki Calls',
   };
 }

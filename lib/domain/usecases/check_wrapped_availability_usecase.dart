@@ -20,8 +20,10 @@ class CheckWrappedAvailabilityUseCase {
     final prefs = await SharedPreferences.getInstance();
     final key = 'wrapped_seen_${prevMonth}_$prevYear';
     final hasSeen = prefs.getBool(key) ?? false;
+    final isFirstDayOfMonth = now.day == 1;
 
-    if (hasSeen) {
+    // Logic: Show if not seen OR if it's the first day of the month (as requested)
+    if (hasSeen && !isFirstDayOfMonth) {
       return null;
     }
 

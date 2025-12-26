@@ -9,6 +9,8 @@ import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_event.da
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/presentation/features/user/bloc/user_cubit.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 
 class MonthlyGoalsSection extends StatelessWidget {
   final MonthlySummary summary;
@@ -17,6 +19,8 @@ class MonthlyGoalsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final language = context.watch<LanguageCubit>().state;
+
     return BlocBuilder<GoalsBloc, GoalsState>(
       builder: (context, state) {
         if (state.isLoading) {
@@ -77,18 +81,18 @@ class MonthlyGoalsSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Monthly Goals', style: theme.textTheme.titleLarge),
+                  Text(AppStrings.get(language, 'monthly_goals_title'), style: theme.textTheme.titleLarge),
                   TextButton.icon(
                     onPressed: () => _showEditGoalsDialog(context, state.targetHours, state.targetCalls),
                     icon: Icon(Icons.edit_outlined, size: 16, color: Theme.of(context).colorScheme.primary),
-                    label: Text('Edit', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                    label: Text(AppStrings.get(language, 'edit_btn'), style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                   )
                 ],
               ),
               const SizedBox(height: 12),
               CustomCard(
                 child: (hoursProgress >= 1.0 && callsProgress >= 1.0)
-                    ? _buildGoalsComplete(context, state)
+                    ? _buildGoalsComplete(context, state, language)
                     : Column(
                   children: [
                     Row(
@@ -97,7 +101,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                         _buildProgressIndicator(
                           context,
                           percent: hoursProgress,
-                          title: 'Login Hours',
+                          title: AppStrings.get(language, 'login_hours_label'),
                           current: summary.totalLoginHours.toStringAsFixed(1),
                           target: '${state.targetHours}h',
                           color: theme.colorScheme.primary,
@@ -105,7 +109,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                         _buildProgressIndicator(
                           context,
                           percent: callsProgress,
-                          title: 'Calls',
+                          title: AppStrings.get(language, 'calls_label'),
                           current: summary.totalCalls.toString(),
                           target: state.targetCalls.toString(),
                           color: theme.colorScheme.secondary,
@@ -117,19 +121,19 @@ class MonthlyGoalsSection extends StatelessWidget {
                     const SizedBox(height: 16),
                     _buildGoalDetails(
                       context,
-                      'Remaining Hours to Goal:',
+                      AppStrings.get(language, 'remaining_hours_goal'),
                       '${remainingHours.toStringAsFixed(1)}h',
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
-                      'Remaining Calls to Goal:',
+                      AppStrings.get(language, 'remaining_calls_goal'),
                       '$remainingCalls',
                     ),
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
-                      'Daily Avg. Hours Needed:',
+                      AppStrings.get(language, 'daily_avg_hours_needed'),
                       todayEntry == null
                           ? '${dailyAvgHours.toStringAsFixed(1)}h'
                           : '${todaysHours.toStringAsFixed(1)}h / ${dailyAvgHours.toStringAsFixed(1)}h',
@@ -138,7 +142,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                     const SizedBox(height: 8),
                     _buildGoalDetails(
                       context,
-                      'Daily Avg. Calls Needed:',
+                      AppStrings.get(language, 'daily_avg_calls_needed'),
                       todayEntry == null
                           ? '${dailyAvgCalls.toInt()}'
                           : '${todaysCalls} / ${dailyAvgCalls.toInt()}',
@@ -149,7 +153,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                     if (todayEntry != null)
                       _buildGoalDetails(
                         context,
-                        'Remaining Calls for Today:',
+                        AppStrings.get(language, 'remaining_calls_today'),
                         '${(dailyAvgCalls - todaysCalls).clamp(0, dailyAvgCalls).toInt()}',
                       ),
                     if (todayEntry != null)
@@ -157,13 +161,14 @@ class MonthlyGoalsSection extends StatelessWidget {
                     if (todayEntry != null)
                       _buildGoalDetails(
                         context,
-                        'Remaining Hours for Today:',
+                        AppStrings.get(language, 'remaining_hours_today'),
                         '${(dailyAvgHours - todaysHours).clamp(0, dailyAvgHours).toStringAsFixed(1)}h',
                       ),
                     _buildSalaryProjection(
                       context,
                       summary, // current summary
                       _calculateProjectedSummary(state, summary), // projected summary
+                      language,
                     ),
                   ],
                 ),
@@ -258,7 +263,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSalaryProjection(BuildContext context, MonthlySummary currentSummary, MonthlySummary projectedSummary) {
+  Widget _buildSalaryProjection(BuildContext context, MonthlySummary currentSummary, MonthlySummary projectedSummary, Language language) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,13 +272,13 @@ class MonthlyGoalsSection extends StatelessWidget {
         Divider(color: theme.colorScheme.onSurface.withOpacity(0.1)),
         const SizedBox(height: 16),
         Text(
-          'Salary Projection',
+          AppStrings.get(language, 'salary_projection_title'),
           style: theme.textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
         _buildSalaryRow(
           context,
-          'Current Salary',
+          AppStrings.get(language, 'current_salary_label'),
           '₹${currentSummary.netSalary.toStringAsFixed(2)}',
           Icons.trending_up,
           theme.colorScheme.primary,
@@ -281,7 +286,7 @@ class MonthlyGoalsSection extends StatelessWidget {
         const SizedBox(height: 8),
         _buildSalaryRow(
           context,
-          'Projected Salary (at 100% goal)',
+          AppStrings.get(language, 'projected_salary_label'),
           '₹${projectedSummary.netSalary.toStringAsFixed(2)}',
           Icons.military_tech,
           theme.colorScheme.tertiary,
@@ -305,7 +310,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildGoalsComplete(BuildContext context, GoalsState state) {
+  Widget _buildGoalsComplete(BuildContext context, GoalsState state, Language language) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -329,7 +334,7 @@ class MonthlyGoalsSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Congratulations!',
+            AppStrings.get(language, 'congratulations_title'),
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onPrimaryContainer,
@@ -338,7 +343,7 @@ class MonthlyGoalsSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'You have successfully achieved your monthly goals.',
+            AppStrings.get(language, 'goals_achieved_message'),
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onPrimaryContainer,
             ),
@@ -349,7 +354,7 @@ class MonthlyGoalsSection extends StatelessWidget {
             onPressed: () => _showEditGoalsDialog(context, state.targetHours, state.targetCalls),
             icon: Icon(Icons.visibility, color: theme.colorScheme.onPrimaryContainer),
             label: Text(
-              'View Targets',
+              AppStrings.get(language, 'view_targets_btn'),
               style: theme.textTheme.labelLarge?.copyWith(
                 color: theme.colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.bold,
@@ -366,6 +371,7 @@ class MonthlyGoalsSection extends StatelessWidget {
     final hoursController = TextEditingController(text: currentHours.toString());
     final callsController = TextEditingController(text: currentCalls.toString());
     final _formKey = GlobalKey<FormState>(); // Add a form key
+    final language = context.read<LanguageCubit>().state; // Use context.read here since it's a callback
 
     showDialog(
       context: context,
@@ -373,7 +379,7 @@ class MonthlyGoalsSection extends StatelessWidget {
         return BlocProvider.value(
           value: BlocProvider.of<GoalsBloc>(context),
           child: AlertDialog(
-            title: const Text('Set Monthly Goals'),
+            title: Text(AppStrings.get(language, 'set_monthly_goals_title')),
             content: Form(
               key: _formKey, // Assign the form key
               child: Column(
@@ -383,7 +389,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                     controller: hoursController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Target Login Hours (Max 570)',
+                      labelText: AppStrings.get(language, 'target_login_hours_label'),
                       border: theme.inputDecorationTheme.border,
                       enabledBorder: theme.inputDecorationTheme.enabledBorder,
                       focusedBorder: theme.inputDecorationTheme.focusedBorder,
@@ -392,14 +398,14 @@ class MonthlyGoalsSection extends StatelessWidget {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter target hours';
+                        return AppStrings.get(language, 'enter_target_hours_error');
                       }
                       final hours = int.tryParse(value);
                       if (hours == null) {
-                        return 'Please enter a valid number';
+                        return AppStrings.get(language, 'valid_number_error');
                       }
                       if (hours > 570) {
-                        return 'Hours cannot exceed 570';
+                        return AppStrings.get(language, 'hours_exceed_error');
                       }
                       return null;
                     },
@@ -409,7 +415,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                     controller: callsController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Target Call Count',
+                      labelText: AppStrings.get(language, 'target_call_count_label'),
                       border: theme.inputDecorationTheme.border,
                       enabledBorder: theme.inputDecorationTheme.enabledBorder,
                       focusedBorder: theme.inputDecorationTheme.focusedBorder,
@@ -418,10 +424,10 @@ class MonthlyGoalsSection extends StatelessWidget {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter target calls';
+                        return AppStrings.get(language, 'enter_target_calls_error');
                       }
                       if (int.tryParse(value) == null) {
-                        return 'Please enter a valid number';
+                        return AppStrings.get(language, 'valid_number_error');
                       }
                       return null;
                     },
@@ -443,7 +449,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                           context.read<GoalsBloc>().add(GetGoalSuggestions());
                         },
                         icon: const Icon(Icons.auto_awesome),
-                        label: const Text('Get AI Suggestions'),
+                        label: Text(AppStrings.get(language, 'get_ai_suggestions_btn')),
                       );
                     },
                   ),
@@ -453,7 +459,7 @@ class MonthlyGoalsSection extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancel'),
+                child: Text(AppStrings.get(language, 'cancel')),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -467,7 +473,7 @@ class MonthlyGoalsSection extends StatelessWidget {
                     Navigator.pop(dialogContext);
                   }
                 },
-                child: const Text('Save'),
+                child: Text(AppStrings.get(language, 'save_btn')),
               )
             ],
           ),

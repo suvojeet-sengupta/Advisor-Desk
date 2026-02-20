@@ -55,6 +55,9 @@ jobs:
       - name: 🔄 Get Dependencies
         run: flutter pub get
 
+      - name: 🛠️ Generate Code (build_runner)
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
       - name: Decode Keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/my_release_key.jks

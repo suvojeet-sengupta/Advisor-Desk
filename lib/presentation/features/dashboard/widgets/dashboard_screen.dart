@@ -744,158 +744,61 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.1,
             ),
             delegate: SliverChildListDelegate([
+              // LARGE BENTO CARD: Salary (Important visual)
+              DashboardCard(
+                isLarge: true,
+                title: AppStrings.get(language, 'net_salary_card'),
+                value: '₹${summary.netSalary.toStringAsFixed(0)}',
+                icon: Icons.currency_rupee,
+                iconColor: Theme.of(context).colorScheme.secondary,
+                onTap: () => Navigator.pushNamed(context, AppRouter.salaryDetailsRoute, arguments: summary),
+              ),
+              // NORMAL CARD: CSAT Score with Progress
+              DashboardCard(
+                title: AppStrings.get(language, 'csat_score_card'),
+                value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(1)}%',
+                progress: dashboardState.csatSummary!.monthlyCSATPercentage / 100,
+                icon: Icons.sentiment_satisfied_alt,
+                iconColor: Theme.of(context).colorScheme.primary,
+                onTap: () => Navigator.pushNamed(context, AppRouter.csatDetailsRoute, arguments: dashboardState.csatSummary),
+              ),
+              // NORMAL CARD: CQ Score with Progress
+              DashboardCard(
+                title: AppStrings.get(language, 'cq_score_card'),
+                value: '${dashboardState.cqSummary!.monthlyAverageCQ.toStringAsFixed(1)}%',
+                progress: dashboardState.cqSummary!.monthlyAverageCQ / 100,
+                icon: Icons.assessment,
+                iconColor: _getQualityColor(dashboardState.cqSummary!.monthlyAverageCQ, context),
+                onTap: () => Navigator.pushNamed(context, AppRouter.cqDetailsRoute, arguments: dashboardState.cqSummary),
+              ),
+              // NORMAL CARD: Total Calls
               DashboardCard(
                 title: AppStrings.get(language, 'total_calls_card'),
                 value: summary.totalCalls.toString(),
                 icon: Icons.call,
-                iconColor: Theme.of(context).colorScheme.secondary,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.metricDetailsRoute,
-                    arguments: {
-                      'metricType': MetricType.totalCalls,
-                      'summary': summary,
-                    },
-                  );
-                },
+                iconColor: Theme.of(context).colorScheme.tertiary,
+                onTap: () => Navigator.pushNamed(context, AppRouter.metricDetailsRoute, arguments: {'metricType': MetricType.totalCalls, 'summary': summary}),
               ),
-              if (summary.totalNonBillableCalls > 0)
-                DashboardCard(
-                  title: AppStrings.get(language, 'non_billable_calls_card'),
-                  value: summary.totalNonBillableCalls.toString(),
-                  icon: Icons.phone_disabled,
-                  iconColor: Theme.of(context).colorScheme.error,
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRouter.metricDetailsRoute,
-                      arguments: {
-                        'metricType': MetricType.totalCalls, // Non-billable calls are part of total calls details
-                        'summary': summary,
-                      },
-                    );
-                  },
-                ),
+               // NORMAL CARD: Login Hours
               DashboardCard(
                 title: AppStrings.get(language, 'total_login_hours_card'),
-                value: '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
+                value: '${summary.totalLoginHours.toStringAsFixed(1)}h',
                 icon: Icons.timer,
-                iconColor: Theme.of(context).colorScheme.tertiary,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.metricDetailsRoute,
-                    arguments: {
-                      'metricType': MetricType.totalLoginHours,
-                      'summary': summary,
-                    },
-                  );
-                },
-              ),
-              DashboardCard(
-                title: AppStrings.get(language, 'avg_login_hours_card'),
-                value: summary.averageDailyLoginHours.toStringAsFixed(2),
-                icon: Icons.timer,
-                iconColor: Theme.of(context).colorScheme.tertiary,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.metricDetailsRoute,
-                    arguments: {
-                      'metricType': MetricType.avgLoginHours,
-                      'summary': summary,
-                    },
-                  );
-                },
-              ),
-              DashboardCard(
-                title: AppStrings.get(language, 'avg_calls_card'),
-                value: summary.averageDailyCalls.toStringAsFixed(2),
-                icon: Icons.call,
-                iconColor: Theme.of(context).colorScheme.secondary,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.metricDetailsRoute,
-                    arguments: {
-                      'metricType': MetricType.avgCalls,
-                      'summary': summary,
-                    },
-                  );
-                },
-              ),
-              DashboardCard(
-                title: AppStrings.get(language, 'csat_score_card'),
-                value: '${dashboardState.csatSummary!.monthlyCSATPercentage.toStringAsFixed(2)}%',
-                icon: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Icons.sentiment_dissatisfied : Icons.sentiment_satisfied_alt,
-                iconColor: dashboardState.csatSummary!.monthlyCSATPercentage < 60 ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
-                onTap: () {
-                  if (dashboardState.csatSummary != null) {
-                    Navigator.pushNamed(context, AppRouter.csatDetailsRoute, arguments: dashboardState.csatSummary).then((result) {
-                      if (result == true) {
-                        context.read<DashboardBloc>().add(RefreshDashboard());
-                      }
-                    });
-                  }
-                },
-              ),
-              DashboardCard(
-                title: AppStrings.get(language, 'cq_score_card'),
-                value: '${dashboardState.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%',
-                icon: Icons.assessment,
-                iconColor: _getQualityColor(dashboardState.cqSummary!.monthlyAverageCQ, context),
-                onTap: () {
-                  if (dashboardState.cqSummary != null) {
-                    Navigator.pushNamed(context, AppRouter.cqDetailsRoute, arguments: dashboardState.cqSummary).then((result) {
-                      if (result == true) {
-                        context.read<DashboardBloc>().add(RefreshDashboard());
-                      }
-                    });
-                  }
-                },
-              ),
-              DashboardCard(
-                title: AppStrings.get(language, 'net_salary_card'),
-                value: '₹${summary.netSalary.toStringAsFixed(2)}',
-                icon: Icons.currency_rupee,
-                iconColor: Theme.of(context).colorScheme.secondary,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.salaryDetailsRoute,
-                    arguments: summary,
-                  );
-                },
-              ),
-              DashboardCard(
-                title: AppStrings.get(language, 'forecaster_card'),
-                value: AppStrings.get(language, 'project_salary_subtitle'),
-                icon: Icons.insights,
                 iconColor: Theme.of(context).colorScheme.primary,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.performanceForecasterRoute,
-                    arguments: summary,
-                  );
-                },
+                onTap: () => Navigator.pushNamed(context, AppRouter.metricDetailsRoute, arguments: {'metricType': MetricType.totalLoginHours, 'summary': summary}),
               ),
+              // NORMAL CARD: Login Days
               DashboardCard(
                 title: AppStrings.get(language, 'login_days_card'),
                 value: summary.loginDays.toString(),
                 icon: Icons.calendar_today,
-                iconColor: Theme.of(context).colorScheme.tertiary,
-                onTap: () {
-                  if (dashboardState.monthlySummary != null) {
-                    Navigator.pushNamed(context, AppRouter.loginDaysDetailsRoute, arguments: dashboardState.monthlySummary);
-                  }
-                },
+                iconColor: Theme.of(context).colorScheme.secondary,
+                onTap: () => Navigator.pushNamed(context, AppRouter.loginDaysDetailsRoute, arguments: dashboardState.monthlySummary),
               ),
             ]),
           ),

@@ -12,7 +12,9 @@ class CustomFormField extends StatelessWidget {
   final Function(String)? onChanged;
   final String? suffixText;
   final String? Function(String?)? validator;
-  final List<TextInputFormatter>? inputFormatters; // Added inputFormatters
+  final List<TextInputFormatter>? inputFormatters;
+  final TextAlign textAlign;
+  final int maxLines;
 
   const CustomFormField({
     Key? key,
@@ -25,18 +27,24 @@ class CustomFormField extends StatelessWidget {
     this.onChanged,
     this.suffixText,
     this.validator,
-    this.inputFormatters, // Added inputFormatters
+    this.inputFormatters,
+    this.textAlign = TextAlign.start,
+    this.maxLines = 1,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null)
           Text(
             label!,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.8),
+            ),
           ),
         if (label != null) const SizedBox(height: 8),
         TextFormField(
@@ -44,29 +52,35 @@ class CustomFormField extends StatelessWidget {
           initialValue: initialValue,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
-          style: Theme.of(context).textTheme.bodyLarge,
+          textAlign: textAlign,
+          maxLines: maxLines,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5)),
-            prefixIcon: icon != null ? Icon(icon, color: Theme.of(context).colorScheme.primary) : null,
+            hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.4),
+              fontWeight: FontWeight.normal,
+            ),
+            prefixIcon: icon != null ? Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20) : null,
             suffixText: suffixText,
             filled: true,
-            fillColor: Theme.of(context).brightness == Brightness.dark 
-                ? const Color(0xFF2C2C2C) 
-                : const Color(0xFFF5F5F5),
+            fillColor: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF0F2F5),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none, // Clean look
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5), width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            errorStyle: const TextStyle(height: 0.8, fontSize: 11),
           ),
           onChanged: onChanged,
           validator: validator,

@@ -72,16 +72,16 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
             SnackBar(
               content: Text(state.isDelete 
                 ? AppStrings.get(language, 'csat_deleted_success') 
-                : AppStrings.get(language, 'csat_added_success')),
-              backgroundColor: AppColors.accentGreen,
+                : (state.isUpdate ? AppStrings.get(language, 'csat_updated_success') : AppStrings.get(language, 'csat_added_success'))),
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
             ),
           );
-          Navigator.of(context).pop(true); // Go back to the previous screen
+          Navigator.of(context).pop(true);
         } else if (state.status == AddCSATEntryStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.errorMessage ?? AppStrings.get(language, 'failed_save_csat')),
-              backgroundColor: AppColors.accentRed,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -96,134 +96,153 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Date Section
                       _buildSectionTitle(context, AppStrings.get(language, 'date_label')),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       CustomCard(
-                        child: InkWell(
-                          onTap: () => _selectDate(context, state.date),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).inputDecorationTheme.fillColor,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Theme.of(context).colorScheme.outline),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today,
+                        onTap: () => _selectDate(context, state.date),
+                        padding: EdgeInsets.zero,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.calendar_month_rounded,
                                   color: Theme.of(context).colorScheme.primary,
+                                  size: 20,
                                 ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  DateFormat('dd MMM yyyy').format(state.date),
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
-                                ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(width: 16),
+                              Text(
+                                DateFormat('dd MMMM yyyy').format(state.date),
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const Spacer(),
+                              Icon(Icons.edit_calendar_rounded, size: 20, color: Theme.of(context).colorScheme.primary),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
 
-                      // T2 Count Section
-                      CustomFormField(
-                        label: AppStrings.get(language, 't2_count_label'),
-                        hintText: AppStrings.get(language, 'enter_t2_hint'),
-                        icon: Icons.thumb_up,
-                        controller: _t2CountController,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          context.read<AddCSATEntryBloc>().add(T2CountChanged(count: int.tryParse(value) ?? 0));
-                        },
+                      // Survey Hits Section
+                      _buildSectionTitle(context, AppStrings.get(language, 'survey_hits_section')),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomFormField(
+                              label: AppStrings.get(language, 't2_count_label'),
+                              hintText: '0',
+                              icon: Icons.sentiment_very_satisfied_rounded,
+                              controller: _t2CountController,
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                context.read<AddCSATEntryBloc>().add(T2CountChanged(count: int.tryParse(value) ?? 0));
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
-
-                      // B2 Count Section
-                      CustomFormField(
-                        label: AppStrings.get(language, 'b2_count_label'),
-                        hintText: AppStrings.get(language, 'enter_b2_hint'),
-                        icon: Icons.thumb_down,
-                        controller: _b2CountController,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          context.read<AddCSATEntryBloc>().add(B2CountChanged(count: int.tryParse(value) ?? 0));
-                        },
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomFormField(
+                              label: AppStrings.get(language, 'nCount_label') ?? 'N Count',
+                              hintText: '0',
+                              icon: Icons.sentiment_neutral_rounded,
+                              controller: _nCountController,
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                context.read<AddCSATEntryBloc>().add(NCountChanged(count: int.tryParse(value) ?? 0));
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: CustomFormField(
+                              label: AppStrings.get(language, 'b2_count_label'),
+                              hintText: '0',
+                              icon: Icons.sentiment_very_dissatisfied_rounded,
+                              controller: _b2CountController,
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                context.read<AddCSATEntryBloc>().add(B2CountChanged(count: int.tryParse(value) ?? 0));
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-
-                      // N Count Section
-                      CustomFormField(
-                        label: AppStrings.get(language, 'n_count_label'),
-                        hintText: AppStrings.get(language, 'enter_n_hint'),
-                        icon: Icons.remove,
-                        controller: _nCountController,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          context.read<AddCSATEntryBloc>().add(NCountChanged(count: int.tryParse(value) ?? 0));
-                        },
-                      ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
 
                       // Preview Section
                       if (state.t2Count > 0 || state.b2Count > 0 || state.nCount > 0) ...[
                         _buildSectionTitle(context, AppStrings.get(language, 'preview_section')),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         CustomCard(
+                          padding: const EdgeInsets.all(20),
                           child: Column(
                             children: [
                               _buildPreviewRow(AppStrings.get(language, 'total_survey_hits'), '${state.t2Count + state.b2Count + state.nCount}'),
-                              const Divider(),
-                              _buildPreviewRow(AppStrings.get(language, 't2_score'), '${_calculateScore(state.t2Count, state).toStringAsFixed(2)}%'),
-                              _buildPreviewRow(AppStrings.get(language, 'b2_score'), '${_calculateScore(state.b2Count, state).toStringAsFixed(2)}%'),
-                              _buildPreviewRow(AppStrings.get(language, 'n_score'), '${_calculateScore(state.nCount, state).toStringAsFixed(2)}%'),
-                              const Divider(),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.0),
+                                child: Divider(height: 1),
+                              ),
+                              _buildPreviewRow(AppStrings.get(language, 't2_score'), '${_calculateScore(state.t2Count, state).toStringAsFixed(1)}%'),
+                              _buildPreviewRow(AppStrings.get(language, 'n_score') ?? 'N Score', '${_calculateScore(state.nCount, state).toStringAsFixed(1)}%'),
+                              _buildPreviewRow(AppStrings.get(language, 'b2_score'), '${_calculateScore(state.b2Count, state).toStringAsFixed(1)}%'),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.0),
+                                child: Divider(height: 1),
+                              ),
                               _buildPreviewRow(
                                 AppStrings.get(language, 'csat_percentage'),
-                                '${_calculateCSAT(state).toStringAsFixed(2)}%',
+                                '${_calculateCSAT(state).toStringAsFixed(1)}%',
                                 isHighlight: true,
-                                color: _calculateCSAT(state) >= 60 ? Colors.green : Theme.of(context).colorScheme.error,
+                                color: _calculateCSAT(state) >= 60 ? Colors.greenAccent : Theme.of(context).colorScheme.error,
                               ),
                               if (_calculateCSAT(state) < 60)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.warning_amber_rounded,
-                                          color: Theme.of(context).colorScheme.error,
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            AppStrings.get(language, 'csat_needs_improvement'),
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: Theme.of(context).colorScheme.error,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 16),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.error.withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Theme.of(context).colorScheme.error.withOpacity(0.2)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.info_outline_rounded, color: Theme.of(context).colorScheme.error, size: 18),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          AppStrings.get(language, 'csat_needs_improvement'),
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.error,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                       ],
 
                       // Submit Button
@@ -236,28 +255,34 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(state.isUpdate ? Icons.update : Icons.add),
-                              const SizedBox(width: 8),
-                              Text(state.isUpdate ? AppStrings.get(language, 'update_csat_btn') : AppStrings.get(language, 'save_csat_btn')),
+                              Icon(state.isUpdate ? Icons.published_with_changes_rounded : Icons.save_rounded),
+                              const SizedBox(width: 10),
+                              Text(
+                                state.isUpdate ? AppStrings.get(language, 'update_csat_btn') : AppStrings.get(language, 'save_csat_btn'),
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
                             ],
                           ),
                         ),
                       ),
 
                       if (state.isUpdate) ...[
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
-                          child: AnimatedButton(
+                          child: TextButton(
                             onPressed: state.status == AddCSATEntryStatus.loading ? null : () => _showDeleteConfirmationDialog(context, language),
-                            backgroundColor: AppColors.secondaryBackground,
-                            foregroundColor: AppColors.textPrimary,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              foregroundColor: Colors.redAccent,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.delete_outline),
+                                const Icon(Icons.delete_sweep_rounded, size: 20),
                                 const SizedBox(width: 8),
-                                Text(AppStrings.get(language, 'delete_entry_btn')),
+                                Text(AppStrings.get(language, 'delete_entry_btn'), style: const TextStyle(fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -272,11 +297,12 @@ class _AddCSATEntryViewState extends State<AddCSATEntryView> {
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium,
+    return Text(
+      title.toUpperCase(),
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1.0,
       ),
     );
   }

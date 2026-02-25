@@ -224,25 +224,30 @@ class _AddEntryViewState extends State<AddEntryView> {
                 : AppStrings.get(language, 'add_new_entry'),
             bottom: TabBar(
               labelColor: Theme.of(context).colorScheme.primary,
-              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
               indicatorColor: Theme.of(context).colorScheme.primary,
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.label,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
               tabs: [
                 Tab(
-                  icon: const Icon(Icons.work_outline),
+                  icon: const Icon(Icons.bolt_rounded, size: 20),
                   text: AppStrings.get(language, 'daily_entry_tab'),
                 ),
                 Tab(
-                  icon: const Icon(Icons.sentiment_satisfied_alt),
+                  icon: const Icon(Icons.reviews_rounded, size: 20),
                   text: AppStrings.get(language, 'csat_entry_tab'),
                 ),
                 Tab(
-                  icon: const Icon(Icons.assessment),
+                  icon: const Icon(Icons.fact_check_rounded, size: 20),
                   text: AppStrings.get(language, 'cq_entry_tab'),
                 ),
               ],
             ),
           ),
           body: TabBarView(
+            physics: const BouncingScrollPhysics(),
             children: [
               // Daily Entry Tab
               _buildDailyEntryTab(context, language),
@@ -268,7 +273,7 @@ class _AddEntryViewState extends State<AddEntryView> {
         }
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
           child: Form(
             key: _formKey,
             child: Column(
@@ -282,18 +287,19 @@ class _AddEntryViewState extends State<AddEntryView> {
                 padding: EdgeInsets.zero,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
                           Icons.calendar_today_rounded,
                           color: Theme.of(context).colorScheme.primary,
+                          size: 20,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -304,26 +310,26 @@ class _AddEntryViewState extends State<AddEntryView> {
                             DateFormat('MMMM yyyy').format(state.date).toUpperCase(),
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               letterSpacing: 1.2,
-                              color: Theme.of(context).colorScheme.secondary,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
-                            DateFormat('d, EEEE').format(state.date),
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            DateFormat('d MMMM, EEEE').format(state.date),
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              fontSize: 24,
                             ),
                           ),
                         ],
                       ),
                       const Spacer(),
-                      const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
+                      Icon(Icons.edit_calendar_rounded, size: 20, color: Theme.of(context).colorScheme.primary),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Login Hours Section
               _buildSectionTitle(context, AppStrings.get(language, 'login_duration')),
@@ -336,14 +342,15 @@ class _AddEntryViewState extends State<AddEntryView> {
                       hintText: '00',
                       controller: _loginHoursController,
                       keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) return AppStrings.get(language, 'required_error');
+                        if (value == null || value.isEmpty) return '??';
                         final hours = int.tryParse(value);
-                        if (hours == null || hours < 0 || hours > 23) return '0-23';
+                        if (hours == null || hours < 0 || hours > 23) return '!';
                         return null;
                       },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
@@ -351,21 +358,25 @@ class _AddEntryViewState extends State<AddEntryView> {
                           ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0, top: 20),
+                    child: Text(':', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  ),
                   Expanded(
                     child: CustomFormField(
                       label: AppStrings.get(language, 'minutes_label'),
                       hintText: '00',
                       controller: _loginMinutesController,
                       keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                         if (value == null || value.isEmpty) return AppStrings.get(language, 'required_error');
+                         if (value == null || value.isEmpty) return '??';
                         final mins = int.tryParse(value);
-                        if (mins == null || mins < 0 || mins > 59) return '0-59';
+                        if (mins == null || mins < 0 || mins > 59) return '!';
                         return null;
                       },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
@@ -373,21 +384,25 @@ class _AddEntryViewState extends State<AddEntryView> {
                           ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0, top: 20),
+                    child: Text(':', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  ),
                   Expanded(
                     child: CustomFormField(
                       label: AppStrings.get(language, 'seconds_label'),
                       hintText: '00',
                       controller: _loginSecondsController,
                       keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                         LengthLimitingTextInputFormatter(2),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) return AppStrings.get(language, 'required_error');
+                        if (value == null || value.isEmpty) return '??';
                         final secs = int.tryParse(value);
-                        if (secs == null || secs < 0 || secs > 59) return '0-59';
+                        if (secs == null || secs < 0 || secs > 59) return '!';
                         return null;
                       },
                       onChanged: (value) => context.read<AddEntryBloc>().add(
@@ -397,15 +412,15 @@ class _AddEntryViewState extends State<AddEntryView> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Call Count Section
               _buildSectionTitle(context, AppStrings.get(language, 'performance_section')),
               const SizedBox(height: 12),
               CustomFormField(
                 label: AppStrings.get(language, 'total_calls_label'),
-                hintText: 'e.g. 50',
-                icon: Icons.call,
+                hintText: '0',
+                icon: Icons.phone_in_talk_rounded,
                 controller: _callCountController,
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
@@ -414,23 +429,17 @@ class _AddEntryViewState extends State<AddEntryView> {
                       );
                 },
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Custom Call Rate Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                   _buildSectionTitle(context, AppStrings.get(language, 'advanced_options')),
-                ],
-              ),
-              
-              const SizedBox(height: 8),
+              _buildSectionTitle(context, AppStrings.get(language, 'advanced_options')),
+              const SizedBox(height: 12),
               CustomCard(
                 padding: EdgeInsets.zero,
                 child: SwitchListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  title: Text(AppStrings.get(language, 'custom_per_call_rate'), style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text(AppStrings.get(language, 'override_default_rate')),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  title: Text(AppStrings.get(language, 'custom_per_call_rate'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  subtitle: Text(AppStrings.get(language, 'override_default_rate'), style: const TextStyle(fontSize: 12)),
                   value: state.isCustomRateEnabled,
                   onChanged: (_) {
                     context.read<AddEntryBloc>().add(const ToggleCustomRate());
@@ -438,10 +447,10 @@ class _AddEntryViewState extends State<AddEntryView> {
                   secondary: Container(
                     padding: const EdgeInsets.all(8),
                      decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                      color: Colors.amber.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.price_change, color: Colors.orange),
+                    child: const Icon(Icons.currency_rupee_rounded, color: Colors.amber, size: 20),
                   ),
                 ),
               ),
@@ -450,7 +459,8 @@ class _AddEntryViewState extends State<AddEntryView> {
                   padding: const EdgeInsets.only(top: 16.0),
                   child: CustomFormField(
                     label: AppStrings.get(language, 'custom_rate_label'),
-                    hintText: 'e.g. 15.0',
+                    hintText: '15.0',
+                    icon: Icons.edit_note_rounded,
                     controller: _customCallRateController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (value) {
@@ -466,7 +476,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                     },
                   ),
                 ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 32),
 
               // Buttons Section
               SizedBox(
@@ -480,30 +490,34 @@ class _AddEntryViewState extends State<AddEntryView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(state.isUpdate ? Icons.check_circle_outline : Icons.add_circle_outline),
-                      const SizedBox(width: 8),
-                      Text(state.isUpdate ? AppStrings.get(language, 'update_entry_btn') : AppStrings.get(language, 'save_daily_entry_btn')),
+                      Icon(state.isUpdate ? Icons.published_with_changes_rounded : Icons.save_rounded),
+                      const SizedBox(width: 10),
+                      Text(
+                        state.isUpdate ? AppStrings.get(language, 'update_entry_btn') : AppStrings.get(language, 'save_daily_entry_btn'),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
                     ],
                   ),
                 ),
               ),
 
               if (state.isUpdate) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => _showDeleteConfirmationDialog(context, language),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      foregroundColor: Colors.red,
+                      foregroundColor: Colors.redAccent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.delete_outline),
+                        const Icon(Icons.delete_sweep_rounded, size: 20),
                         const SizedBox(width: 8),
-                        Text(AppStrings.get(language, 'delete_entry_btn'), style: const TextStyle(fontWeight: FontWeight.w600)),
+                        Text(AppStrings.get(language, 'delete_entry_btn'), style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),

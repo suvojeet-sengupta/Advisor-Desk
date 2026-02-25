@@ -206,6 +206,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
 
     return Scaffold(
       backgroundColor: backgroundColor,
+      extendBody: true,
       body: MultiBlocListener(
         listeners: [
           BlocListener<UserCubit, UserState>(

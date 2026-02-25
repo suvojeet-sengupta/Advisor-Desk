@@ -321,24 +321,3 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
     return Colors.red;
   }
 }
-
-  Widget _buildStatItem(BuildContext context, String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: color)),
-        const SizedBox(height: 4),
-        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
-      ],
-    );
-  }
-
-  // Helper row - Removed as replaced by _buildStatItem and new layout
-  // Widget _buildSummaryRow(...)
-
-  Color _getQualityColor(double percentage, BuildContext context) {
-    final rating = QualityRatingHelper.getQualityRating(percentage);
-    if (rating == 'Excellent' || rating == 'Good') return Colors.teal; // using standard colors for cleaner look
-    if (rating == 'Average') return Colors.amber;
-    return Colors.red;
-  }
-}

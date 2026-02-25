@@ -335,14 +335,3 @@ class _CsatDetailsScreenState extends State<CsatDetailsScreen> {
     );
   }
 }
-
-  Widget _buildStatItem(BuildContext context, String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: color)),
-        const SizedBox(height: 4),
-        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
-      ],
-    );
-  }
-}

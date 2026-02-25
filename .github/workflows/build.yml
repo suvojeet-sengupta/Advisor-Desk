@@ -49,11 +49,11 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 🧼 Clean Project
-        run: flutter clean
-
       - name: 🔄 Get Dependencies
         run: flutter pub get
+
+      - name: 🛠️ Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
 
       - name: 🛠️ Generate Code (build_runner)
         run: flutter pub run build_runner build --delete-conflicting-outputs
@@ -71,12 +71,10 @@ jobs:
           echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> key.properties
         working-directory: android/
 
-      - name: 💪 Build Release APK
-        run: flutter build apk --release --dart-define=GEMINI_API_1="${{ secrets.GEMINI_API_1 }}"
-        working-directory: ./
-
-      - name: 💪 Build Release AAB
-        run: flutter build appbundle --release --dart-define=GEMINI_API_1="${{ secrets.GEMINI_API_1 }}"
+      - name: 💪 Build Release APK & AAB
+        run: |
+          flutter build apk --release --dart-define=GEMINI_API_1="${{ secrets.GEMINI_API_1 }}"
+          flutter build appbundle --release --dart-define=GEMINI_API_1="${{ secrets.GEMINI_API_1 }}"
         working-directory: ./
 
       - name: 📦 Prepare Release Artifacts

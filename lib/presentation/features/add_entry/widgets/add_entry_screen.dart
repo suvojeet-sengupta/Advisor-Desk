@@ -359,7 +359,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0, top: 20),
+                    padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 20),
                     child: Text(':', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey)),
                   ),
                   Expanded(
@@ -385,7 +385,7 @@ class _AddEntryViewState extends State<AddEntryView> {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0, top: 20),
+                    padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 20),
                     child: Text(':', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey)),
                   ),
                   Expanded(

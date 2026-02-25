@@ -33,37 +33,49 @@ class CustomBottomNavigationBar extends StatelessWidget {
           ],
         ),
         clipBehavior: Clip.antiAlias,
-        child: NavigationBar(
-          selectedIndex: currentIndex,
-          onDestinationSelected: onTap,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          height: 60,
-          indicatorColor: theme.colorScheme.primary.withOpacity(0.1),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined, size: 22),
-              selectedIcon: Icon(Icons.dashboard_rounded, size: 22),
-              label: 'Dashboard',
+        child: Theme(
+          data: theme.copyWith(
+            navigationBarTheme: theme.navigationBarTheme.copyWith(
+              labelTextStyle: MaterialStateProperty.resolveWith((states) {
+                if (states.contains(MaterialState.selected)) {
+                  return const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
+                }
+                return const TextStyle(fontSize: 12, fontWeight: FontWeight.w500);
+              }),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.calendar_month_outlined, size: 22),
-              selectedIcon: Icon(Icons.calendar_month_rounded, size: 22),
-              label: 'Monthly',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.assessment_outlined, size: 22),
-              selectedIcon: Icon(Icons.assessment_rounded, size: 22),
-              label: 'Reports',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined, size: 22),
-              selectedIcon: Icon(Icons.settings_rounded, size: 22),
-              label: 'Settings',
-            ),
-          ],
+          ),
+          child: NavigationBar(
+            selectedIndex: currentIndex,
+            onDestinationSelected: onTap,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            height: 60,
+            indicatorColor: theme.colorScheme.primary.withOpacity(0.12),
+            labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+            destinations: [
+              NavigationDestination(
+                icon: const Icon(Icons.dashboard_outlined, size: 22),
+                selectedIcon: Icon(Icons.dashboard_rounded, size: 24, color: theme.colorScheme.primary),
+                label: 'Dashboard',
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.calendar_month_outlined, size: 22),
+                selectedIcon: Icon(Icons.calendar_month_rounded, size: 24, color: theme.colorScheme.primary),
+                label: 'Monthly',
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.assessment_outlined, size: 22),
+                selectedIcon: Icon(Icons.assessment_rounded, size: 24, color: theme.colorScheme.primary),
+                label: 'Reports',
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.settings_outlined, size: 22),
+                selectedIcon: Icon(Icons.settings_rounded, size: 24, color: theme.colorScheme.primary),
+                label: 'Settings',
+              ),
+            ],
+          ),
         ),
       ),
     );

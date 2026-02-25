@@ -219,6 +219,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             },
           ),
           BlocListener<DashboardBloc, DashboardState>(
+            listenWhen: (previous, current) => previous.wrappedSummary == null && current.wrappedSummary != null,
             listener: (context, dashboardState) {
               // Wrapped Notification Listener
               if (dashboardState.wrappedSummary != null) {

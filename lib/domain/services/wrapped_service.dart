@@ -26,31 +26,39 @@ class WrappedService {
     }
 
     // 3. Persona Logic
-    String persona = "The Rising Star";
-    String description = "You're building momentum and making your mark!";
+    String persona = "The Dedicated Professional";
+    String description = "You show up every day and get the job done. Reliability is your superpower!";
 
-    // Thresholds (Customize these based on realistic app data)
-    final bool highCalls = totalCalls > 2500;
-    final bool highHours = totalHours > 220; // Approx 9 hours/day for 24 days
-    final bool highCsat = averageCsat >= 90;
-    final bool goodCsat = averageCsat >= 80;
-    final bool targetsMet = summary.isBonusAchieved;
+    // Thresholds (Refined)
+    final bool highCalls = totalCalls > 3000;
+    final bool moderateCalls = totalCalls > 2000;
+    final bool highHours = totalHours > 220; 
+    final bool moderateHours = totalHours > 180;
+    final bool eliteQuality = averageCsat >= 95 && averageCq >= 95;
+    final bool highQuality = averageCsat >= 90 && averageCq >= 90;
+    final bool goodQuality = averageCsat >= 85 && averageCq >= 85;
 
-    if (highCsat && highCalls) {
-       persona = "The Legend";
-       description = "Top-tier quality AND quantity. You are simply unstoppable.";
-    } else if (highCsat) {
-      persona = "The Customer Whisperer";
-      description = "Your customers absolutely love you. Quality is your middle name.";
+    if (highCalls && eliteQuality) {
+       persona = "The G.O.A.T.";
+       description = "Greatest Of All Time. Unmatched speed, volume, and perfection. You're in a league of your own!";
+    } else if (highCalls && highQuality) {
+       persona = "The Powerhouse";
+       description = "A perfect blend of high energy and sharp focus. You're the engine of the floor!";
+    } else if (eliteQuality) {
+      persona = "The Perfectionist";
+      description = "Every call you handle is a masterpiece. Your quality scores are legendary.";
     } else if (highCalls) {
-      persona = "The Machine";
-      description = "You were on fire! Crushing call volumes like it's nothing.";
-    } else if (highHours) {
-      persona = "The Marathon Runner";
-      description = "Your dedication and consistency are unmatched.";
-    } else if (targetsMet && goodCsat) {
-      persona = "The All-Rounder";
-      description = "You balanced everything perfectly. Consistency is key!";
+      persona = "The Sonic";
+      description = "Fast, efficient, and unstoppable. You handle calls like a blur!";
+    } else if (highHours && goodQuality) {
+      persona = "The Iron Pillar";
+      description = "Your stamina and consistent quality are the foundation of excellence.";
+    } else if (moderateCalls && highQuality) {
+      persona = "The Precision Expert";
+      description = "Every move is calculated, every word is perfect. You're the go-to for quality.";
+    } else if (totalCalls < 500 && highQuality) {
+       persona = "The Quality Specialist";
+       description = "You may handle fewer calls, but each one is handled with extreme care and excellence.";
     }
 
     return WrappedStats(

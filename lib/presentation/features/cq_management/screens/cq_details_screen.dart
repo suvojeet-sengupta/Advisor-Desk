@@ -1,4 +1,5 @@
 import 'package:advisor_desk/presentation/common/widgets/details_screen_banner_ad.dart';
+import 'package:advisor_desk/presentation/common/widgets/performance_details_header.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:advisor_desk/domain/entities/cq_summary.dart';
@@ -9,8 +10,8 @@ import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/presentation/features/add_entry/widgets/add_cq_entry_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:advisor_desk/domain/entities/cq_entry.dart';
-import 'package:advisor_desk/core/utils/tutorial_helper.dart'; // Import TutorialHelper
-import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart'; // Import InteractiveTutorialOverlay
+import 'package:advisor_desk/core/utils/tutorial_helper.dart';
+import 'package:advisor_desk/presentation/common/widgets/interactive_tutorial_overlay.dart';
 import 'package:advisor_desk/presentation/common/widgets/empty_state_widget.dart';
 import 'package:advisor_desk/core/utils/quality_rating_helper.dart';
 
@@ -25,8 +26,8 @@ class CqDetailsScreen extends StatefulWidget {
 
 class _CqDetailsScreenState extends State<CqDetailsScreen> {
   late CQSummary _currentCqSummary;
-  final GlobalKey _firstCqEntryKey = GlobalKey(); // Declare GlobalKey
-  late OverlayEntry overlayEntry; // Declare here
+  final GlobalKey _firstCqEntryKey = GlobalKey();
+  late OverlayEntry overlayEntry;
   bool _hasDataChanged = false;
 
   @override
@@ -40,13 +41,13 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
 
   void _showCqTutorial() async {
     final hasSeen = await TutorialHelper.hasSeenCqTutorial();
-    if (!hasSeen && _currentCqSummary.entries.isNotEmpty) { // Only show if there are entries
+    if (!hasSeen && _currentCqSummary.entries.isNotEmpty) {
       final List<TutorialStep> steps = [
         TutorialStep(
           targetKey: _firstCqEntryKey,
           text: 'Swipe left on an entry to reveal options like Edit and Delete.',
           textAlignment: Alignment.bottomCenter,
-          textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Adjust padding to avoid overlapping
+          textPadding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
           showSwipeHint: true,
         ),
       ];
@@ -133,6 +134,8 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scoreColor = _getQualityColor(_currentCqSummary.monthlyAverageCQ, context);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -141,215 +144,183 @@ class _CqDetailsScreenState extends State<CqDetailsScreen> {
         }
       },
       child: Scaffold(
-         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: const CustomAppBar(title: 'CQ Performance'),
         body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: <Widget>[
           SliverToBoxAdapter(
+            child: PerformanceDetailsHeader(
+              score: _currentCqSummary.monthlyAverageCQ,
+              scoreLabel: 'Average Quality Score',
+              scoreColor: scoreColor,
+              monthYear: _currentCqSummary.formattedMonthYear,
+              statusMessage: 'Rating: ${_currentCqSummary.qualityRating}',
+              stats: [
+                HeaderStat(label: 'Total Audits', value: '${_currentCqSummary.totalAudits}'),
+                HeaderStat(label: 'Quality Rating', value: _currentCqSummary.qualityRating, color: scoreColor),
+              ],
+            ),
+          ),
+          
+          SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+              padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
               child: Text(
-                _currentCqSummary.formattedMonthYear.toUpperCase(),
-                style: theme.textTheme.labelLarge?.copyWith(
+                'DAILY AUDITS',
+                style: theme.textTheme.labelMedium?.copyWith(
                   color: Colors.grey,
-                  letterSpacing: 1.5,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
                 ),
               ),
             ),
           ),
-          
-          if (!_currentCqSummary.entries.isEmpty)
-          SliverToBoxAdapter(
-            child: Padding(
-               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-               child: Column(
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [
-                   CustomCard(
-                     padding: const EdgeInsets.all(24),
-                     child: Column(
-                       children: [
-                         // Big circular score indicator
-                         Container(
-                           height: 120,
-                           width: 120,
-                           decoration: BoxDecoration(
-                             shape: BoxShape.circle,
-                             border: Border.all(
-                               color: _getQualityColor(_currentCqSummary.monthlyAverageCQ, context).withOpacity(0.2),
-                               width: 8,
-                             ),
-                           ),
-                           child: Center(
-                             child: Column(
-                               mainAxisSize: MainAxisSize.min,
-                               children: [
-                                 Text(
-                                   '${_currentCqSummary.monthlyAverageCQ.toStringAsFixed(1)}%',
-                                   style: theme.textTheme.headlineLarge?.copyWith(
-                                     fontWeight: FontWeight.bold,
-                                     color: _getQualityColor(_currentCqSummary.monthlyAverageCQ, context),
-                                   ),
-                                 ),
-                                 Text(
-                                   'Avg Score',
-                                   style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey),
-                                 )
-                               ],
-                             ),
-                           ),
-                         ),
-                         const SizedBox(height: 24),
-                         Divider(color: theme.dividerColor.withOpacity(0.1)),
-                         const SizedBox(height: 16),
-                         Row(
-                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                           children: [
-                             _buildStatItem(context, 'Total Audits', '${_currentCqSummary.totalAudits}', theme.colorScheme.primary),
-                             _buildStatItem(context, 'Rating', _currentCqSummary.qualityRating, _getQualityColor(_currentCqSummary.monthlyAverageCQ, context)),
-                           ],
-                         ),
-                       ],
-                     ),
-                   ),
-                   const SizedBox(height: 24),
-                   Text(
-                     'DAILY AUDITS',
-                     style: theme.textTheme.labelMedium?.copyWith(
-                       color: Colors.grey,
-                       fontWeight: FontWeight.bold,
-                       letterSpacing: 1.2,
-                     ),
-                   ),
-                   const SizedBox(height: 12),
-                 ],
-               ),
-            ),
-          ),
 
-          _currentCqSummary.entries.isEmpty
-              ? SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: CustomCard(
-                       padding: const EdgeInsets.all(32),
-                       child: Center(
-                         child: Column(
-                           children: [
-                             Icon(Icons.assignment_outlined, size: 48, color: Colors.grey.withOpacity(0.5)),
-                             const SizedBox(height: 16),
-                             const Text(
-                               'No CQ entries for this month.',
-                               style: TextStyle(color: Colors.grey),
-                             ),
-                           ],
-                         ),
-                       ),
-                    ),
-                  ),
-                )
-              : SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final entry = _currentCqSummary.entries[index];
-                        return Slidable(
-                          key: index == 0 ? _firstCqEntryKey : ValueKey(entry.id),
-                          endActionPane: ActionPane(
-                            motion: const ScrollMotion(),
-                            extentRatio: 0.5, // Reduced ratio for cleaner look
-                            children: [
-                              SlidableAction(
-                                onPressed: (context) async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddCQEntryScreen(entryToEdit: entry),
-                                    ),
-                                  );
-                                  if (result == true) {
-                                    _refreshData();
-                                  }
-                                },
-                                backgroundColor: Colors.blue,
-                                foregroundColor: Colors.white,
-                                icon: Icons.edit_rounded,
-                                label: 'Edit',
-                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), bottomLeft: Radius.circular(12)),
-                              ),
-                              SlidableAction(
-                                onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
-                                backgroundColor: Theme.of(context).colorScheme.error,
-                                foregroundColor: Colors.white,
-                                icon: Icons.delete_rounded,
-                                label: 'Delete',
-                                borderRadius: const BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12)),
-                              ),
-                            ],
-                          ),
-                          child: CustomCard(
-                            margin: const EdgeInsets.only(bottom: 12),
-                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Reduced padding for compactness
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration( // Changed from CircleAvatar to rounded rect
-                                    color: _getQualityColor(entry.percentage, context).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: _getQualityColor(entry.percentage, context).withOpacity(0.2)),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      DateFormat('dd').format(entry.auditDate),
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: _getQualityColor(entry.percentage, context),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                       Text(
-                                         DateFormat('EEEE, MMM yyyy').format(entry.auditDate), // Full date details
-                                         style: const TextStyle(fontWeight: FontWeight.bold),
-                                       ),
-                                       // Could add sub-text like 'Audit ID: ...' if available, otherwise cleaner
-                                    ],
-                                  ),
-                                ),
-                                 Text(
-                                  '${entry.percentage.toStringAsFixed(1)}%',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: _getQualityColor(entry.percentage, context),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                      childCount: _currentCqSummary.entries.length,
+          if (_currentCqSummary.entries.isEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: CustomCard(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      children: [
+                        Icon(Icons.assignment_outlined, size: 64, color: theme.colorScheme.primary.withOpacity(0.2)),
+                        const SizedBox(height: 20),
+                        Text(
+                          'No audits for this month',
+                          style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-            const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+              )
+          else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final entry = _currentCqSummary.entries[index];
+                      final entryColor = _getQualityColor(entry.percentage, context);
+                      final rating = QualityRatingHelper.getQualityRating(entry.percentage);
+
+                      return Slidable(
+                        key: index == 0 ? _firstCqEntryKey : ValueKey(entry.id),
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          extentRatio: 0.5,
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddCQEntryScreen(entryToEdit: entry),
+                                  ),
+                                );
+                                if (result == true) {
+                                  _refreshData();
+                                }
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit_rounded,
+                              label: 'Edit',
+                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), bottomLeft: Radius.circular(12)),
+                            ),
+                            SlidableAction(
+                              onPressed: (context) => _showDeleteConfirmationDialog(context, entry),
+                              backgroundColor: theme.colorScheme.error,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete_rounded,
+                              label: 'Delete',
+                              borderRadius: const BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12)),
+                            ),
+                          ],
+                        ),
+                        child: CustomCard(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: entryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: entryColor.withOpacity(0.1)),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    DateFormat('dd').format(entry.auditDate),
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: entryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                     Text(
+                                       DateFormat('EEEE, MMM yyyy').format(entry.auditDate),
+                                       style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                     ),
+                                     const SizedBox(height: 4),
+                                     Text(
+                                       'Audit Performance: $rating',
+                                       style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey),
+                                     ),
+                                  ],
+                                ),
+                              ),
+                               Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '${entry.percentage.toStringAsFixed(1)}%',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: entryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    rating,
+                                    style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey, fontSize: 10),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    childCount: _currentCqSummary.entries.length,
+                  ),
+                ),
+              ),
+            const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
         ],
       ),
       bottomNavigationBar: const DetailsScreenBannerAd(),
       ),
     );
   }
+
+  Color _getQualityColor(double percentage, BuildContext context) {
+    final rating = QualityRatingHelper.getQualityRating(percentage);
+    if (rating == 'Excellent' || rating == 'Good') return Colors.teal;
+    if (rating == 'Average') return Colors.amber;
+    return Colors.red;
+  }
+}
 
   Widget _buildStatItem(BuildContext context, String label, String value, Color color) {
     return Column(

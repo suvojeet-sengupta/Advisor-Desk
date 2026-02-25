@@ -291,36 +291,36 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
             },
           ),
         ],
-        child: Stack(
-          children: [
-            BlocBuilder<DashboardBloc, DashboardState>(
-              buildWhen: (previous, current) =>
-                  previous.status != current.status ||
-                  previous.monthlySummary != current.monthlySummary ||
-                  previous.currentMonth != current.currentMonth ||
-                  previous.currentYear != current.currentYear,
-              builder: (context, dashboardState) {
-                if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
-                  return const DashboardSkeletonLoader();
-                }
-
-                if (dashboardState.status == DashboardStatus.error) {
-                  return EmptyStateWidget(
-                    message: dashboardState.errorMessage ?? AppStrings.get(context.read<LanguageCubit>().state, 'unknown_error'),
-                    illustrationPath: 'assets/images/error.svg',
-                    onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
-                  );
-                }
-
-                return SafeArea(
-                  bottom: false,
-                  child: CustomScrollView(
+        child: SafeArea(
+          bottom: false,
+          child: Stack(
+            children: [
+              BlocBuilder<DashboardBloc, DashboardState>(
+                buildWhen: (previous, current) =>
+                    previous.status != current.status ||
+                    previous.monthlySummary != current.monthlySummary ||
+                    previous.currentMonth != current.currentMonth ||
+                    previous.currentYear != current.currentYear,
+                builder: (context, dashboardState) {
+                  if (dashboardState.status == DashboardStatus.initial || dashboardState.status == DashboardStatus.loading) {
+                    return const DashboardSkeletonLoader();
+                  }
+        
+                  if (dashboardState.status == DashboardStatus.error) {
+                    return EmptyStateWidget(
+                      message: dashboardState.errorMessage ?? AppStrings.get(context.read<LanguageCubit>().state, 'unknown_error'),
+                      illustrationPath: 'assets/images/error.svg',
+                      onRetry: () => context.read<DashboardBloc>().add(RefreshDashboard()),
+                    );
+                  }
+        
+                  return CustomScrollView(
                     physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     slivers: [
                         // Custom Header
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 24.0, bottom: 16.0),
                             child: BlocBuilder<ProfileCubit, ProfileState>(
                               builder: (context, profileState) {
                                 return BlocBuilder<GoalsBloc, GoalsState>(
@@ -577,11 +577,10 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                             ),
                           ),
                       ],
-                    ),
-                  );
-              },
-            ),
-            if (_isFabMenuOpen)
+                    );
+                  },
+                ),
+                if (_isFabMenuOpen)
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -608,11 +607,12 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           ],
         ),
       ),
-      floatingActionButton: _buildFabMenu(context),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 0,
-        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        onTap: (index) {
+    ),
+    floatingActionButton: _buildFabMenu(context),
+    bottomNavigationBar: CustomBottomNavigationBar(
+      currentIndex: 0,
+      backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      onTap: (index) {
           switch (index) {
             case 0:
               break;

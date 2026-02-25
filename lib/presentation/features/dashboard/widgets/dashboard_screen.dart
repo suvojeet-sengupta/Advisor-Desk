@@ -313,6 +313,7 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                 }
 
                 return SafeArea(
+                  bottom: false,
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     slivers: [

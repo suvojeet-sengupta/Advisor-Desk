@@ -663,58 +663,34 @@ class LocalDataSource {
     }
   }
 
-  // Get all unique month-year combinations from daily, CSAT, and CQ entries
-  Future<List<Map<String, int>>> getUniqueMonthYearCombinations() async {
+  // Get all unique month-year combinations from daily, CSAT, and CQ entries with pagination support
+  Future<List<Map<String, int>>> getUniqueMonthYearCombinations({int? limit, int? offset}) async {
     final db = await database;
-    final Set<String> uniqueCombinations = {};
-    final List<Map<String, int>> result = [];
+    
+    // Using strftime to get unique month and year directly from SQL.
+    // Date is stored as milliseconds, so divide by 1000 for unixepoch.
+    final String query = '''
+      SELECT DISTINCT 
+        CAST(strftime('%m', date / 1000, 'unixepoch') AS INTEGER) as month,
+        CAST(strftime('%Y', date / 1000, 'unixepoch') AS INTEGER) as year
+      FROM (
+        SELECT date FROM ${AppConstants.tableEntries}
+        UNION
+        SELECT date FROM ${AppConstants.tableCSATEntries}
+        UNION
+        SELECT audit_date as date FROM ${AppConstants.tableCQEntries}
+      )
+      ORDER BY year DESC, month DESC
+      ${limit != null ? 'LIMIT $limit' : ''}
+      ${offset != null ? 'OFFSET $offset' : ''}
+    ''';
 
-    // Fetch dates from daily entries
-    final List<Map<String, dynamic>> dailyMaps = await db.query(
-      AppConstants.tableEntries,
-      columns: ["date"],
-      distinct: true,
-    );
-    for (var map in dailyMaps) {
-      final date = DateTime.fromMillisecondsSinceEpoch(map["date"] as int);
-      uniqueCombinations.add("${date.month}-${date.year}");
-    }
-
-    // Fetch dates from CSAT entries
-    final List<Map<String, dynamic>> csatMaps = await db.query(
-      AppConstants.tableCSATEntries,
-      columns: ["date"],
-      distinct: true,
-    );
-    for (var map in csatMaps) {
-      final date = DateTime.fromMillisecondsSinceEpoch(map["date"] as int);
-      uniqueCombinations.add("${date.month}-${date.year}");
-    }
-
-    // Fetch dates from CQ entries
-    final List<Map<String, dynamic>> cqMaps = await db.query(
-      AppConstants.tableCQEntries,
-      columns: ["audit_date"],
-      distinct: true,
-    );
-    for (var map in cqMaps) {
-      final date = DateTime.fromMillisecondsSinceEpoch(map["audit_date"] as int);
-      uniqueCombinations.add("${date.month}-${date.year}");
-    }
-
-    // Convert unique combinations to desired format and sort
-    final List<DateTime> sortedDates = uniqueCombinations.map((e) {
-      final parts = e.split('-');
-      return DateTime(int.parse(parts[1]), int.parse(parts[0]));
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    
+    return maps.map((map) => {
+      "month": map["month"] as int,
+      "year": map["year"] as int,
     }).toList();
-
-    sortedDates.sort((a, b) => b.compareTo(a)); // Sort in descending order (latest first)
-
-    for (var date in sortedDates) {
-      result.add({"month": date.month, "year": date.year});
-    }
-
-    return result;
   }
 
   // Leave Entry CRUD operations

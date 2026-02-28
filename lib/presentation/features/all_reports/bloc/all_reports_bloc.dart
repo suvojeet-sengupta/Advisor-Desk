@@ -43,7 +43,9 @@ class AllReportsBloc extends Bloc<AllReportsEvent, AllReportsState> {
     LoadMoreMonthlySummaries event,
     Emitter<AllReportsState> emit,
   ) async {
-    if (state.hasReachedMax) return;
+    if (state.hasReachedMax || state.status == AllReportsStatus.loading) return;
+
+    emit(state.copyWith(status: AllReportsStatus.loading));
 
     try {
       final currentSummaries = state.summaries;
@@ -53,7 +55,10 @@ class AllReportsBloc extends Bloc<AllReportsEvent, AllReportsState> {
       );
 
       if (newSummaries.isEmpty) {
-        emit(state.copyWith(hasReachedMax: true));
+        emit(state.copyWith(
+          status: AllReportsStatus.loaded,
+          hasReachedMax: true,
+        ));
       } else {
         emit(state.copyWith(
           status: AllReportsStatus.loaded,

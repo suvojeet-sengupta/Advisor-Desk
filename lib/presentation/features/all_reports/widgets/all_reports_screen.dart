@@ -181,6 +181,14 @@ class _AllReportsViewState extends State<AllReportsView> {
               return const Center(child: CircularProgressIndicator());
             }
 
+            if (state.status == AllReportsStatus.error && state.summaries.isEmpty) {
+              return EmptyStateWidget(
+                message: state.errorMessage ?? 'Something went wrong while loading reports.',
+                illustrationPath: 'assets/images/error.svg',
+                onRetry: () => context.read<AllReportsBloc>().add(LoadAllMonthlySummaries()),
+              );
+            }
+
             if (state.summaries.isEmpty) {
               return EmptyStateWidget(
                 message: 'No monthly reports found.',
@@ -189,21 +197,28 @@ class _AllReportsViewState extends State<AllReportsView> {
               );
             }
 
-            return ListView.builder(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              itemCount: state.hasReachedMax ? state.summaries.length : state.summaries.length + 1,
-              itemBuilder: (context, index) {
-                if (index >= state.summaries.length) {
-                  return const Center(child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(),
-                  ));
-                }
-                final summary = state.summaries[index];
-                return _buildReportCard(context, summary, widget.profile);
+            return RefreshIndicator(
+              onRefresh: () async {
+                 context.read<AllReportsBloc>().add(LoadAllMonthlySummaries());
               },
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                padding: const EdgeInsets.all(16),
+                itemCount: state.hasReachedMax ? state.summaries.length : state.summaries.length + 1,
+                itemBuilder: (context, index) {
+                  if (index >= state.summaries.length) {
+                    return const Center(child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(),
+                    ));
+                  }
+                  final summary = state.summaries[index];
+                  return _buildReportCard(context, summary, widget.profile);
+                },
+              ),
             );
           },
         ),

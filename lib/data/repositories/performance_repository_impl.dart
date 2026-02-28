@@ -89,21 +89,13 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
 
   @override
   Future<List<MonthlySummary>> getAllMonthlySummaries({int limit = 10, int offset = 0}) async {
-    final monthYearCombinations = await localDataSource.getUniqueMonthYearCombinations();
-    
-    // Apply pagination
-    final endIndex = (offset + limit) > monthYearCombinations.length 
-        ? monthYearCombinations.length 
-        : offset + limit;
-        
-    if (offset >= monthYearCombinations.length) {
-      return [];
-    }
-
-    final paginatedCombinations = monthYearCombinations.sublist(offset, endIndex);
+    final monthYearCombinations = await localDataSource.getUniqueMonthYearCombinations(
+      limit: limit,
+      offset: offset,
+    );
 
     final List<MonthlySummary> summaries = [];
-    for (final combination in paginatedCombinations) {
+    for (final combination in monthYearCombinations) {
       final month = combination["month"]!;
       final year = combination["year"]!;
       final summary = await getMonthlySummary(month, year);

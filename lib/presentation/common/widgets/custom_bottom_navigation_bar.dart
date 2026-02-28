@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -32,84 +31,73 @@ class CustomBottomNavigationBar extends StatelessWidget {
         child: Container(
           height: 68,
           decoration: BoxDecoration(
+            color: backgroundColor ?? (isDark ? const Color(0xFF1E1E1E) : Colors.white),
             borderRadius: BorderRadius.circular(34),
+            border: Border.all(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(34),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: backgroundColor ?? (isDark ? Colors.black.withOpacity(0.7) : Colors.white.withOpacity(0.8)),
-                  borderRadius: BorderRadius.circular(34),
-                  border: Border.all(
-                    color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
-                    width: 0.5,
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: items.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final item = entry.value;
-                    final isSelected = currentIndex == index;
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: items.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              final isSelected = currentIndex == index;
 
-                    return Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          onTap(index);
-                        },
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        child: AnimatedContainer(
+              return Expanded(
+                child: InkWell(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    onTap(index);
+                  },
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          item['icon'],
+                          color: isSelected 
+                              ? theme.colorScheme.primary 
+                              : theme.colorScheme.onSurface.withOpacity(0.5),
+                          size: isSelected ? 26 : 24,
+                        ),
+                        const SizedBox(height: 4),
+                        AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                item['icon'],
-                                color: isSelected 
-                                    ? theme.colorScheme.primary 
-                                    : theme.colorScheme.onSurface.withOpacity(0.5),
-                                size: isSelected ? 26 : 24,
-                              ),
-                              const SizedBox(height: 4),
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                width: isSelected ? 4 : 0,
-                                height: isSelected ? 4 : 0,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              if (isSelected)
-                                Text(
-                                  item['label'],
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                            ],
+                          width: isSelected ? 4 : 0,
+                          height: isSelected ? 4 : 0,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            shape: BoxShape.circle,
                           ),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                        if (isSelected)
+                          Text(
+                            item['label'],
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            }).toList(),
           ),
         ),
       ),

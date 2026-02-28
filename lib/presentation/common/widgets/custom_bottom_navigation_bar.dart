@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -17,64 +19,97 @@ class CustomBottomNavigationBar extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-      child: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: backgroundColor ?? (isDark ? const Color(0xFF1E1E1E) : Colors.white),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Theme(
-          data: theme.copyWith(
-            navigationBarTheme: theme.navigationBarTheme.copyWith(
-              labelTextStyle: MaterialStateProperty.resolveWith((states) {
-                if (states.contains(MaterialState.selected)) {
-                  return const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
-                }
-                return const TextStyle(fontSize: 12, fontWeight: FontWeight.w500);
-              }),
-            ),
-          ),
-          child: NavigationBar(
-            selectedIndex: currentIndex,
-            onDestinationSelected: onTap,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            height: 60,
-            indicatorColor: theme.colorScheme.primary.withOpacity(0.12),
-            labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-            destinations: [
-              NavigationDestination(
-                icon: const Icon(Icons.dashboard_outlined, size: 22),
-                selectedIcon: Icon(Icons.dashboard_rounded, size: 24, color: theme.colorScheme.primary),
-                label: 'Dashboard',
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.calendar_month_outlined, size: 22),
-                selectedIcon: Icon(Icons.calendar_month_rounded, size: 24, color: theme.colorScheme.primary),
-                label: 'Monthly',
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.assessment_outlined, size: 22),
-                selectedIcon: Icon(Icons.assessment_rounded, size: 24, color: theme.colorScheme.primary),
-                label: 'Reports',
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.settings_outlined, size: 22),
-                selectedIcon: Icon(Icons.settings_rounded, size: 24, color: theme.colorScheme.primary),
-                label: 'Settings',
+    final List<Map<String, dynamic>> items = [
+      {'icon': Icons.dashboard_rounded, 'label': 'Home'},
+      {'icon': Icons.calendar_month_rounded, 'label': 'Logs'},
+      {'icon': Icons.assessment_rounded, 'label': 'Reports'},
+      {'icon': Icons.settings_rounded, 'label': 'Settings'},
+    ];
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Container(
+          height: 68,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(34),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(34),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: backgroundColor ?? (isDark ? Colors.black.withOpacity(0.7) : Colors.white.withOpacity(0.8)),
+                  borderRadius: BorderRadius.circular(34),
+                  border: Border.all(
+                    color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+                    width: 0.5,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: items.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final isSelected = currentIndex == index;
+
+                    return Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          onTap(index);
+                        },
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                item['icon'],
+                                color: isSelected 
+                                    ? theme.colorScheme.primary 
+                                    : theme.colorScheme.onSurface.withOpacity(0.5),
+                                size: isSelected ? 26 : 24,
+                              ),
+                              const SizedBox(height: 4),
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                width: isSelected ? 4 : 0,
+                                height: isSelected ? 4 : 0,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              if (isSelected)
+                                Text(
+                                  item['label'],
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           ),
         ),
       ),

@@ -39,26 +39,34 @@ class MetricDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppBar(title: _getTitle()),
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
-              child: Text(
-                summary.formattedMonthYear.toUpperCase(),
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Colors.grey,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.bold,
-                ),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    summary.formattedMonthYear.toUpperCase(),
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: Colors.grey.shade600,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(Icons.calendar_month_rounded, size: 18, color: Colors.grey.shade400),
+                ],
               ),
             ),
           ),
           _buildDetailsContent(context),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
         ],
       ),
       bottomNavigationBar: const DetailsScreenBannerAd(),
@@ -77,6 +85,7 @@ class MetricDetailsScreen extends StatelessWidget {
           'Average Login Hours',
           '${summary.averageDailyLoginHours.toStringAsFixed(2)} Hrs',
           _getAverageLoginHoursCalculation(),
+          Icons.av_timer_rounded,
         );
       case MetricType.avgCalls:
         return _buildCalculationDetails(
@@ -84,26 +93,28 @@ class MetricDetailsScreen extends StatelessWidget {
           'Average Calls',
           summary.averageDailyCalls.toStringAsFixed(2),
           _getAverageCallsCalculation(),
+          Icons.query_stats_rounded,
         );
     }
   }
 
   Widget _buildTotalCallsDetails(BuildContext context) {
+    final theme = Theme.of(context);
     if (summary.entries.isEmpty) {
       return SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: CustomCard(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(40),
             child: Center(
               child: Column(
                 children: [
-                   Icon(Icons.event_busy_rounded, size: 48, color: Colors.grey.withOpacity(0.5)),
+                   Icon(Icons.call_end_rounded, size: 64, color: Colors.grey.withOpacity(0.2)),
                    const SizedBox(height: 16),
                    const Text(
                      'No call entries found for this month.',
                      textAlign: TextAlign.center,
-                     style: TextStyle(color: Colors.grey),
+                     style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                    ),
                 ],
               ),
@@ -116,7 +127,7 @@ class MetricDetailsScreen extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -124,44 +135,66 @@ class MetricDetailsScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      _buildSummaryRow(
-                        context,
-                        'Total Calls',
-                        summary.totalCalls.toString(),
-                        Theme.of(context).colorScheme.primary,
-                        Icons.call_rounded,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                'TOTAL CALLS',
+                                style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                summary.totalCalls.toString(),
+                                style: theme.textTheme.displayMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      Divider(color: Theme.of(context).dividerColor.withOpacity(0.1)),
-                      const SizedBox(height: 16),
-                      _buildSummaryRow(
-                        context,
-                        'Billable Calls',
-                        summary.billableCalls.toString(),
-                        Theme.of(context).colorScheme.tertiary,
-                        Icons.check_circle_outline_rounded,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildSummaryRow(
-                        context,
-                        'Non-Billable Calls',
-                        summary.totalNonBillableCalls.toString(),
-                        Theme.of(context).colorScheme.error,
-                        Icons.cancel_outlined,
+                      const SizedBox(height: 24),
+                      Divider(color: theme.dividerColor.withOpacity(0.05)),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildMiniStat(
+                              context,
+                              'Billable',
+                              summary.billableCalls.toString(),
+                              theme.colorScheme.tertiary,
+                              Icons.verified_rounded,
+                            ),
+                          ),
+                          Container(height: 40, width: 1, color: theme.dividerColor.withOpacity(0.05)),
+                          Expanded(
+                            child: _buildMiniStat(
+                              context,
+                              'Non-Billable',
+                              summary.totalNonBillableCalls.toString(),
+                              theme.colorScheme.error,
+                              Icons.cancel_rounded,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 Text(
                   'DAILY BREAKDOWN',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Colors.grey,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: Colors.grey.shade600,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -172,59 +205,12 @@ class MetricDetailsScreen extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final entry = summary.entries[index];
-                return CustomCard(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          DateFormat('dd').format(entry.date),
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                               DateFormat('EEEE').format(entry.date),
-                               style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                             Text(
-                               DateFormat('MMM yyyy').format(entry.date),
-                               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
-                        ),
-                        child: Text(
-                          '${entry.callCount}',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
+                return _buildDailyEntryCard(
+                  context,
+                  entry,
+                  '${entry.callCount}',
+                  'Calls',
+                  theme.colorScheme.primary,
                 );
               },
               childCount: summary.entries.length,
@@ -236,14 +222,21 @@ class MetricDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildTotalLoginHoursDetails(BuildContext context) {
+    final theme = Theme.of(context);
     if (summary.entries.isEmpty) {
       return SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: const CustomCard(
-             padding: EdgeInsets.all(32),
+          child: CustomCard(
+             padding: const EdgeInsets.all(40),
              child: Center(
-               child: Text('No login entries found for this month.', style: TextStyle(color: Colors.grey)),
+               child: Column(
+                 children: [
+                   Icon(Icons.timer_off_rounded, size: 64, color: Colors.grey.withOpacity(0.2)),
+                   const SizedBox(height: 16),
+                   const Text('No login entries found.', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
+                 ],
+               ),
              ),
           ),
         ),
@@ -253,31 +246,59 @@ class MetricDetailsScreen extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomCard(
                   padding: const EdgeInsets.all(24),
-                  child: _buildSummaryRow(
-                    context,
-                    'Total Login Hours',
-                    '${summary.totalLoginHours.toStringAsFixed(2)} Hrs',
-                    Theme.of(context).colorScheme.tertiary,
-                    Icons.timer_rounded,
-                    subtitle: '(${_formatDuration(summary.totalLoginHours)})',
+                  child: Column(
+                    children: [
+                      Text(
+                        'TOTAL LOGIN HOURS',
+                        style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        '${summary.totalLoginHours.toStringAsFixed(2)}',
+                        style: theme.textTheme.displayMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.tertiary,
+                        ),
+                      ),
+                      Text(
+                        'HOURS : MINUTES : SECONDS',
+                        style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey.withOpacity(0.6), fontSize: 9),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.tertiary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          _formatDuration(summary.totalLoginHours),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.tertiary,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                  Text(
                   'DAILY BREAKDOWN',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Colors.grey,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: Colors.grey.shade600,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -288,63 +309,13 @@ class MetricDetailsScreen extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final entry = summary.entries[index];
-                return CustomCard(
-                  margin: const EdgeInsets.only(bottom: 12),
-                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                     children: [
-                       Container(
-                        padding: const EdgeInsets.all(10),
-                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.tertiary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          DateFormat('dd').format(entry.date),
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.tertiary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                               DateFormat('EEEE').format(entry.date),
-                               style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                             Text(
-                               DateFormat('MMM yyyy').format(entry.date),
-                               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${entry.totalLoginTimeInHours.toStringAsFixed(2)} Hrs',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
-                          ),
-                          Text(
-                            entry.formattedLoginTime,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                          ),
-                        ],
-                      ),
-                     ],
-                  ),
+                return _buildDailyEntryCard(
+                  context,
+                  entry,
+                  '${entry.totalLoginTimeInHours.toStringAsFixed(2)}',
+                  'Hrs',
+                  theme.colorScheme.tertiary,
+                  subtitle: entry.formattedLoginTime,
                 );
               },
               childCount: summary.entries.length,
@@ -355,85 +326,190 @@ class MetricDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCalculationDetails(
-      BuildContext context, String title, String value, String calculation) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: CustomCard(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildMiniStat(BuildContext context, String label, String value, Color color, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: color.withOpacity(0.7), size: 20),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: color),
+        ),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDailyEntryCard(BuildContext context, DailyEntry entry, String value, String unit, Color color, {String? subtitle}) {
+    final theme = Theme.of(context);
+    return CustomCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  DateFormat('dd').format(entry.date),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                Text(
+                  DateFormat('EEE').format(entry.date).toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: color.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat('MMMM yyyy').format(entry.date),
+                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey, fontWeight: FontWeight.w500),
+                ),
+                if (subtitle != null)
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                  )
+                else
+                   Text(
+                    DateFormat('EEEE').format(entry.date),
+                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _buildSummaryRow(
-                context,
-                title,
-                value,
-                Theme.of(context).colorScheme.primary,
-                Icons.analytics_rounded,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'CALCULATION LOGIC',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
-                ),
-                child: Text(
-                  calculation,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5, fontFamily: 'Monospace'),
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    value,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    unit,
+                    style: theme.textTheme.labelSmall?.copyWith(color: color.withOpacity(0.6), fontSize: 10),
+                  ),
+                ],
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildSummaryRow(BuildContext context, String label, String value, Color valueColor, IconData icon, {String? subtitle}) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-             color: valueColor.withOpacity(0.1),
-             shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: valueColor, size: 20),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-               Text(label, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
-               if (subtitle != null) ...[
-                  const SizedBox(height: 2),
-                  Text(subtitle, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
-               ]
-            ],
-          ),
-        ),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: valueColor,
+  Widget _buildCalculationDetails(
+      BuildContext context, String title, String value, String calculation, IconData icon) {
+    final theme = Theme.of(context);
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            CustomCard(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: theme.colorScheme.primary, size: 32),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: theme.textTheme.labelLarge?.copyWith(color: Colors.grey, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ],
               ),
+            ),
+            const SizedBox(height: 24),
+            CustomCard(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline_rounded, size: 16, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'CALCULATION LOGIC',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+                    ),
+                    child: Text(
+                      calculation,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        height: 1.6,
+                        fontFamily: 'Monospace',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurface.withOpacity(0.8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

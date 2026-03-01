@@ -54,35 +54,49 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   final PdfColor textColor = PdfColor.fromHex('#333333');
   final PdfColor cardBgColor = PdfColor.fromHex('#F5F5F5');
 
-  pw.Widget _buildHeader(pw.Context context, String title) {
+  pw.Widget _buildHeader(pw.Context context, String title, String dateRange, String? advisorName) {
     return pw.Container(
-      padding: const pw.EdgeInsets.only(bottom: 20),
+      padding: const pw.EdgeInsets.only(bottom: 10),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text(
-            'Advisor Desk Performance Report',
-            style: pw.TextStyle(
-                fontSize: 24, fontWeight: pw.FontWeight.bold, color: primaryColor),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text(
+                'Advisor Desk',
+                style: pw.TextStyle(
+                    fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.grey700),
+              ),
+              pw.Text(
+                'Performance Report',
+                style: pw.TextStyle(
+                    fontSize: 10, color: PdfColors.grey700),
+              ),
+            ],
           ),
+          pw.Divider(thickness: 0.5, color: PdfColors.grey300),
           pw.SizedBox(height: 10),
-          pw.Text(
-            'Period: ${summary.formattedDateRange}',
-            style: pw.TextStyle(fontSize: 16, color: textColor),
-          ),
-          if (profile.name != null) ...[
-            pw.SizedBox(height: 5),
-            pw.Text(
-              'Advisor: ${profile.name!}',
-              style: pw.TextStyle(fontSize: 16, color: textColor),
+          if (context.pageNumber == 1) ...[
+             pw.Text(
+              'Performance Report',
+              style: pw.TextStyle(
+                  fontSize: 24, fontWeight: pw.FontWeight.bold, color: primaryColor),
             ),
-          ],
-          pw.SizedBox(height: 20),
-          pw.Text(
-            title,
-            style: pw.TextStyle(
-                fontSize: 20, fontWeight: pw.FontWeight.bold, color: primaryColor),
-          ),
+            pw.SizedBox(height: 8),
+            pw.Text(
+              'Period: $dateRange',
+              style: pw.TextStyle(fontSize: 14, color: textColor),
+            ),
+            if (advisorName != null) ...[
+              pw.SizedBox(height: 4),
+              pw.Text(
+                'Advisor: $advisorName',
+                style: pw.TextStyle(fontSize: 14, color: textColor),
+              ),
+            ],
+            pw.SizedBox(height: 20),
+          ]
         ],
       ),
     );
@@ -91,11 +105,12 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   pw.Widget _buildInfoCard(
       {required String title, required List<pw.Widget> children}) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 20),
-      padding: const pw.EdgeInsets.all(16),
+      margin: const pw.EdgeInsets.only(bottom: 15),
+      padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
         color: cardBgColor,
-        borderRadius: pw.BorderRadius.circular(10),
+        borderRadius: pw.BorderRadius.circular(8),
+        border: pw.Border.all(color: PdfColors.grey200, width: 0.5),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -103,25 +118,28 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
           pw.Text(
             title,
             style: pw.TextStyle(
-                fontSize: 18, fontWeight: pw.FontWeight.bold, color: primaryColor),
+                fontSize: 16, fontWeight: pw.FontWeight.bold, color: primaryColor),
           ),
-          pw.SizedBox(height: 10),
+          pw.SizedBox(height: 8),
           ...children,
         ],
       ),
     );
   }
 
-  pw.Widget _buildInfoRow(String label, String value) {
+  pw.Widget _buildInfoRow(String label, String value, {bool isTotal = false}) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+      padding: const pw.EdgeInsets.symmetric(vertical: 3),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text(label, style: pw.TextStyle(color: textColor)),
+          pw.Text(label, style: pw.TextStyle(color: textColor, fontSize: 10)),
           pw.Text(value,
               style: pw.TextStyle(
-                  fontWeight: pw.FontWeight.bold, color: textColor)),
+                  fontWeight: isTotal ? pw.FontWeight.bold : pw.FontWeight.normal, 
+                  color: textColor,
+                  fontSize: 10,
+              )),
         ],
       ),
     );
@@ -163,7 +181,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
           _buildInfoRow('Total Survey Hits',
               summary.csatSummary!.totalSurveyHits.toString()),
           _buildInfoRow('Monthly CSAT Percentage',
-              '${formatter.format(summary.csatSummary!.monthlyCSATPercentage)}%'),
+              '${formatter.format(summary.csatSummary!.monthlyCSATPercentage)}%', isTotal: true),
           _buildInfoRow('Average Daily CSAT Score',
               '${formatter.format(summary.csatSummary!.averageScore)}%'),
         ],
@@ -181,7 +199,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
           _buildInfoRow('Total CQ Entries',
               summary.cqSummary!.entries.length.toString()),
           _buildInfoRow('Average CQ Score',
-              formatter.format(summary.cqSummary!.averageScore)),
+              formatter.format(summary.cqSummary!.averageScore), isTotal: true),
         ],
       ),
     );
@@ -202,9 +220,9 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
               'Rs. ${formatter.format(summary.totalSalary + summary.csatBonus)}'),
           _buildInfoRow('TDS Deduction',
               'Rs. -${formatter.format(summary.tdsDeduction)}'),
-          pw.Divider(color: primaryColor.shade(0.5)),
+          pw.Divider(color: PdfColors.grey300, thickness: 0.5),
           _buildInfoRow(
-              'Net Salary', 'Rs. ${formatter.format(summary.netSalary)}'),
+              'Net Salary', 'Rs. ${formatter.format(summary.netSalary)}', isTotal: true),
         ],
       ),
     );
@@ -217,7 +235,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
         children: [
           _buildInfoRow('Total Calls with Custom Rate',
               summary.totalCustomRateCalls.toString()),
-          pw.Divider(color: primaryColor.shade(0.5)),
+          pw.Divider(color: PdfColors.grey300, thickness: 0.5),
           ...summary.customRateEntries.map((entry) {
             return _buildInfoRow(
               '${DateFormat('dd MMM yyyy').format(entry.date)}',
@@ -233,23 +251,26 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(title, style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: primaryColor)),
-        pw.SizedBox(height: 10),
+        pw.Text(title, style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: primaryColor)),
+        pw.SizedBox(height: 8),
         pw.Table.fromTextArray(
           headers: headers,
           data: data,
-          headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: secondaryColor),
+          headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: secondaryColor, fontSize: 9),
           headerDecoration: pw.BoxDecoration(color: primaryColor),
           cellAlignment: pw.Alignment.center,
-          cellStyle: pw.TextStyle(color: textColor),
+          cellStyle: pw.TextStyle(color: textColor, fontSize: 8),
+          headerHeight: 25,
+          cellHeight: 20,
+          border: pw.TableBorder.all(color: PdfColors.grey300, width: 0.5),
         ),
-        pw.SizedBox(height: 20),
+        pw.SizedBox(height: 15),
       ]
     );
   }
 
   if (sectionsToInclude.contains(ReportSection.dailyEntries) && summary.entries.isNotEmpty) {
-    const chunkSize = 15;
+    const chunkSize = 25;
     for (int i = 0; i < summary.entries.length; i += chunkSize) {
       final end = (i + chunkSize < summary.entries.length) ? i + chunkSize : summary.entries.length;
       final chunk = summary.entries.sublist(i, end);
@@ -272,7 +293,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   if (sectionsToInclude.contains(ReportSection.csatDailyBreakdown) &&
       summary.csatSummary != null &&
       summary.csatSummary!.entries.isNotEmpty) {
-    const chunkSize = 15;
+    const chunkSize = 25;
     final entries = summary.csatSummary!.entries;
     for (int i = 0; i < entries.length; i += chunkSize) {
       final end = (i + chunkSize < entries.length) ? i + chunkSize : entries.length;
@@ -301,7 +322,7 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
   if (sectionsToInclude.contains(ReportSection.cqDailyBreakdown) &&
       summary.cqSummary != null &&
       summary.cqSummary!.entries.isNotEmpty) {
-    const chunkSize = 15;
+    const chunkSize = 25;
     final entries = summary.cqSummary!.entries;
     for (int i = 0; i < entries.length; i += chunkSize) {
       final end = (i + chunkSize < entries.length) ? i + chunkSize : entries.length;
@@ -326,51 +347,60 @@ Future<List<int>> _generatePdfInBackground(Map<String, dynamic> params) async {
     pw.MultiPage(
       theme: theme,
       pageFormat: PdfPageFormat.a4,
-      build: (pw.Context context) => [
-        _buildHeader(context, 'Performance Report'),
-        ...content,
-      ],
+      header: (pw.Context context) => _buildHeader(context, 'Performance Report', summary.formattedDateRange, profile.name),
+      build: (pw.Context context) => content,
       footer: (pw.Context context) {
         return pw.Container(
           alignment: pw.Alignment.center,
-          margin: const pw.EdgeInsets.only(top: 20, left: 20, right: 20),
-          child: pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          margin: const pw.EdgeInsets.only(top: 10),
+          child: pw.Column(
             children: [
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
+               pw.Divider(thickness: 0.5, color: PdfColors.grey300),
+               pw.SizedBox(height: 5),
+               pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
-                  pw.Text(
-                    'Generated by Advisor Desk',
-                    style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
-                  ),
-                  pw.SizedBox(height: 5),
-                  pw.UrlLink(
-                    destination: 'https://play.google.com/store/apps/details?id=com.suvojeet.advisordesk',
-                    child: pw.Row(
-                      children: [
-                        pw.SvgImage(svg: playStoreIconSvg, width: 20, height: 20),
-                        pw.SizedBox(width: 5),
-                        pw.Text(
-                          'Download on Playstore',
-                          style: pw.TextStyle(
-                            color: PdfColors.blue,
-                            decoration: pw.TextDecoration.underline,
-                          ),
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        'Generated by Advisor Desk',
+                        style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700),
+                      ),
+                      pw.SizedBox(height: 2),
+                      pw.UrlLink(
+                        destination: 'https://play.google.com/store/apps/details?id=com.suvojeet.advisordesk',
+                        child: pw.Row(
+                          children: [
+                            pw.SvgImage(svg: playStoreIconSvg, width: 12, height: 12),
+                            pw.SizedBox(width: 4),
+                            pw.Text(
+                              'Download on Playstore',
+                              style: pw.TextStyle(
+                                fontSize: 8,
+                                color: PdfColors.blue700,
+                                decoration: pw.TextDecoration.underline,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
+                  pw.Text(
+                    'Page ${context.pageNumber} of ${context.pagesCount}',
+                    style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700),
+                  ),
+                  pw.BarcodeWidget(
+                    barcode: pw.Barcode.qrCode(),
+                    data: 'https://play.google.com/store/apps/details?id=com.suvojeet.advisordesk',
+                    width: 30,
+                    height: 30,
                   ),
                 ],
               ),
-              pw.BarcodeWidget(
-                barcode: pw.Barcode.qrCode(),
-                data: 'https://play.google.com/store/apps/details?id=com.suvojeet.advisordesk',
-                width: 60,
-                height: 60,
-              ),
             ],
-          ),
+          )
         );
       },
     ),

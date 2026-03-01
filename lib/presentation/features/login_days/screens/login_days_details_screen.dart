@@ -17,8 +17,10 @@ class LoginDaysDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Login Activity'),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: const CustomAppBar(title: 'Attendance & Login'),
       body: BlocBuilder<LoginDaysBloc, LoginDaysState>(
         builder: (context, state) {
           if (state is LoginDaysLoading || state is LoginDaysInitial) {
@@ -29,43 +31,83 @@ class LoginDaysDetailsScreen extends StatelessWidget {
           }
           if (state is LoginDaysLoaded) {
             return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverToBoxAdapter(
-                  child: CustomCard(
-                    padding: const EdgeInsets.all(16),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Attendance Statistics',
-                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                             fontWeight: FontWeight.bold,
-                           ),
+                          'MONTHLY STATISTICS',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         _buildStats(context, state),
                       ],
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(child: const SizedBox(height: 24)),
                 SliverToBoxAdapter(
-                   child: Text(
-                      summary.formattedMonthYear.toUpperCase(),
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                   ),
-                ),
-                SliverToBoxAdapter(child: const SizedBox(height: 12)),
-                _buildCalendar(context, state),
-                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          summary.formattedMonthYear.toUpperCase(),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${state.presentCount}/${DateTime(summary.year, summary.month + 1, 0).day} Days',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: _buildCalendar(context, state),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 32, 20, 32),
                     child: CustomCard(
-                       child: _buildLegend(context),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'LEGEND',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildLegend(context),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -81,32 +123,39 @@ class LoginDaysDetailsScreen extends StatelessWidget {
 
   Widget _buildStats(BuildContext context, LoginDaysLoaded state) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(child: _buildStatItem(context, 'Present', state.presentCount.toString(), Colors.green, Icons.check_circle_rounded)),
-        Expanded(child: _buildStatItem(context, 'Absent', state.absentCount.toString(), Colors.red, Icons.cancel_rounded)),
-        Expanded(child: _buildStatItem(context, 'Off', state.weekOffCount.toString(), Colors.blue, Icons.weekend_rounded)),
+        Expanded(child: _buildStatCard(context, 'Present', state.presentCount.toString(), Colors.green, Icons.check_circle_outline_rounded)),
+        const SizedBox(width: 12),
+        Expanded(child: _buildStatCard(context, 'Absent', state.absentCount.toString(), Colors.red, Icons.highlight_off_rounded)),
+        const SizedBox(width: 12),
+        Expanded(child: _buildStatCard(context, 'Leaves', (state.weekOffCount + state.personalLeaveCount).toString(), Colors.blue, Icons.event_note_rounded)),
       ],
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value, Color color, IconData icon) {
-    final theme = Theme.of(context);
-    return Column(
-      children: [
-        Container(
-           padding: const EdgeInsets.all(8),
-           decoration: BoxDecoration(
-             color: color.withOpacity(0.1),
-             shape: BoxShape.circle,
-           ),
-           child: Icon(icon, color: color, size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(value, style: theme.textTheme.headlineLarge?.copyWith(color: color, fontWeight: FontWeight.bold, height: 1.0)),
-        const SizedBox(height: 4),
-        Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey)),
-      ],
+  Widget _buildStatCard(BuildContext context, String label, String value, Color color, IconData icon) {
+    return CustomCard(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -121,20 +170,17 @@ class LoginDaysDetailsScreen extends StatelessWidget {
     final loginDates = state.loginEntries.map((e) => e.date).toSet();
     final leaveEntries = {for (var e in state.leaveEntries) e.date: e};
 
-    // Weekdays Header
-    // TODO: Can be added as a persistent header or just above grid
-    
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 0.8,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.85,
       ),
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index < firstDayWeekday - 1) {
-            return Container(); // Empty container for offset
+            return const SizedBox.shrink();
           }
           final day = index - (firstDayWeekday - 1) + 1;
           final date = DateTime(year, month, day);
@@ -145,81 +191,85 @@ class LoginDaysDetailsScreen extends StatelessWidget {
 
           Color bgColor = theme.cardColor;
           Color textColor = theme.textTheme.bodyMedium!.color!;
-          Color borderColor = Colors.transparent;
-          Widget? icon;
+          Color accentColor = Colors.transparent;
+          IconData? statusIcon;
 
           if (isFutureDay) {
             bgColor = theme.disabledColor.withOpacity(0.05);
             textColor = theme.disabledColor;
-             borderColor = theme.disabledColor.withOpacity(0.1);
           } else if (isLoginDay) {
+            accentColor = Colors.green;
             bgColor = Colors.green.withOpacity(0.1);
             textColor = Colors.green;
-            borderColor = Colors.green.withOpacity(0.3);
+            statusIcon = Icons.check_circle_rounded;
           } else if (leaveEntry != null) {
             if (leaveEntry.type == LeaveType.weekOff) {
+              accentColor = Colors.blue;
               bgColor = Colors.blue.withOpacity(0.1);
               textColor = Colors.blue;
-              icon = Icon(Icons.weekend, size: 14, color: Colors.blue);
-              borderColor = Colors.blue.withOpacity(0.3);
+              statusIcon = Icons.weekend_rounded;
             } else {
+              accentColor = Colors.orange;
               bgColor = Colors.orange.withOpacity(0.1);
               textColor = Colors.orange;
-              icon = Icon(Icons.person, size: 14, color: Colors.orange);
-               borderColor = Colors.orange.withOpacity(0.3);
+              statusIcon = Icons.person_rounded;
             }
           } else { // Absent day
             if (isToday) {
-               bgColor = theme.colorScheme.surface;
-                textColor = theme.colorScheme.primary; 
-                borderColor = theme.colorScheme.primary;
+               accentColor = theme.colorScheme.primary;
+               bgColor = theme.colorScheme.primary.withOpacity(0.1);
+               textColor = theme.colorScheme.primary;
+               statusIcon = Icons.pending_actions_rounded;
             } else {
+              accentColor = Colors.red;
               bgColor = Colors.red.withOpacity(0.1);
               textColor = Colors.red;
-              borderColor = Colors.red.withOpacity(0.3);
+              statusIcon = Icons.cancel_rounded;
             }
           }
 
           return GestureDetector(
             onTap: () => _showMarkDayDialog(context, date, isLoginDay, leaveEntry),
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: bgColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: borderColor),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isToday ? theme.colorScheme.primary : accentColor.withOpacity(0.3),
+                  width: isToday ? 2 : 1,
+                ),
+                boxShadow: isToday ? [
+                  BoxShadow(
+                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  )
+                ] : null,
               ),
-              child: Stack(
-                alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                       Text(
-                        DateFormat('E').format(date).toUpperCase().substring(0, 1),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: textColor.withOpacity(0.7),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$day',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      if (isToday && !isLoginDay && leaveEntry == null)
-                         Padding(
-                           padding: const EdgeInsets.only(top: 2.0),
-                           child: Icon(Icons.timelapse, size: 12, color: theme.colorScheme.primary),
-                         ),
-                    ],
+                   Text(
+                    DateFormat('E').format(date).toUpperCase().substring(0, 1),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: textColor.withOpacity(0.6),
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  if (icon != null)
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: icon,
+                  const SizedBox(height: 4),
+                  Text(
+                    '$day',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  if (statusIcon != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Icon(statusIcon, size: 10, color: textColor.withOpacity(0.8)),
                     ),
                 ],
               ),
@@ -232,58 +282,118 @@ class LoginDaysDetailsScreen extends StatelessWidget {
   }
 
   void _showMarkDayDialog(BuildContext context, DateTime date, bool isLoginDay, LeaveEntry? leaveEntry) {
-    if (isLoginDay) {
-      // Cannot mark a login day as leave
+    if (isLoginDay || date.isAfter(DateTime.now())) {
       return;
     }
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text('Mark Day Off'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text('Week Off'),
-                onTap: () {
-                  context.read<LoginDaysBloc>().add(MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.weekOff)));
-                  Navigator.pop(dialogContext);
-                },
-              ),
-              ListTile(
-                title: const Text('Personal Leave'),
-                onTap: () {
-                  // You can add a text field here to get a reason
-                  context.read<LoginDaysBloc>().add(MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.personal)));
-                  Navigator.pop(dialogContext);
-                },
-              ),
-              if (leaveEntry != null)
-                ListTile(
-                  title: const Text('Mark as Absent'),
-                  onTap: () {
-                    context.read<LoginDaysBloc>().add(DeleteLeave(date));
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mark Status for ${DateFormat('dd MMM yyyy').format(date)}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 24),
+                _buildActionTile(
+                  context,
+                  'Week Off',
+                  'Standard weekly holiday',
+                  Icons.weekend_rounded,
+                  Colors.blue,
+                  () {
+                    context.read<LoginDaysBloc>().add(MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.weekOff)));
                     Navigator.pop(dialogContext);
                   },
                 ),
-            ],
+                const SizedBox(height: 12),
+                _buildActionTile(
+                  context,
+                  'Personal Leave',
+                  'Sick leave or personal work',
+                  Icons.person_rounded,
+                  Colors.orange,
+                  () {
+                    context.read<LoginDaysBloc>().add(MarkDayAsLeave(LeaveEntry(date: date, type: LeaveType.personal)));
+                    Navigator.pop(dialogContext);
+                  },
+                ),
+                if (leaveEntry != null) ...[
+                  const SizedBox(height: 12),
+                  _buildActionTile(
+                    context,
+                    'Mark as Absent',
+                    'Reset to standard absent status',
+                    Icons.cancel_rounded,
+                    Colors.red,
+                    () {
+                      context.read<LoginDaysBloc>().add(DeleteLeave(date));
+                      Navigator.pop(dialogContext);
+                    },
+                  ),
+                ],
+              ],
+            ),
           ),
         );
       },
     );
   }
 
+  Widget _buildActionTile(BuildContext context, String title, String subtitle, IconData icon, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: color.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: Colors.grey.shade400),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildLegend(BuildContext context) {
     return Wrap(
-      spacing: 16,
-      runSpacing: 8,
-      alignment: WrapAlignment.center,
+      spacing: 20,
+      runSpacing: 12,
       children: [
         _buildLegendItem(context, Colors.green, 'Present'),
         _buildLegendItem(context, Colors.red, 'Absent'),
-        _buildLegendItem(context, Colors.grey, 'In Progress'),
+        _buildLegendItem(context, Theme.of(context).colorScheme.primary, 'In Progress'),
         _buildLegendItem(context, Colors.blue, 'Week Off'),
         _buildLegendItem(context, Colors.orange, 'Personal'),
       ],
@@ -295,15 +405,20 @@ class LoginDaysDetailsScreen extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 16,
-          height: 16,
+          width: 12,
+          height: 12,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(4),
+            color: color,
+            shape: BoxShape.circle,
           ),
         ),
         const SizedBox(width: 8),
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: Colors.grey.shade700,
+          ),
+        ),
       ],
     );
   }

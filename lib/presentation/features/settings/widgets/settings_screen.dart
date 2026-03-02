@@ -130,6 +130,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           );
                         },
                       ),
+                      _buildDivider(),
+                      _buildSettingsTile(
+                        context,
+                        icon: Icons.share_rounded,
+                        title: AppStrings.get(language, 'share_app'),
+                        subtitle: "Spread the word to your colleagues!",
+                        onTap: () => _shareApp(language),
+                      ),
                     ],
                   ),
                   
@@ -523,6 +531,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _shareApp(Language language) async {
+    final String shareText = AppStrings.get(language, 'share_app_text');
+    await Share.share(shareText);
   }
 
   void _showSatisfactionDialog(BuildContext context) {

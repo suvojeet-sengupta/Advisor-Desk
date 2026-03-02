@@ -26,6 +26,8 @@ class StringsEn {
     'cancel': 'Cancel',
     'save_profile': 'Save Profile',
     'manage_users': 'Manage Users',
+    'share_app': 'Share this App',
+    'share_app_text': '🚀 Track your performance like a pro with Advisor Desk! 📈\n\nManage your CSAT, CQ, and daily performance metrics effortlessly. Stay organized and achieve your goals.\n\nDownload Advisor Desk now:\nhttps://play.google.com/store/apps/details?id=com.suvojeet.advisordesk',
 
     // Dashboard
     'dashboard_total_calls': 'Total Calls',

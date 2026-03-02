@@ -26,6 +26,8 @@ class StringsHinglish {
     'cancel': 'Rehne Do',
     'save_profile': 'Profile Save Karo',
     'manage_users': 'Users Sambhalo',
+    'share_app': 'Doston Ko Bhejo (Share)',
+    'share_app_text': '🚀 Advisor Desk ke saath apni performance track karo ek pro ki tarah! 📈\n\nCSAT, CQ aur daily performance metrics manage karna ab hai aasaan. Organized raho aur apne goals poore karo.\n\nAbhi download karein Advisor Desk:\nhttps://play.google.com/store/apps/details?id=com.suvojeet.advisordesk',
 
     // Dashboard
     'dashboard_total_calls': 'Total Calls (Kitne kiye?)',

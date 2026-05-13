@@ -17,6 +17,7 @@ import 'package:advisor_desk/domain/entities/monthly_data.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:archive/archive_io.dart';
 import 'package:advisor_desk/core/constants/app_constants.dart';
+import 'package:advisor_desk/data/datasources/user_data_source.dart';
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
 
 class PerformanceRepositoryImpl implements PerformanceRepository {
@@ -144,7 +145,7 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
     if (entry.id == null) {
       return await localDataSource.insertCSATEntry(entry);
     } else {
-      return await localDataSource.insertCSATEntry(entry); // This might need to be updateCSATEntry
+      return await localDataSource.updateCSATEntry(entry);
     }
   }
 
@@ -243,25 +244,55 @@ class PerformanceRepositoryImpl implements PerformanceRepository {
 
   @override
   Future<void> restoreDatabase(String backupFilePath) async {
+    // Capture the current user id BEFORE closing the db so we re-open the
+    // same per-user database, not the default one.
+    final currentUserId = await UserDataSource().getCurrentUserId();
+
     final dbPath = await localDataSource.getDatabasePath();
     final dbFile = File(dbPath);
 
-    final inputStream = InputFileStream(backupFilePath);
-    final archive = ZipDecoder().decodeBuffer(inputStream);
+    InputFileStream? inputStream;
+    try {
+      inputStream = InputFileStream(backupFilePath);
+      final archive = ZipDecoder().decodeBuffer(inputStream);
 
-    if (archive.files.isEmpty) {
-      throw Exception("Invalid backup file.");
+      if (archive.files.isEmpty) {
+        throw Exception("Invalid backup file: archive is empty.");
+      }
+
+      // Pick the .db file explicitly instead of blindly using files.first,
+      // which can corrupt the database if zip ordering changes.
+      final backupDbFile = archive.files.firstWhere(
+        (f) => f.isFile && f.name.toLowerCase().endsWith('.db'),
+        orElse: () => throw Exception(
+          "Invalid backup file: no .db entry found.",
+        ),
+      );
+
+      final content = backupDbFile.content;
+      if (content is! List<int>) {
+        throw Exception("Invalid backup file: unreadable db contents.");
+      }
+
+      // Close the database before overwriting the file on disk.
+      await localDataSource.closeDatabase();
+
+      dbFile.writeAsBytesSync(content);
+
+      // Re-initialize the database for the same user the app was using.
+      await LocalDataSource.init(userId: currentUserId);
+    } catch (e) {
+      // Make sure we leave the database in a usable state even if restore
+      // failed mid-way (e.g. corrupt zip, write error).
+      try {
+        await LocalDataSource.init(userId: currentUserId);
+      } catch (_) {
+        // Swallow re-init failure; surface the original error below.
+      }
+      throw Exception('Restore failed: $e');
+    } finally {
+      await inputStream?.close();
     }
-
-    final backupDbFile = archive.files.first;
-
-    // Close the database before restoring
-    await localDataSource.closeDatabase();
-
-    dbFile.writeAsBytesSync(backupDbFile.content as List<int>);
-
-    // Re-initialize the database after restoring
-    await LocalDataSource.init();
   }
 
   @override

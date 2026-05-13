@@ -404,6 +404,17 @@ class LocalDataSource {
     );
   }
 
+  // Update an existing CSAT entry by id
+  Future<int> updateCSATEntry(CSATEntry entry) async {
+    final db = await database;
+    return await db.update(
+      AppConstants.tableCSATEntries,
+      entry.toMap(),
+      where: 'id = ?',
+      whereArgs: [entry.id],
+    );
+  }
+
   // Batch insert CSAT entries
   Future<void> insertCSATEntries(List<CSATEntry> entries) async {
     final db = await database;

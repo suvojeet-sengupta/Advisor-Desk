@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:advisor_desk/core/utils/rate_app_helper.dart';
 import 'package:flutter/services.dart';
 
@@ -174,6 +175,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final ValueNotifier<bool> isLocked = ValueNotifier(false);
+  StreamSubscription<InstallStatus>? _updateSubscription;
   bool _justUnlocked = false;
   static const _shortcutChannel = MethodChannel('com.suvojeet.advisordesk/shortcuts');
   final _navigatorKey = GlobalKey<NavigatorState>();
@@ -249,8 +251,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         if (appUpdateInfo.flexibleUpdateAllowed) {
           // Start a flexible update
           await InAppUpdate.startFlexibleUpdate();
-          // Listen for the update to be downloaded
-          InAppUpdate.installUpdateListener.listen((status) {
+          // Cancel any prior listener before subscribing again to avoid
+          // duplicate callbacks if checkForUpdate is invoked more than once
+          // during the app's lifecycle.
+          await _updateSubscription?.cancel();
+          _updateSubscription =
+              InAppUpdate.installUpdateListener.listen((status) {
             if (status == InstallStatus.downloaded) {
               // When the update is downloaded, complete it
               InAppUpdate.completeFlexibleUpdate();
@@ -269,6 +275,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _updateSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     isLocked.dispose();
     super.dispose();

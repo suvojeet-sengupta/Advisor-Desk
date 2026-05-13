@@ -318,10 +318,10 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                   return CustomScrollView(
                     physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     slivers: [
-                        // Custom Header
+                        // Custom Header (Polished Card)
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 24.0, bottom: 16.0),
+                            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 12.0),
                             child: BlocBuilder<ProfileCubit, ProfileState>(
                               builder: (context, profileState) {
                                 return BlocBuilder<GoalsBloc, GoalsState>(
@@ -329,87 +329,126 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                                     final profile = profileState.profile;
                                     final goalStatusColor = _getGoalStatusColor(goalsState, dashboardState.monthlySummary, context);
 
-                                    return Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            BlocBuilder<LanguageCubit, Language>(
-                                              builder: (context, language) {
-                                                return Text(
-                                                  _getGreeting(language),
-                                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                        color: Colors.grey[600],
-                                                        fontSize: 14,
-                                                      ),
-                                                );
-                                              },
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  profile.name ?? 'User',
-                                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                        fontWeight: FontWeight.bold,
-                                                        color: isDark ? Colors.white : Colors.black87,
-                                                      ),
-                                                ),
-                                                if (profile.name == 'Suvojeet Sengupta') ...[
-                                                  const SizedBox(width: 8),
-                                                  Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                                    decoration: BoxDecoration(
-                                                      color: Theme.of(context).colorScheme.primary,
-                                                      borderRadius: BorderRadius.circular(4),
-                                                    ),
-                                                    child: Text(
-                                                      'DEV',
-                                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                                            color: Theme.of(context).colorScheme.onPrimary,
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 10,
-                                                          ),
-                                                    ),
-                                                  ),
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: isDark
+                                              ? [
+                                                  theme.colorScheme.primary.withOpacity(0.22),
+                                                  theme.colorScheme.primary.withOpacity(0.06),
+                                                ]
+                                              : [
+                                                  theme.colorScheme.primary.withOpacity(0.14),
+                                                  theme.colorScheme.primary.withOpacity(0.04),
                                                 ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(24),
+                                        border: Border.all(
+                                          color: theme.colorScheme.primary.withOpacity(0.15),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                BlocBuilder<LanguageCubit, Language>(
+                                                  builder: (context, language) {
+                                                    return Text(
+                                                      _getGreeting(language),
+                                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                                            color: isDark ? Colors.white70 : Colors.grey[700],
+                                                            fontSize: 13,
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                    );
+                                                  },
+                                                ),
+                                                const SizedBox(height: 6),
+                                                Row(
+                                                  children: [
+                                                    Flexible(
+                                                      child: Text(
+                                                        profile.name ?? 'User',
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                                              fontWeight: FontWeight.w800,
+                                                              color: isDark ? Colors.white : Colors.black87,
+                                                              letterSpacing: -0.2,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    if (profile.name == 'Suvojeet Sengupta') ...[
+                                                      const SizedBox(width: 8),
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                        decoration: BoxDecoration(
+                                                          color: theme.colorScheme.primary,
+                                                          borderRadius: BorderRadius.circular(4),
+                                                        ),
+                                                        child: Text(
+                                                          'DEV',
+                                                          style: theme.textTheme.labelSmall?.copyWith(
+                                                                color: theme.colorScheme.onPrimary,
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 10,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ],
+                                                ),
                                               ],
                                             ),
-                                          ],
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
-                                          child: Stack(
-                                            children: [
-                                              CircleAvatar(
-                                                radius: 24,
-                                                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                                                backgroundImage: profile.profilePicturePath.isNotEmpty
-                                                    ? ResizeImage(FileImage(File(profile.profilePicturePath)), width: 96)
-                                                    : null,
-                                                child: profile.profilePicturePath.isEmpty
-                                                    ? Icon(Icons.person, color: theme.colorScheme.primary)
-                                                    : null,
-                                              ),
-                                              if (goalsState.isGoalsSet && dashboardState.monthlySummary != null)
-                                                Positioned(
-                                                  bottom: 0,
-                                                  right: 0,
-                                                  child: Container(
-                                                    width: 12,
-                                                    height: 12,
-                                                    decoration: BoxDecoration(
-                                                      color: goalStatusColor,
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+                                          ),
+                                          GestureDetector(
+                                            onTap: () => Navigator.pushNamed(context, AppRouter.profileRoute, arguments: false),
+                                            child: Stack(
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                      color: theme.colorScheme.primary.withOpacity(0.4),
+                                                      width: 2,
                                                     ),
                                                   ),
+                                                  child: CircleAvatar(
+                                                    radius: 26,
+                                                    backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                                                    backgroundImage: profile.profilePicturePath.isNotEmpty
+                                                        ? ResizeImage(FileImage(File(profile.profilePicturePath)), width: 96)
+                                                        : null,
+                                                    child: profile.profilePicturePath.isEmpty
+                                                        ? Icon(Icons.person, color: theme.colorScheme.primary, size: 26)
+                                                        : null,
+                                                  ),
                                                 ),
-                                            ],
+                                                if (goalsState.isGoalsSet && dashboardState.monthlySummary != null)
+                                                  Positioned(
+                                                    bottom: 0,
+                                                    right: 0,
+                                                    child: Container(
+                                                      width: 14,
+                                                      height: 14,
+                                                      decoration: BoxDecoration(
+                                                        color: goalStatusColor,
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     );
                                   },
                                 );
@@ -418,75 +457,106 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
                           ),
                         ),
 
-                        // Month Selector
+                        // Month Selector + Settings
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     decoration: BoxDecoration(
-                                      color: isDark ? Colors.grey[800] : Colors.white,
-                                      borderRadius: BorderRadius.circular(30), // Pill shape
+                                      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                                      borderRadius: BorderRadius.circular(30),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                       border: Border.all(
-                                        color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
+                                        color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
                                         width: 0.8,
                                       ),
                                     ),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        InkWell(
-                                          onTap: () {
-                                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                            final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
-                                            context.read<DashboardBloc>().add(
-                                              LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
-                                            );
-                                          },
-                                          customBorder: const CircleBorder(),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Icon(Icons.chevron_left, size: 20, color: Colors.grey[600]),
+                                        Material(
+                                          color: Colors.transparent,
+                                          shape: const CircleBorder(),
+                                          child: InkWell(
+                                            customBorder: const CircleBorder(),
+                                            onTap: () {
+                                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                              final previousMonth = DateTime(currentDate.year, currentDate.month - 1);
+                                              context.read<DashboardBloc>().add(
+                                                LoadDashboardData(month: previousMonth.month, year: previousMonth.year),
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(6.0),
+                                              child: Icon(Icons.chevron_left_rounded, size: 22, color: theme.colorScheme.primary),
+                                            ),
                                           ),
                                         ),
                                         BlocBuilder<LanguageCubit, Language>(
                                           builder: (context, language) {
                                             return Text(
-                                              dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month', // Date formatting usually handled by Intl, but 'Select Month' could be localized if it wasn't dynamic
-                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                    fontWeight: FontWeight.w600,
+                                              dashboardState.monthlySummary?.formattedMonthYear ?? 'Select Month',
+                                              style: theme.textTheme.titleMedium?.copyWith(
+                                                    fontWeight: FontWeight.w700,
                                                     color: isDark ? Colors.white : Colors.black87,
                                                   ),
                                             );
                                           },
                                         ),
-                                        InkWell(
-                                          onTap: () {
-                                            final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
-                                            final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
-                                            context.read<DashboardBloc>().add(
-                                              LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
-                                            );
-                                          },
-                                          customBorder: const CircleBorder(),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Icon(Icons.chevron_right, size: 20, color: Colors.grey[600]),
+                                        Material(
+                                          color: Colors.transparent,
+                                          shape: const CircleBorder(),
+                                          child: InkWell(
+                                            customBorder: const CircleBorder(),
+                                            onTap: () {
+                                              final currentDate = DateTime(dashboardState.currentYear, dashboardState.currentMonth);
+                                              final nextMonth = DateTime(currentDate.year, currentDate.month + 1);
+                                              context.read<DashboardBloc>().add(
+                                                LoadDashboardData(month: nextMonth.month, year: nextMonth.year),
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(6.0),
+                                              child: Icon(Icons.chevron_right_rounded, size: 22, color: theme.colorScheme.primary),
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                IconButton(
-                                  icon: const Icon(Icons.settings_outlined),
-                                  onPressed: () => Navigator.pushNamed(context, AppRouter.settingsRoute),
-                                  tooltip: 'Settings',
-                                  color: Colors.grey[600],
+                                const SizedBox(width: 10),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                    border: Border.all(
+                                      color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.tune_rounded, color: theme.colorScheme.primary),
+                                    onPressed: () => Navigator.pushNamed(context, AppRouter.settingsRoute),
+                                    tooltip: 'Settings',
+                                  ),
                                 ),
                               ],
                             ),
@@ -747,8 +817,8 @@ class _DashboardViewState extends State<DashboardView> with TickerProviderStateM
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
+              crossAxisSpacing: 14,
+              mainAxisSpacing: 14,
               childAspectRatio: 1.1,
             ),
             delegate: SliverChildListDelegate([

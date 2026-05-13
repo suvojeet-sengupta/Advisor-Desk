@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_app_bar.dart';
 import 'package:advisor_desk/presentation/common/widgets/custom_card.dart';
+import 'package:advisor_desk/core/localization/app_strings.dart';
+import 'package:advisor_desk/core/localization/language_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -30,7 +34,7 @@ class AboutAppScreen extends StatelessWidget {
                 context,
                 'The Story',
                 null,
-                'As a customer care executive, I found it challenging to keep track of my daily calls, login hours, and performance scores. Since my salary is calculated on a per-call basis, I needed a way to monitor my progress and earnings in real-time, without having to wait for my payslip.\n\nTo solve this problem, I created Advisor Desk. This app is designed to help my fellow advisors and other professionals in similar roles to easily track their performance, calculate their earnings, and stay motivated to achieve their goals. It\'s a tool built by an advisor, for advisors.',
+                'I built Advisor Desk during my time as a customer care advisor, when I struggled to keep track of my daily calls, login hours, and performance scores. Since salaries in that role are calculated on a per-call basis, I needed a way to monitor my progress and earnings in real-time — without having to wait for the payslip at month-end.\n\nI have since moved on from that role, but Advisor Desk remains a project I continue to maintain and improve. If you are still working as a call-center advisor — especially in a per-call-incentive setup — this app is built for you. It is a tool built by an advisor, for advisors.',
               ),
               const SizedBox(height: 32),
               _buildTeamSection(context),
@@ -315,7 +319,84 @@ class AboutAppScreen extends StatelessWidget {
           'mailto:suvojitsengupta21@gmail.com',
           Icons.email_outlined,
         ),
+        const SizedBox(height: 12),
+        _buildShareAppTile(context),
       ],
+    );
+  }
+
+  Widget _buildShareAppTile(BuildContext context) {
+    return BlocBuilder<LanguageCubit, Language>(
+      builder: (context, language) {
+        final theme = Theme.of(context);
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => Share.share(AppStrings.get(language, 'share_app_text')),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary.withOpacity(0.12),
+                    theme.colorScheme.primary.withOpacity(0.04),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.share_rounded,
+                      color: theme.colorScheme.primary,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppStrings.get(language, 'share_app'),
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Help a fellow advisor — share Advisor Desk',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

@@ -61,6 +61,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                 children: [
+                  _buildShareAppBanner(context, language),
+                  const SizedBox(height: 24),
                   _buildSectionHeader(AppStrings.get(language, 'general_section')),
                   _buildSectionCard(
                     context,
@@ -234,6 +236,82 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
   
+  Widget _buildShareAppBanner(BuildContext context, Language language) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _shareApp(language),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primary,
+                theme.colorScheme.primary.withOpacity(0.75),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.primary.withOpacity(isDark ? 0.3 : 0.25),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.ios_share_rounded,
+                  color: Colors.white,
+                  size: 26,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppStrings.get(language, 'share_app'),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Spread the word to your colleagues',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withOpacity(0.85),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(String title) {
 
     return Padding(

@@ -65,16 +65,24 @@ class _DashboardCardState extends State<DashboardCard> with SingleTickerProvider
         child: ScaleTransition(
           scale: _scaleAnimation,
           child: Container(
-            padding: EdgeInsets.all(widget.isLarge ? 24 : 16),
+            padding: EdgeInsets.all(widget.isLarge ? 22 : 16),
             decoration: BoxDecoration(
               color: theme.cardTheme.color,
-              borderRadius: theme.cardTheme.shape is RoundedRectangleBorder 
-                  ? (theme.cardTheme.shape as RoundedRectangleBorder).borderRadius 
-                  : BorderRadius.circular(28),
+              borderRadius: theme.cardTheme.shape is RoundedRectangleBorder
+                  ? (theme.cardTheme.shape as RoundedRectangleBorder).borderRadius
+                  : BorderRadius.circular(24),
               border: Border.all(
-                color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+                color: theme.colorScheme.outlineVariant.withOpacity(0.35),
                 width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(
+                      theme.brightness == Brightness.dark ? 0.18 : 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

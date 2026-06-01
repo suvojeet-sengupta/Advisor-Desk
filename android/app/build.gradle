@@ -87,6 +87,20 @@ flutter {
     source '../..'
 }
 
+// Pin androidx.glance to a stable version. The home_widget plugin requests
+// Glance with a dynamic version, which now resolves to 1.3.0-alpha01 — that
+// alpha requires compileSdk 37 / AGP 9.1+, breaking the release build on the
+// current toolchain (compileSdk 36 / AGP 8.6). Forcing the stable 1.1.1 keeps
+// the build green and also drops the compose.remote alpha it pulls in.
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'androidx.glance') {
+            details.useVersion '1.1.1'
+            details.because 'glance 1.3.0-alpha01 needs compileSdk 37/AGP 9.1; pin to stable'
+        }
+    }
+}
+
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }

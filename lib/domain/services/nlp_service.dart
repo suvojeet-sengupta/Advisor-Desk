@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:advisor_desk/core/constants/app_constants.dart';
 import 'package:advisor_desk/domain/entities/ai_insight.dart';
 import 'package:advisor_desk/domain/entities/ai_response.dart';
@@ -66,24 +67,22 @@ class NlpService {
     }
 
     final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry, requestedDate);
-    // Fresh content list per model attempt (the tool loop mutates it).
-    final baseContent = [Content.text(prompt)];
 
     // Try Primary: gemini-3-flash
     try {
-      final response = await _generateWithTools(_modelPrimary, List<Content>.of(baseContent));
+      final response = await _generateWithTools(_modelPrimary, prompt);
       return _handleResponse(response, false);
     } catch (e) {
       if (_shouldUseFallbackModel(e)) {
         // Try Fallback 1: gemini-2.5-flash
         try {
-          final response = await _generateWithTools(_modelFallback1, List<Content>.of(baseContent));
+          final response = await _generateWithTools(_modelFallback1, prompt);
           return _handleResponse(response, true);
         } catch (e2) {
           if (_shouldUseFallbackModel(e2)) {
             // Try Fallback 2: gemini-2.5-flash-lite
             try {
-              final response = await _generateWithTools(_modelFallback2, List<Content>.of(baseContent));
+              final response = await _generateWithTools(_modelFallback2, prompt);
               return _handleResponse(response, true);
             } catch (e3) {
               return AiResponse(
@@ -105,34 +104,46 @@ class NlpService {
     }
   }
 
-  /// Runs a single model through the tool-calling loop: send the prompt with
-  /// the tool schemas, and while the model keeps asking for tool calls, execute
-  /// them against the local repository and feed the results back. A guard caps
-  /// the number of round-trips to avoid an infinite loop.
+  /// Runs a single model through the tool-calling loop.
+  ///
+  /// The model is given the tool schemas and asked the question. When it
+  /// requests tool calls, we execute them against the local repository and feed
+  /// the results back **as plain text** (not as `functionResponse` parts).
+  ///
+  /// Why text instead of native function-response parts: Gemini 3 / 2.5
+  /// (thinking) models attach a `thought_signature` to each `functionCall`, and
+  /// the API rejects the follow-up request unless that signature is round-tripped.
+  /// The legacy `google_generative_ai` package doesn't expose/preserve the
+  /// signature, so resubmitting the `functionCall` part fails with a
+  /// "missing thought_signature" error. By never resubmitting `functionCall`
+  /// parts and instead passing results as natural-language text, the signature
+  /// requirement does not apply — and we can keep using gemini-3.
   Future<GenerateContentResponse> _generateWithTools(
-      GenerativeModel model, List<Content> content) async {
+      GenerativeModel model, String basePrompt) async {
+    final content = <Content>[Content.text(basePrompt)];
+
     var response =
         await model.generateContent(content, tools: AdvisorAiTools.tools);
 
     var guard = 0;
-    while (response.functionCalls.isNotEmpty && guard < 5) {
+    const maxRounds = 3;
+    while (response.functionCalls.isNotEmpty && guard < maxRounds) {
       guard++;
 
-      // Append the model's function-call turn before adding our responses,
-      // as the Gemini API expects the model turn followed by the tool results.
-      if (response.candidates.isNotEmpty) {
-        content.add(response.candidates.first.content);
-      }
-
-      final responses = <FunctionResponse>[];
+      final buffer = StringBuffer(
+          'TOOL RESULTS (use these to answer the question; do NOT call the same '
+          'tool again with the same arguments):\n');
       for (final call in response.functionCalls) {
         final result = await _tools.executeTool(call.name, call.args);
-        responses.add(FunctionResponse(call.name, result));
+        buffer.writeln('- ${call.name}(${jsonEncode(call.args)}) => '
+            '${jsonEncode(result)}');
       }
-      content.add(Content.functionResponses(responses));
+      content.add(Content.text(buffer.toString()));
 
-      response =
-          await model.generateContent(content, tools: AdvisorAiTools.tools);
+      // On the final allowed round, drop the tools so the model is forced to
+      // produce a textual answer instead of requesting yet more data.
+      final toolsForNext = guard >= maxRounds ? null : AdvisorAiTools.tools;
+      response = await model.generateContent(content, tools: toolsForNext);
     }
 
     return response;

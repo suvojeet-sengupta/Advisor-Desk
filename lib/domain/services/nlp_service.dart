@@ -6,6 +6,7 @@ import 'package:advisor_desk/domain/entities/profile.dart';
 import 'package:advisor_desk/presentation/features/dashboard/bloc/goals_state.dart';
 import 'package:advisor_desk/domain/repositories/performance_repository.dart';
 import 'package:advisor_desk/domain/services/query_parser.dart';
+import 'package:advisor_desk/domain/services/advisor_ai_tools.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:advisor_desk/domain/entities/daily_entry.dart';
 
@@ -15,22 +16,24 @@ class NlpService {
   late final GenerativeModel _modelPrimary;   // gemini-3-flash
   late final GenerativeModel _modelFallback1; // gemini-2.5-flash
   late final GenerativeModel _modelFallback2; // gemini-2.5-flash-lite
+  late final AdvisorAiTools _tools;
 
   NlpService({required PerformanceRepository performanceRepository, required QueryParser queryParser})
       : _performanceRepository = performanceRepository,
         _queryParser = queryParser {
           _modelPrimary = GenerativeModel(
-            model: 'gemini-3-flash-preview', 
+            model: 'gemini-3-flash-preview',
             apiKey: AppConstants.geminiApiKey,
           );
           _modelFallback1 = GenerativeModel(
-            model: 'gemini-2.5-flash', 
+            model: 'gemini-2.5-flash',
             apiKey: AppConstants.geminiApiKey,
           );
           _modelFallback2 = GenerativeModel(
-            model: 'gemini-2.5-flash-lite', 
+            model: 'gemini-2.5-flash-lite',
             apiKey: AppConstants.geminiApiKey,
           );
+          _tools = AdvisorAiTools(_performanceRepository);
         }
 
   // Duration for showing "Switching model..." indicator
@@ -63,23 +66,24 @@ class NlpService {
     }
 
     final prompt = _buildPrompt(question, histories, goals, profile, chatHistory, dailyEntry, requestedDate);
-    final content = [Content.text(prompt)];
+    // Fresh content list per model attempt (the tool loop mutates it).
+    final baseContent = [Content.text(prompt)];
 
     // Try Primary: gemini-3-flash
     try {
-      final response = await _modelPrimary.generateContent(content);
+      final response = await _generateWithTools(_modelPrimary, List<Content>.of(baseContent));
       return _handleResponse(response, false);
     } catch (e) {
       if (_shouldUseFallbackModel(e)) {
         // Try Fallback 1: gemini-2.5-flash
         try {
-          final response = await _modelFallback1.generateContent(content);
+          final response = await _generateWithTools(_modelFallback1, List<Content>.of(baseContent));
           return _handleResponse(response, true);
         } catch (e2) {
           if (_shouldUseFallbackModel(e2)) {
             // Try Fallback 2: gemini-2.5-flash-lite
             try {
-              final response = await _modelFallback2.generateContent(content);
+              final response = await _generateWithTools(_modelFallback2, List<Content>.of(baseContent));
               return _handleResponse(response, true);
             } catch (e3) {
               return AiResponse(
@@ -101,6 +105,39 @@ class NlpService {
     }
   }
 
+  /// Runs a single model through the tool-calling loop: send the prompt with
+  /// the tool schemas, and while the model keeps asking for tool calls, execute
+  /// them against the local repository and feed the results back. A guard caps
+  /// the number of round-trips to avoid an infinite loop.
+  Future<GenerateContentResponse> _generateWithTools(
+      GenerativeModel model, List<Content> content) async {
+    var response =
+        await model.generateContent(content, tools: AdvisorAiTools.tools);
+
+    var guard = 0;
+    while (response.functionCalls.isNotEmpty && guard < 5) {
+      guard++;
+
+      // Append the model's function-call turn before adding our responses,
+      // as the Gemini API expects the model turn followed by the tool results.
+      if (response.candidates.isNotEmpty) {
+        content.add(response.candidates.first.content);
+      }
+
+      final responses = <FunctionResponse>[];
+      for (final call in response.functionCalls) {
+        final result = await _tools.executeTool(call.name, call.args);
+        responses.add(FunctionResponse(call.name, result));
+      }
+      content.add(Content.functionResponses(responses));
+
+      response =
+          await model.generateContent(content, tools: AdvisorAiTools.tools);
+    }
+
+    return response;
+  }
+
   AiResponse _handleResponse(GenerateContentResponse response, bool switched) {
     final text = response.text;
     if (text == null || text.isEmpty) {
@@ -118,63 +155,25 @@ class NlpService {
   String _buildPrompt(String question, List<MonthlySummary> histories, GoalsState goals, Profile profile, List<AiInsight> chatHistory, DailyEntry? dailyEntry, DateTime? requestedDate) {
     final name = profile.name ?? 'Advisor';
     final now = DateTime.now();
-    final timeString = "${now.hour}:${now.minute}";
-    
-    // Build comprehensive data context
+    final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    final timeString = "$dateStr ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+
+    // Build a COMPACT monthly index (overview only). Detailed numbers — daily
+    // entries, CSAT/CQ breakdowns, full salary breakdown — are fetched on demand
+    // by the model via tools (see DATA TOOLS instructions below). This keeps the
+    // prompt small instead of dumping the entire history every time.
     final StringBuffer dataBuffer = StringBuffer();
     if (histories.isEmpty) {
       dataBuffer.writeln("No historical data available.");
     } else {
       for (final summary in histories) {
-        dataBuffer.writeln("=== ${summary.formattedMonthYear} ===");
-        dataBuffer.writeln("SUMMARY:");
-        dataBuffer.writeln("- Total Calls: ${summary.totalCalls}");
-        dataBuffer.writeln("- Billable Calls: ${summary.billableCalls}");
-        dataBuffer.writeln("- Non-Billable Calls: ${summary.totalNonBillableCalls}");
-        dataBuffer.writeln("- Total Login Hours: ${summary.totalLoginHours.toStringAsFixed(2)}");
-        dataBuffer.writeln("- Working Days: ${summary.entries.length}");
-        dataBuffer.writeln("- Avg Calls/Day: ${summary.averageDailyCalls.toStringAsFixed(1)}");
-        dataBuffer.writeln("- Avg Hours/Day: ${summary.averageDailyLoginHours.toStringAsFixed(2)}");
-        dataBuffer.writeln("- CSAT Score: ${summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(2) ?? 'N/A'}%");
-        dataBuffer.writeln("- CQ Score: ${summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(2) ?? 'N/A'}%");
-        dataBuffer.writeln("SALARY BREAKDOWN:");
-        dataBuffer.writeln("- Base Salary: ₹${summary.baseSalary.toStringAsFixed(2)}");
-        dataBuffer.writeln("- Performance Bonus: ₹${summary.bonusAmount.toStringAsFixed(2)} (${summary.isBonusAchieved ? 'Achieved' : 'Not Achieved'})");
-        dataBuffer.writeln("- CSAT Bonus: ₹${summary.csatBonus.toStringAsFixed(2)}");
-        dataBuffer.writeln("- Gross Salary: ₹${(summary.totalSalary + summary.csatBonus).toStringAsFixed(2)}");
-        dataBuffer.writeln("- TDS Deduction: ₹${summary.tdsDeduction.toStringAsFixed(2)}");
-        dataBuffer.writeln("- Net Salary: ₹${summary.netSalary.toStringAsFixed(2)}");
-        
-        // Daily Entries Detail
-        if (summary.entries.isNotEmpty) {
-          dataBuffer.writeln("\nDAILY ENTRIES (${summary.entries.length} days):");
-          for (final entry in summary.entries) {
-            final dateStr = "${entry.date.day}/${entry.date.month}/${entry.date.year}";
-            dataBuffer.writeln("  $dateStr: Calls=${entry.callCount}, Hours=${entry.formattedLoginTime}${entry.customCallRate != null ? ', CustomRate=₹${entry.customCallRate}' : ''}");
-          }
-        }
-        
-        // CSAT Entries Detail
-        if (summary.csatSummary != null && summary.csatSummary!.entries.isNotEmpty) {
-          dataBuffer.writeln("\nCSAT ENTRIES (${summary.csatSummary!.entries.length} days):");
-          dataBuffer.writeln("  Monthly: T2=${summary.csatSummary!.totalT2Count}, B2=${summary.csatSummary!.totalB2Count}, N=${summary.csatSummary!.totalNCount}, Hits=${summary.csatSummary!.totalSurveyHits}");
-          for (final csatEntry in summary.csatSummary!.entries) {
-            final dateStr = "${csatEntry.date.day}/${csatEntry.date.month}/${csatEntry.date.year}";
-            dataBuffer.writeln("  $dateStr: T2=${csatEntry.t2Count}, B2=${csatEntry.b2Count}, N=${csatEntry.nCount}, CSAT=${csatEntry.csatPercentage.toStringAsFixed(1)}%");
-          }
-        }
-        
-        // CQ Entries Detail
-        if (summary.cqSummary != null && summary.cqSummary!.entries.isNotEmpty) {
-          dataBuffer.writeln("\nCQ ENTRIES (${summary.cqSummary!.entries.length} audits):");
-          dataBuffer.writeln("  Monthly Avg: ${summary.cqSummary!.monthlyAverageCQ.toStringAsFixed(2)}%, Rating: ${summary.cqSummary!.qualityRating}");
-          for (final cqEntry in summary.cqSummary!.entries) {
-            final dateStr = "${cqEntry.auditDate.day}/${cqEntry.auditDate.month}/${cqEntry.auditDate.year}";
-            dataBuffer.writeln("  $dateStr: Score=${cqEntry.percentage.toStringAsFixed(1)}%");
-          }
-        }
-        
-        dataBuffer.writeln(""); // Empty line between months
+        final csat = summary.csatSummary?.monthlyCSATPercentage.toStringAsFixed(1) ?? 'N/A';
+        final cq = summary.cqSummary?.monthlyAverageCQ.toStringAsFixed(1) ?? 'N/A';
+        dataBuffer.writeln(
+          "- ${summary.formattedMonthYear} (month=${summary.month}, year=${summary.year}): "
+          "Calls=${summary.totalCalls}, Hours=${summary.totalLoginHours.toStringAsFixed(1)}, "
+          "Days=${summary.entries.length}, CSAT=$csat%, CQ=$cq%, Net=₹${summary.netSalary.toStringAsFixed(0)}",
+        );
       }
     }
 
@@ -217,13 +216,22 @@ You are "Advisor Assistant", an intelligent AI for "Advisor Desk" app that track
 2. **DO NOT** repeat your greeting (e.g., "Hello Suvojeet! I'm ready to help...") if you see that you have already greeted the user in the **RECENT CONVERSATION** history.
 3. If the user asks a question, answer it DIRECTLY.
 
+**DATA TOOLS (IMPORTANT)**:
+- Tumhare paas ye tools hain: `list_recent_months`, `get_monthly_summary`,
+  `get_entries_for_month`, `get_daily_entry`, `get_csat_summary`, `get_cq_summary`.
+- Neeche sirf ek COMPACT MONTHLY OVERVIEW diya hai. Jab bhi detailed numbers chahiye
+  (kisi specific din ke calls, CSAT/CQ ka day-wise breakdown, full salary breakdown,
+  ya kisi month ke saare daily entries) to relevant TOOL call karo — numbers GUESS mat karo.
+- Dates ke liye `get_daily_entry` ko ISO format (YYYY-MM-DD) mein date do. Current year
+  ka pata Current Time se lagao.
+
 **CURRENT CONTEXT**:
 - User Name: $name
 - Company: ${profile.companyName ?? 'N/A'}
 - Current Time: $timeString
 - Monthly Goals: ${goals.targetCalls} calls, ${goals.targetHours} hours
 
-**COMPREHENSIVE PERFORMANCE DATA**:
+**MONTHLY OVERVIEW (compact — use tools for details)**:
 $dataBuffer
 
 **SPECIFIC DATE DATA (If requested)**:

@@ -159,7 +159,12 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     final userMessage = AiInsight(message: event.question, isUser: true);
     var currentHistory = List<AiInsight>.from(state.insightHistory)..add(userMessage);
 
-    emit(state.copyWith(insightHistory: currentHistory, isAiTyping: true, isSwitchingModel: false));
+    emit(state.copyWith(
+      insightHistory: currentHistory, 
+      isAiTyping: true, 
+      isSwitchingModel: false,
+      thoughtSteps: ["Analyzing your query..."],
+    ));
     
     // Save User Message and update ID
     final userMsgId = await _performanceRepository.insertChatMessage(userMessage, true);
@@ -180,8 +185,8 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     }).toList();
     emit(state.copyWith(insightHistory: currentHistory));
 
-    // Artificial delay to show typing indicator as requested (2-3 seconds)
-    await Future.delayed(const Duration(seconds: 2));
+    // Initial delay for "Thinking" feel
+    await Future.delayed(const Duration(milliseconds: 800));
 
     try {
       final userId = await _userDataSource.getCurrentUserId();
@@ -201,6 +206,7 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
       DailyEntry? dailyEntry;
       final date = _extractDateFromQuery(event.question);
       if (date != null) {
+        emit(state.copyWith(thoughtSteps: [...state.thoughtSteps, "Extracting date details..."]));
         dailyEntry = await _performanceRepository.getEntryForDate(date);
       }
       // ----------------------------------------
@@ -214,6 +220,12 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
         chatHistory: currentHistory, 
         dailyEntry: dailyEntry, 
         requestedDate: date, 
+        onToolCall: (toolName, args) {
+          final step = _mapToolToStep(toolName, args);
+          emit(state.copyWith(
+            thoughtSteps: [...state.thoughtSteps, step],
+          ));
+        },
       );
       
       print("BLoC: Received AI Response: ${aiResponse.insight.message.substring(0, 10)}...");
@@ -226,7 +238,12 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
 
       var aiInsight = aiResponse.insight;
       currentHistory = List<AiInsight>.from(state.insightHistory)..add(aiInsight);
-      emit(state.copyWith(insightHistory: currentHistory, isAiTyping: false, isSwitchingModel: false));
+      emit(state.copyWith(
+        insightHistory: currentHistory, 
+        isAiTyping: false, 
+        isSwitchingModel: false,
+        thoughtSteps: [...state.thoughtSteps, "Generating final response..."],
+      ));
       
       // Save AI Message and update ID
       final aiMsgId = await _performanceRepository.insertChatMessage(aiInsight, false);
@@ -258,7 +275,26 @@ class AdvisorDeskAIBloc extends Bloc<AdvisorDeskAIEvent, AdvisorDeskAIState> {
     }
   }
       
-        DateTime? _extractDateFromQuery(String query) {
+        String _mapToolToStep(String toolName, Map<String, dynamic> args) {
+    switch (toolName) {
+      case 'list_recent_months':
+        return "Checking available months...";
+      case 'get_monthly_summary':
+        return "Fetching summary for ${args['month']}/${args['year']}...";
+      case 'get_entries_for_month':
+        return "Reading daily entries for ${args['month']}/${args['year']}...";
+      case 'get_daily_entry':
+        return "Looking up data for ${args['date']}...";
+      case 'get_csat_summary':
+        return "Analyzing CSAT scores...";
+      case 'get_cq_summary':
+        return "Reviewing Quality audits...";
+      default:
+        return "Processing data...";
+    }
+  }
+
+  DateTime? _extractDateFromQuery(String query) {
           query = query.toLowerCase();
           final now = DateTime.now();
       

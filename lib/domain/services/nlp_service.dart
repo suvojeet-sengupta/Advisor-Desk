@@ -58,6 +58,7 @@ class NlpService {
     required List<AiInsight> chatHistory,
     DailyEntry? dailyEntry,
     DateTime? requestedDate,
+    Function(String toolName, Map<String, dynamic> args)? onToolCall,
   }) async {
     if (AppConstants.geminiApiKey.isEmpty) {
        return AiResponse(
@@ -70,19 +71,19 @@ class NlpService {
 
     // Try Primary: gemini-3-flash
     try {
-      final response = await _generateWithTools(_modelPrimary, prompt);
+      final response = await _generateWithTools(_modelPrimary, prompt, onToolCall);
       return _handleResponse(response, false);
     } catch (e) {
       if (_shouldUseFallbackModel(e)) {
         // Try Fallback 1: gemini-2.5-flash
         try {
-          final response = await _generateWithTools(_modelFallback1, prompt);
+          final response = await _generateWithTools(_modelFallback1, prompt, onToolCall);
           return _handleResponse(response, true);
         } catch (e2) {
           if (_shouldUseFallbackModel(e2)) {
             // Try Fallback 2: gemini-2.5-flash-lite
             try {
-              final response = await _generateWithTools(_modelFallback2, prompt);
+              final response = await _generateWithTools(_modelFallback2, prompt, onToolCall);
               return _handleResponse(response, true);
             } catch (e3) {
               return AiResponse(
@@ -119,7 +120,7 @@ class NlpService {
   /// parts and instead passing results as natural-language text, the signature
   /// requirement does not apply — and we can keep using gemini-3.
   Future<GenerateContentResponse> _generateWithTools(
-      GenerativeModel model, String basePrompt) async {
+      GenerativeModel model, String basePrompt, Function(String toolName, Map<String, dynamic> args)? onToolCall) async {
     final content = <Content>[Content.text(basePrompt)];
 
     var response =
@@ -134,6 +135,11 @@ class NlpService {
           'TOOL RESULTS (use these to answer the question; do NOT call the same '
           'tool again with the same arguments):\n');
       for (final call in response.functionCalls) {
+        // Report tool call to UI
+        if (onToolCall != null) {
+          onToolCall(call.name, call.args);
+        }
+
         final result = await _tools.executeTool(call.name, call.args);
         buffer.writeln('- ${call.name}(${jsonEncode(call.args)}) => '
             '${jsonEncode(result)}');

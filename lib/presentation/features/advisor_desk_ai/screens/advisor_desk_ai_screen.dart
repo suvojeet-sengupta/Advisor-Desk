@@ -252,7 +252,10 @@ class _AdvisorDeskAIViewState extends State<AdvisorDeskAIView> {
   Widget _buildThinkingBubble(BuildContext context) {
     return BlocBuilder<AdvisorDeskAIBloc, AdvisorDeskAIState>(
       builder: (context, state) {
-        return ThinkingProcessIndicator(isThinking: state.isAiTyping || state.isSwitchingModel);
+        return ThinkingProcessIndicator(
+          isThinking: state.isAiTyping || state.isSwitchingModel,
+          steps: state.thoughtSteps,
+        );
       },
     );
   }
